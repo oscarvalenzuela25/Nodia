@@ -1,5 +1,17 @@
 # Acceso por módulos y privacidad de datos
 
+## Noticias personales — alcance de implementación aprobado el 2026-11-18
+
+[Plan105 §18](105-on-demand-tech-news.md#18-plan-de-noticias-personales) y
+[ADR110 propuesto](../architecture/decisions/ADR-110-personal-news-connection-ownership.md)
+aplican sesión vigente y propiedad por usuario a los métodos y rutas exactos
+de `/api/v1/news/personal`. Una sesión ordinaria puede consultar, probar,
+actualizar o desconectar su propia conexión, con la autoridad derivada en
+Server. El requisito de `super_admin` de la sección del 2026-11-16 corresponde
+al RSS público histórico y se conserva para el POST de compatibilidad de fuente
+retirada. La lectura pública conserva su respuesta vacía válida. Las reglas de
+acceso del resto de destinos y los contratos históricos conservan su alcance.
+
 ## Noticias pública — alcance confirmado2026-11-16
 
 [Plan105§8](105-on-demand-tech-news.md#8-news-01-acceso-público-y-catálogo-inicial--2026-11-16)

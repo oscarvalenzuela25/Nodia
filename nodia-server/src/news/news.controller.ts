@@ -34,7 +34,7 @@ export class NewsController {
   @HttpCode(200)
   @ApiBearerAuth()
   @Header('Cache-Control', 'no-store')
-  refreshNews(@Req() request: AuthRequest, @Body() body: RefreshNewsDto) {
-    return this.refresh.execute(actorReference(request.auth), body);
+  refreshNews(@Req() request: AuthRequest, @Body() _body: RefreshNewsDto) {
+    return this.refresh.execute(actorReference(request.auth));
   }
 }

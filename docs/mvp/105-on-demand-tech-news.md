@@ -2,8 +2,12 @@
 
 > Seguimiento de implementación futura: `NEWS-001` en [TODO central](TODO.md).
 > La especificación, opciones y diseño se retoman desde este plan y sus dependencias.
+> Alcance aprobado para implementación: [Noticias personales §18](#18-plan-de-noticias-personales).
+> La [verificación local](#185-implementación-y-verificación-local) registra Client,
+> Server, PostgreSQL y el actualizador de CD aislado.
+> Continuación para un solo dueño en desarrollo: [piloto personal daily.dev §18.8](#188-piloto-personal-local-de-dailydev).
 
-> Alcance vigente2026-11-16: [§9](#9-obtención-exclusiva-super_admin-y-primera-integración-rss--2026-11-16).
+> Alcance de la primera versión RSS del 2026-11-16: [§9](#9-obtención-exclusiva-super_admin-y-primera-integración-rss--2026-11-16).
 > Noticias pública debajo de Home; fuentes con cupo sólo para sesiones válidas,
 > toda obtención externa sólo por super_admin activo. RSS público primero;
 > daily.dev deshabilitada hasta resolver
@@ -703,3 +707,354 @@ permisos/UI reales y aceptación humana. Teléfono e inspección visual nativa20
 conservan los límites de§13. No repetir integración, promoción o despliegue ya
 comprobados. Esta conciliación no modifica contratos, capacidades, herramientas
 o aprobación de fichas/ADR; no acredita un recorrido humano por leer logs.
+
+## 16. Renovación del catálogo de Noticias dev — 2026-11-18
+
+El usuario solicita retirar web.dev y Node.js y buscar fuentes para Noticias
+dev. `codex/dev-news-sources`, creada desde `development`, las sustituye en el
+catálogo activo por The Go Blog, Rust Blog y Kubernetes Blog. Go y Rust cubren
+Programación y Kubernetes, Tecnología. La [revisión de los feeds](../evidence/news-dev-source-refresh-20261118.md)
+documenta publicaciones recientes, tamaños y atribución. También registra
+GitHub Changelog, DEV Community, Hacker News y Hugging Face como candidatas.
+
+El [contrato de lectura y actualización](../features/news/http-contract.md)
+usa `catalog=2` para leer las fuentes nuevas. Las pestañas con Client anterior
+reciben una página vacía válida mientras se publica el Client actualizado.
+La actualización requiere una fuente explícita, sesión válida y `super_admin`
+vigente. Se mantiene la lectura pública de caché, el enfriamiento de 15 minutos
+y la retención lógica de siete días. Se muestran título, URL, fecha y procedencia.
+
+La migración `1793750000000` amplía el CHECK sin tocar las filas históricas.
+La API excluye las dos fuentes retiradas de lectura y actualización. Su caché
+se conserva para una reversión de versión. El `down` restaura el CHECK anterior
+y elimina sólo la caché nueva. CI incorpora la prueba de migración y autoridad HTTP de
+Noticias sobre PostgreSQL desechable, con transporte controlado.
+
+El resultado queda como antecedente del ensayo de fuentes. La selección para el
+siguiente corte se recoge en §17.
+
+## 17. Evaluación de conexiones personales con Forem y daily.dev — 2026-11-18
+
+El usuario descarta Go, Rust y Kubernetes como próxima entrega y pide evaluar
+Forem y daily.dev con una conexión propia por persona. El corte anterior queda
+como evidencia de laboratorio. Esta evaluación propone un flujo de lectura
+privada y requiere comprobar las capacidades con una cuenta de prueba.
+
+| Fuente | Capacidad documentada | Primera prueba propuesta |
+| --- | --- | --- |
+| [Forem API v1](https://developers.forem.com/api/v1) | Clave personal en `api-key`; `GET /api/users/me` acredita identidad, `GET /api/follows/tags` expone etiquetas seguidas y `GET /api/readinglist` devuelve guardados. `GET /api/articles` admite filtrado de artículos públicos | Validar la identidad y leer etiquetas seguidas. Construir una selección acotada a partir de esas etiquetas y conservar título, URL original y procedencia. Identificarla como una selección que genera Nodia. Revisar el alcance de uso previsto bajo los [términos de DEV](https://dev.to/terms) |
+| [daily.dev API](https://docs.daily.dev/public-api/) | `GET /feeds/foryou` entrega el feed personalizado de la cuenta. El PAT tiene alcance amplio; [OAuth](https://docs.daily.dev/oauth-apps/) permite consentimiento de sólo lectura por persona. El plan Free documenta 200 peticiones por 30 días, compartidas por cuenta | Aclarar cómo aplica la sección 18 de los [términos](https://daily.dev/tos/) a una sección de noticias de desarrolladores. Si el uso encaja, probar una conexión de sólo lectura vía OAuth y recuperar una página de `For You` |
+
+Comprobaciones sin credenciales: Forem devolvió HTTP 200 con tres artículos
+públicos filtrados por etiqueta y HTTP 401 al consultar la identidad. Las
+lecturas de etiquetas seguidas y guardados devolvieron 429 en esa consulta.
+`For You` de daily.dev devolvió HTTP 401. Los resultados documentan el transporte
+y las respuestas observadas; la lectura autenticada queda pendiente.
+
+La propuesta asocia cada conexión al usuario autenticado en Nodia y deriva la
+propiedad en Server. El primer alcance se limita a lectura. Una clave guardada
+se cifra en Server y la interfaz muestra su estado. La actualización se inicia
+por acción explícita y respeta el límite del proveedor. La vista y cualquier
+caché permitida quedan aisladas por usuario y por conexión. Al desconectar, se
+retira el acceso y se limpia la caché asociada. La sección 18 de daily.dev limita
+el uso en productos o funciones sustitutivas de su agregador, incluso con
+credenciales individuales. La documentación de OAuth instruye cómo conectar
+cuentas y el encaje de la función requiere revisión propia.
+
+## 18. Plan de Noticias personales
+
+> El usuario aprobó implementar este alcance el 2026-11-18 después de revisar
+> el plan y mockup. DEV es la única fuente del piloto. daily.dev permanece
+> pendiente del encaje bajo sus términos y de pruebas independientes de OAuth.
+> El mockup usa estados y artículos de demostración. La [ficha candidata](../nodia-ai/knowledge/news/features/personal-connections.md)
+> y [ADR110](../architecture/decisions/ADR-110-personal-news-connection-ownership.md)
+> conservan sus estados de revisión documental.
+
+### 18.1. Primera visita y acciones
+
+1. Al entrar en `/news` con sesión válida, consultar en Nodia el estado de las
+   conexiones y resultados conservados. Con cero conexiones, mostrar **Conecta
+   una fuente para ver tus noticias** con tarjetas separadas para DEV Community
+   y daily.dev. En este corte DEV ofrece la conexión si está configurado y
+   daily.dev explica su estado pendiente. Se puede continuar sin conectar.
+   El acceso anónimo conserva el contrato público de compatibilidad.
+2. **Conectar** abre el formulario de la fuente elegida. La clave se oculta al
+   escribir y se puede mostrar temporalmente con un control etiquetado. **Probar
+   y conectar** hace una prueba autenticada mínima y guarda la conexión sólo al
+   confirmar el resultado. El estado **Conectada** corresponde a esa prueba.
+   En caso de error, mantener el formulario y el borrador. Si el error corresponde
+   a la clave, enfocar su campo y asociarle el mensaje traducido.
+3. Una vez conectada, la tarjeta ofrece **Probar conexión**, **Reconectar** y
+   **Desconectar**. La prueba actualiza el estado de acceso. Reconectar valida
+   la nueva clave antes de reemplazar la anterior. El reemplazo invalida los
+   resultados previos, que pueden pertenecer a otra cuenta del proveedor.
+   Desconectar exige confirmación,
+   retira la conexión y sus resultados de Nodia y orienta a revocar la clave
+   en el proveedor si la persona quiere retirarla allí también.
+4. **Actualizar noticias** consulta la fuente seleccionada y distingue primer
+   resultado, feed vacío y resultados anteriores. Entrar, cambiar filtros y
+   volver a la vista sólo leen datos de Nodia. Cada acción externa se solicita
+   explícitamente y afecta una sola fuente. Probar acceso y obtener noticias
+   tienen estados propios y aislados por proveedor.
+
+La vista conserva el shell y el theme de Client. En móvil, las tarjetas se
+apilan y los botones principales ocupan el ancho disponible. La implementación
+reutiliza `BaseModal`, los inputs compartidos, `ConfirmDialog` y Sileo con i18n
+es/en. Validar al interactuar, asociar los errores al campo, anunciar cambios
+de estado y devolver el foco al cerrar. Usar Boneyard sólo en la carga inicial
+de datos y conservar resultados visibles al revalidar. Aplicar la
+[matriz de modern-web-guidance](../../nodia-client/AGENTS.md#modern-web-guidance)
+y el [perfil responsive](../../nodia-client/skills/responsive-design/references/nodia-profile.md).
+
+### 18.2. Alcance por proveedor
+
+| Fuente | Piloto | Qué verá la persona |
+| --- | --- | --- |
+| DEV Community (Forem) | `dev-community`, PAT de una cuenta de prueba. Validar con `GET /api/users/me`. Al actualizar, obtener las etiquetas seguidas con `GET /api/follows/tags` y consultar `GET /api/articles` con un presupuesto acotado de páginas y etiquetas. Verificar el uso de metadatos fuera del piloto local bajo los [términos de DEV](https://dev.to/terms) | **DEV Community · Según tus etiquetas**. La selección se arma en Nodia con artículos públicos. Si la cuenta carece de etiquetas seguidas, mostrar instrucciones para seguirlas en DEV |
+| daily.dev | `daily-dev`, estado pendiente. Revisar el encaje de la sección 18 para Noticias y comprobar por separado la integración OAuth de sólo lectura con `GET /feeds/foryou` | **daily.dev · For You** es el feed personalizado documentado por el proveedor. La tarjeta del corte actual explica el estado pendiente |
+
+Los PAT y OAuth pueden consumir cuota del proveedor. Validar con cuentas de
+prueba en el flujo seguro local cuando exista. El usuario ya tiene ambas claves.
+La persona introduce los PAT únicamente en el formulario seguro de Nodia. Referencias
+[Forem API](https://developers.forem.com/api/v1), [daily.dev Public API](https://docs.daily.dev/public-api/),
+[daily.dev OAuth](https://docs.daily.dev/oauth-apps/) y [daily.dev Terms §18](https://daily.dev/tos/#public-api).
+
+### 18.3. Contrato y almacenamiento candidatos
+
+| Operación bajo `/api/v1/news/personal` | Comportamiento |
+| --- | --- |
+| `GET /connections`, `GET /articles` | Devuelven al dueño estado, metadatos permitidos y resultados vigentes. Lectura local |
+| `POST /connections/:provider` | Recibe `api_key` de sólo escritura para PAT, valida y crea o reemplaza la conexión del dueño |
+| `POST /connections/:provider/test` | Prueba explícita de acceso de la conexión existente |
+| `POST /connections/:provider/refresh` | Actualiza una fuente y devuelve un resultado con semántica propia de caché y de consulta externa |
+| `DELETE /connections/:provider` | Elimina credencial y caché asociadas en una transacción e invalida reservas en vuelo |
+
+- Los handlers privados derivan el dueño de una sesión válida y activa. Server
+  consulta y escribe por `user_id` y proveedor permitido. Una sesión ordinaria
+  opera sus fuentes personales. `super_admin` conserva su validación propia en
+  el handler de compatibilidad pública.
+- `1793760000000-PersonalNewsConnections` agrega `news_personal_connections`
+  con FK al usuario, unicidad por dueño/proveedor y versionado de credencial.
+  La llave opcional `NEWS_PERSONAL_ENCRYPTION_KEY` de 32 bytes se entrega como
+  64 caracteres hexadecimales sólo a Server. Con la llave ausente, DEV queda
+  inhabilitado para el piloto. El cifrado AES-256-GCM vincula usuario, proveedor
+  y versión a la credencial cifrada. El PAT se envía por TLS y se descarta del
+  formulario al guardar, cancelar o cambiar de sesión. Server lo descifra al
+  efectuar la acción autenticada que lo necesita.
+  La API responde sólo con disponibilidad, máscara fija y metadatos autorizados.
+  Sanear logs, traces, errores y diagnósticos. Excluir credenciales y resultados
+  privados de cachés compartidas, persistencia en el navegador, CDN y service worker.
+- Fijar destinos y permisos por adaptador. Acotar páginas, etiquetas, tamaño de
+  respuesta, tiempo total y concurrencia. Persistir sólo metadatos permitidos
+  con vigencia finita y enlace al original. Ajustar retención a las condiciones
+  de cada proveedor antes de activar caché y excluir vencidos desde la lectura.
+  Usar `Cache-Control: private, no-store` en respuestas privadas. Al cerrar sesión
+  o cambiar de cuenta, vaciar el estado privado del Client y descartar respuestas tardías.
+- Coordinar el consumo con una reserva por conexión en SQL y un presupuesto
+  explícito por operación. La red corre fuera de la transacción. Finalizar sólo
+  si la reserva y la versión de credencial siguen vigentes. Así reconectar o
+  desconectar invalida una actualización en vuelo, incluso entre procesos.
+- Una clave inválida o revocada requiere reconexión y retira el acceso a su
+  snapshot. Un fallo de red, 5xx o 429 conserva los resultados vigentes con fecha
+  del último éxito y estado claro. Respetar `Retry-After` válido. Cuando el
+  proveedor omita el dato, aplicar un enfriamiento local identificado como tal.
+  El reintento de una mutación queda disponible por acción explícita tras la
+  ventana aplicable. Una respuesta válida sin artículos muestra el estado vacío.
+
+### 18.4. Secuencia y comprobaciones de entrega
+
+| Paso | Salida y criterio de avance |
+| --- | --- |
+| NEWS-P01 · Revisar propuesta | Alcance aprobado para implementar el circuito personal con piloto DEV. La revisión de metadatos fuera del piloto y la habilitación de daily.dev conservan sus propios criterios |
+| NEWS-P02 · Server y migración | Agregar persistencia, adaptador Forem, endpoints y política de dueño. Probar con transporte controlado y PostgreSQL desechable, desde cero y desde un esquema representativo poblado. Validar cifrado/redacción, dos usuarios con el mismo proveedor, sesión expirada, cuota, resultado vacío, errores, doble clic y carrera con reconexión/desconexión |
+| NEWS-P03 · Client y piloto | Implementar la vista tras sesión válida. Probar modo claro/oscuro, teclado, móvil y desktop, cambio de cuenta y estado pendiente de daily.dev. Medir que primera entrada y filtros generan cero peticiones a proveedores. Verificar en laboratorio que una cuenta de prueba conecta, obtiene una selección por sus etiquetas y desconecta. Registrar resultado por operación con evidencias saneadas |
+| NEWS-P04 · CI y CD | Antes del PR a `development`, revisar el diff contra el catálogo efectivamente desplegado, el ledger y el empaquetado. Cerrar el gate con el SHA exacto en `development` antes de promover. Al pasar a `master`, verificar CI, CD, salud de API, ledger previsto y smoke autenticado controlado. Adoptar daily.dev sólo después de su validación propia |
+
+La migración de Noticias personales agrega una tabla inicialmente vacía.
+La versión previa de Server debe funcionar con el esquema ampliado, y Client
+se publica después de comprobar Server y migración. La entrega retira web.dev
+y Node.js del catálogo activo y de las actualizaciones. `GET /api/v1/news`
+mantiene el paginado y devuelve `items: []` y `sources: []` para clientes sin
+catálogo o con `catalog=2`. El POST público histórico conserva la autoridad
+administrativa y devuelve un código de fuente retirada. Consultar el
+[contrato exacto](../features/news/http-contract.md#compatibilidad-de-la-capa-pública).
+La caché histórica queda fuera de lectura y las noticias de una cuenta sólo
+aparecen en su lectura autenticada.
+
+La migración del ensayo Go/Rust/Kubernetes `1793750000000` quedó fuera de la
+entrega personal. Se comprobó en transacciones de sólo lectura que no figura
+en los ledgers locales de `nodia_postgres` y `nodia-business-feedback-pg`.
+Las referencias remotas registradas localmente no contienen el commit del
+ensayo `d373920e`. Su historia y [evidencia de laboratorio](../evidence/news-dev-source-refresh-20261118.md)
+se conservan junto con las migraciones históricas aplicadas.
+
+En el gate de esquema, ejecutar el actualizador real del CD en un ambiente
+aislado con los artefactos de la entrega y comprobar migraciones, esquema y
+compatibilidad con la API anterior. Simular también un fallo anterior a la
+migración: la API anterior debe volver automáticamente, el ledger debe conservar
+las mismas migraciones y el CD debe seguir bloqueado si R2 queda incierto.
+Seguir la [recuperación por fase](99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase)
+y la [guía de entrega de Noticias](../features/news/deployment-readiness.md).
+
+La comprobación documental de conocimiento valida 98 fuentes registradas,
+54 excluidas, 44 documentos y 46 fragmentos. El párrafo de autoridad en
+[Plan89](89-module-access-and-user-data-scope.md#noticias-personales--alcance-de-implementación-aprobado-el-2026-11-18)
+cambia exclusivamente el hash de procedencia de siete entradas del manifiesto.
+Reponer el hash previo sólo en memoria reproduce el identificador anterior.
+Los cuerpos y las aprobaciones permanecen con sus valores históricos. La
+ficha personal queda en borrador fuera del registro de publicación.
+
+### 18.5. Implementación y verificación local
+
+El circuito personal quedó implementado en `codex/dev-news-sources` con DEV
+Community como proveedor del piloto. La vista acepta el PAT en el formulario
+autenticado y el Server sólo habilita DEV con su llave dedicada. daily.dev
+queda pendiente de sus condiciones y de una validación OAuth propia.
+
+| Comprobación | Resultado en laboratorio |
+| --- | --- |
+| Client | Suite completa con 3 323 pruebas en 410 archivos, 50 pruebas focales de News, lint y build correctos |
+| Navegador | Chromium con Vite en `/news` y respuestas de API sintéticas a 1 440 y 390 px. Se verificó el cambio de tema a 390 px y el diálogo sin desborde con foco inicial a 320 px. Se comprobó campo enmascarado, cierre con Escape, conservación de la entrada tras rechazo del proveedor, asociación del error mediante ARIA, acciones de proveedor explícitas y ausencia de persistencia en navegador |
+| Server | Build y lint correctos, con una advertencia previa de lint. La pasada principal registró 6 211 pruebas correctas en 370 suites y una omisión en Windows. Una suite ajena a Noticias coincidió con la reescritura del manifiesto y pasó luego en una corrida focal separada de 136 pruebas |
+| HTTP y PostgreSQL 16 | Seis grupos con Server compilado y base desechable. Se comprobó cifrado, aislamiento de dos dueños, sesiones, conservación de caché al fallar una reconexión, límites y revocación, descarte del refresh tardío al desconectar, cierre con llave ausente y protección del `down` con datos. La suite de instalación registró 47 pruebas correctas |
+| Actualizador de producción aislado | `update-backend-action` ejecutado en Linux con UID 900, red Docker interna y PostgreSQL con TLS `verify-full`, artefactos compilados y manifiestos de prueba. `inspect` comprobó estado quiescente, ledger 58 y objetivo 59. `migrate` aplicó una migración y comprobó las columnas persistentes de 77 entidades. `verify` comprobó el ledger objetivo y 0 pendientes. Rechazó repetir `migrate`, conservó la fila histórica y dejó la tabla nueva vacía |
+| Fallo de respaldo en systemd aislado | 36 comprobaciones correctas. Con `recovery_write_unknown` sintético de R2, la API pasó de HTTP 503 a 200 con los mismos procesos, los timers se restauraron y el CD siguió bloqueado. El resultado SQL era simulado y no se solicitó una migración (`migration_requested: false`) |
+
+Forem respondió HTTP 200 con tres resultados en una consulta pública de
+`/api/articles` con varias etiquetas. Sigue pendiente conectar una cuenta de
+prueba con su PAT, recuperar su selección y desconectar en el flujo local.
+El acceso con cuenta real, la apertura del PR, los gates de CI del SHA final
+y la adopción por CD quedan pendientes. La revisión de uso más amplio de los
+metadatos de DEV conserva su propio criterio. Seguir [NEWS-001 en TODO](TODO.md#cola-actual).
+
+El piloto local quedó disponible en `http://localhost:5174/news`. La base
+`nodia_feedback` de pruebas avanzó de 58 a 59 con una sola migración aplicada
+y las columnas de la tabla nueva verificadas. El Server reiniciado escucha en
+loopback y tiene habilitada su llave dedicada. Una sesión temporal revocada al
+terminar comprobó HTTP 200 en conexiones y artículos a través del proxy local,
+con DEV disponible para conectar y daily.dev pendiente. Esta comprobación
+leyó sólo el estado local, sin enviar credenciales ni consultar proveedores.
+
+### 18.6. Portadas y paneles plegables
+
+La vista autenticada presenta noticias en tarjetas con el título, procedencia,
+fecha disponible y portada cuando DEV la entrega. El campo opcional
+`cover_image_url` admite únicamente HTTPS de `media2.dev.to`. Server conserva
+la URL en el snapshot JSONB. Client solicita la imagen sin referer y conserva
+una tarjeta con icono cuando falta la portada o falla la carga. La próxima
+actualización explícita incorpora portadas a la lectura según lo que devuelva
+el proveedor. El cambio es compatible con los snapshots anteriores y se aplica
+sin una migración de esquema.
+
+**Tus fuentes** y **Tu lectura** empiezan expandidas y pueden plegarse de forma
+independiente con ratón o teclado. Los paneles conservan su estado de lectura y
+el filtro de fuente durante la visita. Plegar y reabrir son acciones locales de
+la interfaz. El [contrato HTTP](../features/news/http-contract.md#operaciones-personales)
+y el [diseño editorial](../features/news/editorial-design.md) describen estas
+garantías.
+
+El piloto recibió portadas en 17 de 24 artículos de una consulta pública
+de comprobación a Forem. En Chromium se probaron tarjetas con portada, sin
+portada y con un fallo de imagen, más los paneles independientes con teclado
+a 1 440 y 320 px. El recorrido no volvió a pedir las listas ni emitió mutaciones
+al plegar y reabrir los paneles. Pasaron 62 pruebas de Client para News, las
+pruebas del adaptador y la lectura de snapshots con y sin portada por HTTP
+en PostgreSQL desechable. El Server local reiniciado atendió `/news/personal`
+con la conexión DEV existente disponible y el ledger local en 59.
+
+### 18.7. Tarjetas enlazadas y filtro por tema
+
+Toda la tarjeta de una noticia enlaza al artículo original. El enlace usa el
+título como nombre accesible, conserva el foco visible y abre en otra pestaña.
+**Tu lectura** combina el filtro de fuente con el tema seleccionado.
+
+La actualización guarda las etiquetas que devuelve Forem como el campo opcional
+`tags` del snapshot existente. Client agrupa etiquetas afines en Frontend,
+Backend, DevOps e IA. También permite seleccionar etiquetas individuales de la
+lectura cargada. Un artículo puede coincidir con varios temas. Filtrar se
+resuelve localmente y no consume el proveedor. Las opciones reflejan las
+etiquetas de la fuente seleccionada. Si un snapshot de DEV no tiene etiquetas,
+**Tu lectura** mantiene visibles todos sus artículos y ofrece **Actualizar DEV**
+en lugar del selector de tema. Esa acción explícita incorpora los metadatos
+disponibles sin migración SQL.
+
+Consultar el [contrato HTTP](../features/news/http-contract.md#operaciones-personales)
+y el [diseño editorial](../features/news/editorial-design.md).
+
+La consulta pública de prueba devolvió `tag_list` y `tags` en los seis artículos
+de la muestra. Chromium comprobó clic sobre la portada y Enter sobre la misma
+tarjeta. Probó los cuatro grupos, una etiqueta individual y conservación del
+filtro al plegar a 1 440 px y verificó el layout a 320 px. El filtro de tema no
+provocó nuevas lecturas ni mutaciones. La prueba HTTP de PostgreSQL desechable
+recuperó snapshots con y sin etiquetas. Tras reiniciar el Server local,
+conexiones y artículos respondieron HTTP 200 con una sesión temporal.
+
+### 18.8. Piloto personal local de daily.dev
+
+El usuario autorizó incorporar daily.dev como piloto de lectura personal e
+interna para una sola persona en una instancia local de desarrollo. El piloto
+se plantea bajo el supuesto de uso personal de §18.2(i) y toma como referencia
+el lector manual del CLI oficial. La licencia, el permiso para un producto
+distribuido y la integración de varias cuentas conservan su evaluación propia.
+[Términos §18](https://daily.dev/tos/#public-api),
+[CLI oficial](https://docs.daily.dev/daily-dev-from-your-terminal/),
+[OAuth apps](https://docs.daily.dev/oauth-apps/).
+
+- **Acceso de un dueño.** Server habilita `daily-dev` únicamente con
+  `NODE_ENV=development`, la llave `NEWS_PERSONAL_ENCRYPTION_KEY` válida y el
+  ID del actor vigente igual a `NEWS_DAILY_DEV_LOCAL_OWNER_ID`. El piloto se
+  prueba en la instancia local. Las demás sesiones y entornos conservan estado
+  pendiente y quedan fuera de su lectura y acciones. El PAT se introduce en
+  el formulario protegido y se cifra por persona, proveedor y versión.
+- **Lectura breve.** Conectar o probar verifica el perfil mediante `GET
+  /public/v1/profile/`. Una actualización explícita admitida consulta una sola
+  página `GET /public/v1/feeds/foryou?limit=10` con el PAT
+  de ese dueño. Al elegir daily.dev en **Tu lectura**, la vista **Para ti de
+  daily.dev** identifica la procedencia y enlaza a la publicación original.
+  Conserva únicamente metadatos mínimos durante una ventana de lectura de
+  hasta 60 minutos. El contrato excluye cuerpo, resumen, enriquecimientos y
+  resultados de la lectura de DEV. La vista tiene su propio filtro de tema
+  local cuando el resultado incluye etiquetas. La primera visita, los filtros
+  y el cambio de fuente sólo leen datos locales.
+- **Esquema y entrega.** `1793770000000-AllowDailyDevPersonalPilot` amplía los
+  proveedores admitidos en `news_personal_connections` de forma aditiva. Se
+  preservan las migraciones aplicadas y las conexiones existentes. Repetir
+  instalación limpia, upgrade poblado, esquema y protección del `down` en
+  PostgreSQL aislado antes de atribuir el nuevo corte al paquete. La
+  [guía de entrega](../features/news/deployment-readiness.md#piloto-local-de-dailydev)
+  separa estas pruebas del gate real de CI/CD.
+
+#### Verificación local del piloto
+
+El candidato local incorpora adaptador, vista por fuente y migración nueva.
+El build de Client y las 72 pruebas de News pasaron. Chromium verificó el
+formulario con un PAT simulado, la conservación del borrador y el foco, las
+lecturas y filtros temáticos separados, la vista a 320 px y la ausencia de
+persistencia de la clave en el navegador. Entrar no disparó actualización.
+
+Pasaron el build de Server, 19 pruebas focales y los grupos HTTP con Server
+compilado y PostgreSQL desechable. Se comprobó la migración aditiva, la
+protección de reversión con filas daily.dev, la restricción por dueño y
+entorno, el cifrado separado y la exclusión de daily.dev en la lectura sin
+filtro. La habilitación técnica corresponde a la instancia local. El acceso
+con PAT real y el plan efectivo de la cuenta tienen su propia verificación.
+
+La suite de instalación completó 47 comprobaciones. El actualizador SQL real
+ejecutado en Linux aislado con TLS avanzó el ledger de 59 a 60, aplicó una
+migración, comprobó las tablas de 77 entidades y registró cero pendientes.
+Rechazó repetir la migración y conservó la fila histórica y el cifrado de
+DEV. El ensayo systemd aislado también pasó sus 36 comprobaciones. Ante R2
+incierto simulado, la API volvió a HTTP 200, se restauraron los timers y el
+CD siguió bloqueado. El ensayo no solicitó una migración.
+
+La base de pruebas local `nodia_feedback` avanzó de 59 a 60 y conservó el
+cifrado y la versión de la conexión de DEV. En `http://localhost:5174/news`, la
+vista y las lecturas privadas de conexiones y artículos con sesión de prueba
+respondieron HTTP 200. DEV quedó conectado. daily.dev apareció disponible y
+sin conexión para el dueño configurado. Una lectura privada sin sesión recibió
+HTTP 401. La primera lectura real de daily.dev requiere introducir el PAT en
+el formulario local. PR, CI y CD del SHA final conservan sus propios gates.
+
+Una futura entrega en cloud, a varias personas o como agregador requiere una
+evaluación nueva de términos y permisos, más la validación de OAuth de sólo
+lectura. La evidencia de los cortes DEV anteriores se conserva en §18.5–§18.7.

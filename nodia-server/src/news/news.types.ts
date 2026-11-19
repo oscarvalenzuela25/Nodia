@@ -1,5 +1,7 @@
+import type { RETIRED_NEWS_SOURCE_KEYS } from './news.sources.js';
+
 export type NewsTopic = 'technology' | 'programming' | 'ai';
-export type NewsSourceKey = 'web-dev' | 'node-js';
+export type NewsSourceKey = (typeof RETIRED_NEWS_SOURCE_KEYS)[number];
 export interface NewsProvenance {
   source_key: NewsSourceKey;
   source_name: string;
@@ -11,7 +13,7 @@ interface NewsArticleMetadata extends NewsProvenance {
   url: string;
   excerpt: string | null;
   author: string | null;
-  topic: 'programming';
+  topic: NewsTopic;
   published_at: string | null;
   received_at: string;
 }
@@ -40,19 +42,4 @@ export interface NewsListResponse {
     total: number;
     total_pages: number;
   };
-}
-export interface NewsRefreshResponse {
-  source_key: NewsSourceKey;
-  status: 'updated' | 'not_modified' | 'cached';
-  received_count: number;
-  stored_count: number;
-  last_attempt_at: string;
-  last_success_at: string | null;
-  next_refresh_at: string;
-}
-export interface FeedResult {
-  status: 'updated' | 'not_modified';
-  articles: StoredNewsArticle[];
-  etag: string | null;
-  lastModified: string | null;
 }

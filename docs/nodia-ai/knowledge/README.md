@@ -1,5 +1,13 @@
 # Contexto funcional de productos para NodiaAI
 
+La [ficha de Noticias personales](news/features/personal-connections.md)
+documenta el piloto DEV por usuario, implementado y verificado en laboratorio.
+El piloto daily.dev tiene alcance local para un único dueño. El PAT real y el
+uso distribuido se evalúan por proveedor y entorno.
+La [renovación de Noticias dev](news/README.md#renovación-de-fuentes--2026-11-18)
+conserva el ensayo de fuentes RSS y el historial de
+[lectura bajo demanda](news/features/on-demand-reading.md).
+
 Los comentarios sobre Market y Caja actualizan el índice de
 [Negocios](businesses/README.md), la ficha de
 [Listas](businesses/features/market-shopping-lists.md) y la de
@@ -772,7 +780,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 
 | Producto | Carpeta documental elegida | Fuentes de partida | Fichas de contexto |
 |---|---|---|---|
-| Noticias (propuesta) | `news/` | [Plan105](../../mvp/105-on-demand-tech-news.md) | [Producto](news/README.md) y [lectura bajo demanda](news/features/on-demand-reading.md), draft/planned/unregistered; sólo validación, sin herramientas o publicación |
+| Noticias | `news/` | [Plan105 §18](../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales) | [Producto](news/README.md), [lectura pública histórica](news/features/on-demand-reading.md) y [conexiones personales](news/features/personal-connections.md). Fichas draft/unregistered para documentación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
 | Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [plan de Caja109](../../mvp/109-business-cash-ledger-plan.md) | [Producto](businesses/README.md) draft excluido;7 funciones con secciones de lectura publicadas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) publicados y [análisis C03 revisión3](businesses/features/active-invoice-analysis.md) aprobado/publicado con aceptación pendiente; [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) partial/draft/unregistered, con API local de categorías y movimientos manuales. [Listas de Market](businesses/features/market-shopping-lists.md) implementada y verificada en laboratorio, con ficha candidata sin registrar. |
 | Finanzas personales | `personal-finance/` | [Contratos](../../mvp/22-personal-finance-contracts.md) | [Producto](personal-finance/README.md) excluido;4 funciones con secciones de lectura y [efecto confirmado](personal-finance/features/confirmed-movement-effect.md) publicados |

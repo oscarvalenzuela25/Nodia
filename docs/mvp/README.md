@@ -1,5 +1,13 @@
 # Especificación del MVP — Nodia
 
+**Noticias personales — 2026-11-18.** El circuito personal DEV quedó
+implementado y [verificado localmente](105-on-demand-tech-news.md#185-implementación-y-verificación-local).
+El [piloto daily.dev](105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev)
+se limita a un solo dueño en desarrollo. El acceso con PAT real se comprueba
+por proveedor. La evaluación de uso distribuido y OAuth queda separada. El
+[contrato HTTP](../features/news/http-contract.md) detalla la compatibilidad
+de la lectura pública y el [TODO](TODO.md#cola-actual) conserva la verificación.
+
 **Listas de Market — 2026-11-18.**
 [Plan110](110-market-shopping-lists-plan.md) registra el editor persistente,
 el copiado y el checklist compartido por negocio. La
@@ -364,7 +372,7 @@ El [progreso vigente](00-progress.md) contiene el estado operativo y la próxima
 | Reservas | [Entrevista25](25-rental-reservations-interview.md), [especificación26](26-rental-reservations-spec.md), [ERD27](27-rental-reservations-erd.md), [contratos28](28-rental-reservations-contracts.md), planes [Server29](29-rental-reservations-backend-plan.md)/[Client30](30-rental-reservations-client-plan.md) y [rediseño36](36-reservations-redesign-proposal.md) |
 | Negocios, productos y POS | [PRD de Negocios](../features/businesses/01-prd.md), [plan94](94-business-point-of-sale-and-product-refactor.md) y [contactos31](31-provider-contacts-proposal.md) |
 | Core, módulos y privacidad | [Orden/feedback87](87-core-feedback-module-order-plan.md), [política89](89-module-access-and-user-data-scope.md) y [ADR092 de rutas canónicas](../architecture/decisions/ADR-092-stable-module-navigation-routes.md) |
-| Noticias de tecnología, programación e IA | [Plan105§12](105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16): NEWS-04 incorpora RSS Node.js junto a web.dev, lectura pública Home→Noticias y fetch exclusivo super_admin por fuente explícita. Diseño NEWS-05/chips conservado, dedupe con procedencias/avisos MIT. [Evidencia](../evidence/news-nodejs-integration-20261116.md), [contratos](../features/news/http-contract.md), [catálogo](../features/news/source-catalog.md) y [ADR105 propuesto](../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md). NEWS-06 aceptación/adopción pendientes |
+| Noticias de tecnología, programación e IA | [Plan105 §18](105-on-demand-tech-news.md#18-plan-de-noticias-personales), [contratos](../features/news/http-contract.md), [catálogo](../features/news/source-catalog.md) y [ADR110 propuesto](../architecture/decisions/ADR-110-personal-news-connection-ownership.md). El piloto DEV usa conexiones privadas y actualización manual. [Plan105 §12](105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16) y [ADR105](../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md) conservan el corte RSS |
 
 La aprobación explícita del ERD27 del 2026-10-04 no aprueba por extensión contratos28, planes29/30 ni sus ADR. Los estados de cada dominio se consultan en sus fuentes y en progreso.
 
