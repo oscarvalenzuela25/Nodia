@@ -1,2 +1,5 @@
 # Normalize text files to LF in Git and working-tree checkouts.
 * text=auto eol=lf
+
+# Preserve upstream Markdown line breaks and padding in the vendored guidance.
+nodia-client/skills/modern-web-guidance/**/*.md whitespace=-blank-at-eol,-blank-at-eof
