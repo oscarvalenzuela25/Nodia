@@ -35,7 +35,7 @@ import { setupDraftReceiptSchema, type Answer, type CommandResult, type Cursor, 
 import { useSetupDraft } from "../../hooks/useSetupDraft";
 import { TEACHER_NEW_ROUTE } from "../../constants/routes";
 import { SESSION_JOB_COLORS } from "../../infrastructure/sessionList";
-import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanFilters, PlanGrid, PlanSearch, ProductBrand, SessionActions, SessionPage, SessionTitleRow, StateChip, Workspace } from "./styles";
+import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanCard, PlanFilters, PlanGrid, PlanSearch, ProductBrand, SessionActions, SessionPage, SessionTitleRow, StateChip, Workspace } from "./styles";
 
 const SESSION_STATE_COLORS = {
   draft: "default",
@@ -64,7 +64,51 @@ function Plans() {
     <QueryErrorAlert retryVariant="outlined" isError={sessions.isError} isFetching={sessions.isFetching} onRetry={sessions.refetch} />
     {sessions.isFetching && !sessions.isLoading && <LinearProgress />}
     <TeacherLoading loading={sessions.isLoading && !sessions.data}>
-      {!sessions.isError && !sessions.data?.data.length ? <Panel sx={{ py: 6, textAlign: "center" }}><AutoStoriesOutlined sx={{ fontSize: 48, color: "primary.main", mb: 2 }} /><Typography variant="h6">{t("teacher:empty_title")}</Typography><Typography color="text.secondary" sx={{ mb: 3 }}>{t("teacher:empty_description")}</Typography><Button variant="outlined" disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button></Panel> : <PlanGrid>{sessions.data?.data.map(session => <Panel key={session.id} sx={{ display: "flex", flexDirection: "column", gap: 2 }}><Box><Stack direction="row" sx={{ gap: 1, flexWrap: "wrap", mb: 2 }}><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} size="small" />{session.latest_job && <StateChip label={t(`teacher:jobs.${session.latest_job.state}`)} color={SESSION_JOB_COLORS[session.latest_job.state]} variant="outlined" size="small" sx={{ maxWidth: "100%", height: "auto", minHeight: 24, "& .MuiChip-label": { whiteSpace: "normal", py: 0.5 } }} />}</Stack>{sessions.isError && session.latest_job && <Typography variant="caption" color="text.secondary">{t("teacher:job_last_known_state")}</Typography>}<Typography variant="h6" component="h2">{session.title || session.topic}</Typography></Box><Typography color="text.secondary">{session.objective}</Typography><Button component={Link} to={`/nodia-teacher/${session.id}`} variant="contained" disabled={command.isPending || sessions.isFetching} sx={{ mt: "auto", minHeight: 44 }}>{t("teacher:open_plan")}</Button></Panel>)}</PlanGrid>}
+      {!sessions.isError && !sessions.data?.data.length ? (
+        <Panel sx={{ py: 6, textAlign: "center" }}>
+          <AutoStoriesOutlined sx={{ fontSize: 48, color: "primary.main", mb: 2 }} />
+          <Typography variant="h6">{t("teacher:empty_title")}</Typography>
+          <Typography color="text.secondary" sx={{ mb: 3 }}>{t("teacher:empty_description")}</Typography>
+          <Button variant="outlined" disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>
+            {t("teacher:new_session")}
+          </Button>
+        </Panel>
+      ) : (
+        <PlanGrid>
+          {sessions.data?.data.map(session => (
+            <PlanCard key={session.id}>
+              <Box>
+                <Stack direction="row" sx={{ gap: 1, flexWrap: "wrap", mb: 2 }}>
+                  <StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} size="small" />
+                  {session.latest_job && (
+                    <StateChip
+                      label={t(`teacher:jobs.${session.latest_job.state}`)}
+                      color={SESSION_JOB_COLORS[session.latest_job.state]}
+                      variant="outlined"
+                      size="small"
+                      sx={{ maxWidth: "100%", height: "auto", minHeight: 24, "& .MuiChip-label": { whiteSpace: "normal", py: 0.5 } }}
+                    />
+                  )}
+                </Stack>
+                {sessions.isError && session.latest_job && (
+                  <Typography variant="caption" color="text.secondary">{t("teacher:job_last_known_state")}</Typography>
+                )}
+                <Typography variant="h6" component="h2">{session.title || session.topic}</Typography>
+              </Box>
+              <Typography color="text.secondary">{session.objective}</Typography>
+              <Button
+                component={Link}
+                to={`/nodia-teacher/${session.id}`}
+                variant="contained"
+                disabled={command.isPending || sessions.isFetching}
+                sx={{ mt: "auto", minHeight: 44 }}
+              >
+                {t("teacher:open_plan")}
+              </Button>
+            </PlanCard>
+          ))}
+        </PlanGrid>
+      )}
     </TeacherLoading>
     {sessions.data && sessions.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page} count={sessions.data.meta.total_pages} disabled={sessions.isFetching || command.isPending} onChange={(_, value) => setPage(value)} />}
   </Page>;

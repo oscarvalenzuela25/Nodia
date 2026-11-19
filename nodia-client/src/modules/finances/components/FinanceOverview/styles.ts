@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 
 export const OverviewStack = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -30,6 +30,8 @@ export const MetricPanel = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(1),
   boxShadow: "none",
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: `linear-gradient(${alpha(theme.palette.primary.main, 0.05)}, transparent 80px)`,
   minWidth: 0,
 }));
 export const MetricValue = styled(Typography)(({ theme }) => ({

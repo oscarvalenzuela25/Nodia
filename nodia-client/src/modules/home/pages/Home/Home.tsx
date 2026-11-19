@@ -31,7 +31,7 @@ const Home: FC = () => {
 
   return (
     <ContainerPage>
-      <WelcomeMessage sx={{ mb: isError ? 3 : 6 }}>
+      <WelcomeMessage>
         {t("home:welcome")}
       </WelcomeMessage>
 
@@ -71,7 +71,7 @@ const Home: FC = () => {
             return (
               <Box key={group.module_group_key} sx={{ mb: 4 }}>
                 <SectionTitle>{groupTitle}</SectionTitle>
-                <Grid container spacing={3}>
+                <Grid container rowSpacing={3} columnSpacing={2}>
                   {modules.map((m) => {
                     const title = getModuleTitle(m);
                     const desc = getModuleDesc(m);

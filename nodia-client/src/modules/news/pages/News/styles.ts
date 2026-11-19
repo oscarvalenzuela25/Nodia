@@ -1,4 +1,5 @@
 import { styled } from "@mui/material/styles";
+import { NewsMasthead } from "../../styles";
 
 export const NewsRoot = styled("section")(({ theme }) => ({
   display: "flex",
@@ -11,7 +12,7 @@ export const NewsRoot = styled("section")(({ theme }) => ({
   containerType: "inline-size",
   containerName: "news-editorial",
 }));
-export const Header = styled("header")(({ theme }) => ({
+export const Header = styled(NewsMasthead)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
@@ -42,8 +43,10 @@ export const FilterBar = styled("section")(({ theme }) => ({
   gridTemplateColumns: "minmax(0, 1fr)",
   alignItems: "center",
   gap: theme.spacing(2),
-  paddingBlock: theme.spacing(2),
-  borderBlock: `1px solid ${theme.palette.divider}`,
+  padding: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.spacing(1.5),
+  backgroundColor: theme.palette.background.paper,
   "@container news-editorial (min-width: 1020px)": {
     gridTemplateColumns: "minmax(0, 1fr) minmax(24rem, .9fr)",
   },

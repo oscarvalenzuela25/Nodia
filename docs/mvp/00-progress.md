@@ -1,5 +1,18 @@
 # Progreso del MVP — Nodia
 
+**Revisión móvil de Client — 2026-11-18.** Se corrigieron controles táctiles,
+oclusiones del compositor y de diálogos, navegación entre secciones y
+recuperación de errores en pantallas estrechas. La
+[evidencia móvil](../evidence/mobile-ui-review-20261118.md) identifica los
+recorridos locales y el alcance de la emulación.
+
+**Retoque transversal de Client — 2026-11-18.** La rama
+`codex/ui-refresh` desde `origin/development` ajusta las superficies, la
+jerarquía y el foco de los módulos. Pasaron 3345 pruebas de Client, la
+compilación y los recorridos de Chromium con datos sintéticos.
+[Diseño](../../nodia-client/DESIGN.md#11-retoque-transversal--2026-11-18) y
+[evidencia de Client](../evidence/ui-refresh-20261118.md).
+
 **daily.dev — piloto personal local, 2026-11-18.** Se implementó el circuito de
 lectura manual breve para un solo dueño en desarrollo. Pasaron la vista por
 fuente en Chromium, el build de ambos componentes y la comprobación de acceso,

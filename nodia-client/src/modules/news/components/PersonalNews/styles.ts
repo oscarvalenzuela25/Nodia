@@ -3,7 +3,7 @@ import { alpha, styled } from "@mui/material/styles";
 export const PersonalRoot = styled("section")(({ theme }) => ({
   display: "grid",
   alignContent: "start",
-  gap: theme.spacing(4),
+  gap: theme.spacing(3),
   maxWidth: 1120,
   marginInline: "auto",
   minWidth: 0,
@@ -24,15 +24,23 @@ export const PanelToggle = styled("button")(({ theme }) => ({
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.paper,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.spacing(1.5),
   cursor: "pointer",
-  "&:hover": { backgroundColor: theme.palette.action.hover },
+  "&[aria-expanded='true']": {
+    backgroundImage: `linear-gradient(90deg, ${alpha(theme.palette.primary.main, 0.075)}, transparent 55%)`,
+  },
+  "&:hover, &:active": { borderColor: theme.palette.primary.main },
   "&:focus-visible": {
-    outline: `2px solid ${theme.palette.primary.main}`,
+    outline: "2px solid CanvasText",
     outlineOffset: 2,
   },
-  "& svg": { flexShrink: 0 },
+  "& svg": { flexShrink: 0, color: theme.palette.primary.main },
   "&[aria-expanded='true'] svg": { transform: "rotate(90deg)" },
+  "@media (prefers-reduced-motion: no-preference)": {
+    "& svg": {
+      transition: theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
+    },
+  },
 }));
 
 export const PanelBody = styled("div")(({ theme }) => ({
@@ -60,7 +68,7 @@ export const SourceCard = styled("article")(({ theme }) => ({
   gap: theme.spacing(1.5),
   padding: theme.spacing(2),
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.spacing(1.5),
   backgroundColor: theme.palette.background.paper,
 }));
 
@@ -73,9 +81,27 @@ export const ProviderMark = styled("span")(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
   color: theme.palette.text.primary,
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: alpha(theme.palette.primary.main, 0.1),
   fontSize: theme.typography.caption.fontSize,
   fontWeight: 750,
+}));
+
+export const ConnectionState = styled("p")(({ theme }) => ({
+  ...theme.typography.caption,
+  display: "flex",
+  alignItems: "baseline",
+  gap: theme.spacing(0.75),
+  color: theme.palette.text.secondary,
+  margin: 0,
+  "&[data-connected='true']::before": {
+    content: '""',
+    width: 7,
+    height: 7,
+    flexShrink: 0,
+    alignSelf: "center",
+    borderRadius: "50%",
+    backgroundColor: theme.palette.success.main,
+  },
 }));
 
 export const SourceActions = styled("div")(({ theme }) => ({
@@ -83,8 +109,13 @@ export const SourceActions = styled("div")(({ theme }) => ({
   flexWrap: "wrap",
   gap: theme.spacing(1),
   marginTop: "auto",
-  "& > button": { width: "100%", minHeight: 44 },
-  [theme.breakpoints.up("sm")]: { "& > button": { width: "auto" } },
+  paddingTop: theme.spacing(1.5),
+  borderTop: `1px solid ${theme.palette.divider}`,
+  "& > button": { minHeight: 44 },
+  [theme.breakpoints.down("sm")]: {
+    "& > .MuiButton-contained": { width: "100%" },
+    "& > .MuiButton-outlined": { flex: "1 1 7rem", minWidth: 0 },
+  },
 }));
 
 export const ReadingFilters = styled("div")(({ theme }) => ({
@@ -92,10 +123,12 @@ export const ReadingFilters = styled("div")(({ theme }) => ({
   gridTemplateColumns: "minmax(0, 1fr)",
   gap: theme.spacing(2),
   width: "100%",
+  padding: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.spacing(1.5),
+  backgroundColor: theme.palette.background.paper,
   "@container personal-news (min-width: 620px)": {
     gridTemplateColumns: "repeat(2, minmax(0, 240px))",
-    justifyContent: "end",
-    "& > :only-child": { gridColumn: 2 },
   },
 }));
 
@@ -106,7 +139,8 @@ export const EmptyReading = styled("div")(({ theme }) => ({
   padding: theme.spacing(4, 2),
   textAlign: "center",
   border: `1px dashed ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.spacing(1.5),
+  backgroundColor: alpha(theme.palette.primary.main, 0.035),
 }));
 
 export const PersonalArticleList = styled("ul")(({ theme }) => ({
@@ -130,15 +164,18 @@ export const ArticleCardLink = styled("a")(({ theme }) => ({
   height: "100%",
   minWidth: 0,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.spacing(1.5),
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.paper,
   textDecoration: "none",
   "&:hover": { borderColor: theme.palette.primary.main },
-  "&:hover h3 span": { textDecoration: "underline" },
+  "&:hover h3 span, &:focus-visible h3 span": {
+    textDecoration: "underline",
+    textUnderlineOffset: "0.18em",
+  },
   "&:focus-visible": {
     borderColor: theme.palette.primary.main,
-    outline: `2px solid ${theme.palette.primary.main}`,
+    outline: "2px solid CanvasText",
     outlineOffset: 2,
   },
 }));
@@ -190,9 +227,31 @@ export const ArticleCopy = styled("header")(({ theme }) => ({
     display: "flex",
     alignItems: "flex-start",
     gap: theme.spacing(0.5),
-    color: theme.palette.primary.main,
     overflowWrap: "anywhere",
   },
   "& h3 span": { minWidth: 0 },
-  "& svg": { flexShrink: 0, fontSize: "1em", marginBlockStart: theme.spacing(0.25) },
+  "& svg": {
+    flexShrink: 0,
+    fontSize: "1em",
+    marginBlockStart: theme.spacing(0.25),
+    color: theme.palette.primary.main,
+  },
+}));
+
+export const CredentialHelp = styled("p")(({ theme }) => ({
+  ...theme.typography.body2,
+  margin: 0,
+  padding: theme.spacing(1, 1.5),
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: alpha(theme.palette.primary.main, 0.045),
+  overflowWrap: "anywhere",
+  "& > a": {
+    display: "inline-flex",
+    alignItems: "center",
+    minHeight: 44,
+    gap: theme.spacing(0.75),
+    color: theme.palette.text.primary,
+  },
+  "& > a:focus-visible": { outline: "2px solid CanvasText", outlineOffset: 3 },
 }));

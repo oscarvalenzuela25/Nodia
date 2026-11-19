@@ -19,10 +19,11 @@ export const TopHeaderPanel = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(3), // 24px gap between navigation bar and tabs
   padding: theme.spacing(2, 2.5),
-  backgroundColor: alpha(theme.palette.background.paper, 0.6),
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: `linear-gradient(110deg, ${alpha(theme.palette.primary.main, 0.055)}, transparent 68%)`,
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: theme.shape.borderRadius,
-  backdropFilter: "blur(8px)",
+  borderRadius: theme.spacing(2),
+  boxShadow: theme.shadows[1],
   minWidth: 0,
   [theme.breakpoints.down("sm")]: {
     padding: theme.spacing(1.5),
@@ -214,6 +215,7 @@ export const DetailPanel = styled(Paper)(({ theme }) => ({
   borderRadius: Number(theme.shape.borderRadius) * 1.5,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: theme.palette.background.paper,
+  backgroundImage: "none",
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),

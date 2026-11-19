@@ -5,6 +5,11 @@ import { alpha, styled, type SxProps, type Theme } from "@mui/material/styles";
 export const composerStyles: SxProps<Theme> = theme => ({
   width: "100%", maxWidth: "56rem", boxSizing: "border-box", alignSelf: "center",
   margin: 0, maxHeight: "100%", borderRadius: "16px", containerType: "inline-size",
+  borderColor: theme.palette.divider,
+  "&:focus-within": {
+    borderColor: theme.palette.primary.main,
+    boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.15)}`,
+  },
   "& > [data-composer-toolbar]": {
     minHeight: 44, flex: "0 1 auto", overflowY: "auto",
     scrollbarWidth: "thin", scrollbarColor: `${alpha(theme.palette.text.primary, 0.2)} transparent`,
@@ -27,7 +32,10 @@ export const composerStyles: SxProps<Theme> = theme => ({
       "& > [data-composer-footer]": { gridColumn: "1 / -1", gridRow: 2 },
     },
   },
-  [theme.breakpoints.down("sm")]: { margin: 0, borderRadius: "16px" },
+  [theme.breakpoints.down("md")]: {
+    flexShrink: 0,
+    "& > [data-composer-toolbar]": { flexShrink: 0 },
+  },
 });
 
 export const ReviewArea = styled("div")(({ theme }) => ({

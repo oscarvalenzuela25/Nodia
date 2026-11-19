@@ -13,6 +13,11 @@ const components: Components = {
         : alpha("#000000", 0.35);
 
       return {
+        html: { colorScheme: theme.palette.mode },
+        // Sileo calculates the animated SVG and title geometry on a 350px canvas.
+        "@media (max-width: 365px)": {
+          "[data-sileo-toast]": { zoom: 0.85 },
+        },
         "*": {
           scrollbarWidth: "thin",
           scrollbarColor: `${thumbColor} transparent`,
@@ -43,14 +48,42 @@ const components: Components = {
       };
     },
   },
+  MuiButtonBase: {
+    styleOverrides: {
+      root: {
+        "&.Mui-focusVisible": {
+          outline: "2px solid CanvasText",
+          outlineOffset: 2,
+        },
+      },
+    },
+  },
   MuiButton: {
     styleOverrides: {
       root: {
         boxShadow: "none",
+        letterSpacing: 0,
         "&:hover": {
           boxShadow: "none",
         },
       },
+    },
+  },
+  MuiMenu: {
+    styleOverrides: {
+      paper: ({ theme }) => ({
+        borderRadius: 12,
+        boxShadow: `0 0 0 1px ${theme.palette.divider}, 0 10px 28px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.35 : 0.14)}`,
+      }),
+      list: ({ theme }) => ({ paddingInline: theme.spacing(0.5) }),
+    },
+  },
+  MuiMenuItem: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        borderRadius: theme.shape.borderRadius,
+        "&.Mui-focusVisible": { outlineOffset: -2 },
+      }),
     },
   },
   MuiTableHead: {
@@ -67,6 +100,7 @@ const components: Components = {
   },
   MuiTableCell: {
     styleOverrides: {
+      alignRight: { fontVariantNumeric: "tabular-nums" },
       head: ({ theme }) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
@@ -84,6 +118,7 @@ const components: Components = {
   MuiTablePagination: {
     styleOverrides: {
       root: ({ theme }) => ({
+        color: theme.palette.text.secondary,
         [theme.breakpoints.down("sm")]: { overflow: "visible" },
       }),
       toolbar: ({ theme, ownerState }) => ({
@@ -126,6 +161,8 @@ const components: Components = {
         },
       }),
       displayedRows: ({ theme }) => ({
+        color: theme.palette.text.primary,
+        fontVariantNumeric: "tabular-nums",
         [theme.breakpoints.down("sm")]: {
           order: 2,
           margin: 0,

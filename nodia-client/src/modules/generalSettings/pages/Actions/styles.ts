@@ -1,6 +1,5 @@
 import { styled, alpha } from "@mui/material/styles";
-import { TABLE_PANEL_RADIUS } from "../../../../theme/tablePanel";
-import { Box, Typography, Chip, Paper, TablePagination } from "@mui/material";
+import { Box, Typography, Chip, TablePagination } from "@mui/material";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -38,42 +37,6 @@ export const ViewModeContainer = styled(Box)(({ theme }) => {
   };
 });
 
-export const BusinessSectionCard = styled(Paper)(({ theme }) => {
-  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
-  const isDark = theme.palette.mode === "dark";
-
-  return {
-    borderRadius:
-      typeof theme.shape.borderRadius === "number"
-        ? theme.shape.borderRadius * 2
-        : 16,
-    overflow: "hidden",
-    boxShadow: theme.shadows[2],
-    backgroundColor: theme.palette.background.paper,
-    border: `1px solid ${borderColor}`,
-    marginBottom: theme.spacing(3),
-    position: "relative",
-    transition: theme.transitions.create(["box-shadow", "border-color"], {
-      duration: theme.transitions.duration.shorter,
-    }),
-    backgroundImage: isDark
-      ? "linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%)"
-      : "linear-gradient(180deg, rgba(0, 0, 0, 0.01) 0%, rgba(0, 0, 0, 0) 100%)",
-  };
-});
-
-export const BusinessSectionHeader = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: theme.spacing(1.75, 2.5),
-  gap: theme.spacing(2),
-  flexWrap: "wrap",
-  borderBottom: `1px solid ${
-    theme.palette.border?.default ?? theme.palette.divider
-  }`,
-}));
-
 export const BusinessHeaderInfo = styled(Box)(({ theme }) => ({
   minWidth: 0,
   display: "flex",
@@ -92,24 +55,14 @@ export const BusinessHeaderActions = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const PageTitleContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1.5),
-}));
-
-export const PageTitle = styled(Typography)(({ theme }) => ({
-  ...theme.typography.h4,
-  color: theme.palette.text.primary,
-  fontWeight: theme.typography.fontWeightBold,
-}));
-
-export const PageSubtitle = styled(Typography)(({ theme }) => ({
-  ...theme.typography.body1,
-  color: theme.palette.text.secondary,
-  maxWidth: "680px",
-  lineHeight: 1.6,
-}));
+export {
+  PageTitleContainer,
+  PageTitle,
+  PageSubtitle,
+  StyledTableContainer,
+  SectionCard as BusinessSectionCard,
+  SectionHeader as BusinessSectionHeader,
+} from "../../styles";
 
 export const FilterRow = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -146,18 +99,6 @@ export const TableTopBar = styled(Box)(({ theme }) => ({
     },
   },
 }));
-
-export const StyledTableContainer = styled(Box)(({ theme }) => {
-  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
-
-  return {
-    borderRadius: TABLE_PANEL_RADIUS,
-    overflow: "hidden",
-    boxShadow: theme.shadows[2],
-    backgroundColor: theme.palette.background.paper,
-    border: `1px solid ${borderColor}`,
-  };
-});
 
 export const KeyBadge = styled(Box)(({ theme }) => {
   const isDark = theme.palette.mode === "dark";
