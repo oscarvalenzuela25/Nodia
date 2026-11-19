@@ -1,5 +1,7 @@
+import type { RETIRED_NEWS_SOURCE_KEYS } from './news.sources.js';
+
 export type NewsTopic = 'technology' | 'programming' | 'ai';
-export type NewsSourceKey = 'go-blog' | 'rust-blog' | 'kubernetes-blog';
+export type NewsSourceKey = (typeof RETIRED_NEWS_SOURCE_KEYS)[number];
 export interface NewsProvenance {
   source_key: NewsSourceKey;
   source_name: string;
@@ -40,19 +42,4 @@ export interface NewsListResponse {
     total: number;
     total_pages: number;
   };
-}
-export interface NewsRefreshResponse {
-  source_key: NewsSourceKey;
-  status: 'updated' | 'not_modified' | 'cached';
-  received_count: number;
-  stored_count: number;
-  last_attempt_at: string;
-  last_success_at: string | null;
-  next_refresh_at: string;
-}
-export interface FeedResult {
-  status: 'updated' | 'not_modified';
-  articles: StoredNewsArticle[];
-  etag: string | null;
-  lastModified: string | null;
 }

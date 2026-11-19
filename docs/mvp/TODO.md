@@ -43,7 +43,7 @@ validación pendiente`, `en implementación`, `bloqueado` (dependencia concreta)
 | **OBS-001 — Grafana, primera entrega operativa** | G0/documentación e inventario; Grafana Cloud Free elegido. Sin cuenta/stack, Alloy, ingesta o alertas acreditados | [Plan104 §8–9](104-logs-and-monitoring-grafana-cloud.md#8-secuencia-de-configuración-posterior), [ADR101 propuesto](../architecture/decisions/ADR-101-grafana-cloud-observability.md) | G1: cuenta/stack/región/Free efectivo/correo/host. Después G2–G6 con configuración, saneamiento antes de exportar, alertas y consumo real. Credenciales por custodia segura |
 | **OBS-002 — eventos de CI/CD** | Especificado como entrega separada G7 | [Plan104](104-logs-and-monitoring-grafana-cloud.md) §6 y§8 | Definir emisor desde recibo saneado y validar fallo/entrega parcial; Alloy no observa por sí solo el runner de GitHub. Sin replay ni dependencia de telemetría para publicar |
 | **Recuperación del CD por fase** | Recuperación de tráfico antes de migrar ensayada con fallo de respaldo en laboratorio. Los mismos archivos y pins ya están instalados y verificados en el VPS | [Plan99 §36](99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase), [evidencia](../evidence/cd-backup-failure-recovery-20261118.md), [ADR109 propuesto](../architecture/decisions/ADR-109-phase-aware-production-deploy-recovery.md) | Ejecutar el actualizador real con los artefactos de la entrega en el gate de CI para cambios de esquema. Después sigue la recuperación por componente. |
-| **NEWS-001 — Noticias bajo demanda** | Primera entrega publicada en PR46/47. `codex/dev-news-sources` retira web.dev y Node.js del catálogo activo y prepara Go, Rust y Kubernetes | [Plan105 §16](105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18), [verificación de fuentes](../evidence/news-dev-source-refresh-20261118.md) | CI del nuevo SHA y promoción coordinada de Server y Client. Después, primera actualización por fuente como super_admin, verificación pública y aceptación en dispositivo. DEV, Hacker News, GitHub Changelog y Hugging Face quedan en evaluación. |
+| **NEWS-001 — Noticias bajo demanda** | DEV y daily.dev disponibles en el piloto local. Aislamiento, upgrade 59→60 y recuperación del CD verificados en laboratorio | [Plan105 §18.8](105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev), [catálogo](../features/news/source-catalog.md), [ADR110 propuesto](../architecture/decisions/ADR-110-personal-news-connection-ownership.md) | Conectar daily.dev con el PAT real en el formulario local y comprobar su lectura. Conservar los gates de PR, CI y CD del SHA final. Evaluar términos, permisos y OAuth antes de cualquier entrega distribuida de daily.dev. |
 | **OPS-05 — retención global y disco físico** | Pendiente independiente; archivo automático del inbox ya entregado. OPS-001 cerrado por alcance | [Plan99 §33](99-production-deployment-and-cicd-plan.md#33-cierre-ops-001-y-separación-de-ops-05--2026-11-16), [alcance técnico§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16) | Especificar conservación de releases/diagnósticos, duración/capacidad, protecciones y retirada u offload para liberar disco físico. No repetir archivo del inbox, que sólo libera cuota lógica; sin purga de backups/secretos/evidencia por defecto |
 
 ## Entregas cerradas por alcance
@@ -92,9 +92,10 @@ se conserva con motivo y destino si fue reemplazada, sin borrar evidencia histó
 Esta conciliación usa documentación/código y referencias Git disponibles en el
 checkout; no consultó producción, cuentas Grafana o dispositivos. Plan103§12 y
 evidencia posterior suceden el texto de publicación pendiente de103§11; la
-comprobación HTTPS no acredita instalación humana. Noticias tiene dos fuentes
-publicadas por105§15, con CI/CD y GET público comprobados; primera actualización
-y aceptación humana pendientes. Diseño/ADR siguen en revisión.
+comprobación HTTPS no acredita instalación humana. La primera versión de
+Noticias publicó dos fuentes por105§15, con CI/CD y GET público comprobados.
+El corte personal posterior de105§18 conserva su propia verificación. Los ADR
+de Noticias siguen en revisión.
 La confirmación humana2026-11-16 cierra THEME-001/PWA-001/TUX-001/NAIUX-001
 por sus alcances entregados; no procede de automatización ni amplía pruebas por
 dispositivo. Nuevas evidencias actualizan primero sus documentos enlazados.

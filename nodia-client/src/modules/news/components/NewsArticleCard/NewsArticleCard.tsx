@@ -126,15 +126,15 @@ export default function NewsArticleCard({
                 : t("news:license")}
             </Link>
           ))}
-          {article.provenances.some((source) => source.source_key === "rust-blog") && (
+          {article.provenances.some((source) => source.source_key === "node-js") && (
             <Link
               {...linkState}
-              href={`${import.meta.env.BASE_URL}legal/news-rust-notice.txt`}
+              href={`${import.meta.env.BASE_URL}legal/news-nodejs-notice.txt`}
               target="_blank"
               rel="noopener noreferrer"
               sx={{ minHeight: 44, display: "inline-flex", alignItems: "center", fontSize: ".75rem" }}
             >
-              {t("news:rust_notice")}
+              {t("news:nodejs_notice")}
             </Link>
           )}
         </Stack>

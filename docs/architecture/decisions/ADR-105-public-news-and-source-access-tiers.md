@@ -3,6 +3,11 @@
 > Estado: propuesto
 > Fecha:2026-11-16
 
+El corte posterior de Noticias personales separa las conexiones privadas por
+dueño y retira las fuentes RSS del catálogo activo. Este ADR conserva la
+decisión y evidencia de la capa RSS inicial. La continuidad pública y la
+frontera privada se describen en [ADR110](ADR-110-personal-news-connection-ownership.md).
+
 ## Contexto
 
 El usuario confirma Noticias pública debajo de Home; fuentes gratuitas sin cupo

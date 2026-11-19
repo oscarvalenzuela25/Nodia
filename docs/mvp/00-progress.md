@@ -1,10 +1,26 @@
 # Progreso del MVP — Nodia
 
-**Noticias dev — 2026-11-18.** La rama
-`codex/dev-news-sources` sustituye web.dev y Node.js por Go, Rust y Kubernetes.
-El [Plan105 §16](105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
-describe el contrato y la migración. La [revisión](../evidence/news-dev-source-refresh-20261118.md)
-registra tráfico HTTPS real de los feeds y candidatas para ampliar la cobertura.
+**daily.dev — piloto personal local, 2026-11-18.** Se implementó el circuito de
+lectura manual breve para un solo dueño en desarrollo. Pasaron la vista por
+fuente en Chromium, el build de ambos componentes y la comprobación de acceso,
+aislamiento y migración aditiva con HTTP y PostgreSQL. El actualizador aislado
+validó 59→60 y 77 entidades. La base local de pruebas avanzó al ledger 60 y la
+vista habilita daily.dev para el dueño configurado. La lectura con PAT real,
+el uso distribuido y OAuth conservan sus comprobaciones propias.
+[Plan105 §18.8](105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev).
+
+**Noticias personales — implementación local, 2026-11-18.** El corte de
+[Plan105 §18](105-on-demand-tech-news.md#18-plan-de-noticias-personales) en
+`codex/dev-news-sources` agrega el piloto DEV por dueño, retira web.dev y Node.js
+del catálogo activo y conserva la respuesta pública vacía. En ese primer corte
+daily.dev estaba pendiente. Pasaron el ensayo en navegador, las comprobaciones HTTP con PostgreSQL
+16 y el actualizador real de CD en Linux aislado. El actualizador validó ledger
+58→59 y esquema de 77 entidades. El fallo sintético de R2 restauró la API y
+mantuvo bloqueado el CD antes de migrar. Consulta pública Forem 200, con el
+recorrido con PAT real, PR/CI y adopción pendientes. El ensayo RSS queda en
+`d373920e`, con la migración de laboratorio fuera de esta entrega.
+[Resultados](105-on-demand-tech-news.md#185-implementación-y-verificación-local)
+y [ADR110 propuesto](../architecture/decisions/ADR-110-personal-news-connection-ownership.md).
 
 **Recuperación del CD antes de migrar — 2026-11-18.** El VPS adoptó el
 actualizador y la política que pasaron el fallo de respaldo simulado en systemd

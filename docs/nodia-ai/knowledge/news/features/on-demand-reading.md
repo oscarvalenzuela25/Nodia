@@ -4,11 +4,11 @@
   "document_id": "news.on-demand-reading",
   "product_id": "news",
   "kind": "feature",
-  "revision": 9,
+  "revision": 10,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "La rama publica localmente el catálogo 2 de Go, Rust y Kubernetes y retira las dos fuentes iniciales de la API. Lectura pública desde caché y consulta externa por fuente explícita para super_admin."
+    "notes": "Primera entrega RSS pública adoptada. El catálogo Go, Rust y Kubernetes queda como ensayo. El corte personal posterior retira las fuentes RSS activas y conserva compatibilidad HTTP pública."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -53,6 +53,15 @@
 ---
 
 # Lectura y actualización bajo demanda — contexto funcional para NodiaAI
+
+## Corte personal y compatibilidad pública — 2026-11-18
+
+La [ficha de conexiones personales](personal-connections.md) documenta el
+alcance aprobado para implementar el piloto DEV por dueño. El [contrato de
+compatibilidad](../../../../features/news/http-contract.md#compatibilidad-de-la-capa-pública)
+conserva el GET público con un resultado vacío y el POST histórico con
+autoridad administrativa y resultado de fuente retirada. Los apartados
+siguientes describen los cortes RSS históricos y sus comprobaciones.
 
 ## Renovación de fuentes — 2026-11-18
 
@@ -193,3 +202,4 @@ y respuestas de otro actor descartadas; fuentes adicionales y adopción pendient
 | 4 | Lectura pública y fuentes con cupo por sesión | Plan105 §8 y catálogo | Sucede actor/módulo obligatorios para News; contratos aún pendientes, sin herramienta o publicación nuevas |
 | 5 | Fetch exclusivo super_admin y primer RSS local | Plan105 §9, contratos y evidencia | Implementado por alcance web.dev; otros usuarios sólo leen, sin adopción, herramienta o aprobación nuevas |
 | 6 | NEWS-05: diseño editorial, chips y foco | Plan105 §10 y evidencia visual | Mismos filtros/contratos y autoridad; sin capacidad de chat o publicación nuevas |
+| 10 | Conservación del corte RSS como antecedente y transición a Noticias personales | Plan105 §18 y contrato público de compatibilidad | La lectura pública queda vacía y la actualización histórica responde fuente retirada |

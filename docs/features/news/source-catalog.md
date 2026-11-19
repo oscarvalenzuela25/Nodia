@@ -1,7 +1,24 @@
 # Noticias — catálogo y política de fuentes
 
+## Catálogo del corte personal — 2026-11-18
+
+El usuario aprobó implementar el circuito personal de
+[Plan105 §18](../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales).
+`/news` conserva el destino público. El [contrato de compatibilidad](http-contract.md#compatibilidad-de-la-capa-pública)
+devuelve una lista pública vacía y las operaciones privadas se autorizan por
+dueño. La adopción es una comprobación posterior.
+
+| Fuente | Estado para la entrega | Procedencia de las noticias |
+| --- | --- | --- |
+| [DEV Community](https://developers.forem.com/api/v1) (`dev-community`) | Primer adaptador para el piloto local. PAT de la persona y custodia en Server. Verificación autenticada y revisión de uso de metadatos en una entrega más amplia pendientes | Selección de artículos públicos construida por Nodia a partir de las etiquetas seguidas en DEV. Título, URL original, fecha cuando exista y procedencia, según [términos de DEV](https://dev.to/terms) |
+| [daily.dev](https://docs.daily.dev/public-api/) (`daily-dev`) | Piloto local de uso personal con PAT para un solo dueño habilitado. El uso distribuido y OAuth de sólo lectura conservan su validación propia | Lectura breve del `For You` nativo, una página en la vista de daily.dev con atribución y enlace original. [Plan105 §18.8](../../mvp/105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev), [términos §18](https://daily.dev/tos/#public-api), [CLI](https://docs.daily.dev/daily-dev-from-your-terminal/), [OAuth](https://docs.daily.dev/oauth-apps/) |
+| web.dev y Node.js | Retiradas de lectura y actualización públicas en este corte | Snapshots históricos fuera del catálogo activo |
+| The Go Blog, Rust Blog y Kubernetes Blog | Ensayo anterior conservado en Git y en su [evidencia](../../evidence/news-dev-source-refresh-20261118.md) | RSS/Atom comprobados durante el ensayo |
+
+## Historial de evaluación de RSS
+
 > La [renovación del catálogo](../../mvp/105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
-> retira web.dev y Node.js de la rama y prepara Go, Rust y Kubernetes para
+> retiró web.dev y Node.js de la rama y preparó Go, Rust y Kubernetes para
 > lectura pública y actualización administrativa explícita. El historial
 > NEWS-01–06 explica el catálogo que se publicó inicialmente.
 
@@ -21,7 +38,7 @@
 > Web.dev y Node.js comparten lectura pública; sus actualizaciones siguen siendo
 > explícitas y exclusivas de super_admin, con estado/caché independientes.
 
-## Acceso y criterio de selección
+### Acceso y criterio de selección del ensayo
 
 - `/news` se podrá leer sin sesión, con enlace fijo inmediatamente debajo de
   Home en sidenav/drawer, antes de los grupos privados. No exige asignación de
@@ -42,7 +59,7 @@
 - Leer caché no evita la clasificación: metadatos de una fuente limitada tampoco
   se vuelven públicos por guardarlos, agrupar URLs o consultarlos desde Server.
 
-## Catálogo actualizado
+### Catálogo del ensayo
 
 | Fuente / destino real | Clase de acceso prevista | Decisión y condiciones |
 | --- | --- | --- |
@@ -61,7 +78,7 @@ de atribución sólo determina la procedencia primaria al deduplicar un enlace;
 cada actualización consulta la fuente elegida. El catálogo se prepara en la
 rama para entregar Client y Server juntos.
 
-## Campos, atribución y retención de feeds públicos
+### Campos, atribución y retención de feeds públicos
 
 Límites locales de Nodia por fuente:
 
@@ -103,7 +120,7 @@ Los valores7días/15minutos son decisiones de Nodia implementadas en este alcanc
 local. No equivalen al `Cache-Control` del proveedor ni a un permiso para
 persistir cualquier fuente; daily.dev necesita otra política tras aclarar términos.
 
-## Integración prevista
+### Integración prevista en ese corte
 
 Server consulta únicamente un catálogo administrado con destinos/redirecciones
 permitidos, límites de bytes/elementos/tiempo y XML sin entidades externas. Consulta
@@ -119,7 +136,7 @@ públicos autorizados; caché de fuentes limitadas por actor/cuenta. Logout, cam
 de cuenta y revocación retiran los datos privados sin cerrar el feed público.
 Deduplicar por URL no permite filtrar procedencias privadas hacia el resultado anónimo.
 
-## Evidencia y dependencias
+### Evidencia y dependencias del ensayo
 
 [Comprobación de fuentes](../../evidence/news-source-discovery-20261116.md):
 GET reales de tres RSS, límites de la revisión y fuentes de licencia/términos.

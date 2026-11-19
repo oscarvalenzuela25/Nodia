@@ -1,9 +1,66 @@
-# News — preparación y entrega de la primera versión pública
+# Noticias — preparación y entrega
 
-> Para el catálogo que sustituye las dos fuentes iniciales, consultar
-> [Plan105 §16](../../mvp/105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
-> y el [contrato vigente](http-contract.md). La guía inferior conserva la
-> evidencia y los pasos de la primera publicación.
+## Gate de Noticias personales
+
+El [plan de Noticias personales](../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales)
+requiere paquete Server y Client del SHA exacto. Verificar que el paquete
+compilado incluye `1793760000000-PersonalNewsConnections` y la entidad para la
+tabla `news_personal_connections`. La migración es aditiva y parte de un ledger
+conciliado. Verificar esquema limpio y actualizado con filas RSS históricas,
+interoperabilidad con la API previa y compatibilidad de `GET /api/v1/news`
+durante la publicación. La [decisión técnica](../../architecture/decisions/ADR-110-personal-news-connection-ownership.md)
+y el [contrato HTTP](http-contract.md) describen la frontera privada.
+
+El `down` de laboratorio sólo admite una tabla vacía. Para revertir una
+versión con conexiones, usar la recuperación de release y conservar esquema y
+datos. El ensayo de Go, Rust y Kubernetes y su migración `1793750000000`
+quedan en la historia de Git según la conciliación en el plan.
+
+Ejecutar el actualizador real en un PostgreSQL aislado con los artefactos del
+candidato. En el ensayo de fallo de respaldo previo a la migración, comprobar
+servicio anterior recuperado, ledger intacto y CD aún bloqueado si R2 queda
+incierto, conforme a [Plan99 §36](../../mvp/99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase).
+Tras un upgrade de ensayo, comprobar schema y arranque de la API, retiro del
+catálogo público, aislamiento por dueño y Client antiguo frente a Server nuevo.
+
+`NEWS_PERSONAL_ENCRYPTION_KEY` se provisiona sólo en Server para el piloto DEV
+local y admite exactamente 64 caracteres hexadecimales. La falta de una llave
+válida cierra el circuito de credenciales. La compatibilidad pública se conserva.
+Los paquetes, recibos y diagnósticos excluyen la llave y
+el PAT. El gate productivo requiere los resultados del SHA exacto y su ledger
+antes de atribuir adopción o acceso real a DEV.
+
+El [ensayo del candidato local](../../mvp/105-on-demand-tech-news.md#185-implementación-y-verificación-local)
+ejecutó el actualizador real sobre PostgreSQL aislado y verificó ledger de 58 a
+59, esquema de 77 entidades y tabla nueva vacía. En el escenario de respaldo
+incierto se recuperó la API y el CD permaneció bloqueado. CI del SHA entregado
+y CD en producción conservan su comprobación propia.
+
+### Piloto local de daily.dev
+
+`1793770000000-AllowDailyDevPersonalPilot` amplía el esquema de
+`news_personal_connections` en una migración nueva. Verificar su inclusión en
+el paquete compilado, instalación limpia, upgrade desde una base con la
+migración de DEV y conservación de sus conexiones, CHECK definitivo y
+reversión protegida con datos daily.dev. Ejecutar el actualizador de CD en
+laboratorio con los artefactos de este corte y verificar esquema y ledger.
+El resultado previo 58→59 corresponde al corte DEV.
+
+Configurar el piloto sólo en una instancia local de desarrollo con
+`NEWS_DAILY_DEV_LOCAL_OWNER_ID` igual al ID del usuario autorizado y
+`NEWS_PERSONAL_ENCRYPTION_KEY` válida. Ejercitar el deny por ausencia de llave,
+otro dueño y entorno fuera de `development` sin consumo remoto. Las
+comprobaciones de CI/CD mantienen su alcance de esquema y compatibilidad.
+Mantener daily.dev fuera del uso cloud y multiusuario hasta revisar sus
+condiciones y validar OAuth de sólo lectura. [Plan105 §18.8](../../mvp/105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev).
+
+El ensayo del actualizador en Linux con TLS avanzó 59→60, validó 77 entidades,
+confirmó cero pendientes y preservó la fila histórica y el cifrado DEV. El
+fallo simulado de R2 en systemd recuperó la API y mantuvo bloqueado el CD sin
+solicitar una migración. El entorno local de pruebas también aplica el ledger
+60. Los resultados corresponden a la [verificación local del piloto](../../mvp/105-on-demand-tech-news.md#verificación-local-del-piloto).
+
+## Historial de la primera versión pública
 
 Fecha2026-11-16. Complementa [plan105](../../mvp/105-on-demand-tech-news.md),
 [contrato HTTP](http-contract.md) y [plan99](../../mvp/99-production-deployment-and-cicd-plan.md).
@@ -11,7 +68,7 @@ Esta guía concreta el recorrido de entrega; no autoriza ni acredita un desplieg
 un SHA promocionado, un recibo CI/CD o aceptación humana de News. El pedido actual
 es validar y preparar la sección para desplegar.
 
-## Candidato y alcance
+### Candidato y alcance
 
 La entrega comprende Server y Client juntos: módulo RSS, caché pública y dos
 migraciones; ruta `/news` bajo Home, diseño editorial y selección administrativa
@@ -36,7 +93,7 @@ UI adversa del build y corrección de carga inicial (41focales/5archivos). Chrom
 nativo200% comprobado en geometría/teclado; captura visual fallida, teléfono y
 Google/sesión humana no acreditados. El candidato técnico conserva esos límites.
 
-## Revisión local de preparación
+### Revisión local de preparación
 
 - [x] Módulo News registrado en AppModule; controlador público sólo en GET.
   La excepción de módulo exige método/ruta exactos del POST; el caso de uso
@@ -63,7 +120,7 @@ Google/sesión humana no acreditados. El candidato técnico conserva esos límit
   una decisión explícita del usuario por alcance; no marcarlos como ejecutados
   basándose en fixtures o en esta revisión.
 
-## Promoción y artefactos
+### Promoción y artefactos
 
 1. Revisar el diff final y separar temporales ignorados, perfiles y secretos.
    Versionar el alcance autorizado con sus docs/fichas y ambas migraciones;
@@ -89,7 +146,7 @@ es [ci.yml](../../../.github/workflows/ci.yml) → `cd-dispatch.yml` →
 [cd.yml](../../../.github/workflows/cd.yml), con validación de master/CI exactos,
 transporte v2 y comprobación de Client previa a los efectos del backend.
 
-## Migraciones y activación
+### Migraciones y activación
 
 | Orden News | Clase / archivo | Efecto | Reversión de laboratorio |
 | --- | --- | --- | --- |
@@ -114,7 +171,7 @@ Client. El cliente nuevo exige el contrato con `provenances`: desplegarlo contra
 el Server anterior no es un orden válido. Mantener historial/recibos del backend
 si falla Pages; no presentar una publicación parcial como entrega completa.
 
-## Recuperación y rollback
+### Recuperación y rollback
 
 Las pruebas down/up acreditan reversibilidad de la caché en PostgreSQL
 descartable, no una restauración productiva ni rollback automático de la app.
@@ -131,7 +188,7 @@ Client y Server, y sólo retirar la caché sabiendo qué datos se pierden. No
 ejecutar `migration:revert`, restaurar DB o hacer replay de un deploy anterior
 como reacción automática a un smoke fallido.
 
-## Postchecks de la entrega autorizada
+### Postchecks de la entrega autorizada
 
 Registrar versión, HTTP, resultado y fecha reales, sin tokens o XML:
 
