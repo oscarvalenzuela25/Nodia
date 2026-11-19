@@ -25,7 +25,7 @@ import {
   TagRow,
   SubtitleTag,
   StatusPill,
-  StatusDot,
+  ModeStatus,
   MetricsGrid,
   MetricBlock,
   MetricLabel,
@@ -115,12 +115,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
     }
   };
 
-  const getStatusDotColor = () => {
-    if (headerStatus === "healthy") return "#10b981";
-    if (headerStatus === "expired" || headerStatus === "degraded") return "#f59e0b";
-    return "#64748b";
-  };
-
   const hasAnyConfiguredChannel = Boolean(
     provider.use_api_key ||
     provider.use_agentic
@@ -171,7 +165,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
             </TitleBox>
           </ProviderInfo>
           {hasAgenticChannel && <StatusPill statusType="unconfigured">
-            <StatusDot color="#64748b" />
             {t("ai_providers:cards.status_unconfigured", "SIN CONFIGURAR")}
           </StatusPill>}
         </CardHeader>
@@ -272,7 +265,6 @@ const ProviderCard: FC<ProviderCardProps> = ({
         </ProviderInfo>
 
         {hasAgenticChannel && <StatusPill statusType={headerStatus}>
-          <StatusDot color={getStatusDotColor()} />
           {headerStatusLabel}
         </StatusPill>}
       </CardHeader>
@@ -282,22 +274,13 @@ const ProviderCard: FC<ProviderCardProps> = ({
         {/* Service State */}
         <MetricBlock>
           <MetricLabel>{t("ai_providers:cards.service_state", "Estado de servicio")}</MetricLabel>
-          <MetricValue
-            sx={{
-              color:
-                provider.status === "healthy"
-                  ? "#10b981"
-                  : provider.status === "expired" || provider.status === "degraded"
-                  ? "#f59e0b"
-                  : "#64748b",
-            }}
-          >
+          <MetricValue>
             {provider.status === "healthy" ? (
-              <CheckCircleOutlinedIcon sx={{ fontSize: 16 }} />
+              <CheckCircleOutlinedIcon color="success" sx={{ fontSize: 16 }} />
             ) : provider.status === "expired" || provider.status === "degraded" ? (
-              <ErrorOutlineOutlinedIcon sx={{ fontSize: 16 }} />
+              <ErrorOutlineOutlinedIcon color="warning" sx={{ fontSize: 16 }} />
             ) : (
-              <InfoOutlinedIcon sx={{ fontSize: 16 }} />
+              <InfoOutlinedIcon color="action" sx={{ fontSize: 16 }} />
             )}
             {provider.serviceState}
           </MetricValue>
@@ -339,23 +322,11 @@ const ProviderCard: FC<ProviderCardProps> = ({
                         {t("ai_providers:cards.panel_agentic_title")}
                       </Typography>
                     </Box>
-                    <CodeBadge
-                      sx={{
-                        backgroundColor:
-                          !isAgenticActive
-                            ? "rgba(239, 68, 68, 0.1)"
-                            : "rgba(16, 185, 129, 0.1)",
-                        color: !isAgenticActive ? "#ef4444" : "#10b981",
-                        borderColor:
-                          !isAgenticActive
-                            ? "rgba(239, 68, 68, 0.2)"
-                            : "rgba(16, 185, 129, 0.2)",
-                      }}
-                    >
+                    <ModeStatus tone={isAgenticActive ? "success" : "error"}>
                       {!isAgenticActive
                         ? t("ai_providers:cards.panel_agentic_inactive", "No detectada")
                         : t("ai_providers:cards.panel_agentic_active", "Conectada")}
-                    </CodeBadge>
+                    </ModeStatus>
                   </ModePanelHeader>
                   <ModePanelBody>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
@@ -409,21 +380,11 @@ const ProviderCard: FC<ProviderCardProps> = ({
                           {t("ai_providers:cards.panel_api_key_title", "Conexión API (API Key)")}
                         </Typography>
                       </Box>
-                      <CodeBadge
-                        sx={{
-                          backgroundColor: isConfigured
-                            ? "rgba(100, 116, 139, 0.1)"
-                            : "rgba(245, 158, 11, 0.1)",
-                          color: isConfigured ? "#64748b" : "#f59e0b",
-                          borderColor: isConfigured
-                            ? "rgba(100, 116, 139, 0.2)"
-                            : "rgba(245, 158, 11, 0.2)",
-                        }}
-                      >
+                      <ModeStatus tone={isConfigured ? "neutral" : "warning"}>
                         {isConfigured
                           ? t("ai_providers:cards.panel_api_configured", "Configurada")
                           : t("ai_providers:cards.panel_api_incomplete", "Incompleta")}
-                      </CodeBadge>
+                      </ModeStatus>
                     </ModePanelHeader>
                     <ModePanelBody>
                       <Box

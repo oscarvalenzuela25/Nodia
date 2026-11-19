@@ -1,5 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent } from "react";
-import { Alert, Button, IconButton, InputAdornment, Link, Stack, Typography } from "@mui/material";
+import { Alert, Button, IconButton, InputAdornment, Link, Stack } from "@mui/material";
+import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { Controller, useForm } from "react-hook-form";
@@ -8,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import BaseModal from "../../../../components/BaseModal";
 import TextInput from "../../../../components/inputs/TextInput";
+import { CredentialHelp } from "./styles";
 import type { PersonalProvider } from "./types";
 
 const credentialForm = z.object({
@@ -112,12 +114,13 @@ export default function PersonalNewsConnectionDialog({
         }}
       >
         {failure && <Alert severity="error">{failure}</Alert>}
-        <Typography variant="body2" color="text.secondary">
+        <CredentialHelp>
           <Link href={daily ? "https://daily.dev/settings/api" : "https://dev.to/settings/extensions"}
             target="_blank" rel="noopener noreferrer">
             {t(`news:personal_find_${providerName}_key`)}
+            <OpenInNewOutlinedIcon aria-hidden="true" fontSize="inherit" />
           </Link>
-        </Typography>
+        </CredentialHelp>
         <Controller
           name="key"
           control={control}

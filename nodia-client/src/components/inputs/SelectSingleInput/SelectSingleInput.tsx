@@ -39,6 +39,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   onChange,
   placeholder,
   searchPlaceholder,
+  autoFocusSearch = true,
   disabled = false,
   onSearchChange, onLoadMore, hasMore = false, loadingOptions = false,
   required = false,
@@ -216,7 +217,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
       >
         <SearchContainer onClick={(e) => e.stopPropagation()}>
           <SearchField
-            autoFocus
+            autoFocus={autoFocusSearch}
             fullWidth
             size="small"
             value={searchTerm}
@@ -249,7 +250,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
         </SearchContainer>
 
         {loadingOptions && <LinearProgress sx={{ height: 2 }} />}
-        <OptionsList role="listbox" aria-multiselectable="false">
+        <OptionsList role="listbox" aria-multiselectable="false" autoFocusItem={!autoFocusSearch && isOpen}>
           {filteredOptions.length === 0 ? (
             <Box sx={{ py: 2, px: 2, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">

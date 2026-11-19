@@ -70,6 +70,7 @@ export const SelectTrigger = styled(Box, {
             0.15
           )}`
         : "none",
+      "&:focus-visible": { outline: "2px solid CanvasText", outlineOffset: 2 },
       "&:hover": {
         borderColor: isError
           ? theme.palette.error.main

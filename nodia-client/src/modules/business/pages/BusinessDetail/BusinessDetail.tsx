@@ -363,23 +363,54 @@ const BusinessDetail: FC = () => {
 
           {/* Embedded Navigation Tabs */}
           <TabsWrapper>
-            {mobile ? <SelectSingleInput label={t("business:pos.section")} clearable={false} value={selectedTab} onChange={selectSection} disabled={isBusy} options={sections.map((section) => ({ value: section.value, label: t(section.label) }))} /> : <StyledTabs
-              orientation="horizontal"
-              value={selectedTab}
-              onChange={handleTabChange}
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              {renderSectionTabs(sections)}
-            </StyledTabs>}
+            {mobile ? (
+              <>
+                <SelectSingleInput
+                  label={t("business:pos.section")}
+                  clearable={false}
+                  autoFocusSearch={false}
+                  value={selectedTab}
+                  onChange={selectSection}
+                  disabled={isBusy}
+                  options={sections.map(({ value, label }) => ({ value, label: t(label) }))}
+                />
+                {selectedMarketSection && (
+                  <Box sx={{ mt: 2 }}>
+                    <SelectSingleInput
+                      label={t("business:market_lists.market")}
+                      clearable={false}
+                      autoFocusSearch={false}
+                      value={selectedMarketSection}
+                      onChange={selectSection}
+                      disabled={isBusy}
+                      options={marketSections.map(({ value, label }) => {
+                        const count = sectionCounts[value];
+                        const title = t(label);
+                        return { value, label: count === undefined ? title : `${title} (${count})` };
+                      })}
+                    />
+                  </Box>
+                )}
+              </>
+            ) : (
+              <StyledTabs
+                orientation="horizontal"
+                value={selectedTab}
+                onChange={handleTabChange}
+                variant="scrollable"
+                scrollButtons="auto"
+                aria-label={t("business:pos.section")}
+              >
+                {renderSectionTabs(sections)}
+              </StyledTabs>
+            )}
           </TabsWrapper>
-          {selectedMarketSection && <MarketTabs
+          {!mobile && selectedMarketSection && <MarketTabs
             value={selectedMarketSection}
             onChange={handleTabChange}
             aria-label={t("business:market_lists.market")}
             variant="scrollable"
             scrollButtons="auto"
-            allowScrollButtonsMobile
           >
             {renderSectionTabs(marketSections)}
           </MarketTabs>}

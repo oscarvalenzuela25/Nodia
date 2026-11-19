@@ -40,6 +40,8 @@ const LanguageSelector: FC = () => {
             textTransform: "uppercase", 
             fontWeight: "bold",
             minWidth: 0,
+            minHeight: { xs: 44, sm: 0 },
+            "@media (pointer: coarse)": { minHeight: 44 },
             px: 1 
           }}
         >

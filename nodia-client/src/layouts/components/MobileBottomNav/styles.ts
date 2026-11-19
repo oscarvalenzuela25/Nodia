@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography } from "@mui/material";
-import { alpha, lighten, darken, styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 import type { Theme } from "@mui/material/styles";
 import { Link } from "react-router";
 
@@ -11,7 +11,9 @@ export const NavRoot = styled(Box)(({ theme }) => ({
 }));
 export const Dock = styled("nav")(({ theme }) => ({
   pointerEvents: "auto", display: "grid", gridTemplateColumns: "1fr 1fr 80px 1fr 1fr", alignItems: "start",
-  padding: `12px 4px calc(14px + env(safe-area-inset-bottom, 0px))`,
+  paddingBlock: `12px calc(14px + env(safe-area-inset-bottom, 0px))`,
+  paddingLeft: "max(4px, env(safe-area-inset-left, 0px))",
+  paddingRight: "max(4px, env(safe-area-inset-right, 0px))",
   background: theme.palette.background.paper, borderTop: `1px solid ${theme.palette.divider}`,
   borderRadius: `${theme.spacing(3)} ${theme.spacing(3)} 0 0`, boxShadow: `0 -5px 22px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? .35 : .08)}`,
   "@media (max-width: 359.95px)": { gridTemplateColumns: "1fr 1fr 68px 1fr 1fr" },
@@ -35,15 +37,16 @@ export const RoundLink = styled(Link)(roundStyles, ({ theme }) => ({
 }));
 export const HomeLink = styled(RoundLink)(({ theme }) => ({
   width: 72, height: 72, marginTop: -34, color: theme.palette.primary.contrastText,
-  background: `linear-gradient(145deg, ${lighten(theme.palette.primary.main, .18)}, ${theme.palette.primary.main} 62%, ${darken(theme.palette.primary.main, .12)})`,
+  backgroundColor: theme.palette.primary.main,
   borderColor: alpha(theme.palette.primary.main, .8),
   boxShadow: `0 0 0 6px ${theme.palette.background.default}, 0 9px 18px ${alpha(theme.palette.primary.main, .32)}, inset 0 2px 0 ${alpha(theme.palette.common.white, .2)}`,
-  "& svg": { fontSize: 30 }, "&:hover": { backgroundColor: theme.palette.primary.dark },
+  "& svg": { fontSize: 30 },
+  "&:hover": { borderColor: theme.palette.primary.contrastText },
   "&[aria-current=page]": { boxShadow: `0 0 0 6px ${theme.palette.background.default}, 0 9px 18px ${alpha(theme.palette.primary.main, .32)}, inset 0 2px 0 ${alpha(theme.palette.common.white, .2)}` },
   "@media (max-width: 359.95px)": { width: 64, height: 64, marginTop: -26 },
 }));
 export const LockButton = styled(RoundButton)(({ theme }) => ({
-  position: "absolute", top: 8, right: 16, background: theme.palette.background.paper, color: theme.palette.primary.main,
+  position: "absolute", top: 8, right: "max(16px, env(safe-area-inset-right, 0px))", background: theme.palette.background.paper, color: theme.palette.primary.main,
   boxShadow: theme.shadows[2], "& svg": { fontSize: 20 },
   "&[aria-pressed=true]": { background: theme.palette.background.paper },
 }));

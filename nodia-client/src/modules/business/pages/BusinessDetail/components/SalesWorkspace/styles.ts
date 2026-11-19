@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from "@mui/material";
-import { styled, type Theme } from "@mui/material/styles";
+import { alpha, styled, type Theme } from "@mui/material/styles";
 import { catalogueScrollbars } from "./PosProductCatalog/styles";
 export const Workspace = styled(Box)(({ theme }) => ({ display: "grid", gap: theme.spacing(3), minWidth: 0 }));
 export const PointOfSaleGrid = styled(Box)(({ theme }) => ({
@@ -14,7 +14,9 @@ const salePanel = ({ theme }: { theme: Theme }) => ({
   [`${theme.breakpoints.down("lg")} and (max-height: 500px)`]: { height: "auto", minHeight: 0, overflowY: "visible" },
 } as const);
 export const CatalogPanel = styled(Panel)(salePanel);
-export const CartPanel = styled(Panel)(salePanel);
+export const CartPanel = styled(Panel)(salePanel, ({ theme }) => ({
+  backgroundImage: `linear-gradient(${alpha(theme.palette.primary.main, 0.06)}, transparent 104px)`,
+}));
 export const TotalRow = styled(Box)(({ theme }) => ({ display: "flex", flexWrap: "wrap", alignItems: "baseline", justifyContent: "space-between", gap: theme.spacing(1), minWidth: 0 }));
 export const TotalLabel = styled(Typography)(({ theme }) => ({ fontSize: "1.5rem", lineHeight: 1.2, fontWeight: 700, [theme.breakpoints.up("sm")]: { fontSize: "1.75rem" } }));
 export const TotalAmount = styled(Typography)(({ theme }) => ({ fontSize: "2.25rem", lineHeight: 1.15, fontWeight: 800, fontVariantNumeric: "tabular-nums", overflowWrap: "anywhere", minWidth: 0, [theme.breakpoints.up("sm")]: { fontSize: "3rem" } }));

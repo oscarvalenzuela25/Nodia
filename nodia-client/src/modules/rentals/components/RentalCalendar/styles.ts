@@ -31,6 +31,9 @@ export const CalendarPanel = styled(Paper)(({ theme }) => ({
   ".rental-status-in_progress": { borderLeftColor: theme.palette.primary.main },
   ".rental-event-muted": { opacity: 0.75, borderStyle: "dashed" },
   ".fc": { fontFamily: theme.typography.fontFamily },
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiButton-root": { minHeight: 44 },
+  },
   [theme.breakpoints.up("sm")]: { padding: theme.spacing(3) },
 }));
 export const ContextPanel = styled(CalendarPanel)(({ theme }) => ({

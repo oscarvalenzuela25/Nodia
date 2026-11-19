@@ -206,7 +206,7 @@ const AiProviders: FC = () => {
       >
         <HeaderTitleBox>
           <PageTitleContainer>
-            <SmartToyOutlinedIcon color="primary" sx={{ fontSize: 32 }} />
+            <SmartToyOutlinedIcon color="primary" />
             <PageTitle>
               {t("ai_providers:title", "Proveedores de IA")}
             </PageTitle>

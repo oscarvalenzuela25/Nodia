@@ -55,13 +55,6 @@ export default function NewsArticleCard({
           rel="noopener noreferrer"
           color="inherit"
           underline="hover"
-          sx={{
-            "&:focus-visible": {
-              outline: "2px solid",
-              outlineColor: "primary.main",
-              outlineOffset: 4,
-            },
-          }}
         >
           {article.title}
         </Link>

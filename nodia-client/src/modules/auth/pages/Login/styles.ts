@@ -1,10 +1,10 @@
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 
 export const Page = styled("main")(({ theme }) => ({
   display: "flex",
-  minHeight: "100vh",
+  minHeight: "100dvh",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
@@ -12,6 +12,8 @@ export const Page = styled("main")(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { padding: theme.spacing(3) },
   [theme.breakpoints.up('md')]: { padding: theme.spacing(4) },
   backgroundColor: theme.palette.background.default,
+  backgroundImage: `radial-gradient(ellipse at 50% 0%, ${alpha(theme.palette.primary.main, 0.13)}, transparent 65%)`,
+  "@media (max-height: 520px)": { paddingBlockStart: theme.spacing(10) },
   position: "relative",
 }));
 
@@ -24,7 +26,8 @@ export const Card = styled("div")(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { padding: theme.spacing(5) },
   backgroundColor: theme.palette.background.paper,
   borderRadius: 16,
-  boxShadow: theme.shadows[3],
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: `0 12px 32px ${alpha(theme.palette.common.black, theme.palette.mode === "dark" ? 0.32 : 0.08)}`,
 }));
 
 export const LogoContainer = styled("div")(({ theme }) => ({

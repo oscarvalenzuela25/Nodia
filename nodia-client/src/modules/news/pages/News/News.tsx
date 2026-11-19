@@ -16,6 +16,7 @@ import NewsArticleCard from "../../components/NewsArticleCard";
 import NewsInitialLoading from "../../components/NewsInitialLoading";
 import NewsTopicChips from "../../components/NewsTopicChips";
 import PersonalNews from "../../components/PersonalNews";
+import { NewsIntroduction, NewsRetryAlert, NewsTitle } from "../../styles";
 import { newsSourceKeySchema, type NewsFilters, type NewsSourceKey } from "../../types";
 import { useNews, useNewsRefresh } from "./infrastructure/useServices";
 import {
@@ -72,15 +73,8 @@ function PublicNews() {
           >
             {t("news:editorial_kicker")}
           </Typography>
-          <Typography
-            component="h1"
-            variant="h4"
-            id="news-heading"
-            sx={{ fontWeight: 700, letterSpacing: "-.035em", mb: 1 }}
-          >
-            {t("news:title")}
-          </Typography>
-          <Typography color="text.secondary">{t("news:subtitle")}</Typography>
+          <NewsTitle id="news-heading">{t("news:title")}</NewsTitle>
+          <NewsIntroduction>{t("news:subtitle")}</NewsIntroduction>
         </Box>
         {refresh.canRefresh && (
           <AdminRefreshControls role="group" aria-label={t("news:refresh_controls")}>
@@ -175,7 +169,7 @@ function PublicNews() {
         ))}
         {refresh.failure && <Alert severity="error">{refresh.failure}</Alert>}
         {query.isError && (
-          <Alert
+          <NewsRetryAlert
             severity="error"
             action={
               <Button
@@ -190,7 +184,7 @@ function PublicNews() {
             }
           >
             {t("news:load_error")}
-          </Alert>
+          </NewsRetryAlert>
         )}
       </Stack>
       {busy && !query.isLoading && (

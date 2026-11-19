@@ -1,4 +1,4 @@
-import { Button, Stack, styled } from "@mui/material";
+import { alpha, Button, Stack, styled } from "@mui/material";
 import { Panel } from "../Teacher/styles";
 import { Fields } from "../../components/SessionForm/styles";
 
@@ -20,16 +20,44 @@ export const StepList = styled("ol")(({ theme }) => ({
 export const StepButton = styled(Button)(({ theme }) => ({
   width: "100%", minWidth: 0, minHeight: 56, height: "100%", justifyContent: "flex-start", gap: theme.spacing(1.5), textAlign: "left",
   color: theme.palette.text.secondary, borderColor: theme.palette.divider,
-  "&[aria-current=step]": { borderColor: theme.palette.primary.main, color: theme.palette.primary.main },
+  "&[aria-current=step]": {
+    borderColor: theme.palette.primary.main,
+    color: theme.palette.text.primary,
+    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+    "& .step-number": {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+      borderColor: theme.palette.primary.main,
+    },
+  },
+  "&.Mui-focusVisible, &:focus-visible": {
+    outline: `2px solid ${theme.palette.text.primary}`,
+    outlineOffset: 2,
+  },
   "& .step-number": { display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, width: 28, height: 28, borderRadius: "50%", border: "1px solid currentColor" },
   "& .step-label": { overflowWrap: "anywhere" },
-  [theme.breakpoints.down("sm")]: { justifyContent: "center", "& .step-label": { display: "none" } },
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    gap: theme.spacing(0.5),
+    padding: theme.spacing(0.75, 0.5),
+    textAlign: "center",
+    "& .step-label": {
+      ...theme.typography.caption,
+      lineHeight: 1.25,
+      letterSpacing: 0,
+      textWrap: "balance",
+    },
+    "&.Mui-disabled .step-label": { color: theme.palette.text.secondary },
+  },
 }));
 export const SetupLayout = styled("div")(({ theme }) => ({
   display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: theme.spacing(3, 2), alignItems: "start", minWidth: 0,
   [theme.breakpoints.up("lg")]: { gridTemplateColumns: "minmax(0, 1fr) minmax(260px, 340px)" },
 }));
 export const StudyNote = styled(Panel)(({ theme }) => ({
-  borderTop: `3px solid ${theme.palette.primary.main}`, boxShadow: "none",
+  borderTop: `3px solid ${theme.palette.primary.main}`,
+  boxShadow: "none",
+  backgroundImage: `linear-gradient(${alpha(theme.palette.primary.main, 0.055)}, transparent 112px)`,
 }));
 export const SummaryEntry = styled("div")({ minWidth: 0, overflowWrap: "anywhere", "& dd": { margin: 0, whiteSpace: "pre-wrap" } });

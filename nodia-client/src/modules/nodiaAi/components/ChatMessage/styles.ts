@@ -48,8 +48,10 @@ export const Bubble = styled("div", {
   minWidth: 0,
   padding: isOwner || isAssistant ? theme.spacing(1.5, 2) : 0,
   borderRadius: isOwner ? "16px 6px 16px 16px" : isAssistant ? "6px 16px 16px 16px" : 0,
-  border: isOwner || isAssistant ? `1px solid ${alpha(theme.palette.text.primary, 0.06)}` : 0,
-  background: isOwner || isAssistant ? alpha(theme.palette.text.primary, theme.palette.mode === "dark" ? 0.075 : 0.045) : "transparent",
+  border: isOwner || isAssistant ? `1px solid ${theme.palette.divider}` : 0,
+  backgroundColor: isOwner
+    ? alpha(theme.palette.primary.main, 0.09)
+    : isAssistant ? theme.palette.background.paper : "transparent",
   color: theme.palette.text.primary,
   [theme.breakpoints.down("sm")]: { padding: isOwner || isAssistant ? theme.spacing(1.25, 1.5) : 0 },
 }));

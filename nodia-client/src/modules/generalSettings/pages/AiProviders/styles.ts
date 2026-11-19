@@ -1,5 +1,5 @@
-import { styled } from "@mui/material/styles";
-import { Box, Paper, Typography } from "@mui/material";
+import { alpha, styled } from "@mui/material/styles";
+import { Box, Paper } from "@mui/material";
 
 export const PageContainer = styled(Box)(({ theme }) => ({
   width: "100%",
@@ -20,10 +20,8 @@ export const HeaderPanel = styled(Paper)(({ theme }) => ({
   borderRadius: Number(theme.shape.borderRadius) * 2,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: theme.palette.background.paper,
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 4px 20px 0 rgba(0, 0, 0, 0.4)"
-      : "0 4px 20px 0 rgba(0, 0, 0, 0.05)",
+  backgroundImage: `linear-gradient(110deg, ${alpha(theme.palette.primary.main, 0.055)}, transparent 68%)`,
+  boxShadow: theme.shadows[1],
   [theme.breakpoints.down("sm")]: {
     padding: theme.spacing(1.5),
     gap: theme.spacing(2),
@@ -39,28 +37,7 @@ export const HeaderTitleBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: { minWidth: 0 },
 }));
 
-export const PageTitleContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1.5),
-  minWidth: 0,
-  "& svg": { flexShrink: 0 },
-}));
-
-export const PageTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: 700,
-  fontSize: "1.5rem",
-  color: theme.palette.text.primary,
-  overflowWrap: "anywhere",
-  [theme.breakpoints.down("sm")]: { fontSize: "1.25rem" },
-}));
-
-export const PageSubtitle = styled(Typography)(({ theme }) => ({
-  fontSize: "0.875rem",
-  color: theme.palette.text.secondary,
-  maxWidth: "720px",
-  lineHeight: 1.5,
-}));
+export { PageTitleContainer, PageTitle, PageSubtitle } from "../../styles";
 
 export const HeaderActionsBox = styled(Box)(({ theme }) => ({
   display: "flex",

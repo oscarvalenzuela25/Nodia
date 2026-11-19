@@ -33,21 +33,17 @@ export const DetailBreadcrumb = styled(Breadcrumb)(({ theme }) => ({
   },
 }));
 
-export const HeaderCard = styled(Card)(({ theme }) => {
-  const isDark = theme.palette.mode === "dark";
-
-  return {
-    borderRadius: 16,
-    border: `1px solid ${theme.palette.divider}`,
-    boxShadow: isDark
-      ? "0 4px 20px rgba(0, 0, 0, 0.5)"
-      : "0 4px 16px rgba(0, 0, 0, 0.04)",
-    backgroundColor: isDark ? "#1a212b" : "#ffffff",
-    overflow: "hidden",
-  };
-});
+export const HeaderCard = styled(Card)(({ theme }) => ({
+  borderRadius: 16,
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: "none",
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: "none",
+  overflow: "hidden",
+}));
 
 export const HeaderTopSection = styled(Box)(({ theme }) => ({
+  backgroundImage: `linear-gradient(110deg, ${alpha(theme.palette.primary.main, 0.07)}, transparent 65%)`,
   padding: theme.spacing(2),
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(3.5, 3.5, 2.5),
@@ -68,7 +64,7 @@ export const BusinessAvatarBox = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   backgroundColor: alpha(theme.palette.primary.main, 0.15),
   color: theme.palette.primary.main,
-  border: `1px solid ${alpha(theme.palette.primary.main, 0.3)}`,
+  border: `1px solid ${alpha(theme.palette.primary.main, 0.20)}`,
   flexShrink: 0,
 }));
 
@@ -109,52 +105,44 @@ export const TabsWrapper = styled(Box)(({ theme }) => ({
   borderTop: `1px solid ${theme.palette.divider}`,
   padding: theme.spacing(0, 2),
   [theme.breakpoints.down("sm")]: { paddingBlock: theme.spacing(2) },
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(0, 0, 0, 0.2)"
-      : alpha(theme.palette.grey[100], 0.5),
+  backgroundColor: alpha(theme.palette.primary.main, 0.035),
 }));
 
 export const StyledTabs = styled(MuiTabs)(({ theme }) => ({
   minHeight: 48,
-  [theme.breakpoints.down("sm")]: { "& .MuiTabs-indicator": { display: "none" } },
   "& .MuiTabs-indicator": {
     height: 3,
     borderRadius: "3px 3px 0 0",
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: "transparent",
+    borderBlockEnd: `3px solid ${theme.palette.primary.main}`,
+    "@media (prefers-reduced-motion: reduce)": { transition: "none" },
   },
 }));
 
 export const StyledTab = styled(MuiTab)(({ theme }) => ({
   minHeight: 48,
-  [theme.breakpoints.down("sm")]: { width: "100%", justifyContent: "flex-start", borderRadius: 8, "&.Mui-selected": { backgroundColor: alpha(theme.palette.primary.main, 0.1) } },
   textTransform: "none",
-  fontWeight: 500,
+  fontWeight: 600,
   fontSize: "0.875rem",
   padding: theme.spacing(1, 2),
   color: theme.palette.text.secondary,
   gap: theme.spacing(1),
-  transition: "color 0.2s ease-in-out",
-  "&.Mui-selected": {
-    color: theme.palette.primary.main,
-    fontWeight: 600,
+  "&.Mui-focusVisible": { outlineOffset: -3 },
+  transition: theme.transitions.create(["color", "background-color"], {
+    duration: theme.transitions.duration.shorter,
+  }),
+  "&[aria-selected=true]": {
+    backgroundColor: alpha(theme.palette.primary.main, 0.09),
+    "&:not(.Mui-disabled)": { color: theme.palette.text.primary },
   },
   "&:hover": {
-    color: theme.palette.text.primary,
+    backgroundColor: alpha(theme.palette.primary.main, 0.06),
   },
 }));
 
 export const MarketTabs = styled(StyledTabs)(({ theme }) => ({
   paddingInline: theme.spacing(2),
   borderTop: `1px solid ${theme.palette.divider}`,
-  [theme.breakpoints.down("sm")]: {
-    "& .MuiTab-root": {
-      width: "auto",
-      flex: "0 0 auto",
-      paddingInline: theme.spacing(1.5),
-      justifyContent: "center",
-    },
-  },
 }));
 
 export const StatusPill = styled(Box, {
@@ -170,7 +158,7 @@ export const StatusPill = styled(Box, {
   backgroundColor: active
     ? alpha(theme.palette.success.main, 0.15)
     : alpha(theme.palette.error.main, 0.15),
-  color: active ? theme.palette.success.main : theme.palette.error.main,
+  color: theme.palette.text.primary,
   border: `1px solid ${
     active
       ? alpha(theme.palette.success.main, 0.3)
@@ -213,28 +201,20 @@ export const StockDot = styled("span", {
 });
 
 // KPI Cards for Overview
-export const KpiCard = styled(Card)(({ theme }) => {
-  const isDark = theme.palette.mode === "dark";
-
-  return {
-    padding: theme.spacing(2.5),
-    minWidth: 0,
-    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
-    borderRadius: 14,
-    border: `1px solid ${theme.palette.divider}`,
-    boxShadow: "none",
-    backgroundColor: isDark ? "#1a212b" : "#ffffff",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "100%",
-    transition: "transform 0.2s ease-in-out, border-color 0.2s ease-in-out",
-    "&:hover": {
-      transform: "translateY(-2px)",
-      borderColor: theme.palette.primary.main,
-    },
-  };
-});
+export const KpiCard = styled(Card)(({ theme }) => ({
+  padding: theme.spacing(2.5),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
+  borderRadius: 14,
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: "none",
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: `linear-gradient(${alpha(theme.palette.primary.main, 0.05)}, transparent 80px)`,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  height: "100%",
+}));
 
 export const KpiTop = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -264,6 +244,7 @@ export const KpiValue = styled(Box)(({ theme }) => ({
   ...theme.typography.h4,
   fontWeight: 700,
   color: theme.palette.text.primary,
+  fontVariantNumeric: "tabular-nums",
   display: "flex",
   alignItems: "baseline",
   gap: theme.spacing(1),
@@ -282,20 +263,17 @@ export const KpiFooter = styled(Box)(({ theme }) => ({
 }));
 
 // Section and Widget Cards
-export const SectionCard = styled(Card)(({ theme }) => {
-  const isDark = theme.palette.mode === "dark";
-
-  return {
-    padding: theme.spacing(3),
-    minWidth: 0,
-    overflowWrap: "anywhere",
-    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
-    borderRadius: 14,
-    border: `1px solid ${theme.palette.divider}`,
-    boxShadow: "none",
-    backgroundColor: isDark ? "#1a212b" : "#ffffff",
-  };
-});
+export const SectionCard = styled(Card)(({ theme }) => ({
+  padding: theme.spacing(3),
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5) },
+  borderRadius: 14,
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: "none",
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: "none",
+}));
 
 export const SectionHeader = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: { "& > button": { width: "100%", minHeight: 44 } },

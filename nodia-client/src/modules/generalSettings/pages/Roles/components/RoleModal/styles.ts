@@ -50,15 +50,4 @@ export const StyledSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export const ModalActionsContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  gap: theme.spacing(2),
-  width: "100%",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column-reverse",
-    gap: theme.spacing(1),
-    "& > button": { width: "100%", minHeight: 44 },
-  },
-}));
+export { ModalActionsContainer } from "../../../../styles";

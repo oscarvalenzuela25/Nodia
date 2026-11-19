@@ -20,10 +20,13 @@ export const SidenavDrawer = styled(Drawer, {
     boxSizing: "border-box",
     padding: collapsed ? "16px 8px" : "16px",
     overflowX: "hidden",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    backgroundImage: "none",
+    "@media (prefers-reduced-motion: no-preference)": {
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
   },
 }));
 
@@ -122,29 +125,15 @@ export const NavItemButton = styled(ListItemButton, {
     },
   },
   "&.Mui-selected": {
-    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-    boxShadow: `0 4px 12px -2px ${alpha(theme.palette.primary.main, 0.4)}`,
-    position: "relative",
-    overflow: "hidden",
-    border: `1px solid ${alpha(theme.palette.primary.light, 0.2)}`,
-    "&::before": {
-      content: '""',
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      background: "linear-gradient(to right, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%)",
-      pointerEvents: "none",
-    },
+    backgroundColor: theme.palette.primary.main,
+    boxShadow: `inset 0 1px 0 ${alpha(theme.palette.primary.contrastText, 0.14)}`,
     "& .MuiListItemIcon-root, & .MuiTypography-root": {
       color: theme.palette.primary.contrastText,
       fontWeight: 700,
-      textShadow: "0 1px 2px rgba(0,0,0,0.2)",
     },
     "&:hover": {
-      background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
-      boxShadow: `0 6px 16px -2px ${alpha(theme.palette.primary.main, 0.5)}`,
+      backgroundColor: theme.palette.primary.main,
+      boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.primary.contrastText, 0.4)}`,
     },
   },
 }));

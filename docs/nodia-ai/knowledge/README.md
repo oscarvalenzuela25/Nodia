@@ -14,6 +14,18 @@ Los comentarios sobre Market y Caja actualizan el índice de
 [Caja](businesses/features/cash-ledger-and-invoice-expenses.md). Los
 cambios corresponden a navegación, presentación y guardado nativo de Caja.
 
+## Retoque transversal de Client — 2026-11-18
+
+La [evaluación de interfaz](../../evidence/ui-refresh-20261118.md) cubre los
+módulos de Client. El retoque cambia superficies, jerarquía visual, foco y
+presentación responsive. Los conceptos, operaciones e interpretación de
+resultados de las fichas siguen vigentes. Se conservan las revisiones de
+contexto y el catálogo de herramientas publicado.
+
+La [revisión móvil complementaria](../../evidence/mobile-ui-review-20261118.md)
+cambia la presentación adaptativa y el foco. Los conceptos, acciones y
+resultados que describen las fichas se aplican a ambas presentaciones.
+
 ## Verificación de Caja — CASH-07, 2026-11-17
 
 [Plan109 §16](../../mvp/109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17),
