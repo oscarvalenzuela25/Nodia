@@ -1493,3 +1493,76 @@ fallido y la escritura original del catálogo conserva resultado incierto.
 La entrega siguiente usa CI de `master` nueva, el respaldo fresco del CD y
 las verificaciones ordinarias de esquema y activación. Ver el
 [incidente y la recuperación](../../docs/mvp/99-production-deployment-and-cicd-plan.md#35-respaldo-previo-interrumpido-en-listas-de-market--2026-11-18).
+
+## Custodia de ZIP originales de despliegue
+
+Usar el [helper de custodia](release-zip-custody.py) con Python 3.12 y
+[age](https://age-encryption.org/). El ensayo fijó age v1.3.2. La identidad
+age se guarda en almacenamiento privado del operador y por separado de
+los cifrados. El comando de sellado recibe sólo el destinatario público.
+
+El inventario de entrada contiene `snapshot_unchanged=true` y
+`originals` con ruta canónica, ID del artefacto, intento y run, SHA del
+commit, release, tamaño y hashes comprobados de ZIP, TAR, manifiesto y
+árbol. El directorio local de entrada contiene archivos
+`original-<artifact_id>.zip`. El directorio de salida debe ser nuevo
+dentro de un directorio privado. El sello imprime la huella del
+catálogo, que se conserva en el recibo del operador.
+
+```bash
+python3 -B ops/production/release-zip-custody.py seal \
+  --inventory "$OPS05_INVENTORY" --source "$OPS05_ORIGINALS" \
+  --recipient "$OPS05_AGE_RECIPIENT" --out "$OPS05_SEALED"
+```
+
+Para restaurar, obtener el cifrado y catálogo de custodia y cotejarlos
+con la huella del recibo independiente. El destino es un archivo nuevo
+en un directorio privado y desechable.
+
+```bash
+python3 -B ops/production/release-zip-custody.py restore \
+  --catalog "$OPS05_SEALED/catalog.json" \
+  --catalog-sha256 "$OPS05_CATALOG_SHA256" --archive-dir "$OPS05_SEALED" \
+  --artifact "$OPS05_ARTIFACT_ID" --identity-stdin \
+  --out "$OPS05_RESTORE_ZIP" < "$OPS05_AGE_IDENTITY"
+```
+
+La recuperación publicada conserva los bytes originales. Para un
+ensayo de release se usa luego la verificación del manifiesto y la
+extracción segura de `stage-backend-candidate.py` en Docker sin red.
+La [evidencia de OPS-05](../../docs/mvp/99-production-deployment-and-cicd-plan.md#custodia-cifrada-y-restauración-aislada)
+registra la cobertura y aceptación pendientes del destino permanente.
+
+### Publicación y lectura en R2
+
+El destino elegido es el bucket dedicado `nodia-ops05-release-custody`.
+Verificar la URL pública deshabilitada y la ausencia de dominios
+conectados antes de publicar. El
+[helper de R2](release-zip-custody-r2.py) usa una sesión de operador
+autenticada en Wrangler. Cada catálogo ocupa
+`ops05/v1/<sha256-del-catálogo>/`, con un operador por prefijo.
+El directorio de origen contiene sólo el catálogo y los cifrados que
+éste enumera.
+
+```bash
+python3 -B ops/production/release-zip-custody-r2.py \
+  --wrangler-cli "$OPS05_WRANGLER_CLI" --catalog-sha256 "$OPS05_CATALOG_SHA256" \
+  upload --source "$OPS05_SEALED" --readback "$OPS05_READBACK" --jobs 3
+```
+
+Se coteja por SHA-256 lo ya presente y se valida por descarga cualquier
+objeto nuevo. El catálogo se publica al final. `--readback` guarda
+los bytes descargados en un directorio privado nuevo, que sirve de
+entrada al ensayo aislado. Para una restauración futura, obtener el
+catálogo y los cifrados en un directorio nuevo con el mismo helper.
+
+```bash
+python3 -B ops/production/release-zip-custody-r2.py \
+  --wrangler-cli "$OPS05_WRANGLER_CLI" --catalog-sha256 "$OPS05_CATALOG_SHA256" \
+  download --out "$OPS05_DOWNLOAD"
+```
+
+Conservar la huella del catálogo y la identidad del operador fuera
+del bucket. La verificación del destino externo por sí sola deja
+pendiente adaptar los lectores que hoy exigen la ruta original del VPS.
+[Comandos R2 de Wrangler](https://developers.cloudflare.com/workers/wrangler/commands/r2/).

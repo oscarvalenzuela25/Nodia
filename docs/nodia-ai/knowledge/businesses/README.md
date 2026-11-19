@@ -336,6 +336,15 @@ compartido por negocio con guardado por partida. El
 [evidencia de laboratorio](../../../evidence/market-shopping-lists-20261118.md)
 registran el alcance. La adopción se verifica por entorno.
 
+## Consultas de Market y Caja en NodiaAI — 2026-11-19
+
+El catálogo publica dos herramientas para [Listas de Market](features/market-shopping-lists.md#consultas-de-solo-lectura-en-nodiaai)
+y cuatro para [Caja](features/cash-ledger-and-invoice-expenses.md#consultas-de-solo-lectura-en-nodiaai).
+Cada consulta exige el negocio exacto y aplica el módulo y el acceso de
+Negocios. Se reutilizan los lectores nativos en la transacción del gateway.
+La [evidencia](../../../evidence/nodia-ai-business-reads-20261119.md) registra
+la comprobación local y su alcance.
+
 ## Caja: plan de registro y egresos de factura — solicitud2026-11-17
 
 [Plan109](../../../mvp/109-business-cash-ledger-plan.md),
@@ -597,7 +606,8 @@ Los modos operativos son Agentic y API key conforme90/92. Function calling API n
 
 | Función | Ficha | Implementación | Integración NodiaAI | Destino |
 |---|---|---|---|---|
-| Caja, categorías y egresos de factura | [cash-ledger-and-invoice-expenses](features/cash-ledger-and-invoice-expenses.md) | Plan109 y revisión9. Caja, Overview mensual y guardado con recibos en Facturas/OCR verificados en laboratorio | Partial/draft/unregistered/approval:null | Autoridad por Negocios. Adopción por entorno con evidencia propia |
+| Caja, categorías y egresos de factura | [cash-ledger-and-invoice-expenses](features/cash-ledger-and-invoice-expenses.md) | Caja, Overview mensual y egresos de Facturas/OCR | Cuatro consultas de solo lectura publicadas en la revisión 11 | `/business`, con ámbito por negocio |
+| Listas de Market | [market-shopping-lists](features/market-shopping-lists.md) | Editor y checklist compartido | Búsqueda y detalle paginado de solo lectura publicados en la revisión 4 | `/business`, con ámbito por negocio |
 | Negocios y colaboradores | [businesses-and-collaborators](features/businesses-and-collaborators.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Proveedores comerciales | [suppliers](features/suppliers.md); [ampliación candidata§42](features/product-price-calculator-and-invoice-binding.md#redondeo-división-y-contratos-manuales--solicitud2026-11-17) | use_ocr local con defaultfalse y filtro sólo OCR; QA final común registrada en evidencia2026-11-17 | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Contactos de proveedores | [supplier-contacts](features/supplier-contacts.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |

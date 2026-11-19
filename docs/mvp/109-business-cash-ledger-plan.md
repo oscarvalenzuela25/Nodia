@@ -1099,3 +1099,29 @@ listado, que conserva la búsqueda, el filtro y la página.
 En Chrome local se comprobó la alineación de las tarjetas, el orden de las
 columnas y el retorno del foco a la acción de la fila al cancelar, incluso
 si la búsqueda vuelve a montar esa fila.
+
+## 18. Cierre de CASH-001 — 2026-11-19
+
+El usuario confirmó que Caja de Negocios quedó lista. Se cierra CASH-001
+por el alcance entregado: categorías, ingresos y egresos, resumen mensual
+y egresos vinculados a facturas manuales y OCR. La integración se hizo por
+el [PR 52](https://github.com/oscarvalenzuela25/Nodia/pull/52) y la entrega
+operativa consta en el [CD 44233230612](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44233230612).
+Las pruebas de las secciones anteriores conservan su entorno y alcance.
+
+## 19. Consultas de Caja en NodiaAI — 2026-11-19
+
+Por solicitud del usuario, NodiaAI consulta categorías, movimientos y el
+resumen mensual mediante herramientas de solo lectura. Los puertos reutilizan
+las consultas nativas dentro de la transacción del gateway. Cada entrada
+requiere el negocio exacto. El detalle de un movimiento coteja también su
+pertenencia a ese negocio. Propietario y colaboradores siguen las reglas de
+acceso de Negocios y el superadministrador conserva el alcance de la política
+vigente. Las operaciones manuales de Caja y sus vínculos con Facturas/OCR
+conservan sus contratos.
+
+El listado devuelve los totales del conjunto filtrado antes de paginar y
+el resumen mensual usa el mes civil vigente de Santiago. La [ficha
+publicada](../nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md#consultas-de-solo-lectura-en-nodiaai)
+y la [evidencia de integración](../evidence/nodia-ai-business-reads-20261119.md)
+documentan las consultas, sus límites y el entorno comprobado.

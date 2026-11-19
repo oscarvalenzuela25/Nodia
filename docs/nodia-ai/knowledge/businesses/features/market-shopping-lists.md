@@ -4,13 +4,13 @@
   "document_id": "businesses.market-shopping-lists",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 3,
-  "document_status": "draft",
+  "revision": 4,
+  "document_status": "approved",
   "implementation": {
     "status": "implemented",
-    "notes": "Listas de Market disponible en el código de Server y Client. Incluye composición versionada, lista compartida y recibo recuperable. La ficha sigue como candidata y la adopción operativa se verifica por entorno."
+    "notes": "Función nativa entregada. NodiaAI reutiliza las consultas nativas autorizadas y proyecta sólo los datos de lectura declarados."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -36,14 +36,33 @@
     {
       "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ListsTab/ListsTab.tsx",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/business-shopping-list/shopping-lists-tool-family.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/business-shopping-list/shopping-list-scope.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-18",
-    "evidence_paths": ["docs/evidence/market-shopping-lists-20261118.md"],
-    "notes": "Pruebas con Nest compilado, JWT, PostgreSQL aislado y navegador. La actualización comprobó la migración y la protección ante pérdida de datos."
+    "checked_on": "2026-11-19",
+    "evidence_paths": [
+      "docs/evidence/market-shopping-lists-20261118.md",
+      "docs/evidence/nodia-ai-business-reads-20261119.md"
+    ],
+    "notes": "Las dos consultas usan el gateway compilado y el caso de uso nativo en PostgreSQL aislado con usuarios sintéticos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-business-reads-20261119.md",
+    "revision": 4,
+    "content_sha256": "68c5f9450d6734ca207824fa3d35b853789cfaa5019a5eedb5e74de6098001f8"
+  }
 }
 ---
 
@@ -76,11 +95,26 @@ recoge el flujo nativo, el contrato y las pruebas por entorno.
 | Marcar o desmarcar | Escritura nativa de una partida compartida | Client y Server | [Marca y control de revisión](../../../../mvp/110-market-shopping-lists-plan.md#4-contratos-http) |
 | Copiar | Lectura y copia local de nombres y cantidades | Client | [Flujo de copiado](../../../../mvp/110-market-shopping-lists-plan.md#1-flujo-aprobado) |
 
-Las operaciones se usan en **Negocios → Market → Listas**. La ficha registra
-el contexto de la función nativa y sigue como candidata a publicación.
+Las operaciones nativas se usan en **Negocios → Market → Listas**.
 Market agrupa también **Proveedores**, **Productos** y **Facturas**. La
 búsqueda por nombre queda encima de la tabla, con la misma presentación
 de los listados de Productos y Proveedores.
+
+## Consultas de solo lectura en NodiaAI
+
+- `nodia_business_shopping_lists_list` busca listas por nombre dentro de un
+  negocio autorizado. Devuelve una página de listas activas e inactivas con
+  su identidad y cantidad de partidas. Usa `nodia_businesses_list` si falta
+  resolver el negocio y el usuario tiene acceso a esa consulta.
+- `nodia_business_shopping_lists_get` abre una lista por su ID y el ID del
+  mismo negocio. Devuelve una página de partidas con nombre, cantidad,
+  disponibilidad en catálogo y marca de compra compartida. Para responder
+  «¿qué falta comprar?», usa las partidas sin marcar y consulta las páginas
+  que falten antes de presentar un recuento completo. Distingue la marca de
+  compra de la disponibilidad del producto.
+- Si hay varios negocios o listas que coinciden, pide al usuario que elija.
+  Si falta autorización, explica que se necesita el módulo Negocios y acceso
+  al negocio. El checklist manual permite crear, editar, marcar y desmarcar.
 
 ## Datos mínimos y resolución de dudas
 
@@ -119,7 +153,8 @@ Ver [carreras y fases](../../../../mvp/110-market-shopping-lists-plan.md#6-verif
 - [x] Maqueta y decisión de marcas compartidas confirmadas.
 - [x] Contratos, autorización y concurrencia comprobados con Server en laboratorio.
 - [x] Recorrido Client verificado en laboratorio.
-- [ ] Adopción y verificación funcional por entorno operativo.
+- [x] Integración local de las dos lecturas en NodiaAI con permisos por negocio.
+- [ ] Verificación operativa de NodiaAI por entorno y modalidad.
 
 ## Evolución y compatibilidad
 
@@ -127,3 +162,5 @@ Ver [carreras y fases](../../../../mvp/110-market-shopping-lists-plan.md#6-verif
 | --- | --- | --- |
 | 1 | Plan de Listas de Market a partir de la maqueta aprobada y la decisión de marcas compartidas. | Ficha candidata para validación documental. |
 | 2 | Función nativa, persistencia y verificación en laboratorio. | Candidata sin registrar, con adopción operativa pendiente. |
+| 3 | Ajustes visuales de búsqueda, editor y checklist. | Conserva el contrato de la función nativa. |
+| 4 | Búsqueda y detalle paginado en el chat por negocio. | Se publica el apartado de solo lectura con los dos contratos vinculados. |

@@ -1,25 +1,34 @@
 # Especificación del MVP — Nodia
 
+**NodiaAI consulta Listas de Market y Caja — 2026-11-19.** El
+[catálogo](40-nodia-ai-tool-catalog-v1.md#catálogo-histórico-y-extensiones-explícitas)
+publica seis consultas de solo lectura y sus apartados de conocimiento.
+El [ensayo de permisos](../evidence/nodia-ai-business-reads-20261119.md)
+verifica el gateway compilado con PostgreSQL aislado.
+
 **Noticias personales — 2026-11-18.** El circuito personal DEV quedó
 implementado y [verificado localmente](105-on-demand-tech-news.md#185-implementación-y-verificación-local).
 El [piloto daily.dev](105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev)
 se limita a un solo dueño en desarrollo. El acceso con PAT real se comprueba
 por proveedor. La evaluación de uso distribuido y OAuth queda separada. El
 [contrato HTTP](../features/news/http-contract.md) detalla la compatibilidad
-de la lectura pública y el [TODO](TODO.md#cola-actual) conserva la verificación.
+de la lectura pública. El [Plan105 §18.9](105-on-demand-tech-news.md#189-cierre-de-news-001--2026-11-19)
+registra el cierre de NEWS-001 por el alcance entregado.
 
 **Listas de Market — 2026-11-18.**
 [Plan110](110-market-shopping-lists-plan.md) registra el editor persistente,
 el copiado y el checklist compartido por negocio. La
 [evidencia](../evidence/market-shopping-lists-20261118.md) cubre navegador,
 Nest y PostgreSQL 16, incluida la actualización 56→57. El
-[TODO](TODO.md#cola-actual) conserva integración y verificación operativa.
+[Plan110 §10](110-market-shopping-lists-plan.md#10-cierre-de-lista-001--2026-11-19)
+registra la entrega y el cierre de LISTA-001.
 
 **Caja de Negocios — verificación integral CASH-07, 2026-11-17.**
 [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17)
 registra Caja, Overview, Facturas y confirmación OCR en laboratorio,
 incluidos QA móvil y PostgreSQL aislado. La CI se identifica por el SHA
-de entrega. El [TODO](TODO.md) conserva la adopción por entorno.
+de entrega. El [Plan109 §18](109-business-cash-ledger-plan.md#18-cierre-de-cash-001--2026-11-19)
+registra el despliegue y el cierre de CASH-001.
 
 **Topbar para Negocios y recarga desde el avatar — 2026-11-17.**
 [Estado de IA](../features/ai-providers/topbar-mode-health.md#estado-de-ia-para-negocios--2026-11-17)

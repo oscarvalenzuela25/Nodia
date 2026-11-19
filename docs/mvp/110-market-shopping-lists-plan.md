@@ -219,3 +219,25 @@ se concentra en la presentación y los controles de Client.
 Chrome verificó el orden de acciones y un borrador de ocho partidas con
 desplazamiento interno en escritorio y a 390 px. El drawer mostró el
 progreso en su cabecera y una zona de marcado de ancho completo.
+
+## 10. Cierre de LISTA-001 — 2026-11-19
+
+El usuario confirmó que Listas de Market quedó lista. Se cierra LISTA-001
+por el alcance entregado de alta, edición, actividad, copiado y checklist
+compartido. El [PR 60](https://github.com/oscarvalenzuela25/Nodia/pull/60)
+integró la funcionalidad y el
+[CD 44365035546](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44365035546)
+completó la migración 56→57, el backend y la publicación de Client, según
+el [Plan99 §36](99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase).
+
+## 11. Consultas de Listas de Market en NodiaAI — 2026-11-19
+
+Por solicitud del usuario, NodiaAI busca listas por nombre y consulta las
+partidas de una lista por su ID y el negocio al que pertenece. Reutiliza
+los lectores nativos en la transacción del gateway. El detalle pagina las
+partidas e informa cantidades, disponibilidad de catálogo y marcas vigentes
+del checklist. Las operaciones de edición y marcado siguen en la app.
+
+La [ficha publicada](../nodia-ai/knowledge/businesses/features/market-shopping-lists.md#consultas-de-solo-lectura-en-nodiaai)
+y la [evidencia de integración](../evidence/nodia-ai-business-reads-20261119.md)
+documentan el alcance de consulta y las comprobaciones por negocio.
