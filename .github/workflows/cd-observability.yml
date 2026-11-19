@@ -1,0 +1,62 @@
+name: Report Nodia delivery to Grafana
+
+on:
+  workflow_run:
+    workflows: [Nodia production delivery]
+    types: [completed]
+    branches: [master]
+
+permissions: {}
+
+jobs:
+  report:
+    if: >-
+      github.repository == 'oscarvalenzuela25/Nodia' &&
+      github.ref == 'refs/heads/development' && github.run_attempt == 1 &&
+      github.event.workflow_run.repository.id == github.repository_id &&
+      github.event.workflow_run.head_repository.id == github.repository_id &&
+      github.event.workflow_run.path == '.github/workflows/cd.yml' &&
+      github.event.workflow_run.event == 'workflow_dispatch' &&
+      github.event.workflow_run.head_branch == 'master' &&
+      github.event.workflow_run.status == 'completed' && github.event.workflow_run.run_attempt == 1 &&
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
+    environment:
+      name: cd-observability
+      deployment: false
+    steps:
+      - name: Check out the reporter from the default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retrieve only the sanitized delivery receipt from the completed run
+        id: receipt
+        continue-on-error: true
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: delivery-receipt-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}
+          path: ${{ runner.temp }}/nodia-delivery-receipt
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.receipt.outcome == 'success'
+        with:
+          node-version: '24.22.2'
+          package-manager-cache: false
+      - name: Send the delivery event to Loki
+        if: steps.receipt.outcome == 'success'
+        continue-on-error: true
+        env:
+          NODIA_CD_LOKI_URL: ${{ vars.NODIA_CD_LOKI_URL }}
+          NODIA_CD_LOKI_USER: ${{ vars.NODIA_CD_LOKI_USER }}
+          NODIA_CD_LOKI_TOKEN: ${{ secrets.NODIA_CD_LOKI_TOKEN }}
+          NODIA_CD_RUN_ID: ${{ github.event.workflow_run.id }}
+          NODIA_CD_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          NODIA_CD_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: node ops/ci/cd-observability.mjs "$RUNNER_TEMP/nodia-delivery-receipt/delivery-receipt.json"
