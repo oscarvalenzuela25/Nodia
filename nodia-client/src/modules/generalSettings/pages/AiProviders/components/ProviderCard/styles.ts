@@ -15,16 +15,8 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   borderRadius: Number(theme.shape.borderRadius) * 2,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: theme.palette.background.paper,
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 4px 20px 0 rgba(0, 0, 0, 0.4)"
-      : "0 4px 20px 0 rgba(0, 0, 0, 0.05)",
-  transition: theme.transitions.create(["box-shadow", "border-color"], {
-    duration: theme.transitions.duration.shorter,
-  }),
-  "&:hover": {
-    borderColor: alpha(theme.palette.primary.main, 0.4),
-  },
+  backgroundImage: "none",
+  boxShadow: theme.shadows[1],
   minWidth: 0,
   overflowWrap: "anywhere",
   [theme.breakpoints.down("sm")]: {
@@ -99,9 +91,9 @@ export const StatusPill = styled(Box, {
 }>(({ theme, statusType }) => {
   let mainColor = theme.palette.success.main;
   if (statusType === "expired" || statusType === "degraded") {
-    mainColor = "#f59e0b";
+    mainColor = theme.palette.warning.main;
   } else if (statusType === "unconfigured" || statusType === "unverified") {
-    mainColor = theme.palette.mode === "dark" ? "#94a3b8" : "#64748b";
+    mainColor = theme.palette.text.secondary;
   }
 
   return {
@@ -115,20 +107,18 @@ export const StatusPill = styled(Box, {
     letterSpacing: "0.04em",
     textTransform: "uppercase",
     backgroundColor: alpha(mainColor, 0.12),
-    color: mainColor,
+    color: theme.palette.text.primary,
     border: `1px solid ${alpha(mainColor, 0.3)}`,
+    "&::before": {
+      content: '""',
+      width: 7,
+      height: 7,
+      flexShrink: 0,
+      borderRadius: "50%",
+      backgroundColor: mainColor,
+    },
   };
 });
-
-export const StatusDot = styled("span", {
-  shouldForwardProp: (prop) => prop !== "color",
-})<{ color: string }>(({ color }) => ({
-  width: 7,
-  height: 7,
-  borderRadius: "50%",
-  backgroundColor: color,
-  boxShadow: `0 0 6px ${color}`,
-}));
 
 export const MetricsGrid = styled(Box)(({ theme }) => ({
   display: "grid",
@@ -223,6 +213,22 @@ export const CodeBadge = styled("span")(({ theme }) => ({
   maxWidth: "100%",
   overflowWrap: "anywhere",
 }));
+
+export const ModeStatus = styled("span", {
+  shouldForwardProp: (prop) => prop !== "tone",
+})<{ tone: "success" | "error" | "warning" | "neutral" }>(({ theme, tone }) => {
+  const accent = tone === "neutral" ? theme.palette.text.secondary : theme.palette[tone].main;
+
+  return {
+    ...theme.typography.caption,
+    fontWeight: 650,
+    padding: theme.spacing(0.25, 0.75),
+    borderRadius: 6,
+    border: `1px solid ${alpha(accent, 0.24)}`,
+    backgroundColor: alpha(accent, 0.1),
+    color: theme.palette.text.primary,
+  };
+});
 
 export const CardActionsRow = styled(Box)(({ theme }) => ({
   display: "flex",

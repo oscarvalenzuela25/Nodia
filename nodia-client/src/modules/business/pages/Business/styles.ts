@@ -1,11 +1,14 @@
-import { styled } from "@mui/material/styles";
+import { alpha, styled } from "@mui/material/styles";
 import { Box, Card, Typography, FormControlLabel, Switch } from "@mui/material";
+import { Link } from "react-router";
 
 export const PageHeader = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1),
+  paddingBlockEnd: theme.spacing(2),
+  borderBlockEnd: `1px solid ${theme.palette.divider}`,
 }));
 
 export const HeaderTopBar = styled(Box)(({ theme }) => ({
@@ -28,6 +31,16 @@ export const PageTitleContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: theme.spacing(1.5),
+  minWidth: 0,
+  "& > .MuiSvgIcon-root": {
+    boxSizing: "border-box",
+    width: 44,
+    height: 44,
+    flexShrink: 0,
+    padding: theme.spacing(1.25),
+    borderRadius: 12,
+    backgroundColor: alpha(theme.palette.primary.main, 0.10),
+  },
 }));
 
 export const PageTitle = styled(Typography)(({ theme }) => ({
@@ -41,6 +54,7 @@ export const PageTitle = styled(Typography)(({ theme }) => ({
   },
   color: theme.palette.text.primary,
   fontWeight: 700,
+  overflowWrap: "anywhere",
 }));
 
 export const PageSubtitle = styled(Typography)(({ theme }) => ({
@@ -148,38 +162,33 @@ export const CardsGrid = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const BusinessCard = styled(Card)(({ theme }) => {
-  const borderColor = theme.palette.divider;
-
-  return {
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: theme.spacing(2.5),
-    minWidth: 0,
-    [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5), "& button": { minHeight: 44 }, "& .MuiIconButton-root": { minWidth: 44 } },
-    borderRadius: 12,
-    border: `1px solid ${borderColor}`,
-    boxShadow:
-      theme.palette.mode === "dark"
-        ? "0 2px 8px rgba(0, 0, 0, 0.4)"
-        : "0 2px 10px rgba(0, 0, 0, 0.04)",
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? "rgba(255, 255, 255, 0.02)"
-        : "#ffffff",
-    "&:hover": {
-      transform: "translateY(-3px)",
-      boxShadow:
-        theme.palette.mode === "dark"
-          ? "0 8px 24px rgba(0, 0, 0, 0.6)"
-          : "0 8px 24px rgba(0, 0, 0, 0.08)",
-      borderColor: theme.palette.primary.main,
-    },
-  };
-});
+export const BusinessCard = styled(Card)(({ theme }) => ({
+  position: "relative",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  padding: theme.spacing(2.5),
+  minWidth: 0,
+  [theme.breakpoints.down("sm")]: { padding: theme.spacing(1.5), "& button": { minHeight: 44 }, "& .MuiIconButton-root": { minWidth: 44 } },
+  borderRadius: 12,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: `linear-gradient(${alpha(theme.palette.primary.main, 0.04)}, transparent 90px)`,
+  boxShadow: "none",
+  transition: theme.transitions.create(["border-color", "box-shadow"], {
+    duration: theme.transitions.duration.shorter,
+  }),
+  "&:hover, &:focus-within": {
+    boxShadow: `0 6px 16px ${alpha(theme.palette.common.black, 0.10)}`,
+    borderColor: alpha(theme.palette.primary.main, 0.6),
+  },
+  "@media (hover: hover) and (prefers-reduced-motion: no-preference)": {
+    transition: theme.transitions.create(["border-color", "box-shadow", "transform"], {
+      duration: theme.transitions.duration.shorter,
+    }),
+    "&:hover": { transform: "translateY(-2px)" },
+  },
+}));
 
 export const CardHeader = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -211,13 +220,16 @@ export const StatusDot = styled(Box, {
     : "0 0 8px rgba(211, 47, 47, 0.5)",
 }));
 
-export const BusinessName = styled(Typography)(({ theme }) => ({
+export const BusinessName = styled(Link)(({ theme }) => ({
   ...theme.typography.h6,
   fontWeight: 600,
   color: theme.palette.text.primary,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
+  textDecoration: "none",
+  "&:hover, &:focus-visible": { textDecoration: "underline" },
+  "&:focus-visible": { outline: "2px solid CanvasText", outlineOffset: 2 },
   [theme.breakpoints.down("sm")]: {
     whiteSpace: "normal",
     overflowWrap: "anywhere",

@@ -57,7 +57,7 @@ const Topbar: FC<Props> = ({
       {/* Mobile Drawer Toggle */}
       <IconButton
         onClick={onDrawerToggle}
-        sx={{ display: { lg: "none" }, mr: "auto" }}
+        sx={{ display: { lg: "none" }, width: 44, height: 44, mr: "auto" }}
         color="inherit"
         aria-label={t("toggle_drawer")}
       >
@@ -71,7 +71,9 @@ const Topbar: FC<Props> = ({
           display: { xs: "none", lg: "inline-flex" },
           mr: "auto",
           transform: desktopCollapsed ? "rotate(180deg)" : "none",
-          transition: theme.transitions.create("transform"),
+          "@media (prefers-reduced-motion: no-preference)": {
+            transition: theme.transitions.create("transform"),
+          },
         }}
         color="inherit"
         aria-label={t("collapse_drawer")}
@@ -136,7 +138,7 @@ const Topbar: FC<Props> = ({
                 </ListItemIcon>
                 <ListItemText>{t("refresh_information")}</ListItemText>
               </MenuItem>
-              <MenuItem onClick={handleLogout} disabled={isBusy}>
+              <MenuItem onClick={handleLogout} disabled={isBusy} sx={{ minHeight: 44 }}>
                 <ListItemIcon>
                   <LogoutOutlinedIcon fontSize="small" />
                 </ListItemIcon>
@@ -149,7 +151,7 @@ const Topbar: FC<Props> = ({
             disabled={isBusy}
             variant="contained"
             color="primary"
-            sx={{ minWidth: { xs: 0, sm: 64 }, px: { xs: 1, sm: 2 } }}
+            sx={{ minWidth: { xs: 44, sm: 64 }, minHeight: { xs: 44 }, px: { xs: 1, sm: 2 } }}
             onClick={() => navigate("/login")}
           >
             {t("login")}

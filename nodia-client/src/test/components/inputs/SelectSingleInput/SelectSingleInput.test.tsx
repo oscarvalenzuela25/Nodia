@@ -70,6 +70,33 @@ describe("SelectSingleInput", () => {
     expect(handleChange).toHaveBeenCalledWith("roles");
   });
 
+  it("can open on the selected option and still lets the user focus search", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <SelectSingleInput
+        label="Módulo"
+        options={options}
+        value="roles"
+        onChange={onChange}
+        searchPlaceholder="Buscar módulo..."
+        autoFocusSearch={false}
+      />
+    );
+    const trigger = screen.getByRole("button", { name: "Módulo" });
+    trigger.focus();
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByRole("option", { name: "Módulo de Roles" })).toHaveFocus();
+    await user.keyboard("{ArrowDown}{Enter}");
+    expect(onChange).toHaveBeenCalledWith("settings");
+    expect(trigger).toHaveFocus();
+
+    await user.keyboard("{Enter}");
+    await user.click(screen.getByPlaceholderText("Buscar módulo..."));
+    expect(screen.getByRole("textbox")).toHaveFocus();
+  });
+
   it("displays selected value and allows clearing", async () => {
     const handleChange = vi.fn();
     const user = userEvent.setup();

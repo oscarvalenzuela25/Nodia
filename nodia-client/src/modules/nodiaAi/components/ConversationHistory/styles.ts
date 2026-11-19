@@ -19,9 +19,12 @@ export const ConversationRow = styled(ListItem, {
   minWidth: 0,
   borderRadius: theme.shape.borderRadius,
   marginBottom: theme.spacing(0.5),
-  border: `1px solid ${active ? alpha(theme.palette.primary.main, 0.2) : "transparent"}`,
-  background: active ? alpha(theme.palette.primary.main, 0.075) : "transparent",
-  "&:hover": { background: alpha(theme.palette.text.primary, active ? 0.06 : 0.035) },
+  border: `1px solid ${active ? alpha(theme.palette.primary.main, 0.26) : "transparent"}`,
+  backgroundColor: active ? alpha(theme.palette.primary.main, 0.09) : "transparent",
+  boxShadow: active ? `inset 2px 0 ${theme.palette.primary.main}` : "none",
+  "@media (hover: hover)": {
+    "&:hover": { backgroundColor: active ? alpha(theme.palette.primary.main, 0.13) : theme.palette.action.hover },
+  },
   "& .MuiListItemButton-root": {
     width: "100%",
     minWidth: 0,
@@ -32,6 +35,10 @@ export const ConversationRow = styled(ListItem, {
     "& .MuiListItemText-primary": { fontSize: "0.875rem", fontWeight: active ? 650 : 500, lineHeight: 1.5 },
     "& .MuiListItemText-secondary": { fontSize: "0.75rem", marginTop: theme.spacing(0.5), lineHeight: 1.5 },
     "&.Mui-selected, &.Mui-selected:hover, &:hover": { background: "transparent" },
+    "&.Mui-focusVisible, &:focus-visible": {
+      outline: `2px solid ${theme.palette.text.primary}`,
+      outlineOffset: -2,
+    },
   },
 }));
 

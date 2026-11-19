@@ -63,6 +63,7 @@ import {
   Actions,
   Chat,
   ChatNotices,
+  DrawerHistory,
   Header,
   History,
   Messages,
@@ -482,8 +483,7 @@ function ChatPage() {
     <ConversationHistory
       collapsed={collapsed}
       toggleRef={inDrawer ? undefined : historyTrigger}
-      onToggleCollapsed={() => {
-        if (!desktop) { setOverlay(inDrawer ? null : "history"); return; }
+      onToggleCollapsed={inDrawer ? undefined : () => {
         if (messageScroll.current) transcriptAnchor.current = captureTranscriptAnchor(messageScroll.current);
         setHistoryVisible(value => !value);
       }}
@@ -845,18 +845,18 @@ function ChatPage() {
         open={overlay === "history" && !desktop}
         onClose={() => setOverlay(null)}
         slotProps={{
-          paper: { id: desktop ? undefined : "nodia-ai-history", "aria-label": t("conversations"), sx: { width: "min(100%, 320px)", p: 2 } },
+          paper: { id: desktop ? undefined : "nodia-ai-history", "aria-label": t("conversations"), sx: { width: "min(100%, 320px)", overflowY: "hidden" } },
           transition: { onExited: () => { if (!operation && overlay === null) historyTrigger.current?.focus(); } },
         }}
       >
         <Button
           variant="contained"
           onClick={() => setOverlay(null)}
-          sx={{ minHeight: 44 }}
+          sx={{ minHeight: 44, flexShrink: 0, m: 2, mb: 0 }}
         >
           {t("close")}
         </Button>
-        {!desktop && overlay === "history" && historyContent(false, true)}
+        {!desktop && overlay === "history" && <DrawerHistory>{historyContent(false, true)}</DrawerHistory>}
       </Drawer>
       <Preferences
         key={`preferences:${chatId ?? "new"}`}

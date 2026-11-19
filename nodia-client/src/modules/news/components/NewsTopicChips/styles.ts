@@ -37,7 +37,7 @@ export const TopicChip = styled(Button)(({ theme }) => ({
     },
   },
   "&.Mui-focusVisible": {
-    outline: `2px solid ${theme.palette.primary.main}`,
+    outline: "2px solid CanvasText",
     outlineOffset: 3,
   },
   "@media (prefers-reduced-motion: reduce)": {

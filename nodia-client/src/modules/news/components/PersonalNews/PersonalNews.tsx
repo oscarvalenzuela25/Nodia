@@ -6,6 +6,7 @@ import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
+import { NewsIntroduction, NewsMasthead, NewsRetryAlert, NewsTitle } from "../../styles";
 import NewsInitialLoading from "../NewsInitialLoading";
 import PersonalArticleCard from "./PersonalArticleCard";
 import PersonalNewsConnectionDialog from "./PersonalNewsConnectionDialog";
@@ -15,7 +16,7 @@ import { allPersonalTopics, getPersonalReading, type PersonalTopic } from "./top
 import { personalProviderSchema, type PersonalProvider } from "./types";
 import { usePersonalNews } from "./usePersonalNews";
 import {
-  EmptyReading, PersonalArticleList, PersonalRoot, ProviderMark, ReadingFilters, SourceActions,
+  ConnectionState, EmptyReading, PersonalArticleList, PersonalRoot, ProviderMark, ReadingFilters, SourceActions,
   SourceCard, SourceGrid,
 } from "./styles";
 
@@ -95,12 +96,10 @@ export default function PersonalNews({ actorKey }: { actorKey: string }) {
 
   return (
     <PersonalRoot aria-labelledby={`${id}-title`} aria-busy={busy}>
-      <header>
-        <Typography component="h1" variant="h4" id={`${id}-title`} sx={{ fontWeight: 700, mb: 1 }}>
-          {t("news:personal_title")}
-        </Typography>
-        <Typography color="text.secondary">{t("news:personal_subtitle")}</Typography>
-      </header>
+      <NewsMasthead>
+        <NewsTitle id={`${id}-title`}>{t("news:personal_title")}</NewsTitle>
+        <NewsIntroduction>{t("news:personal_subtitle")}</NewsIntroduction>
+      </NewsMasthead>
 
       <PersonalNewsPanel title={t("news:personal_sources")}>
         <Typography variant="body2" color="text.secondary">
@@ -108,13 +107,13 @@ export default function PersonalNews({ actorKey }: { actorKey: string }) {
         </Typography>
         {connections.isPending && !connections.data && <NewsInitialLoading />}
         {connections.isError && (
-          <Alert severity="error" action={
+          <NewsRetryAlert severity="error" action={
             <Button variant="outlined" color="inherit" size="small" disabled={busy} onClick={() => void connections.refetch()}>
               {t("core:retry")}
             </Button>
           }>
             {t("news:personal_connections_failed")}
-          </Alert>
+          </NewsRetryAlert>
         )}
         {connections.data && (
           <SourceGrid>
@@ -139,12 +138,9 @@ export default function PersonalNews({ actorKey }: { actorKey: string }) {
                       >
                         {name}
                       </Typography>
-                      <Typography
-                        component="p" variant="caption" role="status"
-                        color={connected ? "success.main" : "text.secondary"}
-                      >
+                      <ConnectionState role="status" data-connected={connected}>
                         {t(`news:personal_state_${source.state}`)}
-                      </Typography>
+                      </ConnectionState>
                     </div>
                   </Stack>
                   <Typography variant="body2" color="text.secondary">
@@ -296,14 +292,14 @@ export default function PersonalNews({ actorKey }: { actorKey: string }) {
         {(connections.isPending || (readingProvider && articles.isPending)) && <NewsInitialLoading />}
         {articles.isFetching && articles.data && <LinearProgress aria-label={t("news:loading")} />}
         {readingError && (
-          <Alert severity="error" action={
+          <NewsRetryAlert severity="error" action={
             <Button variant="outlined" color="inherit" size="small" disabled={busy}
               onClick={() => void (readingConnectionError ? connections.refetch() : articles.refetch())}>
               {t("core:retry")}
             </Button>
           }>
             {t(readingConnectionError ? "news:personal_connections_failed" : "news:personal_articles_failed")}
-          </Alert>
+          </NewsRetryAlert>
         )}
         {readingReady && !readingError && reading.items.length === 0 && (
           <EmptyReading role="status">

@@ -5,7 +5,7 @@ import useGeneralSettingsStore from "../../../../store/generalSettings/generalSe
 import { useState, useCallback, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { Box, Tab, Tabs, useMediaQuery } from "@mui/material";
+import { Box, Tab, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
@@ -14,6 +14,7 @@ import FinanceResourceTab from "../../components/FinanceResourceTab";
 import { useFinanceBusy } from "../../infrastructure/useServices";
 import type { FinanceQuery, FinanceResource } from "../../types";
 import {
+  FinanceTabs,
   PageHeader,
   PageTitle,
   PageSubtitle,
@@ -95,20 +96,16 @@ const FinancePageContent = ({
           }}
           disabled={busy}
           clearable={false}
+          autoFocusSearch={false}
           fullWidth
         />
       ) : (
-        <Tabs
+        <FinanceTabs
           value={tab}
           onChange={changeTab}
           variant="scrollable"
           scrollButtons="auto"
           allowScrollButtonsMobile
-          sx={{
-            minWidth: 0,
-            "& .MuiTab-root": { minHeight: 44 },
-            "& .MuiTabs-scrollButtons": { width: 44 },
-          }}
           aria-label={t("finance:title")}
         >
           {TABS.map((value) => (
@@ -121,7 +118,7 @@ const FinancePageContent = ({
               aria-controls={`finance-panel-${value}`}
             />
           ))}
-        </Tabs>
+        </FinanceTabs>
       )}
       <Box
         sx={{ minWidth: 0 }}

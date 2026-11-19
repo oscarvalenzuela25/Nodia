@@ -137,9 +137,9 @@
    - Logotipo centrado arriba con `Karmatic Arcade` a 48px y gradiente de marca.
    - Ítems de navegación con íconos Outlined (24px) alineados a la izquierda.
    - Grupos colapsables con flecha rotatoria `KeyboardArrowDownIcon`.
-   - Estado seleccionado: Fondo con gradiente índigo y texto en alto contraste.
+   - Estado seleccionado: Fondo `primary.main` y texto e icono `primary.contrastText`. Un borde interior marca hover sobre la opción activa.
 2. **Topbar (Desktop)**:
-   - Altura: `64px`, `padding: 16px 32px`, alineado a la derecha, sin sombras pesadas.
+   - Altura mínima de `64px` y padding lateral de `32px` en escritorio. La superficie `background.paper` y el divisor interior inferior delimitan la barra superior.
    - Botón de colapso a la izquierda (`ArrowCircleLeftOutlinedIcon`).
    - Selectores a la derecha: Idioma (`ES / EN`), Tema (`Sol / Luna`), Avatar circular con menú de usuario.
 3. **Área Principal (`PageContent`)**:
@@ -179,7 +179,7 @@
    - **Regla de auto-cierre**: Al pulsar cualquier enlace de navegación (`Inicio`, sub-módulos, negocios), el drawer **debe cerrarse automáticamente** (`onDrawerToggle()`).
    - Ancho: `272px` (ocupa máximo `85vw` en pantallas muy reducidas).
 2. **Topbar (Mobile)**:
-   - Altura: `56px`, `padding: theme.spacing(1.5, 2)` (12px vertical, 16px horizontal).
+   - Altura mínima de `56px` y padding lateral de `16px`. La fila de indicadores puede aumentar la altura.
    - Icono de menú hamburguesa (`MenuOutlinedIcon`, touch target `44x44px`) a la izquierda para desplegar el drawer.
    - Controles compactos a la derecha con gap reducido (`spacing={1}`).
 3. **Área Principal (`PageContent`) en Móvil**:
@@ -193,11 +193,12 @@
 ### 6.1 Tarjeta de Módulo / Dashboard (`SettingsCard`)
 - **Uso**: Pantalla Home / Lanzador de aplicaciones.
 - **Grilla Responsive**: `Grid size={{ xs: 12, sm: 6, md: 3 }}` (1 columna en móvil, 2 en tablet, 4 en desktop).
+- **Lectura móvil**: Icono a la izquierda del título y de la descripción. El skeleton conserva esa distribución y las mismas columnas por breakpoint.
 - **Estructura**:
   - `CardIconWrapper`: Cuadro de `44x44px`, border-radius de `12px`, fondo translúcido `rgba(129, 140, 248, 0.14)` y color de ícono `#818cf8`.
-  - `CardTitle`: Título en `1.25rem` (h6), font-weight 600, color `#818cf8`.
-  - `CardDescription`: Texto en `0.875rem` (body2), color `#cccccc`, línea de altura 1.5 (se omite limpiamente si no hay descripción).
-- **Interacción**: Hover en desktop eleva `-4px` y activa glow; en mobile el tap activa retroalimentación visual inmediata.
+  - `CardTitle`: Título en `1.25rem` (h6), font-weight 600, color `text.primary`.
+  - `CardDescription`: Texto en `0.875rem` (body2), color `text.secondary`, línea de altura 1.5. Se omite si no hay descripción.
+- **Interacción**: Hover y foco realzan borde e icono. El foco tiene un contorno visible y la pulsación atenúa el fondo. La tarjeta conserva su posición.
 
 ### 6.2 Tarjeta de Negocio (`BusinessCard`)
 - **Uso**: Listado de negocios en `/tools/business`.
@@ -228,6 +229,7 @@
   - **Móvil (`xs`)**: Muestra **únicamente los iconos** con tooltip y `aria-label` accesible (`sx={{ display: { xs: "none", sm: "inline" } }}` para el texto). Esto evita que el grupo de botones desborde los 360px de la pantalla móvil.
 
 ### 6.5 Modales y Diálogos (`BaseModal`, `ConfirmDialog`)
+- `BaseModal` delimita cabecera y acciones mediante divisores interiores. La cabecera toma un tinte de la paleta activa y el pie agrupa las acciones con un fondo tenue.
 - **Márgenes Externos**: Mínimo `16px` respecto a los bordes de la pantalla (`maxWidth: min(${targetWidth}px, calc(100vw - 32px))`).
 - **Paddings Internos**:
   - `ModalHeader`: `16px` en móvil (`theme.spacing(2, 2, 1.5, 2)`), `24px` en desktop (`theme.spacing(2.5, 3, 1.5, 3)`).
@@ -703,11 +705,12 @@ y [evidencia](../docs/evidence/nodia-ai-ux-upgrade-20261115.md) registran el nue
 patrón local. No implica adopción del entorno, aprobación o inferencia nueva.
 
 - La página de conversación opta por `data-page-layout="conversation"`.
-  BaseLayout utiliza100dvh y una cadena flex/min-height0 a través de PageContent
-  y los wrappers explícitos `data-route-guard`/`data-route-view` de GuardStrict.
-  Conservar avisos de autorización e inert; no aplicar esta altura a todas las
-  páginas ni sumar offsets por breakpoint o mínimos520/580px. Padding y reserva
-  MobileBottomNav/safe area siguen siendo propiedad del layout existente.
+  BaseLayout utiliza `100dvh` y reduce esa altura por la oclusión observada
+  cuando el teclado abre en móvil. Por debajo de md, PageContent permite desplazamiento
+  vertical si el contenido mínimo supera el espacio disponible. Guard y vista
+  conservan ese mínimo y el padding inferior sigue dentro del área desplazable.
+  Conservar los avisos de autorización, `inert` y los scrolls internos del chat.
+  La reserva del dock y safe area son propiedad del layout.
 - Historial local plegable en desktop y overlay móvil, con el mismo dueño de
   filtros/páginas/URL. El viewport usa ancla por messageId/offset y seguimiento
   condicionado al fondo; ResizeObserver local se desconecta al desmontar. No
@@ -1243,3 +1246,44 @@ trabajo síncrono inicial. Estos datos de laboratorio no miden transferencia,
 latencia del navegador, INP ni aceptación productiva; la geometría/continuidad
 responsive y los checks Client se registran por separado en
 [evidencia108](../docs/evidence/user-theme-presets-20261116.md).
+
+## 11. Retoque transversal — 2026-11-18
+
+La navegación, el lanzador y las pantallas públicas comparten superficies
+de la paleta activa. El foco de los controles MUI usa un contorno de 2 px
+y las opciones de menú lo dibujan hacia dentro. El modo seleccionado se
+aplica al elemento raíz para que la interfaz nativa acompañe al tema.
+El ancho animado de la navegación y el giro de su control sólo se aplican
+si el usuario permite movimiento. Las páginas de sistema usan un panel
+estático y acciones de ancho completo en móvil.
+
+En Negocios, Finanzas y Reservas, los encabezados dan prioridad al título
+y los paneles resumen distinguen sus indicadores. Las pestañas de Negocios
+y Reservas destacan la selección mediante fondo y subrayado. Los listados
+administrativos comparten títulos, iconos y tratamiento de panel. Las tablas
+conservan la cabecera y el scroll de la sección 6.3. Los valores alineados a
+la derecha y el rango paginado usan cifras tabulares.
+
+Noticias usa la misma jerarquía editorial para la lectura pública y
+personal. NodiaAI distingue compositor, historial seleccionado y mensajes
+con tonos de la paleta. Teacher diferencia tarjetas de planes, paso activo
+y panel de estudio. Los controles siguen las reglas de cada módulo.
+
+[Verificación local y alcance](../docs/evidence/ui-refresh-20261118.md).
+
+### 11.1 Revisión móvil — 2026-11-18
+
+En xs, el encabezado ofrece controles de al menos 44 × 44 px. El documento y
+PageContent de conversación usan la reserva del dock como distancia de scroll
+para el foco. El mismo observador de viewport visual desplaza los avisos y
+ajusta conversación y modales ante oclusión con un editable enfocado. Al
+cerrar el editor de un acceso, el foco espera que el dock vuelva a mostrarse.
+
+Los selectores compactos de sección abren en la opción activa y conservan la
+búsqueda a demanda. Market y Reservas usan esa presentación en xs y las
+pestañas desde 600 px. Los formularios administrativos apilan sus acciones de
+ancho completo en móvil. Noticias coloca el reintento debajo del mensaje.
+Teacher conserva las etiquetas de los pasos y NodiaAI mantiene el compositor
+alcanzable con poco alto, dejando el exceso de contenido en scroll.
+
+[Verificación móvil](../docs/evidence/mobile-ui-review-20261118.md).

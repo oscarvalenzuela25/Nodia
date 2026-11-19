@@ -21,12 +21,25 @@ import useMobileNavigation from "./hooks/useMobileNavigation";
 import useShortcutDialog from "./hooks/useShortcutDialog";
 import { Dock, EditBadge, HomeLink, LockButton, MOBILE_NAV_RESERVED_HEIGHT, NavRoot, RoundButton, RoundLink, Slot, SlotLabel } from "./styles";
 
-const keyboardSnapshot = () => Boolean(window.visualViewport && window.innerHeight - window.visualViewport.height > 120 &&
-  document.activeElement?.matches("input, textarea, select, [contenteditable=true]"));
+const keyboardInsetSnapshot = () => {
+  const viewport = window.visualViewport;
+  if (!viewport || viewport.scale !== 1 || !document.activeElement?.matches("input, textarea, select, [contenteditable=true]")) {
+    return 0;
+  }
+  const inset = Math.round(window.innerHeight - viewport.height);
+  return inset > 120 ? inset : 0;
+};
 const subscribeKeyboard = (notify: () => void) => {
-  window.visualViewport?.addEventListener("resize", notify);
+  const viewport = window.visualViewport;
+  viewport?.addEventListener("resize", notify);
+  window.addEventListener("resize", notify);
   document.addEventListener("focusin", notify); document.addEventListener("focusout", notify);
-  return () => { window.visualViewport?.removeEventListener("resize", notify); document.removeEventListener("focusin", notify); document.removeEventListener("focusout", notify); };
+  return () => {
+    viewport?.removeEventListener("resize", notify);
+    window.removeEventListener("resize", notify);
+    document.removeEventListener("focusin", notify);
+    document.removeEventListener("focusout", notify);
+  };
 };
 export default function MobileBottomNav() {
   const { t, i18n } = useTranslation();
@@ -42,15 +55,16 @@ export default function MobileBottomNav() {
   const editorLoading = loadingSlot !== null;
   const [editing, setEditing] = useState<{ slotIndex: number; ownerId: string; sessionVersion: number } | null>(null);
   const returnFocus = useRef<{ element: HTMLButtonElement; ownerId: string; sessionVersion: number; navigationKey: string } | null>(null);
-  const keyboardOpen = useSyncExternalStore(subscribeKeyboard, keyboardSnapshot, () => false);
+  const keyboardInset = useSyncExternalStore(subscribeKeyboard, keyboardInsetSnapshot, () => 0);
+  const keyboardOpen = keyboardInset > 0;
   const busy = !ready || !isLoaded || context.isFetching || context.isError;
   const currentEditing = editing && editing.ownerId === ownerId && editing.sessionVersion === sessionVersion ? editing.slotIndex : null;
   useEffect(() => {
-    if (currentEditing !== null || editorLoading || !returnFocus.current) return;
+    if (currentEditing !== null || editorLoading || keyboardOpen || !returnFocus.current) return;
     const trigger = returnFocus.current;
     returnFocus.current = null;
     if (trigger.ownerId === ownerId && trigger.sessionVersion === sessionVersion && trigger.navigationKey === location.key && trigger.element.isConnected) trigger.element.focus();
-  }, [currentEditing, editorLoading, ownerId, sessionVersion, location.key]);
+  }, [currentEditing, editorLoading, keyboardOpen, ownerId, sessionVersion, location.key]);
   const openEditor = (slotIndex: number, element: HTMLButtonElement) => {
     if (!ready || context.isFetching || !ownerId) return;
     returnFocus.current = { element, ownerId, sessionVersion, navigationKey: location.key };
@@ -87,7 +101,14 @@ export default function MobileBottomNav() {
   };
   return <>
     <GlobalStyles styles={theme => ({ [theme.breakpoints.down("sm")]: {
-      "[data-sileo-viewport][data-position^=bottom]": { bottom: `calc(${theme.spacing(2)} + ${MOBILE_NAV_RESERVED_HEIGHT})` },
+      html: {
+        "--nodia-keyboard-inset": `${keyboardInset}px`,
+        "--nodia-dock-reserve": keyboardOpen ? "0px" : MOBILE_NAV_RESERVED_HEIGHT,
+        scrollPaddingBottom: keyboardOpen ? `${keyboardInset}px` : MOBILE_NAV_RESERVED_HEIGHT,
+      },
+      "[data-sileo-viewport][data-position^=bottom]": {
+        bottom: `calc(${theme.spacing(2)} + ${keyboardOpen ? `${keyboardInset}px` : MOBILE_NAV_RESERVED_HEIGHT})`,
+      },
     } })} />
     <NavRoot sx={keyboardOpen ? { display: "none" } : undefined} data-testid="mobile-bottom-nav">
       {(editorLoading || editorFailed || readError || context.isError || busy || !preferences.locked) && (

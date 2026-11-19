@@ -24,6 +24,7 @@
     "preparation_for": "Preparation · Reservation {{id}}"
   },
   "title": "Rental reservations",
+  "section": "Section",
   "subtitle": "Calendar, stays and money for your house",
   "saved": "Changes saved",
   "search": "Search",

@@ -1,33 +1,35 @@
 import { styled, alpha } from "@mui/material/styles";
 import { Link } from "react-router";
 
-export const ContainerPage = styled("section")(({ theme }) => ({
+export const ContainerPage = styled("section")({
   width: "100%",
   display: "flex",
   flexGrow: 1,
   flexDirection: "column",
-  backgroundColor: theme.palette.background.default,
-}));
+});
 
 export const WelcomeMessage = styled("h1")(({ theme }) => ({
   ...theme.typography.h3,
   fontSize: "1.75rem",
+  fontWeight: 700,
+  letterSpacing: "-0.045em",
+  color: theme.palette.text.primary,
+  margin: theme.spacing(0, 0, 3),
+  padding: theme.spacing(3, 2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.spacing(2),
+  backgroundColor: theme.palette.background.paper,
+  backgroundImage: `linear-gradient(118deg, ${alpha(theme.palette.primary.main, 0.13)}, transparent 75%)`,
+  overflowWrap: "anywhere",
+  textWrap: "balance",
   [theme.breakpoints.up("sm")]: {
     fontSize: "2.25rem",
+    padding: theme.spacing(4),
   },
   [theme.breakpoints.up("md")]: {
     fontSize: "3rem",
+    padding: theme.spacing(5, 4),
   },
-  fontWeight: 700,
-  color: theme.palette.text.primary,
-  marginBottom: theme.spacing(3),
-  [theme.breakpoints.up("md")]: {
-    marginBottom: theme.spacing(6),
-  },
-  textAlign: "center",
-  background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.tertiary.main})`,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
 }));
 
 export const SectionTitle = styled("h2")(({ theme }) => ({
@@ -38,46 +40,45 @@ export const SectionTitle = styled("h2")(({ theme }) => ({
   },
   fontWeight: 600,
   color: theme.palette.text.primary,
-  marginBottom: theme.spacing(2),
-  [theme.breakpoints.up("md")]: {
-    marginBottom: theme.spacing(3),
-  },
+  margin: theme.spacing(0, 0, 2),
+  paddingBlockEnd: theme.spacing(1),
+  borderBlockEnd: `1px solid ${theme.palette.divider}`,
 }));
 
-export const SettingsCard = styled(Link)(({ theme }) => {
-  const isDark = theme.palette.mode === "dark";
-
-  return {
-    display: "flex",
-    flexDirection: "column",
-    padding: theme.spacing(3),
-    borderRadius: Number(theme.shape.borderRadius) * 2,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: isDark
-      ? "0 2px 8px rgba(0, 0, 0, 0.4)"
-      : theme.shadows[2],
-    textDecoration: "none",
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    height: "100%",
-    border: `1px solid ${theme.palette.divider}`,
-    "&:hover": {
-      transform: "translateY(-4px)",
-      boxShadow: isDark
-        ? `0 8px 24px -4px ${alpha(theme.palette.primary.main, 0.35)}`
-        : `0 8px 24px -4px ${alpha(theme.palette.primary.main, 0.18)}`,
-      borderColor: theme.palette.primary.main,
-      "& .card-icon-wrapper": {
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        transform: "scale(1.06)",
-        boxShadow: `0 4px 12px ${alpha(theme.palette.primary.main, 0.35)}`,
-      },
-      "& .card-icon-wrapper svg": {
-        transform: "scale(1.05)",
-      },
+export const SettingsCard = styled(Link)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  padding: theme.spacing(3),
+  borderRadius: Number(theme.shape.borderRadius) * 2,
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: `0 2px 6px ${theme.palette.action.hover}`,
+  textDecoration: "none",
+  transition: theme.transitions.create("border-color"),
+  height: "100%",
+  border: `1px solid ${theme.palette.divider}`,
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  "&:hover, &:focus-visible": {
+    borderColor: theme.palette.primary.main,
+    "& .card-icon-wrapper": {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
     },
-  };
-});
+  },
+  "&:focus-visible": { outline: "2px solid CanvasText", outlineOffset: 2 },
+  "&:active": { backgroundColor: theme.palette.background.default },
+  [theme.breakpoints.down("sm")]: {
+    display: "grid",
+    gridTemplateColumns: "44px minmax(0, 1fr)",
+    alignItems: "center",
+    columnGap: theme.spacing(2),
+    padding: theme.spacing(2),
+    "& > .card-icon-wrapper": { gridRow: "span 2", margin: 0 },
+    "& > h3, & > p": { gridColumn: 2 },
+    "& > h3": { marginBottom: 0 },
+    "& > h3:last-child": { gridRow: "span 2" },
+  },
+}));
 
 export const CardIconWrapper = styled("div")(({ theme }) => {
   const isDark = theme.palette.mode === "dark";
@@ -94,18 +95,15 @@ export const CardIconWrapper = styled("div")(({ theme }) => {
       : alpha(theme.palette.primary.main, 0.08),
     color: theme.palette.primary.main,
     marginBottom: theme.spacing(2),
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    "& svg": {
-      fontSize: 24,
-      transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    },
+    transition: theme.transitions.create(["background-color", "color"]),
+    "& svg": { fontSize: 24 },
   };
 });
 
 export const CardTitle = styled("h3")(({ theme }) => ({
   ...theme.typography.h6,
   fontWeight: 600,
-  color: theme.palette.primary.main,
+  color: theme.palette.text.primary,
   margin: 0,
   marginBottom: theme.spacing(1),
   "&:last-child": {

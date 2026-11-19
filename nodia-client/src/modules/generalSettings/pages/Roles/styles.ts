@@ -1,8 +1,6 @@
 import { styled, alpha } from "@mui/material/styles";
-import { TABLE_PANEL_RADIUS } from "../../../../theme/tablePanel";
 import {
   Box,
-  Typography,
   Chip,
   TablePagination,
 } from "@mui/material";
@@ -14,31 +12,12 @@ export const PageHeader = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-export const PageTitleContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: theme.spacing(1.5),
-}));
-
-export const PageTitle = styled(Typography)(({ theme }) => ({
-  ...theme.typography.h4,
-  fontSize: "1.5rem",
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "1.875rem",
-  },
-  [theme.breakpoints.up("md")]: {
-    fontSize: "2.125rem",
-  },
-  color: theme.palette.text.primary,
-  fontWeight: theme.typography.fontWeightBold,
-}));
-
-export const PageSubtitle = styled(Typography)(({ theme }) => ({
-  ...theme.typography.body1,
-  color: theme.palette.text.secondary,
-  maxWidth: "680px",
-  lineHeight: 1.6,
-}));
+export {
+  PageTitleContainer,
+  PageTitle,
+  PageSubtitle,
+  StyledTableContainer,
+} from "../../styles";
 
 export const FilterRow = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -83,18 +62,6 @@ export const RoleInfo = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: theme.spacing(1.5),
 }));
-
-export const StyledTableContainer = styled(Box)(({ theme }) => {
-  const borderColor = theme.palette.border?.default ?? theme.palette.divider;
-
-  return {
-    borderRadius: TABLE_PANEL_RADIUS,
-    overflow: "hidden",
-    boxShadow: theme.shadows[2],
-    backgroundColor: theme.palette.background.paper,
-    border: `1px solid ${borderColor}`,
-  };
-});
 
 export const KeyBadge = styled(Box)(({ theme }) => {
   const isDark = theme.palette.mode === "dark";

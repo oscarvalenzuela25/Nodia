@@ -36,27 +36,24 @@ const FinanceOverview = ({ query, onQueryChange, onViewMovements }: Props) => {
     {
       key: "income",
       value: money(data?.totals.income_amount),
-      color: "success.main",
+      accent: "success" as const,
     },
     {
       key: "expense",
       value: money(data?.totals.expense_amount),
-      color: "error.main",
+      accent: "error" as const,
     },
     {
       key: "net",
       value: money(data?.totals.net_amount),
-      color: "text.primary",
     },
     {
       key: "loan_remaining",
       value: money(data?.obligations.loan_remaining_amount),
-      color: "text.primary",
     },
     {
       key: "debt_remaining",
       value: money(data?.obligations.debt_remaining_amount),
-      color: "text.primary",
     },
   ];
 
@@ -94,13 +91,17 @@ const FinanceOverview = ({ query, onQueryChange, onViewMovements }: Props) => {
       {(data || overview.isLoading) && (
         <Skeleton loading={overview.isLoading && !data}>
           <MetricGrid>
-            {totals.map(({ key, value, color }) => (
-              <MetricPanel key={key}>
+            {totals.map(({ key, value, accent }) => (
+              <MetricPanel
+                key={key}
+                sx={accent
+                  ? (theme) => ({ borderInlineStartColor: theme.palette[accent].main, borderInlineStartWidth: 3 })
+                  : undefined}
+              >
                 <Typography variant="body2" color="text.secondary">
                   {t(`finance:overview.${key}`)}
                 </Typography>
                 <MetricValue
-                  sx={{ color }}
                   data-testid={`finance-metric-${key}`}
                 >
                   {value}

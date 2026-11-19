@@ -283,11 +283,8 @@ const Business: FC = () => {
       <PageHeader>
         <HeaderTopBar>
           <PageTitleContainer>
-            <StorefrontOutlinedIcon
-              color="primary"
-              sx={{ fontSize: { xs: 32, md: 40 } }}
-            />
-            <PageTitle>{t("business:title")}</PageTitle>
+            <StorefrontOutlinedIcon color="primary" />
+            <PageTitle variant="h1">{t("business:title")}</PageTitle>
           </PageTitleContainer>
 
           <Button
@@ -400,6 +397,7 @@ const Business: FC = () => {
           <>
             <CardsGrid>
             {businesses.map((business) => {
+              const businessPath = `${BUSINESS_ROUTE}/${business.id}`;
               const descriptionText = getBusinessDescription(business);
               const isOwner =
                 business.user_role === "owner" ||
@@ -409,7 +407,7 @@ const Business: FC = () => {
               return (
                 <BusinessCard
                   key={business.id}
-                  onClick={() => navigate(`${BUSINESS_ROUTE}/${business.id}`)}
+                  onClick={() => navigate(businessPath)}
                   sx={{ cursor: "pointer" }}
                 >
                   <CardHeader>
@@ -423,7 +421,11 @@ const Business: FC = () => {
                       >
                         <StatusDot active={business.is_active} />
                       </Tooltip>
-                      <BusinessName title={business.name}>
+                      <BusinessName
+                        to={businessPath}
+                        title={business.name}
+                        onClick={(event) => event.stopPropagation()}
+                      >
                         {business.name}
                       </BusinessName>
                     </TitleAndStatus>

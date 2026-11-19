@@ -11,6 +11,11 @@ export const SectionAccordion = styled(Accordion)(({ theme }) => ({
 }));
 export const SectionSummary = styled(AccordionSummary)(({ theme }) => ({
   padding: theme.spacing(0, 1.5), minHeight: 60,
+  "&.Mui-expanded": { backgroundColor: alpha(theme.palette.primary.main, 0.075) },
+  "&.Mui-focusVisible, &:focus-visible": {
+    outline: `2px solid ${theme.palette.text.primary}`,
+    outlineOffset: -2,
+  },
   "& .MuiAccordionSummary-content": { alignItems: "center", gap: theme.spacing(1.25), margin: theme.spacing(1.5, 0), minWidth: 0 },
   "& .MuiAccordionSummary-expandIconWrapper": { marginLeft: theme.spacing(1) },
 }));

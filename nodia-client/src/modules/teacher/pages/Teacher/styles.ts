@@ -34,6 +34,13 @@ export const SessionActions = styled(Stack)(({ theme }) => ({
   "& > [data-teacher-job-status]": { minWidth: 0, maxWidth: "100%" },
 }));
 export const Panel = styled(Paper)(({ theme }) => ({ padding: theme.spacing(3), borderRadius: theme.spacing(2), border: `1px solid ${theme.palette.divider}`, backgroundImage: "none", minWidth: 0, overflowWrap: "anywhere", [theme.breakpoints.down("sm")]: { padding: theme.spacing(2) } }));
+export const PlanCard = styled(Panel)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(2),
+  boxShadow: `inset 0 2px 0 ${alpha(theme.palette.primary.main, 0.36)}`,
+  backgroundImage: `linear-gradient(${alpha(theme.palette.primary.main, 0.045)}, transparent 96px)`,
+}));
 export const Workspace = styled(Box)(({ theme }) => ({ display: "grid", gridTemplateColumns: "minmax(0,1fr)", alignItems: "start", gap: theme.spacing(3, 2), [theme.breakpoints.up("md")]: { gridTemplateColumns: "minmax(240px, 320px) minmax(0, 1fr)" } }));
 export const PlanGrid = styled(Box)(({ theme }) => ({ display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: theme.spacing(3, 2), [theme.breakpoints.up("sm")]: { gridTemplateColumns: "repeat(2,minmax(0,1fr))" }, [theme.breakpoints.up("xl")]: { gridTemplateColumns: "repeat(3,minmax(0,1fr))" } }));
 export const Actions = styled(Stack)(({ theme }) => ({ flexDirection: "row", flexWrap: "wrap", gap: theme.spacing(1), "& > button, & > a": { minHeight: 44, [theme.breakpoints.down("sm")]: { width: "100%" } } }));

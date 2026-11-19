@@ -22,6 +22,11 @@ export const StyledDialog = styled(Dialog, {
   const borderColor = theme.palette.border?.default ?? theme.palette.divider;
 
   return {
+    [theme.breakpoints.down("sm")]: {
+      "& .MuiDialog-container": {
+        height: "calc(100% - var(--nodia-keyboard-inset, 0px))",
+      },
+    },
     "& .MuiDialog-paper": {
       width: "100%",
       maxWidth: `min(${targetWidth}px, calc(100vw - 32px))`,
@@ -44,7 +49,7 @@ export const StyledDialog = styled(Dialog, {
       overflow: "hidden",
       [theme.breakpoints.down("sm")]: {
         margin: theme.spacing(2),
-        maxHeight: "calc(100dvh - 32px)",
+        maxHeight: "calc(100dvh - var(--nodia-keyboard-inset, 0px) - 32px)",
       },
       transition: theme.transitions.create(["box-shadow", "transform"], {
         duration: theme.transitions.duration.shorter,
@@ -69,6 +74,8 @@ export const ModalHeader = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2.5, 3, 1.5, 3),
   },
   gap: theme.spacing(2),
+  backgroundImage: `linear-gradient(115deg, ${alpha(theme.palette.primary.main, 0.07)}, transparent 75%)`,
+  boxShadow: `inset 0 -1px ${theme.palette.divider}`,
 }));
 
 export const HeaderContent = styled(Box)({
@@ -153,6 +160,8 @@ export const ModalActions = styled(DialogActions)(({ theme }) => ({
   alignItems: "center",
   flexWrap: "wrap",
   gap: theme.spacing(1.5),
+  backgroundColor: alpha(theme.palette.text.primary, 0.025),
+  boxShadow: `inset 0 1px ${theme.palette.divider}`,
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column-reverse",
     alignItems: "stretch",

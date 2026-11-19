@@ -93,11 +93,35 @@ it("distinguishes permission errors from empty sections and offers retry", async
   expect(context.refetch).toHaveBeenCalledTimes(1);
   expect(screen.getByRole("button", { name: i18n.t("core:save") })).toBeDisabled();
 });
+it("restores focus to the shortcut after closing its editor with the keyboard open", async () => {
+  const viewport = Object.assign(new EventTarget(), { height: window.innerHeight - 200, scale: 1 });
+  vi.stubGlobal("visualViewport", viewport);
+  setup();
+  const shortcut = screen.getAllByRole("button", { name: /Agregar acceso:/ })[0];
+  await userEvent.click(shortcut);
+  await userEvent.click(await screen.findByPlaceholderText(label("search")));
+  expect(screen.getByTestId("mobile-bottom-nav")).not.toBeVisible();
+
+  await userEvent.keyboard("{Escape}");
+  act(() => {
+    viewport.height = window.innerHeight;
+    viewport.dispatchEvent(new Event("resize"));
+  });
+
+  await waitFor(() => expect(shortcut).toHaveFocus());
+});
 it("closes the editor across identity changes and hides navigation while the virtual keyboard is active", async () => {
-  vi.stubGlobal("visualViewport", { height: window.innerHeight - 200, addEventListener: vi.fn(), removeEventListener: vi.fn() });
+  const viewport = new EventTarget();
+  const metrics = { height: window.innerHeight - 200, scale: 2 };
+  vi.stubGlobal("visualViewport", Object.assign(viewport, metrics));
   setup();
   await userEvent.click(screen.getAllByRole("button", { name: /Agregar acceso:/ })[0]);
   await userEvent.click(await screen.findByPlaceholderText(label("search")));
+  expect(screen.getByTestId("mobile-bottom-nav")).toBeVisible();
+  act(() => {
+    Object.assign(viewport, { scale: 1 });
+    viewport.dispatchEvent(new Event("resize"));
+  });
   expect(screen.getByTestId("mobile-bottom-nav")).not.toBeVisible();
   act(() => useAuthStore.getState().login({ token: "synthetic-b", expiresAt: Date.now() + 900_000, user: { id: "b", name: "B" } }));
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

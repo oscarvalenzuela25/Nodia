@@ -7,9 +7,10 @@ import {
   Menu,
   MenuItem,
   Tab,
-  Tabs,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ import {
   useRentalRecord,
 } from "../../infrastructure/useServices";
 import BaseModal from "../../../../components/BaseModal";
+import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import RentalOverview from "../RentalOverview";
 import RentalCalendar from "../RentalCalendar";
 import ReservationTable from "../ReservationTable";
@@ -42,18 +44,17 @@ import CollaboratorTable from "../CollaboratorTable";
 import ConfigurationPanel from "../ConfigurationPanel";
 import RentalAudit from "../RentalAudit";
 import { RentalAccessContext } from "../../infrastructure/scope";
-import { WorkspaceStack, WorkspaceAction, WorkspaceHeader } from "./styles";
+import { WorkspaceStack, WorkspaceAction, WorkspaceHeader, WorkspaceTabs } from "./styles";
 
-const TABS = [
-  "cash",
-  "general",
+const PRIMARY_TABS = [
   "calendar",
   "reservations",
   "turnovers",
-  "expenses",
+  "cash",
   "collaborators",
   "configuration",
 ] as const;
+const TABS = [...PRIMARY_TABS, "general", "expenses"] as const;
 type RentalTab = (typeof TABS)[number];
 type Modal =
   | { kind: "payment_new"; reservationId: string }
@@ -83,6 +84,7 @@ export default function RentalWorkspace({
 }
 function Workspace({ property }: { property: RentalProperty }) {
   const { t } = useTranslation();
+  const mobile = useMediaQuery(useTheme().breakpoints.down("sm"));
   const [params, setParams] = useSearchParams();
   const tab = TABS.find((value) => value === params.get("tab")) ?? "calendar";
   const primaryTab = tab === "general" || tab === "expenses" ? "cash" : tab;
@@ -202,37 +204,44 @@ function Workspace({ property }: { property: RentalProperty }) {
           {t("rental:history")}
         </MenuItem>
       </Menu>
-      <Tabs
-        value={primaryTab}
-        onChange={(_, next: RentalTab) => changeTab(next)}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label={t("rental:title")}
-      >
-        {(
-          [
-            "calendar",
-            "reservations",
-            "turnovers",
-            "cash",
-            "collaborators",
-            "configuration",
-          ] as RentalTab[]
-        ).map((value) => (
-          <Tab
-            key={value}
-            value={value}
-            disabled={busy || Boolean(modal)}
-            label={t(`rental:tabs.${value}`)}
-            id={`rental-tab-${value}`}
-            aria-controls={`rental-panel-${value}`}
-          />
-        ))}
-      </Tabs>
+      {mobile ? (
+        <SelectSingleInput
+          label={t("rental:section")}
+          value={primaryTab}
+          clearable={false}
+          autoFocusSearch={false}
+          disabled={busy || Boolean(modal)}
+          options={PRIMARY_TABS.map((value) => ({ value, label: t(`rental:tabs.${value}`) }))}
+          onChange={(value) => {
+            const next = PRIMARY_TABS.find((option) => option === value);
+            if (next) changeTab(next);
+          }}
+        />
+      ) : (
+        <WorkspaceTabs
+          value={primaryTab}
+          onChange={(_, next: RentalTab) => changeTab(next)}
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label={t("rental:title")}
+        >
+          {PRIMARY_TABS.map((value) => (
+            <Tab
+              key={value}
+              value={value}
+              disabled={busy || Boolean(modal)}
+              label={t(`rental:tabs.${value}`)}
+              id={`rental-tab-${value}`}
+              aria-controls={`rental-panel-${value}`}
+            />
+          ))}
+        </WorkspaceTabs>
+      )}
       <Box
-        role="tabpanel"
+        role={mobile ? "region" : "tabpanel"}
         id={`rental-panel-${primaryTab}`}
-        aria-labelledby={`rental-tab-${primaryTab}`}
+        aria-labelledby={mobile ? undefined : `rental-tab-${primaryTab}`}
+        aria-label={mobile ? t(`rental:tabs.${tab}`) : undefined}
       >
         {(tab === "general" || tab === "cash") && (
           <RentalOverview
