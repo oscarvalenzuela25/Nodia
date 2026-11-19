@@ -79,6 +79,7 @@ Skills disponibles en `nodia-client/skills/`:
 - **composition-patterns**: Patrones de composición en React escalables (compound components, render props, context).
 - **create-component**: **Obligatorio** al crear o modificar componentes, páginas o layouts en React. Define el uso de MUI, Emotion, Axios y TanStack Query.
 - **frontend-design**: Para crear interfaces con alta calidad de diseño y evitar estéticas genéricas ("AI slop").
+- **modern-web-guidance** — Consultar para cambios de interfaz, accesibilidad, rendimiento o APIs del navegador. La [matriz de Client](nodia-client/AGENTS.md#modern-web-guidance) indica qué guías leer y cómo aplicarlas en Nodia.
 - **responsive-design**: Obligatorio para cambios de UI que afecten layout, contenido o interacción responsive/móvil. Ver [skill](nodia-client/skills/responsive-design/SKILL.md); conserva el theme, contratos y excepciones móviles documentadas de Nodia.
 - **nodejs-backend-patterns**: Patrones para servicios backend Node.js (Express/Fastify, REST, GraphQL, microservicios).
 - **nodejs-best-practices**: Decisiones de arquitectura, seguridad y patrones asíncronos en Node.js.
