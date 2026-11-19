@@ -9,6 +9,13 @@ import { NodiaAiReservationsModule } from './reservations/nodia-ai-reservations.
 import { NodiaAiReservationsFamilyUseCase } from './reservations/use-case/nodia-ai-reservations-family.use-case.js';
 import { createNodiaAiBusinessToolFamily } from './business/business-tool-family.js';
 import { createNodiaAiSalesToolFamily } from './business/sales-tool-family.js';
+import { createNodiaAiBusinessCashToolFamily } from './business-cash/business-cash-tool-family.js';
+import { createNodiaAiShoppingListsToolFamily } from './business-shopping-list/shopping-lists-tool-family.js';
+import { BusinessCashModule } from '../business-cash/business-cash.module.js';
+import { ReadCashCategoriesUseCase } from '../business-cash/use-case/read-cash-categories.use-case.js';
+import { ReadCashMovementsUseCase } from '../business-cash/use-case/read-cash-movements.use-case.js';
+import { BusinessShoppingListModule } from '../business-shopping-list/business-shopping-list.module.js';
+import { ReadShoppingListsUseCase } from '../business-shopping-list/use-case/read-shopping-lists.use-case.js';
 import { SaleModule } from '../sale/sale.module.js';
 import { ReadSalesUseCase } from '../sale/use-case/read-sales.use-case.js';
 import { createNodiaAiAiSettingsReadFamily } from './ai-settings/ai-settings-read.family.js';
@@ -151,6 +158,12 @@ export class NodiaAiProductReadsModule {
         )
           ? [SaleModule]
           : []),
+        ...(ids.some((id) => id.startsWith('nodia_business_cash_'))
+          ? [BusinessCashModule]
+          : []),
+        ...(ids.some((id) => id.startsWith('nodia_business_shopping_lists_'))
+          ? [BusinessShoppingListModule]
+          : []),
         ...(NODIA_AI_EXTERNAL_READS.some(([id]) => ids.includes(id))
           ? [NodiaAiExternalReadsModule]
           : []),
@@ -169,13 +182,19 @@ export class NodiaAiProductReadsModule {
             NODIA_AI_CORE_SETTINGS_READ_FAMILY,
             { token: NODIA_AI_EXTERNAL_READ_FAMILY, optional: true },
             { token: ReadSalesUseCase, optional: true },
+            { token: ReadCashCategoriesUseCase, optional: true },
+            { token: ReadCashMovementsUseCase, optional: true },
+            { token: ReadShoppingListsUseCase, optional: true },
           ],
           useFactory: (
             finance: NodiaAiToolFamily,
             reservations: NodiaAiReservationsFamilyUseCase,
             core: NodiaAiToolFamily,
-            external?: NodiaAiToolFamily,
-            sales?: ReadSalesUseCase,
+            external: NodiaAiToolFamily | undefined,
+            sales: ReadSalesUseCase | undefined,
+            cashCategories: ReadCashCategoriesUseCase | undefined,
+            cashMovements: ReadCashMovementsUseCase | undefined,
+            shoppingLists: ReadShoppingListsUseCase | undefined,
           ) =>
             selectPublishedNodiaAiFamilies(
               [
@@ -194,6 +213,35 @@ export class NodiaAiProductReadsModule {
                           'utf8',
                         ),
                         sales,
+                      ),
+                    ]
+                  : []),
+                ...(cashCategories && cashMovements
+                  ? [
+                      createNodiaAiBusinessCashToolFamily(
+                        readFileSync(
+                          new URL(
+                            './contracts/business-cash.schema.json',
+                            import.meta.url,
+                          ),
+                          'utf8',
+                        ),
+                        cashCategories,
+                        cashMovements,
+                      ),
+                    ]
+                  : []),
+                ...(shoppingLists
+                  ? [
+                      createNodiaAiShoppingListsToolFamily(
+                        readFileSync(
+                          new URL(
+                            './contracts/business-shopping-lists.schema.json',
+                            import.meta.url,
+                          ),
+                          'utf8',
+                        ),
+                        shoppingLists,
                       ),
                     ]
                   : []),

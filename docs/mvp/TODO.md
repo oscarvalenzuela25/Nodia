@@ -1,6 +1,6 @@
 # TODO — núcleo de iniciativas y próximas entregas
 
-> Revisado el 2026-11-18. Creado por solicitud explícita para reunir ideas y
+> Revisado el 2026-11-19. Creado por solicitud explícita para reunir ideas y
 > especificaciones que se implementarán después. No hay prioridad nueva entre
 > iniciativas, fechas comprometidas ni autorización de despliegue por este índice.
 
@@ -34,17 +34,12 @@ validación pendiente`, `en implementación`, `bloqueado` (dependencia concreta)
 
 | ID / iniciativa | Estado comprobado por alcance | Documento para retomar | Primera acción pendiente y dependencia |
 | --- | --- | --- | --- |
-| **CASH-001 — Caja de Negocios** | CASH-01 documental, CASH-02…06 implementados y QA de CASH-07 en `codex/business-cash-ledger`. El commit de entrega tiene su propia comprobación CI | [Plan109 §16](109-business-cash-ledger-plan.md#16-verificación-de-entrega--cash-07-2026-11-17), [ADR106 propuesto](../architecture/decisions/ADR-106-business-cash-invoice-expense-consistency.md), [ficha candidata](../nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md) | Adopción y verificación operativa por entorno, con pedido propio |
-| **LISTA-001 — Listas de Market** | LISTA-01…04 implementadas en `codex/market-shopping-lists`. Recorrido y actualización 56→57 comprobados en laboratorio | [Plan110 §8](110-market-shopping-lists-plan.md#8-migración-y-entrega), [evidencia](../evidence/market-shopping-lists-20261118.md), [ficha candidata](../nodia-ai/knowledge/businesses/features/market-shopping-lists.md) | Integrar con CI verde del SHA y verificar el flujo en el entorno que adopte la entrega. |
 | **PWA-002 — caché y actualización** | Especificado, sin implementación acreditada | [Plan103](103-pwa-progressive-implementation-plan.md) §4 | Retomar contrato de actualización/caché estática y preservar borradores; depende de base001 y compatibilidad de artefactos |
 | **PWA-003 — desconexión** | Especificado | [Plan103](103-pwa-progressive-implementation-plan.md) §5 | Diseñar estado offline/recuperación;002 para arranque sin red. No promete datos offline |
 | **PWA-004 — push** | Especificado; eventos sin concretar | [Plan103](103-pwa-progressive-implementation-plan.md) §6 | Elegir eventos/destinatarios/consentimiento y contrato de suscripción. No requiere escrituras offline |
 | **PWA-005/006 — datos offline y sincronización** | Especificado como evolución, sin módulo elegido | [Plan103](103-pwa-progressive-implementation-plan.md) §7–8 | Elegir módulo/datos, privacidad/retención; después conflictos/idempotencia de escrituras. No ampliar todos los módulos por defecto |
 | **OBS-001 — Grafana, primera entrega operativa** | G0/documentación e inventario; Grafana Cloud Free elegido. Sin cuenta/stack, Alloy, ingesta o alertas acreditados | [Plan104 §8–9](104-logs-and-monitoring-grafana-cloud.md#8-secuencia-de-configuración-posterior), [ADR101 propuesto](../architecture/decisions/ADR-101-grafana-cloud-observability.md) | G1: cuenta/stack/región/Free efectivo/correo/host. Después G2–G6 con configuración, saneamiento antes de exportar, alertas y consumo real. Credenciales por custodia segura |
 | **OBS-002 — eventos de CI/CD** | Especificado como entrega separada G7 | [Plan104](104-logs-and-monitoring-grafana-cloud.md) §6 y§8 | Definir emisor desde recibo saneado y validar fallo/entrega parcial; Alloy no observa por sí solo el runner de GitHub. Sin replay ni dependencia de telemetría para publicar |
-| **Recuperación del CD por fase** | Recuperación de tráfico antes de migrar ensayada con fallo de respaldo en laboratorio. Los mismos archivos y pins ya están instalados y verificados en el VPS | [Plan99 §36](99-production-deployment-and-cicd-plan.md#36-continuidad-del-servicio-y-reintento-por-fase), [evidencia](../evidence/cd-backup-failure-recovery-20261118.md), [ADR109 propuesto](../architecture/decisions/ADR-109-phase-aware-production-deploy-recovery.md) | Ejecutar el actualizador real con los artefactos de la entrega en el gate de CI para cambios de esquema. Después sigue la recuperación por componente. |
-| **NEWS-001 — Noticias bajo demanda** | DEV y daily.dev disponibles en el piloto local. Aislamiento, upgrade 59→60 y recuperación del CD verificados en laboratorio | [Plan105 §18.8](105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev), [catálogo](../features/news/source-catalog.md), [ADR110 propuesto](../architecture/decisions/ADR-110-personal-news-connection-ownership.md) | Conectar daily.dev con el PAT real en el formulario local y comprobar su lectura. Conservar los gates de PR, CI y CD del SHA final. Evaluar términos, permisos y OAuth antes de cualquier entrega distribuida de daily.dev. |
-| **OPS-05 — retención global y disco físico** | Pendiente independiente; archivo automático del inbox ya entregado. OPS-001 cerrado por alcance | [Plan99 §33](99-production-deployment-and-cicd-plan.md#33-cierre-ops-001-y-separación-de-ops-05--2026-11-16), [alcance técnico§32](99-production-deployment-and-cicd-plan.md#32-retención-automática-y-continuación-de-uploads--solicitud2026-11-16) | Especificar conservación de releases/diagnósticos, duración/capacidad, protecciones y retirada u offload para liberar disco físico. No repetir archivo del inbox, que sólo libera cuota lógica; sin purga de backups/secretos/evidencia por defecto |
 
 ## Entregas cerradas por alcance
 
@@ -57,6 +52,10 @@ El 2026-11-17 el usuario solicita cerrar PCON-001, OCR-001, BIZ-042 y TUX-03/05.
 La integración en Git se comprobó para las cuatro entregas. La verificación
 funcional por entorno conserva los límites documentados en sus planes.
 
+El 2026-11-19 el usuario confirmó que CASH-001, LISTA-001 y NEWS-001 quedaron
+listos. Se cierran por el alcance entregado y la evidencia registrada en sus
+planes.
+
 | ID / iniciativa | Entrega aceptada | Fuente de cierre y límites |
 | --- | --- | --- |
 | **THEME-001 — temas personales** | Cerrado: catálogo, selector y persistencia local; QA aceptado por el usuario | [Plan108 §9](108-user-theme-presets.md#9-cierre-por-aceptación-humana--2026-11-16). Evidencia técnica previa conservada; no se ejecutó despliegue nuevo |
@@ -68,6 +67,10 @@ funcional por entorno conserva los límites documentados en sus planes.
 | **OCR-001 — revisión de factura y selección IA** | Cerrado por alcance. Revisión compacta, defaults y selección exacta integrados mediante PR 48 y 49 | [Plan94 §43](94-business-point-of-sale-and-product-refactor.md#43-cierre-de-ocr-001-y-biz-042--2026-11-17), [QA local](../evidence/invoice-ocr-review-defaults-20261116.md) |
 | **BIZ-042 — precios, división y proveedores OCR** | Cerrado por alcance. Ajustes de precios, proveedores y factura integrados mediante PR 50 y 51 | [Plan94 §43](94-business-point-of-sale-and-product-refactor.md#43-cierre-de-ocr-001-y-biz-042--2026-11-17), [QA local](../evidence/business-pricing-ocr-adjustments-20261117.md). Migración operativa y habilitación OCR requieren evidencia propia |
 | **TUX-03/05 — guía y continuidad de Teacher** | Cerrado por alcance. Guía, diagnóstico opcional y continuidad integrados mediante PR 50 y 51 | [Plan106 §16](106-nodia-teacher-guided-ux-redesign.md#16-cierre-de-tux-0305--2026-11-17), [QA local](../evidence/teacher-guided-continuity-20261116.md) |
+| **CASH-001 — Caja de Negocios** | Caja, resumen mensual y egresos de facturas manuales y OCR | [Plan109 §18](109-business-cash-ledger-plan.md#18-cierre-de-cash-001--2026-11-19) |
+| **LISTA-001 — Listas de Market** | Alta, edición, actividad, copiado y checklist compartido | [Plan110 §10](110-market-shopping-lists-plan.md#10-cierre-de-lista-001--2026-11-19) |
+| **NEWS-001 — Noticias personales** | Circuito personal DEV y piloto local de daily.dev | [Plan105 §18.9](105-on-demand-tech-news.md#189-cierre-de-news-001--2026-11-19). Una eventual distribución de daily.dev conserva su evaluación propia. |
+| **OPS-05 — retención global y disco físico** | Retirada del inventario completada y política operativa definida. Los 25 ZIP tienen custodia y restauración verificadas en R2 con bloqueo de 90 días. Segunda copia de la clave comprobada con una restauración desde la bóveda privada | [Política](99-production-deployment-and-cicd-plan.md#política-permanente-de-retención-de-despliegues), [custodia en R2](99-production-deployment-and-cicd-plan.md#custodia-en-r2-verificada-para-los-25-zip), [prueba de la segunda copia](99-production-deployment-and-cicd-plan.md#segunda-copia-de-la-clave-de-custodia). Un traslado posterior de los originales requiere adaptar y ensayar los lectores de rutas locales. |
 
 
 Mantenimiento solicitado2026-11-16 completado:247capturas de validación

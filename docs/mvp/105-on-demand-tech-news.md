@@ -1058,3 +1058,15 @@ el formulario local. PR, CI y CD del SHA final conservan sus propios gates.
 Una futura entrega en cloud, a varias personas o como agregador requiere una
 evaluación nueva de términos y permisos, más la validación de OAuth de sólo
 lectura. La evidencia de los cortes DEV anteriores se conserva en §18.5–§18.7.
+
+### 18.9. Cierre de NEWS-001 — 2026-11-19
+
+El usuario confirmó que Noticias personales quedó lista. Se cierra NEWS-001
+por el alcance entregado del circuito personal DEV y el piloto local de
+daily.dev. El [PR 70](https://github.com/oscarvalenzuela25/Nodia/pull/70)
+integró el código y el
+[CD 44445857444](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44445857444)
+completó la entrega del [PR 71](https://github.com/oscarvalenzuela25/Nodia/pull/71).
+La evidencia de §18.8 conserva sus límites de entorno y credenciales. Para
+una eventual distribución de daily.dev se aplican las condiciones de términos,
+permisos y OAuth de §18.8.

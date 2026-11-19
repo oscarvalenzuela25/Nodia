@@ -4,13 +4,13 @@
   "document_id": "businesses.cash-ledger-and-invoice-expenses",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 10,
-  "document_status": "draft",
+  "revision": 11,
+  "document_status": "approved",
   "implementation": {
-    "status": "partial",
-    "notes": "CASH-02/03 implementan categorías, movimientos manuales, recibos y agregados. CASH-04 añade vínculo de factura y confirmación OCR atómica en Server. CASH-05 incorpora la pestaña Caja. CASH-06 integra Overview y Facturas/OCR. CASH-07 registra la validación integral local y la CI de la rama por SHA. La ficha conserva draft, unregistered y approval null."
+    "status": "implemented",
+    "notes": "Función nativa entregada. NodiaAI reutiliza las consultas nativas autorizadas y proyecta sólo los datos de lectura declarados."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -116,14 +116,33 @@
     {
       "path": "nodia-server/src/invoice/use-case/update-invoice.use-case.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/business-cash/cash-business-scope.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-17",
-    "evidence_paths": ["docs/mvp/109-business-cash-ledger-plan.md"],
-    "notes": "Plan109 §§11–16 registra Client, SQL/HTTP, QA móvil y confirmación OCR sin inferencia externa en laboratorio. La CI identifica el SHA de entrega. La adopción por entorno tiene un paso propio."
+    "checked_on": "2026-11-19",
+    "evidence_paths": [
+      "docs/mvp/109-business-cash-ledger-plan.md",
+      "docs/evidence/nodia-ai-business-reads-20261119.md"
+    ],
+    "notes": "Las cuatro consultas usan el gateway compilado y los casos de uso nativos en PostgreSQL aislado con usuarios sintéticos."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-business-reads-20261119.md",
+    "revision": 11,
+    "content_sha256": "e3efeff2476c4a2ed4a10520c568e11a3c1db180a2df3416fcfa19ceeaee11e0"
+  }
 }
 ---
 
@@ -179,7 +198,7 @@ con regla española determinista, conservando acentos. Ver plan109 §6.1.
 
 | Solicitud ilustrativa | Intención | Datos faltantes/ambigüedad | Aclaración o respuesta segura |
 |---|---|---|---|
-| «Muéstrame los egresos de hoy de este negocio» | Consultar Caja | Negocio si no hay contexto válido | Caja cuenta con consulta HTTP nativa en Server local. La consulta por chat no está publicada |
+| «Muéstrame los egresos de hoy de este negocio» | Consultar Caja | Negocio si no hay contexto válido | Consultar el día civil de Santiago y mostrar los egresos del negocio autorizado |
 | «Registra un ingreso en Ventas» | Crear movimiento | Negocio, categoría real, importe y fecha | Usar el formulario manual de Caja. La operación carece de herramienta en NodiaAI |
 | «Guarda esta factura como egreso de Mercadería» | Factura con vínculo de Caja | Factura, categoría autorizada y total válido | Usar el selector de Facturas u OCR. Client guarda mediante la ruta nativa identificada |
 | «Cambia la categoría del egreso de esta factura» | Actualizar vínculo existente | Identidad de factura, revisión y categoría destino | La edición nativa conserva identidad del egreso. La operación carece de herramienta en NodiaAI |
@@ -192,17 +211,40 @@ con regla española determinista, conservando acentos. Ver plan109 §6.1.
 
 | Operación semántica | Clase/efecto propuesto | Herramienta y estado real | Contrato | Resultado esperado de implementación |
 |---|---|---|---|---|
-| Listar movimientos y resumir filtros | Lectura paginada y agregada | Ninguna herramienta Caja registrada | GET y DTO Ransack implementados localmente en CASH-03 | data/meta/summary juntos desde una sentencia para la selección completa |
+| Listar movimientos y resumir filtros | Lectura paginada y agregada | `nodia_business_cash_movements_list` | GET y DTO Ransack implementados en CASH-03 | data/meta/summary juntos desde una sentencia para la selección completa |
+| Consultar un movimiento | Lectura por negocio e ID | `nodia_business_cash_movements_get` | Proyección nativa de Caja | Movimiento exacto del negocio indicado |
+| Consultar categorías | Lectura paginada | `nodia_business_cash_categories_list` | Búsqueda nativa de Caja | Nombres e identidades de categorías del negocio |
 | Administrar categorías | Escritura manual por negocio | No disponible en NodiaAI | HTTP nativo y Drawer de Caja con alta rápida en formularios de movimiento | Nombre obligatorio, descripción opcional, revisión al editar y duplicados rechazados incluso bajo concurrencia |
 | Crear/editar/activar/desactivar movimiento | Escritura manual | No disponible en NodiaAI | HTTP nativo con revisión y recibo implementado en CASH-03 | Movimiento con categoría obligatoria, importe válido e identidad estable |
 | Vincular/retirar/restaurar egreso de factura | Escritura dependiente | Ninguna ampliación publicada de Facturas | HTTP nativo identificado en CASH-04, plan109 §13 | Primera asignación crea uno; recategorizar conserva ID; null retira; reasignar restaura el mismo |
 | Confirmar revisión OCR de Facturas | Escritura compuesta | No disponible en NodiaAI | POST nativo identificado y multipart en CASH-04 | Factura, productos, logs, egreso opcional y recibo en un commit |
-| Resumen mensual de Overview | Lectura agregada | No disponible en NodiaAI | Ruta mensual implementada en CASH-03, tarjetas en CASH-06 | Conteos y totales de movimientos activos por negocio |
+| Resumen mensual de Overview | Lectura agregada | `nodia_business_cash_monthly_summary` | Ruta mensual implementada en CASH-03, tarjetas en CASH-06 | Conteos y totales de movimientos activos por negocio |
 
 El campo `cash_category_id` pertenece a los comandos HTTP nativos
 identificados y se verifica por negocio. Los DTO conversacionales conservan
 su lista de campos previa. El guard de Facturas protege el egreso cuando
 se intenta cambiar su importe o fecha desde esas rutas.
+
+## Consultas de solo lectura en NodiaAI
+
+- Resuelve el negocio exacto y comprueba el alcance autorizado. Si hay
+  nombres ambiguos, pide al usuario que elija. `nodia_business_cash_categories_list`
+  permite buscar la categoría por nombre dentro de ese negocio.
+- `nodia_business_cash_movements_list` devuelve movimientos paginados y los
+  conteos y totales exactos de ingresos y egresos en CLP para todo el conjunto
+  filtrado. Admite categoría, búsqueda, actividad y fechas civiles inclusivas
+  en Santiago. Filtra activos de forma predeterminada. Las cifras son cadenas
+  decimales para conservar precisión. Usa `summary` al responder por totales y
+  declara el período, la actividad y la categoría consultados. Para un listado
+  de ingresos o egresos, revisa el tipo de cada movimiento de las páginas leídas.
+- `nodia_business_cash_movements_get` lee un movimiento por ID dentro del
+  negocio indicado. `nodia_business_cash_monthly_summary` resume los movimientos
+  activos del mes civil actual de Santiago. Para meses anteriores, usa el
+  listado con ambas fechas. Para un total por categoría, primero resuelve la
+  categoría y usa ese filtro en la consulta de movimientos.
+- Mantén separados los movimientos de Caja, las ventas y los totales de
+  facturas. Los egresos retirados de una factura quedan fuera de listados y
+  totales. Las altas, ediciones y vínculos se gestionan en la app.
 
 ## Datos mínimos y resolución de dudas
 
@@ -266,11 +308,9 @@ Factura sin categoría, incluido el retiro, admite total0 según el contrato nat
 la positividad y la fecha válida corresponden al egreso vigente.
 
 La restricción [plan94 R17](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#26-nodiaai-ventas-y-reportes-de-solo-lectura--r17-2026-10-30)
-sigue vigente para ventas/reportes. No se amplía por analogía a todo dato
-comercial ni se usa para habilitar Caja: esta función aún no tiene operaciones
-publicadas de lectura o escritura en NodiaAI. La ficha aprobada
-[Facturas y archivos](invoices-and-files.md) conserva cuerpo/aprobación propios;
-esa aprobación no cubre el efecto futuro factura→egreso.
+sigue vigente para ventas y reportes. Las consultas de Caja se rigen por su
+propio contrato. La ficha [Facturas y archivos](invoices-and-files.md) conserva
+su alcance documental y operativo.
 
 ## Filtros e informes
 
@@ -319,20 +359,22 @@ la misma intención. Ver [plan109 §17](../../../../mvp/109-business-cash-ledger
 
 ## Integración y evidencia
 
-- [x] Solicitud, plan canónico y ficha candidata enlazados. Estado partial/draft/unregistered y aprobación null.
+- [x] Solicitud, plan canónico y ficha enlazados.
 - [x] Contratos y reglas de CASH-01 refinados en plan109 §§3–7.
-- [ ] Aprobación documental de la ficha, si se solicita.
+- [x] Publicación del apartado de lectura autorizada por el usuario.
 - [x] Entidades, DTOs, endpoints y autoridad para categorías y recibos implementados localmente.
 - [x] Movimientos manuales y agregados implementados en Server local.
 - [x] Igualdad de filtros, página y resumen, y mes civil de Santiago verificados en el alcance manual de CASH-03.
 - [x] Vínculo de Facturas y confirmación OCR identificada implementados en Server local.
 - [x] Vínculo de factura, concurrencia, reintentos y rollback comprobados en PostgreSQL aislado.
 - [x] Alta rápida de categoría desde movimientos, responsive, filtros, estados de lectura y conservación de borrador comprobados en Client local con transporte sintético.
-- [ ] Selectores y guardado recuperable desde los formularios de Facturas/OCR, incluida la limpieza de categoría. Tarjetas mensuales de Overview.
-- [ ] Integración de Caja en NodiaAI especificada y registrada separadamente, si se incorpora al alcance futuro.
+- [x] Selectores y guardado recuperable desde Facturas/OCR, limpieza de categoría y tarjetas mensuales de Overview.
+- [x] Cuatro consultas de Caja integradas en NodiaAI y verificadas localmente.
+- [ ] Verificación operativa de NodiaAI por entorno y modalidad.
 
 La validación de CASH-02…04 usa PostgreSQL aislado y peticiones HTTP con
-usuarios sintéticos. La ficha candidata permanece excluida del contexto publicado.
+usuarios sintéticos. NodiaAI publica el apartado «Consultas de solo lectura en
+NodiaAI» para orientar las cuatro herramientas.
 
 ## Evolución y compatibilidad
 
@@ -347,6 +389,8 @@ usuarios sintéticos. La ficha candidata permanece excluida del contexto publica
 | 7 | CASH-05 incorpora la pestaña Caja, gestión de categorías y movimientos, filtros, totales y tarjetas móviles | Sólo contexto candidato. La UI usa los recursos nativos | CASH-06 conecta Overview y formularios de Facturas/OCR |
 | 8 | CASH-06 conecta el resumen mensual y el guardado de Facturas y OCR mediante categoría opcional y recibo | Sólo contexto candidato. Client usa los recursos nativos | CASH-07 valida la integración de la rama y la evidencia por entorno |
 | 9 | CASH-07 verifica Caja, Overview, Facturas y confirmación OCR en laboratorio y registra la CI de la rama por SHA | Sólo contexto candidato | Adopción por entorno con evidencia propia |
+| 10 | Ajustes visuales de las tarjetas, filtros y guardado de Caja | Conserva el contrato de Caja | Aplicación nativa verificada en el alcance del plan109 |
+| 11 | Cuatro consultas de solo lectura por negocio desde el chat | Publicación del apartado de consulta y de los contratos vinculados | Verificación aislada del gateway |
 
 El escritor común aplica la revisión y el recibo al efecto nativo identificado.
 Los preparadores de NodiaAI revalidan el vínculo al preparar, antes de subir

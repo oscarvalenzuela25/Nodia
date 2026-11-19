@@ -26,5 +26,6 @@ import { ReadShoppingListsUseCase } from './use-case/read-shopping-lists.use-cas
     ReadShoppingListsUseCase,
     MutateShoppingListUseCase,
   ],
+  exports: [ReadShoppingListsUseCase],
 })
 export class BusinessShoppingListModule {}

@@ -216,6 +216,394 @@
         "openWorldHint": false
       },
       "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_business_shopping_lists_list",
+      "kind": "read",
+      "resourceKey": "business_shopping_lists",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "BusinessShoppingListController.list"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_business_shopping_list_page",
+      "implementationContract": {
+        "stage": "2026-11-19",
+        "capabilityId": "nodia_business_shopping_lists_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+        "inputSchema": {
+          "definition": "ShoppingListsListInput",
+          "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+        },
+        "outputSchema": {
+          "definition": "ShoppingListsListResult",
+          "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/business-shopping-list/business-shopping-list.module.ts",
+          "nodia-server/src/business-shopping-list/shopping-list-scope.ts",
+          "nodia-server/src/business-shopping-list/use-case/read-shopping-lists.use-case.ts",
+          "nodia-server/src/nodia-ai-products/business-shopping-list/shopping-lists-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_gateway_and_sql_verification",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_business_shopping_lists_get",
+      "kind": "read",
+      "resourceKey": "business_shopping_lists",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "BusinessShoppingListController.detail"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_shopping_list_with_paginated_items",
+      "implementationContract": {
+        "stage": "2026-11-19",
+        "capabilityId": "nodia_business_shopping_lists_get",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/business-shopping-lists.schema.json",
+        "inputSchema": {
+          "definition": "ShoppingListsGetInput",
+          "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+        },
+        "outputSchema": {
+          "definition": "ShoppingListsGetResult",
+          "sha256": "0ef662426294576571f0c6e59bf6c0a7ede813d011b04be9ab27321de1bc338b"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/business-shopping-list/business-shopping-list.module.ts",
+          "nodia-server/src/business-shopping-list/shopping-list-scope.ts",
+          "nodia-server/src/business-shopping-list/use-case/read-shopping-lists.use-case.ts",
+          "nodia-server/src/nodia-ai-products/business-shopping-list/shopping-lists-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_gateway_and_sql_verification",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_business_cash_categories_list",
+      "kind": "read",
+      "resourceKey": "business_cash_categories",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "BusinessCashCategoriesController.list"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_cash_categories_page",
+      "implementationContract": {
+        "stage": "2026-11-19",
+        "capabilityId": "nodia_business_cash_categories_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "inputSchema": {
+          "definition": "CashCategoriesListInput",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "outputSchema": {
+          "definition": "CashCategoriesListResult",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/business-cash/business-cash.module.ts",
+          "nodia-server/src/business-cash/cash-business-scope.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_gateway_and_sql_verification",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_business_cash_movements_get",
+      "kind": "read",
+      "resourceKey": "business_cash_movements",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "BusinessCashMovementsController.detail"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_cash_movement",
+      "implementationContract": {
+        "stage": "2026-11-19",
+        "capabilityId": "nodia_business_cash_movements_get",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "inputSchema": {
+          "definition": "CashMovementsGetInput",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "outputSchema": {
+          "definition": "CashMovementsGetResult",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/business-cash/business-cash.module.ts",
+          "nodia-server/src/business-cash/cash-business-scope.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_gateway_and_sql_verification",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_business_cash_movements_list",
+      "kind": "read",
+      "resourceKey": "business_cash_movements",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "BusinessCashMovementsController.list"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_cash_movement_page_and_filtered_summary",
+      "implementationContract": {
+        "stage": "2026-11-19",
+        "capabilityId": "nodia_business_cash_movements_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "inputSchema": {
+          "definition": "CashMovementsListInput",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "outputSchema": {
+          "definition": "CashMovementsListResult",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/business-cash/business-cash.module.ts",
+          "nodia-server/src/business-cash/cash-business-scope.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_gateway_and_sql_verification",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_business_cash_monthly_summary",
+      "kind": "read",
+      "resourceKey": "business_cash_movements",
+      "targetModuleRoute": "/tools/business",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "BusinessCashMovementsController.monthly"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_current_month_cash_summary",
+      "implementationContract": {
+        "stage": "2026-11-19",
+        "capabilityId": "nodia_business_cash_monthly_summary",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/business-cash.schema.json",
+        "inputSchema": {
+          "definition": "CashMonthlySummaryInput",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "outputSchema": {
+          "definition": "CashMonthlySummaryResult",
+          "sha256": "b14a35183bc9e80c419818dc3184e493a09210d4042ad23d69c5df6657ddda2b"
+        },
+        "handlerSources": [
+          "nodia-server/src/authorization/use-case/check-module-access.use-case.ts",
+          "nodia-server/src/business-access/business-access.ts",
+          "nodia-server/src/business-cash/business-cash.module.ts",
+          "nodia-server/src/business-cash/cash-business-scope.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-categories.use-case.ts",
+          "nodia-server/src/business-cash/use-case/read-cash-movements.use-case.ts",
+          "nodia-server/src/nodia-ai-products/business-cash/business-cash-tool-family.ts",
+          "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/tools/business"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_gateway_and_sql_verification",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_module_business_scope"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
     }
   ],
   "handlerCoverage": [
@@ -248,6 +636,66 @@
         "kind": "semantic_derivation",
         "note": "New business sales resource of plan94. Conversational adapter uses the same authorized native case of use with the inherited manager; it never calls arbitrary HTTP or confirms through model text."
       }
+    },
+    {
+      "operationId": "BusinessShoppingListController.list",
+      "toolNames": [
+        "nodia_business_shopping_lists_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      }
+    },
+    {
+      "operationId": "BusinessShoppingListController.detail",
+      "toolNames": [
+        "nodia_business_shopping_lists_get"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      }
+    },
+    {
+      "operationId": "BusinessCashCategoriesController.list",
+      "toolNames": [
+        "nodia_business_cash_categories_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      }
+    },
+    {
+      "operationId": "BusinessCashMovementsController.detail",
+      "toolNames": [
+        "nodia_business_cash_movements_get"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      }
+    },
+    {
+      "operationId": "BusinessCashMovementsController.list",
+      "toolNames": [
+        "nodia_business_cash_movements_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      }
+    },
+    {
+      "operationId": "BusinessCashMovementsController.monthly",
+      "toolNames": [
+        "nodia_business_cash_monthly_summary"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
+      }
     }
   ],
   "newHandlers": [
@@ -266,6 +714,54 @@
       "sourcePath": "nodia-server/src/sale/sale.controller.ts",
       "method": "GET",
       "path": "/api/v1/businesses/:businessId/sales"
+    },
+    {
+      "operationId": "BusinessShoppingListController.list",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/business-shopping-list/business-shopping-list.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/businesses/:businessId/lists"
+    },
+    {
+      "operationId": "BusinessShoppingListController.detail",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/business-shopping-list/business-shopping-list.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/businesses/:businessId/lists/:listId"
+    },
+    {
+      "operationId": "BusinessCashCategoriesController.list",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/business-cash/business-cash-categories.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/business-cash-categories"
+    },
+    {
+      "operationId": "BusinessCashMovementsController.detail",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/business-cash/business-cash-movements.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/business-cash-movements/:id"
+    },
+    {
+      "operationId": "BusinessCashMovementsController.list",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/business-cash/business-cash-movements.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/business-cash-movements"
+    },
+    {
+      "operationId": "BusinessCashMovementsController.monthly",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/business-cash/business-cash-movements.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/business-cash-movements/monthly-summary"
     }
   ]
 }

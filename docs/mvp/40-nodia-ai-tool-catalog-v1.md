@@ -22,6 +22,13 @@ Las siete escrituras masivas/importación quedan fuera de v1 por decisión expre
 
 El [JSON de 156 candidatos](nodia-ai-v1-tool-catalog.json), sus conteos y sus evidencias conservan el corte histórico. Las operaciones semánticas posteriores se declaran en [extensiones del catálogo](nodia-ai-v1-tool-catalog.extensions.json). La auditoría actual fusiona una copia sólo en memoria: rechaza nombres duplicados, handlers desconocidos o excluidos y cobertura no recíproca; no reescribe el baseline ni sus cifras. Los totales actuales de la auditoría se calculan desde la unión, separados de los conteos históricos conservados.
 
+El catálogo `nodia-ai-business-pos/5` incorpora seis consultas de solo
+lectura para [Listas de Market](110-market-shopping-lists-plan.md#11-consultas-de-listas-de-market-en-nodiaai--2026-11-19)
+y [Caja](109-business-cash-ledger-plan.md#19-consultas-de-caja-en-nodiaai--2026-11-19).
+El descubrimiento automático usa los nuevos contratos y los apartados de
+conocimiento vinculados. El gateway aplica la sesión, el módulo y el alcance
+por negocio al ejecutar los lectores nativos.
+
 `nodia_invoices_ocr` deriva semánticamente del OCR de Productos identificado por `InvoiceController.analyze`; no añade un handler HTTP ni invoca su endpoint legacy. `backendBindings:[]` hace explícita esa separación. Su [contrato cerrado](../../nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json) contiene `prepare/request/read`; la etapa OCR durable reutiliza el núcleo después del terminal/ACK de planificación, sin HTTP arbitrario, defaults del caso de uso legacy o escrituras comerciales implícitas. La cobertura del handler sólo añade esta procedencia semántica y conserva la asociación histórica de C03.
 
 El flag `published:false` de la extensión no concede ni retira autoridad de ejecución: la publicación efectiva procede exclusivamente del registro explícito y del conocimiento aprobado compilado. La extensión es un insumo de auditoría, sin permisos adicionales; no sustituye elegibilidad actual, autoridad por chat/negocio/archivo o confirmación humana para los efectos de Productos. La [ficha aprobada del recorrido](../nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md) y su evidencia mantienen separados aprobación, implementación local, publicación y aceptación real.
