@@ -11,9 +11,11 @@ import {
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
+import useAuth from "../../../../hooks/useAuth";
 import NewsArticleCard from "../../components/NewsArticleCard";
 import NewsInitialLoading from "../../components/NewsInitialLoading";
 import NewsTopicChips from "../../components/NewsTopicChips";
+import PersonalNews from "../../components/PersonalNews";
 import { newsSourceKeySchema, type NewsFilters, type NewsSourceKey } from "../../types";
 import { useNews, useNewsRefresh } from "./infrastructure/useServices";
 import {
@@ -27,6 +29,16 @@ import {
 } from "./styles";
 
 export default function News() {
+  const { user, sessionVersion, isSessionValid } = useAuth();
+  if (isSessionValid && user?.id) {
+    const actorKey = `${user.id}:${sessionVersion}`;
+    return <PersonalNews key={actorKey} actorKey={actorKey} />;
+  }
+
+  return <PublicNews />;
+}
+
+function PublicNews() {
   const { t, i18n } = useTranslation(["news", "core"]);
   const readingHeading = useRef<HTMLHeadingElement>(null);
   const [filters, setFilters] = useState<NewsFilters>({

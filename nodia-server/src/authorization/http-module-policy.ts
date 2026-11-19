@@ -10,6 +10,15 @@ const MODULES = '/modules';
 const AI = '/ai-providers';
 const BUSINESS = '/business';
 
+const personalNewsOperations = new Set([
+  'GET connections',
+  'GET articles',
+  'POST connections/:provider',
+  'POST connections/:provider/test',
+  'POST connections/:provider/refresh',
+  'DELETE connections/:provider',
+]);
+
 const moduleByControllerPath: Readonly<Record<string, string>> = {
   user: USERS,
   users: USERS,
@@ -64,6 +73,10 @@ function policyForPath(
 ): HttpModulePolicy | undefined {
   const path = normalize(controllerPath);
   if (path === 'auth') return { routes: [], match: 'all' };
+  if (path === 'news/personal' && handlerPaths.length === 1 &&
+      personalNewsOperations.has(`${method} ${normalize(handlerPaths[0])}`)) {
+    return { routes: [], match: 'all' };
+  }
   // Only this exact operation is session-only here; its use case checks current super_admin.
   if (
     path === 'news' &&

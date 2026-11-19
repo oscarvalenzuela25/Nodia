@@ -11,6 +11,21 @@ import { CodexOperationException } from '../ai/codex/codex-contract.js';
 import { GeminiUpstreamException } from '../ai/gemini-upstream.exception.js';
 import { randomUUID } from 'node:crypto';
 
+const personalNewsErrors = new Set([
+  'auth:session_expired',
+  'auth:unauthorized',
+  'core:module_access_required',
+  'news:connection_required',
+  'news:invalid_input',
+  'news:operation_in_progress',
+  'news:operation_superseded',
+  'news:provider_credentials_invalid',
+  'news:provider_invalid_response',
+  'news:provider_pending',
+  'news:provider_rate_limited',
+  'news:provider_unavailable',
+]);
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
@@ -19,6 +34,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    if (/^\/api\/v1\/news\/personal(?:\/|$)/iu.test(request.path)) {
+      this.personalNewsError(exception, response);
+      return;
+    }
     if(request.path==='/api/v1/teacher'||request.path.startsWith('/api/v1/teacher/')){
       const detail=exception instanceof HttpException?exception.getResponse():null;
       const record=detail&&typeof detail==='object'?detail as Record<string,unknown>:null;
@@ -122,5 +141,31 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ...(exception.upstreamErrorCode ? { upstreamErrorCode: exception.upstreamErrorCode } : {}) }
         : {}),
     });
+  }
+
+  private personalNewsError(exception: unknown, response: Response): void {
+    const http = exception instanceof HttpException ? exception : null;
+    const rawStatus = exception && typeof exception === 'object' && 'status' in exception
+      ? exception.status : null;
+    const status = http?.getStatus() ?? (rawStatus === 400 || rawStatus === 413 ? rawStatus : 500);
+    const detail = http?.getResponse();
+    const record = detail && typeof detail === 'object' ? detail as Record<string, unknown> : null;
+    const candidate = typeof detail === 'string' ? detail : record?.message;
+    const fallback = status === 400 || status === 413 ? 'news:invalid_input'
+      : status === 401 ? 'auth:session_expired'
+      : status === 429 ? 'news:provider_rate_limited' : 'news:request_failed';
+    const message = typeof candidate === 'string' && personalNewsErrors.has(candidate)
+      ? candidate : fallback;
+    const retry = record?.retry_after_seconds;
+    const source = record?.retry_source;
+    const metadata = (status === 429 || status === 503) &&
+      typeof retry === 'number' && Number.isSafeInteger(retry) && retry > 0 &&
+      (source === 'provider' || source === 'local')
+      ? { retry_after_seconds: retry, retry_source: source } : {};
+
+    response.setHeader('Cache-Control', 'private, no-store');
+    if (metadata.retry_after_seconds) response.setHeader('Retry-After', String(metadata.retry_after_seconds));
+    this.logger.warn({ event: 'personal_news_http_error', status, code: message });
+    response.status(status).json({ statusCode: status, message, ...metadata });
   }
 }

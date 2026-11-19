@@ -4,11 +4,11 @@
   "document_id": "news",
   "product_id": "news",
   "kind": "product",
-  "revision": 8,
+  "revision": 13,
   "document_status": "draft",
   "implementation": {
-    "status": "implemented",
-    "notes": "Primera versión RSS web.dev/Node.js implementada y preparación NEWS-06 técnica local completada: lectura pública, fetch exclusivo super_admin por fuente explícita, caché/procedencias y diseño editorial. Primera carga Boneyard corregida. Candidato para CI/promoción; sin adopción, aceptación humana o publicación de conocimiento. daily.dev deshabilitada."
+    "status": "partial",
+    "notes": "Primera versión RSS publicada. DEV implementado y comprobado localmente. Piloto daily.dev de un dueño implementado con verificaciones de navegador y HTTP aislado. El acceso real y la adopción se comprueban por proveedor."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -35,7 +35,7 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-16",
+    "checked_on": "2026-11-18",
     "evidence_paths": [
       "docs/evidence/news-source-discovery-20261116.md",
       "docs/evidence/news-public-rss-implementation-20261116.md",
@@ -43,15 +43,40 @@
       "docs/evidence/news-nodejs-source-review-20261116.md",
       "docs/evidence/news-nodejs-integration-20261116.md",
       "docs/evidence/news-final-validation-20261116.md",
-      "docs/evidence/news-final-ui-20261116.md"
+      "docs/evidence/news-final-ui-20261116.md",
+      "docs/evidence/news-dev-source-refresh-20261118.md",
+      "docs/mvp/105-on-demand-tech-news.md"
     ],
-    "notes": "NEWS-06: JWT y sesiones SQL reales de laboratorio,13gates sin red; opt-in14gates con2POSTadmin/RSSreales y110noticias recuperadas públicamente, sin DB configurada. UI compilada adversa y carga inicial220px correctas;41focales News, tipos/lint/build. Zoom nativo200% geométrico/teclado correcto; captura visual fallida, teléfono/Google/sesión humana/adopción no acreditados. CI del SHA se consulta en PR/Actions."
+    "notes": "Plan105 §18.5 registra Client, HTTP, esquema y recuperación del corte personal en laboratorio. Los cortes RSS conservan su evidencia previa."
   },
   "approval": null
 }
 ---
 
 # Noticias — contexto de producto para NodiaAI
+
+## Noticias personales — 2026-11-18
+
+[Plan105 §18](../../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales)
+y la [ficha de conexiones personales](features/personal-connections.md) recogen
+la aprobación para implementar un piloto DEV local con su PAT y custodia en
+Server. La primera visita ofrece conectar al dueño. Cada consulta al proveedor
+requiere una acción explícita. El [piloto local de daily.dev](../../../mvp/105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev)
+limita su lectura personal a un dueño en desarrollo. Términos, permiso de uso
+distribuido y OAuth de sólo lectura se evalúan por separado. La capa pública
+conserva la lectura de una lista vacía. La
+[verificación local](../../../mvp/105-on-demand-tech-news.md#185-implementación-y-verificación-local)
+distingue el circuito implementado del acceso real con PAT y de la adopción.
+Las fichas conservan `draft`, `unregistered` y `approval: null`.
+
+## Renovación de fuentes — 2026-11-18
+
+[Plan105 §16](../../../mvp/105-on-demand-tech-news.md#16-renovación-del-catálogo-de-noticias-dev--2026-11-18)
+y el [catálogo](../../../features/news/source-catalog.md) registran Go y Rust
+en Programación y Kubernetes en Tecnología como ensayo. La rama deja fuera de lectura
+pública los snapshots de web.dev y Node.js. La lectura conserva acceso público
+y la obtención externa sigue reservada a cada clic de un super_admin vigente.
+La evidencia del catálogo anterior se conserva en las secciones históricas.
 
 ## NEWS-06: candidato preparado — 2026-11-16
 
@@ -71,40 +96,35 @@ Node.js aporta sólo título/URL/fecha y mantiene autor/extracto null. Aviso MIT
 
 Intención confirmada: una sección para consultar noticias de tecnología,
 programación e IA mediante un botón. [Plan105](../../../mvp/105-on-demand-tech-news.md)
-conserva investigación y contrato, con web.dev y Node.js implementadas y
-[verificadas por alcance local](../../../evidence/news-nodejs-integration-20261116.md),
-sin aprobación documental completa. El usuario confirmó en §8 lectura pública bajo Home y
-fuentes con cupo sólo para sesiones Nodia válidas. La solicitud posterior de §9
-reserva toda obtención externa a super_admin activo; otros usuarios leen resultados
-conservados de la capa que les corresponda. La lectura pública no requiere módulo.
+conserva la investigación, el contrato y el historial de la primera entrega.
+El destino público debajo de Home proviene de §8. §9 describe la actualización
+administrativa histórica. §18 describe la vista privada y la compatibilidad
+pública del corte personal.
 
 ## Conceptos y relaciones
 
 | Concepto | Significado | Relación y fuente |
 | --- | --- | --- |
-| Fuente | Proveedor/editor que entrega enlaces y metadatos | Plan105 §12; web.dev y Node.js habilitadas localmente |
+| Fuente | Proveedor que entrega enlaces y metadatos según su contrato | Plan105 §18, DEV en piloto y daily.dev pendiente |
 | Noticia | Artículo enlazado con procedencia, sin garantía de veracidad | Plan105 §1 y §3 |
 | Actualización | Consulta externa explícita; puede consumir cuota | Plan105 §3 |
-| Tema | Interés para seleccionar/filtrar contenido | Tecnología, programación e IA; ambos RSS mapeados a Programación por catálogo, sin clasificación IA por título |
+| Etiquetas seguidas | Intereses elegidos por la cuenta de DEV | Plan105 §18, base de la selección personal |
 
 ## Módulos y autoridad
 
-Destino `/news` público implementado localmente. Enlace fijo debajo
-de Home; no exige sesión/asignación de módulo. Fuentes con cupo exigen sesión real
-de cualquier usuario para lectura, además de condiciones del proveedor. Toda
-obtención externa, incluso RSS público, exige super_admin activo y sesión real,
-sin conceder el permiso por un módulo o por un ID/email fijo en código.
-La excepción está en [autoridad89](../../../mvp/89-module-access-and-user-data-scope.md)
-y [ADR105 propuesto](../../../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md).
-Otros módulos privados conservan sus guards. Sólo se comparte caché pública de
-fuentes autorizadas; feeds/conexiones limitados no se comparten entre actores ni
-se vuelven públicos por guardar sus resultados.
+El destino `/news` y la lectura de compatibilidad son públicos. En los handlers
+privados, una sesión vigente autoriza sólo las operaciones del dueño de la
+conexión, sin asignación de módulo. El rol `super_admin` corresponde a la
+validación del POST histórico. Los demás módulos conservan sus guards. La
+[decisión de autoridad de Noticias](../../../architecture/decisions/ADR-110-personal-news-connection-ownership.md)
+delimita la separación por handler y conexión.
 
 ## Índice de funcionalidades
 
 | Función | Ficha | Implementación | Integración NodiaAI | Destino |
 | --- | --- | --- | --- | --- |
-| Lectura y actualización bajo demanda | [Ficha](features/on-demand-reading.md) | implemented para web.dev y Node.js locales | unregistered | `/news` |
+| Lectura y actualización bajo demanda | [Ficha histórica](features/on-demand-reading.md) | Primera entrega RSS publicada. El corte personal mantiene compatibilidad vacía | unregistered | `/news` |
+| Conexiones personales y sus noticias | [Ficha candidata](features/personal-connections.md) | DEV implementado localmente, PAT real pendiente | unregistered | `/news` con sesión válida |
 
 ## Interpretación de solicitudes que combinan funciones
 
@@ -114,13 +134,9 @@ y consulta. No hay herramienta de Noticias disponible para el chat.
 
 ## Restricciones y pendientes
 
-El [catálogo inicial](../../../features/news/source-catalog.md) propone web.dev
-RSS y Node.js como fuentes públicas locales; GitHub sigue candidata con condiciones
-pendientes y daily.dev limitada/deshabilitada por términos. Login Nodia no autoriza
-una cuenta daily.dev compartida; aclaración del proveedor y conexión propias
-siguen pendientes. Los [contratos NEWS-02/03](../../../features/news/http-contract.md)
-separan GET público de caché y POST de actualización super_admin, implementados
-para web.dev y Node.js con pruebas locales. No se adopta por escribir este contexto.
+El [catálogo](../../../features/news/source-catalog.md) registra el estado del
+piloto y de las fuentes retiradas. Los [contratos](../../../features/news/http-contract.md)
+separan la respuesta pública de compatibilidad y las operaciones privadas.
 Resúmenes IA, guardados y estados de lectura son posibles
 ampliaciones; no presentarlos como funciones disponibles. Ficha draft excluida
 de publicación, añadida al registro sólo para validación documental.
@@ -158,3 +174,6 @@ los de primera fuente RSS con evidencia local, sin herramienta NodiaAI o adopci�
 | 4 | Acceso público, posición bajo Home y clasificación de fuentes | Plan105 §8, catálogo y ADR105 propuesto | Regla funcional confirmada; RSS externos comprobados, sin integración Nodia, aprobación documental o publicación nuevas |
 | 5 | Obtención exclusiva super_admin y primer RSS implementado localmente | Plan105 §9, contratos y evidencia local | Sucede fetch por cualquier sesión/anónimo; producto parcial, sin adopción, herramienta o aprobación nuevas |
 | 6 | NEWS-05: chips y composición editorial local | Plan105 §10, diseño y evidencia visual | Presentación/interacción de filtros existentes; contexto y herramientas conservados, aceptación/adopción pendientes |
+| 11 | Conexiones personales por dueño y retiro de los RSS activos | Plan105 §18, contrato y ADR110 | Piloto local DEV con verificación propia. Compatibilidad pública con resultados vacíos |
+| 12 | Implementación y verificación local de Noticias personales | Plan105 §18.5 | Circuito de DEV ensayado en laboratorio. daily.dev, PAT real, CI y adopción pendientes |
+| 13 | Piloto local de daily.dev implementado para un único dueño | Plan105 §18.8 | Vista por fuente y actualización manual. La verificación con PAT real, OAuth y uso distribuido siguen por alcance |

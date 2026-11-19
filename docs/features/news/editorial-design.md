@@ -1,5 +1,31 @@
 # Noticias — propuesta de diseño editorial
 
+La vista personal sigue el recorrido aprobado para implementación del
+[Plan105 §18.1](../../mvp/105-on-demand-tech-news.md#181-primera-visita-y-acciones).
+El shell, la navegación canónica y el tema dan continuidad al trabajo anterior.
+La entrada autenticada presenta las tarjetas de conexión y los estados de
+disponibilidad. El onboarding, la confirmación de desconexión y los resultados
+privados pertenecen a ese recorrido. El diseño inferior documenta el corte RSS.
+
+**Tus fuentes** y **Tu lectura** se pueden plegar de forma independiente y
+abren expandidas. Sus títulos permiten abrir y cerrar con teclado. Reabrir un
+panel conserva su filtro y utiliza el resultado ya cargado. Las noticias usan
+tarjetas con portada opcional de DEV y una alternativa gráfica para artículos
+sin portada o con una imagen que falla. Ver [Plan105 §18.6](../../mvp/105-on-demand-tech-news.md#186-portadas-y-paneles-plegables).
+
+La tarjeta completa abre el artículo original en una pestaña nueva mediante
+un enlace nativo. **Tu lectura** combina fuente con un filtro de tema o
+etiqueta. Las agrupaciones Frontend, Backend, DevOps e IA usan las etiquetas
+de la fuente seleccionada. Si DEV tiene artículos guardados sin etiquetas de
+tema, **Tu lectura** mantiene la lista visible y ofrece **Actualizar DEV**.
+Ver [Plan105 §18.7](../../mvp/105-on-demand-tech-news.md#187-tarjetas-enlazadas-y-filtro-por-tema).
+
+Para el dueño habilitado en desarrollo, elegir daily.dev en **Tu lectura**
+presenta **Para ti de daily.dev**. La lista breve atribuye la procedencia y
+enlaza al original. La actualización es manual. El filtro de tema de
+daily.dev se ofrece cuando hay etiquetas y conserva su selección al alternar
+con DEV. [Plan105 §18.8](../../mvp/105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev).
+
 > Dirección editorial del2026-11-15, implementación local NEWS-05 solicitada
 > el2026-11-16. Dependencia: [plan105§10](../../mvp/105-on-demand-tech-news.md#10-news-05-composición-editorial-y-chips-de-temas--2026-11-16).
 > Solicitud confirmada: conservar sidenav y topbar y explorar un diseño más

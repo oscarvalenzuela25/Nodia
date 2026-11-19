@@ -6,6 +6,19 @@ import { describe, expect, it } from 'vitest';
 import { resolveHttpModulePolicy } from './http-module-policy.js';
 
 describe('HTTP module policy', () => {
+  it('admits only the exact Personal News operations for an authenticated owner', () => {
+    const controller = ['news/personal'];
+    for (const [method, handler] of [
+      ['GET', 'connections'], ['GET', 'articles'], ['POST', 'connections/:provider'],
+      ['POST', 'connections/:provider/test'], ['POST', 'connections/:provider/refresh'],
+      ['DELETE', 'connections/:provider'],
+    ]) {
+      expect(resolveHttpModulePolicy(controller, [handler], method)).toEqual({ routes: [], match: 'all' });
+    }
+    expect(resolveHttpModulePolicy(controller, ['articles'], 'POST')).toBeUndefined();
+    expect(resolveHttpModulePolicy(controller, ['connections/:provider/export'], 'GET')).toBeUndefined();
+    expect(resolveHttpModulePolicy(controller, ['connections', 'articles'], 'GET')).toBeUndefined();
+  });
   it.each([
     [['user', 'users'], '/users'],
     [['role', 'roles'], '/roles'],
