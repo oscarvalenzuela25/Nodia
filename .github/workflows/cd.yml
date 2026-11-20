@@ -158,3 +158,31 @@ jobs:
           RECEIPT_URL: ${{ steps.receipt.outputs.artifact-url }}
         run: |
           printf 'Delivery receipt: %s\n' "$RECEIPT_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  report-delivery:
+    name: Hand off the delivery receipt for reporting
+    needs: [gate, production]
+    if: >-
+      !cancelled() && github.run_attempt == 1 && needs.gate.result == 'success' &&
+      (needs.production.result == 'success' || needs.production.result == 'failure')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch the isolated reporter with this run ID
+        continue-on-error: true
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          retries: 0
+          script: |
+            const cdRunId = String(context.runId);
+            try {
+              await github.rest.actions.createWorkflowDispatch({
+                ...context.repo, workflow_id: 'cd-observability.yml', ref: 'development',
+                inputs: { cd_run_id: cdRunId }, request: { timeout: 20000 },
+              });
+              core.info('Delivery reporting dispatch acknowledged');
+            } catch {
+              core.setFailed('delivery_reporting_dispatch_unconfirmed');
+            }
