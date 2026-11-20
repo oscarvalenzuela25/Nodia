@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Alert, Button, Stack, Typography } from "@mui/material";
 import BookmarkBorderOutlined from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkAddedOutlined from "@mui/icons-material/BookmarkAddedOutlined";
@@ -8,6 +8,7 @@ import BlockLearningTools from "../AdaptiveWorkspace/BlockLearningTools";
 import LessonMarkdown from "../LessonMarkdown";
 import type { AdaptivePanelProps } from "../AdaptiveWorkspace/types";
 import type { LessonInteraction } from "../../infrastructure/learningSchemas";
+import { parseStudyPractice } from "../../infrastructure/studyPractice";
 import type { TopicClarificationProps } from "./TopicClarification";
 import { readTopicSelection } from "./selection";
 import { Topic, TopicActions, TopicColumns, TopicHeader, TopicText } from "./styles";
@@ -35,6 +36,7 @@ export default function LessonTopics({ blocks, ...props }: Props) {
   const [Loaded, setLoaded] = useState<ComponentType<TopicClarificationProps> | null>(null);
   const [loading, setLoading] = useState<OpenPanel | null>(null);
   const [failed, setFailed] = useState<OpenPanel | null>(null);
+  const topics = useMemo(() => blocks.map(block => ({ block, practice: parseStudyPractice(block.body_markdown, block.kind) })), [blocks]);
   const scope = JSON.stringify([props.session.id, props.contentVersionId]);
   const open = activePanel?.scope === scope ? activePanel : null;
   const finalActive = props.session.active_attempts.some(attempt => attempt.scope === "section_final" && attempt.state === "in_progress");
@@ -86,7 +88,7 @@ export default function LessonTopics({ blocks, ...props }: Props) {
   };
 
   return <Stack ref={lesson} sx={{ gap: 3, minWidth: 0 }}>
-    {blocks.map(block => {
+    {topics.map(({ block, practice }) => {
       const key = JSON.stringify([scope, block.id]);
       const retained = panels[key];
       const current = open?.blockId === block.id;
@@ -101,9 +103,9 @@ export default function LessonTopics({ blocks, ...props }: Props) {
         onSave={() => props.onSaveReadingPoint(block.id)}>
         <TopicColumns data-clarification-open={current && Loaded && retained ? true : undefined}>
           <Stack sx={{ gap: 1.5, minWidth: 0 }}>
-            <TopicText data-lesson-topic-text={block.id}><LessonMarkdown text={block.body_markdown} /></TopicText>
+            {practice.mainMarkdown && <TopicText data-lesson-topic-text={block.id}><LessonMarkdown text={practice.mainMarkdown} /></TopicText>}
             <BlockLearningTools session={props.session} busy={props.busy} command={props.command} onResult={props.onResult}
-              history={props.history} contentVersionId={props.contentVersionId} block={block} />
+              history={props.history} contentVersionId={props.contentVersionId} block={block} practice={practice} />
             <TopicActions sx={{ display: triggerHidden ? "none" : undefined }}>
               <Button ref={node => { if (node) triggers.current.set(block.id, node); else triggers.current.delete(block.id); }}
                 variant={candidate && !current ? "contained" : "outlined"} startIcon={<ChatBubbleOutlineOutlined />}

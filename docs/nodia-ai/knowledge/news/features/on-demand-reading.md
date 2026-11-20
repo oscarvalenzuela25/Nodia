@@ -4,11 +4,11 @@
   "document_id": "news.on-demand-reading",
   "product_id": "news",
   "kind": "feature",
-  "revision": 10,
+  "revision": 11,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Primera entrega RSS pública adoptada. El catálogo Go, Rust y Kubernetes queda como ensayo. El corte personal posterior retira las fuentes RSS activas y conserva compatibilidad HTTP pública."
+    "notes": "La primera entrega RSS queda como antecedente. Client abre la vista personal con sesión válida y el GET de compatibilidad devuelve una lista vacía."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -53,6 +53,11 @@
 ---
 
 # Lectura y actualización bajo demanda — contexto funcional para NodiaAI
+
+El [acceso vigente de Client](../../../../mvp/105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19)
+requiere sesión validada y usa [conexiones personales](personal-connections.md).
+La lectura pública de los apartados históricos se conserva como evidencia
+del corte RSS. Su endpoint de compatibilidad devuelve una lista vacía.
 
 ## Corte personal y compatibilidad pública — 2026-11-18
 
@@ -203,3 +208,4 @@ y respuestas de otro actor descartadas; fuentes adicionales y adopción pendient
 | 5 | Fetch exclusivo super_admin y primer RSS local | Plan105 §9, contratos y evidencia | Implementado por alcance web.dev; otros usuarios sólo leen, sin adopción, herramienta o aprobación nuevas |
 | 6 | NEWS-05: diseño editorial, chips y foco | Plan105 §10 y evidencia visual | Mismos filtros/contratos y autoridad; sin capacidad de chat o publicación nuevas |
 | 10 | Conservación del corte RSS como antecedente y transición a Noticias personales | Plan105 §18 y contrato público de compatibilidad | La lectura pública queda vacía y la actualización histórica responde fuente retirada |
+| 11 | Acceso de Client con sesión validada | Plan105 §19 | Se conserva la respuesta vacía de compatibilidad para clientes anteriores |

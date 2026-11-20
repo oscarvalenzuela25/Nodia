@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, type Ref } from "react";
 import { Button, Typography } from "@mui/material";
 import { ArrowForwardOutlined, AutoStoriesOutlined, PlayArrowOutlined } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ type Props = {
   view: Continuation;
   paused: boolean;
   busy: boolean;
+  headingRef?: Ref<HTMLHeadingElement>;
   preparationState?: "queued" | "running" | null;
   jobReadError?: { busy: boolean; onRetry: () => unknown };
   onSelectUnit: (sectionId: string, unitId: string) => void;
@@ -21,7 +22,7 @@ type Props = {
   onRefresh?: () => void;
 };
 
-export default function StudyContinuation({ view, paused, busy, preparationState, jobReadError, onSelectUnit, onPrepare, onOpen, onContinue, onInspectJob, onRefresh }: Props) {
+export default function StudyContinuation({ view, paused, busy, headingRef, preparationState, jobReadError, onSelectUnit, onPrepare, onOpen, onContinue, onInspectJob, onRefresh }: Props) {
   const { t } = useTranslation();
   const headingId = useId();
   const actionable = ["first", "prepare", "open", "continue", "job"].includes(view.kind);
@@ -37,7 +38,7 @@ export default function StudyContinuation({ view, paused, busy, preparationState
   const actionKey = view.kind === "prepare" && view.firstLesson ? "prepare_first" : view.kind;
   if (preparationState) return <ContinuationPanel aria-labelledby={headingId}>
     <Context>
-      <Typography id={headingId} variant="h5" component="h2" sx={{ fontWeight: 700 }}>{t("teacher:continuation.preparing_lesson")}</Typography>
+      <Typography ref={headingRef} tabIndex={-1} id={headingId} variant="h5" component="h2" sx={{ fontWeight: 700 }}>{t("teacher:continuation.preparing_lesson")}</Typography>
       <StateChip role="status" size="small" color="info" label={t(`teacher:jobs.${preparationState}`)} sx={{ alignSelf: "flex-start" }} />
     </Context>
     <LessonTitle>{view.target?.title}</LessonTitle>
@@ -53,7 +54,7 @@ export default function StudyContinuation({ view, paused, busy, preparationState
   return <ContinuationPanel aria-labelledby={headingId}>
     <Context>
       <Typography variant="overline" color="primary">{t("teacher:continuation.eyebrow")}</Typography>
-      <Typography id={headingId} variant="h5" component="h2">{t(`teacher:continuation.titles.${view.kind}`)}</Typography>
+      <Typography ref={headingRef} tabIndex={-1} id={headingId} variant="h5" component="h2">{t(`teacher:continuation.titles.${view.kind}`)}</Typography>
       {view.target && <LessonTitle>{view.target.title}</LessonTitle>}
       <Typography color="text.secondary">{t(`teacher:continuation.descriptions.${view.kind}`)}</Typography>
       {view.kind === "prepare" && !view.canPrepare && <Typography color="text.secondary" variant="body2">{t("teacher:continuation.preparation_unavailable")}</Typography>}

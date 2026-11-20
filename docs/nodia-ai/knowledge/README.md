@@ -10,6 +10,9 @@ La [ficha de Noticias personales](news/features/personal-connections.md)
 documenta el piloto DEV por usuario, implementado y verificado en laboratorio.
 El piloto daily.dev tiene alcance local para un único dueño. El PAT real y el
 uso distribuido se evalúan por proveedor y entorno.
+El [acceso con sesión validada](news/README.md#acceso-con-sesión--2026-11-19)
+se registra en las fichas candidatas de Noticias. Retirar el aviso informativo
+de Inicio es un ajuste de presentación sin efecto sobre el contexto funcional.
 La [renovación de Noticias dev](news/README.md#renovación-de-fuentes--2026-11-18)
 conserva el ensayo de fuentes RSS y el historial de
 [lectura bajo demanda](news/features/on-demand-reading.md).

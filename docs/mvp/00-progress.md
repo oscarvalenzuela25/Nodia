@@ -1,5 +1,18 @@
 # Progreso del MVP — Nodia
 
+**Teacher, práctica interactiva en la lección — 2026-11-19.** El alcance
+incluye pistas y soluciones plegadas, comprobación de respuestas con clave
+explícita y revisión guiada para respuestas abiertas. La navegación por
+secciones y los avisos de preparación se registran en
+[Plan106 §19](106-nodia-teacher-guided-ux-redesign.md#19-práctica-interactiva-durante-el-estudio--2026-11-19).
+
+**Noticias con sesión — 2026-11-19.** Client requiere sesión validada para
+mostrar el enlace y abrir `/news`. Las visitas anónimas a ese destino llevan
+a Login. Inicio sigue disponible para visitantes sin el aviso de modo demo.
+Las fuentes se configuran por usuario en la vista personal. La verificación
+y adopción del ajuste se registran en
+[Plan105 §19](105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
+
 **NodiaAI, consultas de Market y Caja — 2026-11-19.** La publicación de
 esta rama añade dos lecturas de Listas de Market y cuatro de Caja. Los
 lectores nativos reutilizan la transacción del gateway. PostgreSQL aislado

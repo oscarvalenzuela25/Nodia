@@ -4,11 +4,11 @@
   "document_id": "news.personal-connections",
   "product_id": "news",
   "kind": "feature",
-  "revision": 4,
+  "revision": 5,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Circuitos DEV y piloto de un solo dueño de daily.dev implementados localmente. Build, navegador, HTTP y PostgreSQL verificados por alcance. El acceso con PAT real y la adopción conservan su verificación propia."
+    "notes": "Client requiere sesión validada para Noticias. DEV y el piloto de daily.dev conservan la propiedad de cada conexión y sus comprobaciones por alcance."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -56,6 +56,7 @@ evaluación de condiciones y OAuth para uso distribuido.
 | «Quiero mi For You de daily.dev» | Consultar lectura personal | Explicar el piloto local de un dueño y el acceso desde el panel de daily.dev si está habilitado |
 | «¿Mis noticias vienen de mis intereses?» | Entender procedencia | Aclarar cuál fuente usa y explicar etiquetas seguidas de DEV o `For You` de daily.dev según corresponda |
 | «¿Te puedo pasar mi clave aquí?» | Configurar credencial | Remitir al formulario protegido de la vista autenticada de Noticias y mantener el secreto fuera del chat |
+| «¿Puedo ver Noticias sin iniciar sesión?» | Acceder a la vista | Explicar que la vista requiere una sesión de Nodia y que la fuente se conecta con la credencial propia |
 | «Quiero leer las noticias de otra cuenta» | Acceso a datos personales | Explicar que cada cuenta consulta sus propias conexiones |
 
 ## Operaciones y contratos
@@ -84,11 +85,15 @@ El acceso corresponde a la interfaz autenticada de Noticias.
 
 ## Reglas, acceso y restricciones
 
+La entrada canónica `/news` requiere sesión validada con identidad. Una
+persona autenticada puede entrar con cero conexiones para dar de alta su
+propia API key o PAT. [Plan105 §19](../../../../mvp/105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
+
 La propiedad y la caché de la vista personal se comprueban por usuario y
 conexión. La sesión determina identidad en Server. Sólo el dueño puede probar,
 actualizar, reemplazar o desconectar su fuente. El cierre de sesión descarta
-estado privado en Client. La [capa pública](on-demand-reading.md) conserva el
-contrato de compatibilidad con una lista vacía. La
+estado privado en Client. El [GET histórico](on-demand-reading.md) conserva
+una lista vacía de compatibilidad. La
 [decisión de almacenamiento y autoridad](../../../../architecture/decisions/ADR-110-personal-news-connection-ownership.md)
 delimita el cifrado, la propiedad y la caché de la conexión. El piloto daily.dev
 sólo se habilita para el dueño configurado localmente en desarrollo y conserva
@@ -136,3 +141,4 @@ del registro de publicación de NodiaAI.
 | 2 | Alcance aprobado para implementación, Plan105 §18 y ADR110 propuesto | Piloto local DEV, daily.dev pendiente y validación por separado | Contrato privado por dueño y compatibilidad vacía para el GET público |
 | 3 | Implementación local y evidencia, Plan105 §18.5 | Ensayos UI, HTTP, esquema y recuperación aislados. Autenticación DEV real pendiente | Migración aditiva y POST público histórico de fuente retirada |
 | 4 | Piloto local limitado de daily.dev, Plan105 §18.8 | Implementado para un dueño en desarrollo, con UI y HTTP aislados comprobados. PAT real y OAuth por separado | Snapshot y lectura privada de daily.dev aislados de DEV y del catálogo público |
+| 5 | Client autenticado para Noticias, Plan105 §19 | Menú y entrada canónica bajo sesión validada y configuración por dueño | Se conserva el contrato privado y el GET histórico vacío |

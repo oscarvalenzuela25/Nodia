@@ -30,8 +30,6 @@ export const SessionTitleRow = styled(Box)(({ theme }) => ({
 export const SessionActions = styled(Stack)(({ theme }) => ({
   display: "flex", flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: theme.spacing(1), minWidth: 0,
   "& > button": { minHeight: 44, [theme.breakpoints.down("sm")]: { width: "100%" } },
-  "& > .MuiChip-root": { flexShrink: 0, [theme.breakpoints.down("sm")]: { marginLeft: "auto" } },
-  "& > [data-teacher-job-status]": { minWidth: 0, maxWidth: "100%" },
 }));
 export const Panel = styled(Paper)(({ theme }) => ({ padding: theme.spacing(3), borderRadius: theme.spacing(2), border: `1px solid ${theme.palette.divider}`, backgroundImage: "none", minWidth: 0, overflowWrap: "anywhere", [theme.breakpoints.down("sm")]: { padding: theme.spacing(2) } }));
 export const PlanCard = styled(Panel)(({ theme }) => ({

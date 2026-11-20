@@ -832,3 +832,49 @@ en la comprobación focal final. Tipado, compilación, lint del código fuente y
 `knowledge:check` pasaron. El alcance de la validación fue local.
 
 [Ficha de aclaraciones contextuales](../nodia-ai/knowledge/studies/features/contextual-clarifications.md#aclaraciones-por-tópico-y-marcador-de-lectura--2026-11-17).
+
+## 19. Práctica interactiva durante el estudio — 2026-11-19
+
+El ajuste solicitado abarca los bloques de la lección y las acciones al pie
+del contenido. Las pistas y soluciones identificadas por encabezados o
+etiquetas explícitas quedan plegadas hasta que la persona las solicite. La
+consigna queda disponible en el cuerpo del bloque. El material guardado
+conserva su versión y su formato Markdown.
+
+Una serie numerada de espacios con una única clave correspondiente ofrece
+campos individuales y **Comprobar mis respuestas**. Client compara cada
+respuesta con su clave y permite corregirla. Con claves ambiguas o sin una
+correspondencia clara se ofrece la lectura de la solución disponible. Las
+respuestas abiertas permiten escribir, **Revisar mi respuesta** y seguir
+editando. La revisión muestra los criterios del bloque cuando existen y
+orientaciones generales de autoevaluación cuando faltan. El guardado opcional
+de los bloques que ya lo admiten conserva su ancla, revisión y recibo.
+
+Estas interacciones consumen cero generaciones. La comparación sirve como
+ayuda de estudio y su resultado queda en Client. La nota, la evidencia de
+aprendizaje y la verificación de sección siguen el contrato vigente de
+Teacher. El material existente y el manifiesto de generación se conservan.
+[Contratos de Teacher](97-nodia-teacher-technical-contracts.md),
+[evidencia de aprendizaje](../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md).
+
+Los avisos de generación, error y recuperación se presentan en alertas
+separadas por encima de los controles relacionados. La consulta automática
+mantiene el progreso al día. Los fallos de lectura conservan un reintento y
+las solicitudes inciertas conservan la conciliación del recibo. La acción de
+la lección se llama **Generar evaluación final de la sección**. **Ir a la
+siguiente sección** aparece al final de la fila cuando hay un destino en el
+plan y usa la navegación por cursor. Los permisos y requisitos de la
+evaluación final se mantienen en Server.
+
+En Chromium local, el recorrido con datos sintéticos comprobó la solución
+oculta, la corrección de 2/3 a 3/3, los criterios y el foco al mejorar
+la respuesta abierta, el aviso sobre las acciones y la apertura automática
+de la evaluación a partir de una única solicitud. El avance guardó un
+único cursor para la siguiente sección. A 390 px se verificó la apertura
+de la pista con teclado y el ancho sin desbordamiento horizontal. La
+validación se ejecutó sin proveedores de IA ni tráfico de producción.
+La suite de Client registró 3326 pruebas aprobadas en 410 archivos. Con
+la versión final pasaron 306 pruebas de Teacher, el tipado, el lint, la
+compilación y `knowledge:check`.
+[Ficha de práctica](../nodia-ai/knowledge/studies/features/lessons-practice-and-review.md#práctica-interactiva-durante-la-lección--2026-11-19),
+[ficha de experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#acciones-y-avisos-durante-el-estudio--2026-11-19).

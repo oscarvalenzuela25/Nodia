@@ -15,8 +15,9 @@ import {
 } from "@mui/material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import NewspaperOutlinedIcon from "@mui/icons-material/NewspaperOutlined";
-import { NEWS_ROUTE } from "../../../modules/news/constants/routes";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import useAuth from "../../../hooks/useAuth";
+import { NEWS_ROUTE } from "../../../modules/news/constants/routes";
 
 import {
   useVisibleModules,
@@ -85,6 +86,8 @@ const Sidenav: FC<Props> = ({
   const location = useLocation();
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
+  const { isSessionValid, user } = useAuth();
+  const canOpenNews = isSessionValid && Boolean(user?.id);
   const userModules = useVisibleModules();
   const lang = i18n.language || "es";
 
@@ -112,12 +115,15 @@ const Sidenav: FC<Props> = ({
       path: "/",
       icon: <HomeOutlinedIcon />,
     };
-    const newsItem: SidenavItem = {
-      id: "news-public", nameKey: "menu_news", path: NEWS_ROUTE, icon: <NewspaperOutlinedIcon />,
-    };
+    const fixedItems = [homeItem];
+    if (canOpenNews) {
+      fixedItems.push({
+        id: "news", nameKey: "menu_news", path: NEWS_ROUTE, icon: <NewspaperOutlinedIcon />,
+      });
+    }
 
     if (!userModules || userModules.length === 0) {
-      return [homeItem, newsItem];
+      return fixedItems;
     }
 
     const sortedGroups = userModules;
@@ -151,8 +157,8 @@ const Sidenav: FC<Props> = ({
       };
     });
 
-    return [homeItem, newsItem, ...dynamicGroups];
-  }, [userModules, lang, t]);
+    return [...fixedItems, ...dynamicGroups];
+  }, [canOpenNews, userModules, lang, t]);
 
   const activeItem = activeNavigationItem(location.pathname,
     menuItems.flatMap(item => item.subModules?.length ? item.subModules : [item]));

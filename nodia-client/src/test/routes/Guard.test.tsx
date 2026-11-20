@@ -1,4 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
+import { createMemoryRouter } from "react-router";
+import { RouterProvider } from "react-router/dom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import Guard from "../../routes/Guard";
 import useAuth from "../../hooks/useAuth";
@@ -16,7 +18,19 @@ describe("Guard", () => {
   it("allows a visitor to view a route in demo mode", () => {
     render(<Guard><Page /></Guard>);
     expect(screen.getByText("Demo content")).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent("Modo demo");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("redirects visitors to login before mounting a session-only page", async () => {
+    const router = createMemoryRouter([
+      { path: "/news", element: <Guard requireSession><Page /></Guard> },
+      { path: "/login", element: <h1>Iniciar sesión</h1> },
+    ], { initialEntries: ["/news"] });
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByRole("heading", { name: "Iniciar sesión" })).toBeVisible();
+    expect(screen.queryByText("Demo content")).not.toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/login");
   });
 
   it("switches to the account view after login and back to demo after logout", () => {
