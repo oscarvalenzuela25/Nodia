@@ -1,5 +1,15 @@
 # Noticias — preparación y entrega
 
+## Acceso de Client a Noticias personales
+
+El ajuste de [Plan105 §19](../../mvp/105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19)
+aplica a navegación y montaje de Client. En el SHA candidato, comprobar que
+Inicio permanece disponible sin sesión y sin el aviso de modo demo. Verificar
+menús móvil y de escritorio y la redirección de `/news` a `/login` para
+visitantes. Con sesión validada, comprobar acceso a la vista personal y al
+formulario de conexión de una fuente habilitada. El [GET de compatibilidad](http-contract.md#compatibilidad-de-la-capa-pública)
+mantiene el resultado vacío para clientes anteriores.
+
 ## Gate de Noticias personales
 
 El [plan de Noticias personales](../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales)

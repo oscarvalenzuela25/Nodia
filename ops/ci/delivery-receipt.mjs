@@ -8,6 +8,7 @@ const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_starte
   'upload_requested', 'upload_rejected', 'upload_receiving', 'upload_open_requested', 'upload_verified', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
   'asset_check_requested', 'asset_upload_requested', 'asset_hash_registration_requested',
   'pages_submission_requested', 'published_assets_verification_failed']);
+export const receiptStatus = value => statusValues.has(value) ? value : 'not_confirmed';
 const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_unsuccessful', 'pages_response_invalid',
   'pages_response_limit', 'client_preflight_required_before_backend', 'client_preflight_identity_mismatch',
   'client_preflight_result_invalid', 'client_static_changed_after_preflight', 'static_extract_already_exists',
@@ -53,7 +54,7 @@ const uuid = value => typeof value === 'string' && /^[a-f0-9]{8}(?:-[a-f0-9]{4})
 const release = value => typeof value === 'string' && /^(?:backend|client)-[a-f0-9]{12}-[a-f0-9]{12}$/.test(value);
 function state(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const result = { status: statusValues.has(value.status) ? value.status : 'not_confirmed' };
+  const result = { status: receiptStatus(value.status) };
   for (const [key, valid] of Object.entries({ source_sha: isSha, candidate_source_sha: isSha, package_tree_sha256: isHex,
     release_id: release, deployment_id: uuid, upload_id: isHex,
     operation_id: item => typeof item === 'string' && /^[a-f0-9]{32}$/.test(item),

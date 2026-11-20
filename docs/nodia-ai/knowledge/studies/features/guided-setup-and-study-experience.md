@@ -4,7 +4,7 @@
   "document_id": "studies.guided-setup-and-study-experience",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 6,
+  "revision": 7,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -75,6 +75,15 @@
   "approval": null
 }
 ---
+
+## Acciones y avisos durante el estudio — 2026-11-19
+
+Los avisos se muestran en alertas por encima de los controles relacionados.
+La preparación consulta el estado automáticamente. Los errores de lectura
+permiten reintentar esa consulta y la recuperación de una operación incierta
+usa su recibo. **Generar evaluación final de la sección** inicia la acción
+existente cuando está autorizada. **Ir a la siguiente sección** usa el
+cursor del plan para continuar la lectura. [Plan106 §19](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#19-práctica-interactiva-durante-el-estudio--2026-11-19).
 
 ## Guía opcional y continuidad — implementación local2026-11-16
 

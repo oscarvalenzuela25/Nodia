@@ -4,11 +4,11 @@
   "document_id": "news",
   "product_id": "news",
   "kind": "product",
-  "revision": 13,
+  "revision": 14,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Primera versión RSS publicada. DEV implementado y comprobado localmente. Piloto daily.dev de un dueño implementado con verificaciones de navegador y HTTP aislado. El acceso real y la adopción se comprueban por proveedor."
+    "notes": "Acceso de Client restringido a sesión validada según Plan105 §19. DEV y el piloto daily.dev conservan sus verificaciones por entorno. La primera versión RSS queda como antecedente."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -55,6 +55,14 @@
 
 # Noticias — contexto de producto para NodiaAI
 
+## Acceso con sesión — 2026-11-19
+
+El menú autenticado muestra el destino canónico `/news`. Una visita anónima
+al enlace directo lleva a Login. El usuario con sesión validada puede entrar
+a la vista personal y conectar su propia API key o PAT para una fuente
+habilitada. El GET histórico de compatibilidad devuelve una lista vacía.
+[Plan105 §19](../../../mvp/105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
+
 ## Noticias personales — 2026-11-18
 
 [Plan105 §18](../../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales)
@@ -63,8 +71,8 @@ la aprobación para implementar un piloto DEV local con su PAT y custodia en
 Server. La primera visita ofrece conectar al dueño. Cada consulta al proveedor
 requiere una acción explícita. El [piloto local de daily.dev](../../../mvp/105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev)
 limita su lectura personal a un dueño en desarrollo. Términos, permiso de uso
-distribuido y OAuth de sólo lectura se evalúan por separado. La capa pública
-conserva la lectura de una lista vacía. La
+distribuido y OAuth de sólo lectura se evalúan por separado. El endpoint de
+compatibilidad conserva una lista vacía. La
 [verificación local](../../../mvp/105-on-demand-tech-news.md#185-implementación-y-verificación-local)
 distingue el circuito implementado del acceso real con PAT y de la adopción.
 Las fichas conservan `draft`, `unregistered` y `approval: null`.
@@ -177,3 +185,4 @@ los de primera fuente RSS con evidencia local, sin herramienta NodiaAI o adopci�
 | 11 | Conexiones personales por dueño y retiro de los RSS activos | Plan105 §18, contrato y ADR110 | Piloto local DEV con verificación propia. Compatibilidad pública con resultados vacíos |
 | 12 | Implementación y verificación local de Noticias personales | Plan105 §18.5 | Circuito de DEV ensayado en laboratorio. daily.dev, PAT real, CI y adopción pendientes |
 | 13 | Piloto local de daily.dev implementado para un único dueño | Plan105 §18.8 | Vista por fuente y actualización manual. La verificación con PAT real, OAuth y uso distribuido siguen por alcance |
+| 14 | Noticias personal con sesión validada y enlace autenticado | Plan105 §19 | El GET histórico conserva la respuesta vacía. El contexto permanece como borrador sin publicar |

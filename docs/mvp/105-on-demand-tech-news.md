@@ -6,9 +6,10 @@
 > La [verificación local](#185-implementación-y-verificación-local) registra Client,
 > Server, PostgreSQL y el actualizador de CD aislado.
 > Continuación para un solo dueño en desarrollo: [piloto personal daily.dev §18.8](#188-piloto-personal-local-de-dailydev).
+> Ajuste de acceso en Client: [Noticias con sesión y ajuste de Inicio §19](#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
 
 > Alcance de la primera versión RSS del 2026-11-16: [§9](#9-obtención-exclusiva-super_admin-y-primera-integración-rss--2026-11-16).
-> Noticias pública debajo de Home; fuentes con cupo sólo para sesiones válidas,
+> En ese corte, Noticias era pública debajo de Home; fuentes con cupo sólo para sesiones válidas,
 > toda obtención externa sólo por super_admin activo. RSS público primero;
 > daily.dev deshabilitada hasta resolver
 > condiciones. Sucede las candidatas privadas y el orden de fuentes de §5/§7.
@@ -28,11 +29,10 @@
 
 ## 1. Experiencia propuesta
 
-Una sección **Noticias**, con destino canónico candidato `/news`, independiente
-del grupo del menú conforme a [ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md).
-Por la solicitud de §8 será pública, sin asignación de módulo, con enlace fijo
-debajo de Home; aún no existe como ruta implementada. La excepción de Noticias
-no cambia [autoridad89](89-module-access-and-user-data-scope.md) para otros dominios.
+La sección **Noticias** usa `/news` como destino canónico independiente del
+grupo del menú conforme a [ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md).
+El acceso requiere sesión validada con identidad según [§19](#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
+La propuesta inicial y su acceso público quedan documentados en §8.
 
 1. Al entrar, mostrar las noticias conservadas y cuándo se consultó cada fuente.
    Si aún no existen, explicar el estado y ofrecer **Obtener noticias**.
@@ -777,7 +777,7 @@ cuentas y el encaje de la función requiere revisión propia.
    una fuente para ver tus noticias** con tarjetas separadas para DEV Community
    y daily.dev. En este corte DEV ofrece la conexión si está configurado y
    daily.dev explica su estado pendiente. Se puede continuar sin conectar.
-   El acceso anónimo conserva el contrato público de compatibilidad.
+   La respuesta HTTP de compatibilidad y el acceso en Client se delimitan en §19.
 2. **Conectar** abre el formulario de la fuente elegida. La clave se oculta al
    escribir y se puede mostrar temporalmente con un control etiquetado. **Probar
    y conectar** hace una prueba autenticada mínima y guarda la conexión sólo al
@@ -1070,3 +1070,40 @@ completó la entrega del [PR 71](https://github.com/oscarvalenzuela25/Nodia/pull
 La evidencia de §18.8 conserva sus límites de entorno y credenciales. Para
 una eventual distribución de daily.dev se aplican las condiciones de términos,
 permisos y OAuth de §18.8.
+
+## 19. Noticias con sesión y ajuste de Inicio — 2026-11-19
+
+El usuario solicita retirar Noticias de la experiencia sin sesión. El enlace
+debajo de Inicio y la ruta `/news` requieren una sesión validada con identidad.
+Una visita anónima a `/news` redirige a `/login`. Una sesión en restauración o
+temporalmente indisponible sigue el flujo de recuperación de
+[autenticación](14-authentication.md#guards-de-navegación-y-modo-demo).
+Noticias conserva el acceso por sesión sin asignación de módulo. Este ajuste
+sucede la entrada pública de Client descrita en §8 y
+[autoridad89](89-module-access-and-user-data-scope.md#noticias-pública--alcance-confirmado2026-11-16).
+
+Cada usuario autenticado accede a la vista personal y puede configurar su
+propia API key o PAT de una fuente habilitada. La consulta a una fuente parte
+de una acción explícita sobre la conexión de su dueño. `GET /api/v1/news`
+sigue sirviendo una lista vacía para clientes anteriores. La autoridad de
+`/api/v1/news/personal` permanece en Server. [Contratos HTTP](../features/news/http-contract.md).
+
+Inicio conserva su contenido público y la entrada a Login. Se retira el
+aviso informativo de modo demo. El ajuste de acceso y presentación corresponde
+a Client. Las fichas candidatas de
+[Noticias](../nodia-ai/knowledge/news/README.md) y
+[conexiones personales](../nodia-ai/knowledge/news/features/personal-connections.md)
+registran la navegación vigente. El retiro del aviso de Inicio deja intactos
+los conceptos, acciones y resultados de producto que documenta NodiaAI.
+
+En el candidato local pasaron las 53 pruebas focales de rutas, sesión, menú
+lateral y Noticias personales. La suite de Client pasó 3.310 pruebas en 409
+archivos. También pasaron `typecheck`, `lint` y `build`. `knowledge:check` y
+`knowledge:build` conservaron el identificador del bundle compilado de
+`origin/development`.
+En Chromium local se comprobó Inicio como visitante en escritorio y a
+390 × 844, incluido el menú móvil abierto. Las entradas `/news` y `/news/`
+llevaron a Login con cero consultas de Noticias. Una sesión sintética validada
+abrió Mis noticias y la acción Conectar DEV sin registrar una clave real.
+La adopción se comprueba por separado de NEWS-001. Los cortes RSS de §8–§16
+conservan valor histórico.

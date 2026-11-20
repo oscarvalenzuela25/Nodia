@@ -41,7 +41,7 @@ En el cliente, `sessionStatus` vive solo en memoria: `anonymous`, `restoring`, `
 6. **Fallos:** un refresh rechazado con 401/403 limpia la sesión y la caché. Un error de red/5xx al recuperar la sesión conserva las credenciales, mantiene bloqueados los datos y muestra una opción de reintentar o cerrar sesión. Si falla la renovación anticipada pero el access token sigue vigente y validado, puede seguir usándose hasta vencer; después se bloquean los envíos.
 7. **Logout:** limpia token, usuario, contexto, caché y persist. Las respuestas tardías no recuperan una sesión cerrada. Los cambios de token de otra pestaña se validan antes de habilitar datos.
 
-En el servidor la decisión definitiva ocurre en **cada petición**: firma/issuer/audience/tipo/expiración del JWT, sesión existente no vencida ni revocada y usuario activo. El guard se registra como `APP_GUARD`, por lo que también protege automáticamente nuevos controladores. Solo se usa `@Public()` en métodos que deliberadamente no requieren access Bearer: login, refresh, logout y health (`GET /api/v1`). Refresh exige una cookie válida; logout permite revocación idempotente sin access token vigente. Swagger y el preflight CORS son infraestructura HTTP, no endpoints de datos autenticados.
+En el servidor la decisión definitiva ocurre en **cada petición**: firma/issuer/audience/tipo/expiración del JWT, sesión existente no vencida ni revocada y usuario activo. El guard se registra como `APP_GUARD`, por lo que también protege automáticamente nuevos controladores. `@Public()` se reserva para métodos que deliberadamente prescinden de access Bearer, como login, refresh, logout, health (`GET /api/v1`) y el GET histórico de Noticias con respuesta vacía. Refresh exige una cookie válida y logout permite revocación idempotente sin access token vigente. Swagger y el preflight CORS son infraestructura HTTP.
 
 La sesión tiene una duración absoluta de siete días desde el login. Cada access token dura como máximo quince minutos, sin extender ese límite de siete días. Vencida o revocada la sesión del servidor, hace falta volver a iniciar sesión con Google.
 
@@ -69,6 +69,13 @@ export const getUsers = () => mainInstance.get("/users");
 Este refactor conserva las reglas de sesión, los guards y el contrato del backend.
 
 ## Guards de navegación y modo demo
+
+Inicio admite visitantes y conserva el acceso a Login. El ajuste del
+2026-11-19 retira el aviso informativo de modo demo. Noticias en `/news`
+requiere sesión validada con identidad y lleva a `/login` ante una visita
+anónima. La restauración usa el flujo común de sesión. El endpoint histórico
+`GET /api/v1/news` conserva la lista vacía de compatibilidad.
+[Plan105 §19](105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
 
 Requisito confirmado el 2026-09-12: separar la navegación estricta de la navegación que admite demo.
 

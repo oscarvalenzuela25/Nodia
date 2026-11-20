@@ -5,6 +5,7 @@ import AddOutlined from "@mui/icons-material/AddOutlined";
 import SchoolOutlined from "@mui/icons-material/SchoolOutlined";
 import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
+import ArrowForwardOutlined from "@mui/icons-material/ArrowForwardOutlined";
 import { Link, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import LessonTopics from "../../components/LessonTopics";
@@ -136,7 +137,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const [selectionReady, setSelectionReady] = useState(false);
   const [selectionDirty, setSelectionDirty] = useState(false);
   const [recordingMessage, setRecordingMessage] = useState(false);
-  const [jobSelection, setJobSelection] = useState(() => restoreJob(session));
+  const [jobSelection, setJobSelection] = useState(() => ({ ...restoreJob(session), unitId: session.cursor.unit_id }));
   const jobId = jobSelection.jobId;
   const [proposalId, setProposalId] = useState<string | null>(session.latest_proposal?.id ?? null);
   const [unitId, setUnitId] = useState<string | null>(session.cursor.unit_id);
@@ -151,7 +152,11 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const [adaptiveOpen, setAdaptiveOpen] = useState(false);
   const [diagnosticOpen, setDiagnosticOpen] = useState(false);
   const lessonHeading = useRef<HTMLHeadingElement>(null);
+  const continuationHeading = useRef<HTMLHeadingElement>(null);
   const assessmentHeading = useRef<HTMLHeadingElement>(null);
+  const nextSectionFocus = useRef<string | null>(null);
+  const nextSectionRequest = useRef<Cursor | null>(null);
+  const [nextSectionFailure, setNextSectionFailure] = useState<string | null>(null);
   const [archiving, setArchiving] = useState(false);
   const [editingSession, setEditingSession] = useState(false);
   const [selecting, setSelecting] = useState(false);
@@ -183,15 +188,19 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const refreshTeacher = command.refresh;
 
   const applyResult = useCallback((result: CommandResult) => {
-    if (result.job_id) setJobSelection({ jobId: result.job_id, followResult: true });
+    if (result.job_id) {
+      nextSectionRequest.current = null;
+      setJobSelection({ jobId: result.job_id, followResult: true, unitId });
+    }
     if (result.proposal_revision_id) setProposalId(result.proposal_revision_id);
     if (result.attempt_id && result.attempt_id !== attemptId) { setAttemptId(result.attempt_id); setQuestionId(null); }
-  }, [attemptId]);
+  }, [attemptId, unitId]);
   const onTerminal = useCallback((job: Job) => {
     void refreshTeacher(`jobs/${job.job_id}`);
   }, [refreshTeacher]);
   const onReady = useCallback((job: Job) => {
-    const ref = readyJobResult(job, jobSelection);
+    // An explicit destination takes precedence over opening a result automatically.
+    const ref = nextSectionRequest.current ? null : readyJobResult(job, jobSelection);
     if (ref && typeof ref.proposal_revision_id === "string") setProposalId(ref.proposal_revision_id);
     const nextAttempt = nextAttemptId(ref, attemptId);
     if (nextAttempt) { setAttemptId(nextAttempt); setQuestionId(null); }
@@ -270,12 +279,43 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     if (saved) { setLocalCursor(saved); setUnitId(null); setAttemptId(null); setQuestionId(null); setOutlineExpanded(true); }
   };
 
-  const selectUnit = async (sectionId: string, nextUnitId: string) => {
+  const openSavedUnit = (cursor: Cursor) => {
+    setLocalCursor(cursor);
+    setUnitId(cursor.unit_id);
+    setAttemptId(null);
+    setQuestionId(null);
+    setHint(null);
+    setOutlineExpanded(false);
+  };
+  const openNextSection = (cursor: Cursor) => {
+    nextSectionFocus.current = cursor.unit_id;
+    nextSectionRequest.current = null;
+    setNextSectionFailure(null);
+    setJobSelection(current => current.followResult ? { ...current, followResult: false } : current);
+    openSavedUnit(cursor);
+  };
+  const selectUnit = async (sectionId: string, nextUnitId: string, fromNextSection = false) => {
     if (locked || draftAnswer || draftConflict || recordingMessage || !plan?.outline.sections.some(section => section.id === sectionId && section.units.some(unit => unit.id === nextUnitId))) return;
     const cursor: Cursor = { ...session.cursor, phase: "setup", plan_revision_id: plan.id, section_id: sectionId, unit_id: nextUnitId, content_version_id: null, attempt_id: null, item_id: null, block_id: null };
+    nextSectionRequest.current = fromNextSection ? cursor : null;
+    setNextSectionFailure(null);
     const saved = await reinforcementNavigation.choose(cursor, value => command.execute(`sessions/${session.id}/cursor`, { expected_cursor_revision: value.revision, ...cursorBody(value) }, "PATCH"));
-    if (saved) { setLocalCursor(saved); setUnitId(nextUnitId); setAttemptId(null); setQuestionId(null); setHint(null); setOutlineExpanded(false); }
+    if (saved) {
+      if (fromNextSection) openNextSection(saved);
+      else openSavedUnit(saved);
+    } else if (fromNextSection) setNextSectionFailure(unitId);
   };
+  useEffect(() => {
+    if (nextSectionFailure && !command.isPending && !command.uncertain) nextSectionRequest.current = null;
+  }, [command.isPending, command.uncertain, nextSectionFailure]);
+  useEffect(() => {
+    if (nextSectionFocus.current !== unitId || material.isFetching || !unitId) return;
+    const heading = lessonHeading.current ?? continuationHeading.current;
+    if (!heading) return;
+    nextSectionFocus.current = null;
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView?.({ block: "start" });
+  }, [unitId, material.isFetching, material.data]);
   const continuationContext = plan ? { plan, cursor: localCursor, selectedUnitId: unitId, attemptId,
     attemptPlanRevisionId: attempt.data?.attempt_id === attemptId ? attempt.data?.plan_revision_id : undefined,
     material: material.data, allowedActions: session.allowed_actions, paused: !active } : null;
@@ -300,7 +340,25 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     target?.scrollIntoView({ block: "start" });
   };
 
-  const assessmentView = attemptId ? <Panel><QueryErrorAlert retryVariant="outlined" isError={attempt.isError || question.isError} isFetching={attempt.isFetching || question.isFetching} onRetry={() => { void attempt.refetch(); void question.refetch(); }} />
+  const sectionIndex = plan?.outline.sections.findIndex(section => section.units.some(unit => unit.id === unitId)) ?? -1;
+  const section = sectionIndex >= 0 ? plan?.outline.sections[sectionIndex] : undefined;
+  const nextSection = sectionIndex >= 0 ? plan?.outline.sections[sectionIndex + 1] : undefined;
+  const nextUnit = nextSection?.units[0];
+  const canStartSectionFinal = section && enabled(session.allowed_actions, "start_section_final")
+    && enabled(session.section_states.find(state => state.section_id === section.id)?.allowed_actions ?? {}, "start_final");
+  const showingLesson = Boolean(unitId && !attemptId && materialPlanId && lesson?.kind === "material");
+  const currentJobPurpose = jobStatus.data?.purpose ?? session.active_jobs.find(job => job.job_id === jobId)?.purpose;
+  const noticeInLesson = showingLesson && jobSelection.unitId === unitId && (!currentJobPurpose || currentJobPurpose === "assessment_only");
+  const noticeInAssessment = Boolean(attemptId && currentJobPurpose === "assessment_only" && jobStatus.data?.result_ref?.attempt_id === attemptId);
+  const jobNotice = jobId && !(preparationState && lessonJobId === jobId)
+    ? <JobStatus presentation="inline" query={jobStatus} paused={!active} busy={busy}
+        onContinue={async job => { await execute(`jobs/${jobId}/continue-before-dispatch`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }}
+        onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} />
+    : null;
+  const budgetNotice = <Alert variant="outlined" severity="info" role="note">{t("teacher:budget", { used: session.dispatches_used, limit: session.dispatch_limit })}</Alert>;
+  const assessmentView = attemptId ? <Panel>
+          {noticeInAssessment && jobNotice}
+          <QueryErrorAlert retryVariant="outlined" isError={attempt.isError || question.isError} isFetching={attempt.isFetching || question.isFetching} onRetry={() => { void attempt.refetch(); void question.refetch(); }} />
           <TeacherLoading loading={attempt.isLoading && !attempt.data}>
             {attempt.data && <Stack sx={{ gap: 3 }}>
               <Typography ref={assessmentHeading} tabIndex={-1} variant="h5" component="h2">{t(attempt.data.scope === "section_final" ? "teacher:final_assessment" : attempt.data.scope === "diagnostic" ? "teacher:diagnostic" : "teacher:practice")}</Typography>
@@ -320,17 +378,27 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         </Panel> : null;
 
   return <SessionPage>
+    <Header><Box sx={{ width: "100%", minWidth: 0 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><SessionTitleRow><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></SessionTitleRow><Typography color="text.secondary">{session.objective}</Typography></Box></Header>
     {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && !diagnosticOpen && <RequestRecovery command={command} onRecovered={result => {
       const matchesSession = result.session_id === session.id || command.uncertain?.path.startsWith(`sessions/${session.id}/`);
       if (matchesSession && !result.thread_id) applyResult(result);
+      const requested = nextSectionRequest.current;
+      const pending = command.uncertain;
+      if (requested && result.session_id === session.id && result.revision === requested.revision + 1
+        && requested.plan_revision_id === plan?.id && session.cursor.revision <= result.revision
+        && pending?.path === `sessions/${session.id}/cursor` && pending.method === "PATCH"
+        && pending.body.expected_cursor_revision === requested.revision && pending.body.unit_id === requested.unit_id) {
+        openNextSection({ ...requested, revision: result.revision });
+      }
     }} />}
-    <Header><Box sx={{ width: "100%", minWidth: 0 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><SessionTitleRow><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></SessionTitleRow><Typography color="text.secondary">{session.objective}</Typography></Box></Header>
+    {session.state === "paused" && <Alert variant="outlined" severity="info" role="status">{t("teacher:paused_notice")}</Alert>}
+    {!noticeInLesson && !noticeInAssessment && jobNotice}
+    {!showingLesson && budgetNotice}
     <SessionActions>
       {enabled(session.allowed_actions, "pause") && <Button disabled={busy || draftConflict || messageDraft.saving || messageDraft.conflict || !messageDraft.valid} variant="contained" onClick={() => void stateCommand("pause")}>{t("teacher:pause")}</Button>}
       {enabled(session.allowed_actions, "resume") && <Button disabled={busy} variant="contained" onClick={() => void stateCommand("resume")}>{t("teacher:resume")}</Button>}
       <Button variant="outlined" startIcon={<SchoolOutlined />} disabled={busy || recordingMessage || reinforcementNavigation.pending} aria-haspopup="dialog" aria-expanded={adaptiveOpen} onClick={() => setAdaptiveOpen(true)}>{t("teacher:adaptive.workspace")}</Button>
       {archiveOnly ? <Button variant="outlined" disabled={busy} onClick={() => setArchiving(true)}>{t("teacher:archive")}</Button> : <Button variant="outlined" disabled={busy} aria-haspopup="menu" aria-expanded={Boolean(optionsAnchor)} onClick={event => setOptionsAnchor(event.currentTarget)}>{t("teacher:session_options")}</Button>}
-      {jobId && !(preparationState && lessonJobId === jobId) && <JobStatus presentation="inline" query={jobStatus} paused={!active} busy={busy} onContinue={async job => { await execute(`jobs/${jobId}/continue-before-dispatch`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} />}
     </SessionActions>
     <Menu anchorEl={optionsAnchor} open={Boolean(optionsAnchor)} onClose={() => setOptionsAnchor(null)} slotProps={{ list: { "aria-label": t("teacher:session_options") } }}>
       {enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setEditingSession(true); }}>{t("teacher:edit_session")}</MenuItem>}
@@ -343,8 +411,6 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     <ConfirmDialog open={archiving} onClose={() => { if (!busy) setArchiving(false); }} title={t("teacher:archive")} message={session.title || session.topic} confirmText={t("teacher:archive")} isLoading={busy} onConfirm={async () => { const result = await stateCommand("archive"); if (result) setArchiving(false); }}><RequestRecovery command={command} onRecovered={result => { applyResult(result); setArchiving(false); }} /></ConfirmDialog>
     {editingSession && <SessionForm open initial={session} recovery={<RequestRecovery command={command} onRecovered={result => { applyResult(result); setEditingSession(false); }} />} busy={busy} onClose={() => setEditingSession(false)} onSave={async value => { const result = await execute(`sessions/${session.id}`, { ...value, title: value.title?.trim() || undefined, context: value.context || null, declared_base: value.declared_base || null, day_count: value.organization === "days" ? value.day_count : null, expected_session_revision: session.revision }, "PATCH"); if (result) setEditingSession(false); }} />}
     {selecting && <BaseModal open title={t("teacher:ai_selection")} onClose={() => { if (!busy) setSelecting(false); }}><RequestRecovery command={command} onRecovered={result => { applyResult(result); setSelecting(false); }} /><SelectionPanel initial={session.selection} busy={busy} onSave={async selection => { const result = await execute(`sessions/${session.id}`, { expected_session_revision: session.revision, selection }, "PATCH"); if (result) setSelecting(false); }} /></BaseModal>}
-    {session.state === "paused" && <Alert severity="info">{t("teacher:paused_notice")}</Alert>}
-    <Typography variant="body2" color="text.secondary">{t("teacher:budget", { used: session.dispatches_used, limit: session.dispatch_limit })}</Typography>
     {diagnosticOpen && <DiagnosticEntry session={session} open onClose={() => setDiagnosticOpen(false)} busy={busy || recordingMessage || reinforcementNavigation.pending}
       recovery={<RequestRecovery command={command} onRecovered={result => { applyResult(result); setDiagnosticOpen(false); }} />}
       onStart={async () => { if (locked || recordingMessage || draftAnswer || draftConflict) return false; return Boolean(await execute(`sessions/${session.id}/diagnostic-attempts`, { expected_session_revision: session.revision, entry_route: "diagnostic", new_attempt: false })); }} />}
@@ -367,11 +433,11 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }}
         onStartFinal={sectionId => { void startAttempt("sections", sectionId); }} /></Panel>
       <Stack sx={{ gap: 3, minWidth: 0 }}>
-        {continuation && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation view={continuation} paused={!active} preparationState={preparationState}
+        {continuation && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation view={continuation} paused={!active} preparationState={preparationState} headingRef={continuationHeading}
           jobReadError={lessonJob.isError ? { busy: lessonJob.isFetching, onRetry: lessonJob.refetch } : undefined}
           busy={busy || reinforcementNavigation.pending || recordingMessage || material.isFetching || attempt.isFetching || question.isFetching}
           onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }} onPrepare={id => { void prepareLesson(id); }} onOpen={focusStudy} onContinue={focusStudy}
-          onInspectJob={id => { setJobSelection({ jobId: id, followResult: false }); }} onRefresh={() => { void material.refetch(); }} /></TeacherLoading>}
+          onInspectJob={id => { setJobSelection({ jobId: id, followResult: false, unitId }); }} onRefresh={() => { void material.refetch(); }} /></TeacherLoading>}
         {unitId && !attemptId && materialPlanId && (material.isError || lesson?.kind === "material") && <Panel>
           <QueryErrorAlert retryVariant="outlined" isError={material.isError} isFetching={material.isFetching} onRetry={material.refetch} />
           <TeacherLoading loading={material.isLoading && !material.data}>
@@ -389,18 +455,27 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
                   ...localCursor, phase: "theory", plan_revision_id: plan.id, unit_id: unitId,
                   content_version_id: lesson.content_version_id, block_id: blockId,
                 })} />
-              <Actions>
-                {session.state === "active" && enabled(lesson.allowed_actions, "prepare_material") &&
-                  <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={lesson.content_version_id} sessionRevision={session.revision}
-                    busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}
-                <Button variant="contained" disabled={locked || !enabled(lesson.allowed_actions, "start_practice")} onClick={() => void startAttempt("units", unitId)}>
-                  {t("teacher:start_practice")}
-                </Button>
-                <Button variant="outlined" disabled={locked || !enabled(session.allowed_actions, "start_section_final")} onClick={() => {
-                  const section = plan.outline.sections.find(section => section.units.some(unit => unit.id === unitId));
-                  if (section) void startAttempt("sections", section.id, false, "after_study");
-                }}>{t("teacher:after_study_final")}</Button>
-              </Actions>
+              <Stack sx={{ gap: 1.5 }}>
+                {noticeInLesson && jobNotice}
+                {nextSectionFailure === unitId && !command.uncertain && <Alert variant="outlined" severity="error">{t("teacher:next_section_failed")}</Alert>}
+                {budgetNotice}
+                <Actions>
+                  {session.state === "active" && enabled(lesson.allowed_actions, "prepare_material") &&
+                    <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={lesson.content_version_id} sessionRevision={session.revision}
+                      busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}
+                  <Button variant="contained" disabled={locked || !enabled(lesson.allowed_actions, "start_practice")} onClick={() => void startAttempt("units", unitId)}>
+                    {t("teacher:start_practice")}
+                  </Button>
+                  <Button variant="outlined" disabled={locked || !canStartSectionFinal} onClick={() => {
+                    if (section) void startAttempt("sections", section.id, false, "after_study");
+                  }}>{t("teacher:after_study_final")}</Button>
+                  {nextSection && nextUnit && <Button variant="outlined" endIcon={<ArrowForwardOutlined />}
+                    disabled={locked || material.isFetching || Boolean(draftAnswer) || draftConflict || recordingMessage}
+                    sx={{ marginInlineStart: { sm: "auto" } }} onClick={() => void selectUnit(nextSection.id, nextUnit.id, true)}>
+                    {t("teacher:next_section")}
+                  </Button>}
+                </Actions>
+              </Stack>
             </Stack>}
           </TeacherLoading>
         </Panel>}

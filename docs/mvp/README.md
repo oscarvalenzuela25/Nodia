@@ -11,8 +11,10 @@ implementado y [verificado localmente](105-on-demand-tech-news.md#185-implementa
 El [piloto daily.dev](105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev)
 se limita a un solo dueño en desarrollo. El acceso con PAT real se comprueba
 por proveedor. La evaluación de uso distribuido y OAuth queda separada. El
-[contrato HTTP](../features/news/http-contract.md) detalla la compatibilidad
-de la lectura pública. El [Plan105 §18.9](105-on-demand-tech-news.md#189-cierre-de-news-001--2026-11-19)
+[contrato HTTP](../features/news/http-contract.md) detalla la respuesta vacía
+de compatibilidad. El [Plan105 §19](105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19)
+recoge el acceso a Noticias con sesión validada y el retiro del aviso de modo
+demo en Inicio. El [Plan105 §18.9](105-on-demand-tech-news.md#189-cierre-de-news-001--2026-11-19)
 registra el cierre de NEWS-001 por el alcance entregado.
 
 **Listas de Market — 2026-11-18.**

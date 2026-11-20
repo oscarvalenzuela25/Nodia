@@ -19,14 +19,13 @@ beforeEach(() => {
 const view = (paused = false, presentation: "panel" | "inline" = "panel") => <JobPanel presentation={presentation} jobId={job.job_id} paused={paused} busy={false} onReady={onReady} onTerminal={onTerminal} onNew={onNew} onContinue={onContinue} />;
 
 describe("Teacher job presentation", () => {
-  it("explains the actual requested result and read-only recovery without starting another intention", async () => {
+  it("explains what is being generated without a manual refresh during polling", () => {
     render(view(false, "inline"));
-    expect(screen.getByText(/Teacher está preparando una propuesta/)).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent(/Teacher está preparando una propuesta/);
     expect(screen.getByText(/Salir de esta vista no cancela/)).toBeVisible();
-    expect(screen.getByText(/Actualizar estado sólo consulta/)).toBeVisible();
+    expect(screen.queryByText(/Actualizar estado sólo consulta/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Solicitar nueva generación inicia/)).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Actualizar estado" }));
-    expect(query.refetch).toHaveBeenCalledOnce(); expect(onNew).not.toHaveBeenCalled(); expect(onContinue).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Actualizar estado" })).not.toBeInTheDocument();
   });
   it("shows new-intention guidance only when native recovery is offered and respects the view restriction", () => {
     job.state = "unknown"; job.local_closed = true; job.allowed_actions = { request_new_generation: action };
@@ -37,7 +36,7 @@ describe("Teacher job presentation", () => {
     expect(screen.queryByRole("button", { name: "Solicitar nueva generación" })).not.toBeInTheDocument();
     expect(onNew).not.toHaveBeenCalled();
   });
-  it("shows a saved result as a chip without a refresh action, retaining read-error recovery", async () => {
+  it("announces a saved result without a refresh action, retaining read-error recovery", async () => {
     job.state = "ready";
     const { rerender } = render(view(false, "inline"));
     expect(screen.getByRole("status")).toHaveTextContent("Resultado guardado");
@@ -51,11 +50,13 @@ describe("Teacher job presentation", () => {
     expect(query.refetch).toHaveBeenCalledOnce();
     expect(onNew).not.toHaveBeenCalled();
   });
-  it("shows inline state without a separate heading and refreshes only the existing job read", async () => {
+  it.each([true, false])("allows an explicit status read when polling is unavailable (paused=%s)", async (paused) => {
     job.state = "queued";
-    render(view(false, "inline"));
+    if (!paused) job.retry_after_ms = null;
+    render(view(paused, "inline"));
     expect(screen.queryByText("Trabajo de Teacher")).not.toBeInTheDocument();
-    expect(screen.getByText("En cola")).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("En cola");
+    expect(screen.getByText(/Actualizar estado sólo consulta/)).toBeVisible();
     await userEvent.click(screen.getByRole("button", { name: "Actualizar estado" }));
     expect(query.refetch).toHaveBeenCalledOnce();
     expect(onContinue).not.toHaveBeenCalled(); expect(onNew).not.toHaveBeenCalled();
@@ -69,7 +70,7 @@ describe("Teacher job presentation", () => {
     query.isFetching = true; query.data = { ...job }; rerender(view(false, "inline"));
     expect(screen.getByRole("progressbar", { name: "Preparación en curso; sin porcentaje disponible" })).toBe(progress);
     expect(screen.getByText("Preparando")).toBe(status);
-    expect(screen.getByRole("button", { name: "Actualizar estado" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Actualizar estado" })).not.toBeInTheDocument();
     job = { ...job, state: "ready", local_closed: true, remote_outcome: "completed" };
     query.data = job; query.isFetching = false; rerender(view(false, "inline"));
     expect(screen.queryByRole("progressbar", { name: "Preparación en curso; sin porcentaje disponible" })).not.toBeInTheDocument();
@@ -101,17 +102,17 @@ describe("Teacher job presentation", () => {
     await userEvent.click(screen.getByRole("button", { name: "Continuar preparación" }));
     expect(onContinue).toHaveBeenCalledExactlyOnceWith(job); expect(query.refetch).not.toHaveBeenCalled();
   });
-  it("keeps inline refresh outside initial informational loading and retains a retry after an empty failed read", async () => {
+  it("loads the initial state without a refresh button and offers retry when the read fails", async () => {
     query.data = undefined; query.isLoading = true; query.isFetching = true;
     const { container, rerender } = render(view(false, "inline"));
-    expect(screen.getByRole("button", { name: "Actualizar estado" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Actualizar estado" })).not.toBeInTheDocument();
     expect(container.querySelector('[data-boneyard-overlay="true"]')?.childElementCount).toBeGreaterThan(0);
     expect(screen.queryByText("Todavía no hay un estado confirmado para este trabajo.")).not.toBeInTheDocument();
     query.isLoading = false; query.isFetching = false; query.isError = true; rerender(view(false, "inline"));
     expect(container.querySelector('[data-boneyard-overlay="true"]')).not.toBeInTheDocument();
     expect(screen.getByRole("alert")).toBeVisible();
     expect(screen.queryByText("Todavía no hay un estado confirmado para este trabajo.")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Actualizar estado" }));
+    await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
     expect(query.refetch).toHaveBeenCalledOnce(); expect(onNew).not.toHaveBeenCalled(); expect(onContinue).not.toHaveBeenCalled();
   });
   it.each(["failed_known", "unknown", "cancelled_before_dispatch"] as const)("notifies %s once so the session can release its stale preparing state without replay", state => {
@@ -129,7 +130,7 @@ describe("Teacher job presentation", () => {
     expect(progress).not.toHaveAttribute("aria-valuenow");
     query.isFetching = true; rerender(view());
     expect(screen.getByRole("progressbar")).toBe(progress); expect(screen.getByText("Preparando")).toBe(status);
-    expect(screen.getByRole("button", { name: "Actualizar estado" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Actualizar estado" })).not.toBeInTheDocument();
     query.isFetching = false; rerender(view());
     expect(screen.getByRole("progressbar")).toBe(progress);
     expect(onNew).not.toHaveBeenCalled();
