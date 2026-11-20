@@ -683,6 +683,13 @@
     "keep_editing": "Keep editing",
     "leave": "Leave without saving"
   },
+  "structure_ui": {
+    "plan_details": "Plan details",
+    "choose_view": "What to edit",
+    "sections": "Plan sections",
+    "empty_units": "There are no units in this section yet.",
+    "section_settings": "Order and requirements"
+  },
   "review_ui": {
     "title": "Your proposal is ready",
     "future_title": "Review the new version of your plan",
@@ -718,7 +725,7 @@
     "section_content": "Units in this section",
     "day_range": "Study days {{start}}–{{end}}",
     "empty_sections": "This proposal does not include any sections yet. You can add them in Edit structure.",
-    "edit_hint": "Edit only what you need. Saving creates a new version to review and does not use AI.",
+    "edit_hint": "Saving creates a new version for review.",
     "unsaved": "You have unsaved changes. Save them as a new version before using the plan or requesting another adjustment.",
     "invalid_policy": "Check the Assessment counts in Edit structure before saving, using the plan or requesting an adjustment. Your changes are preserved."
   },

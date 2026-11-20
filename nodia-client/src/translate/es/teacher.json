@@ -683,6 +683,13 @@
     "keep_editing": "Seguir editando",
     "leave": "Salir sin guardar"
   },
+  "structure_ui": {
+    "plan_details": "Datos del plan",
+    "choose_view": "Qué quieres editar",
+    "sections": "Secciones del plan",
+    "empty_units": "Esta sección todavía no tiene unidades.",
+    "section_settings": "Organización y requisitos"
+  },
   "review_ui": {
     "title": "Tu propuesta está lista",
     "future_title": "Revisa la nueva versión de tu plan",
@@ -718,7 +725,7 @@
     "section_content": "Unidades de esta sección",
     "day_range": "Jornadas {{start}}–{{end}}",
     "empty_sections": "Esta propuesta aún no incluye secciones. Puedes añadirlas desde Editar estructura.",
-    "edit_hint": "Edita sólo lo que necesites. Guardar los cambios crea una nueva versión para revisar y no utiliza IA.",
+    "edit_hint": "Al guardar, crearás una nueva versión para revisar.",
     "unsaved": "Tienes cambios sin guardar. Guárdalos como una nueva versión antes de usar el plan o pedir otro ajuste.",
     "invalid_policy": "Revisa las cantidades de Evaluación en Editar estructura antes de guardar, usar el plan o pedir un ajuste. Tus cambios se conservan."
   },

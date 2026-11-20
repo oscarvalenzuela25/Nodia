@@ -4,6 +4,11 @@ import { describe, expect, it, vi } from "vitest";
 import PlanReview from "../../../../../modules/teacher/components/PlanReview";
 import { planFixture } from "../../fixtures";
 
+async function openEvaluation(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "Qué quieres editar" }));
+  await user.click(screen.getByRole("option", { name: "Evaluación" }));
+}
+
 describe("Teacher plan assessment policy review", () => {
   it("preserves missing historical duration and empty structure until explicitly edited", async () => {
     const plan = structuredClone(planFixture);
@@ -48,7 +53,7 @@ describe("Teacher plan assessment policy review", () => {
     render(<PlanReview plan={planFixture} busy={false} canAccept canAdjust={false} onSave={onSave} onAdjust={onAdjust} onAccept={onAccept} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Editar estructura" }));
-    await user.click(screen.getByRole("button", { name: "Evaluación" }));
+    await openEvaluation(user);
     const field = screen.getByRole("spinbutton", { name: "Práctica de unidad: selección única" });
     expect(field).toHaveValue(3);
     fireEvent.change(field, { target: { value: "4" } });
@@ -63,13 +68,14 @@ describe("Teacher plan assessment policy review", () => {
     const { rerender } = render(<PlanReview {...props} busy={false} />);
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Editar estructura" }));
-    await user.click(screen.getByRole("button", { name: "Evaluación" }));
+    await openEvaluation(user);
     const field = screen.getByRole("spinbutton", { name: "Final de sección: respuesta breve" });
     fireEvent.change(field, { target: { value: "" } });
     expect(screen.getByText(/Revisa las cantidades:/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Usar este plan" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Usar este plan" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Volver al resumen" }));
+    expect(screen.getByRole("button", { name: "Usar este plan" })).toBeDisabled();
     expect(screen.getByText(/Revisa las cantidades de Evaluación/)).toBeVisible();
     expect(screen.queryByRole("spinbutton", { name: "Final de sección: respuesta breve" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Pedir un ajuste" }));
@@ -112,6 +118,33 @@ describe("Teacher plan assessment policy review", () => {
     expect(props.onAdjust).toHaveBeenCalledExactlyOnceWith(text);
     expect(props.onSave).not.toHaveBeenCalled();
     expect(props.onAccept).not.toHaveBeenCalled();
+  });
+  it("focuses the active view heading and keeps the adjustment draft when switching views", async () => {
+    const props = { plan: planFixture, busy: false, canAccept: true, canAdjust: true,
+      onSave: vi.fn(async () => {}), onAdjust: vi.fn(async () => {}), onAccept: vi.fn(async () => {}) };
+    render(<PlanReview {...props} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Pedir un ajuste" }));
+    const adjustment = screen.getByRole("textbox", { name: "Qué quieres ajustar" });
+    await user.type(adjustment, "Añade un ejemplo.");
+
+    await user.click(screen.getByRole("button", { name: "Editar estructura" }));
+    expect(screen.getByRole("heading", { name: "Editar estructura" })).toHaveFocus();
+    expect(screen.queryByRole("button", { name: "Usar este plan" })).not.toBeInTheDocument();
+    expect(adjustment).not.toBeVisible();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Volver al resumen" })).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "Pedir un ajuste" }));
+    expect(screen.getByRole("textbox", { name: "Qué quieres ajustar" })).toBe(adjustment);
+    expect(adjustment).toHaveValue("Añade un ejemplo.");
+
+    await user.click(screen.getByRole("button", { name: "Volver al resumen" }));
+    expect(screen.getByRole("heading", { name: "Tu propuesta está lista" })).toHaveFocus();
+    expect(adjustment).not.toBeVisible();
+    expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
+    expect(props.onSave).not.toHaveBeenCalled();
+    expect(props.onAccept).not.toHaveBeenCalled();
+    expect(props.onAdjust).not.toHaveBeenCalled();
   });
   it("retains edits through the overview, refetch and a resolved save callback without a replacement revision", async () => {
     const props = { plan: planFixture, canAccept: true, canAdjust: true, onSave: vi.fn(async () => {}), onAdjust: vi.fn(async () => {}), onAccept: vi.fn(async () => {}) };

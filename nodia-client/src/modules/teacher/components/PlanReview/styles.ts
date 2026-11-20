@@ -1,5 +1,29 @@
 import { Accordion, Box, Stack, alpha, styled } from "@mui/material";
 
+export const ReviewHeader = styled("header")(({ theme }) => ({
+  display: "flex", flexDirection: "column", gap: theme.spacing(2), minWidth: 0,
+  "& h2": { overflowWrap: "anywhere", scrollMarginBlock: theme.spacing(2) },
+  "&[data-editing]": { borderBlockEnd: `1px solid ${theme.palette.divider}`, paddingBlockEnd: theme.spacing(2) },
+  [theme.breakpoints.up("md")]: {
+    flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap",
+  },
+}));
+export const EditActions = styled(Box)(({ theme }) => ({
+  display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: theme.spacing(1), minWidth: 0,
+  "& > button": {
+    minHeight: 44, minWidth: 0, textWrap: "balance",
+    [theme.breakpoints.down("sm")]: { paddingInline: theme.spacing(1.25) },
+  },
+  "& > button:last-child": { gridColumn: "1 / -1" },
+  [theme.breakpoints.up("sm")]: { display: "flex", flexWrap: "wrap" },
+}));
+export const AdjustmentPanel = styled(Stack)(({ theme }) => ({
+  gap: theme.spacing(2), padding: theme.spacing(2), minWidth: 0,
+  border: `1px solid ${theme.palette.divider}`, borderRadius: theme.spacing(2),
+  background: alpha(theme.palette.primary.main, theme.palette.mode === "dark" ? 0.045 : 0.025),
+  [theme.breakpoints.up("sm")]: { padding: theme.spacing(3) },
+}));
+
 export const ReviewSummary = styled(Box)(({ theme }) => ({
   display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: theme.spacing(3),
   padding: theme.spacing(3), borderRadius: 16,

@@ -4,7 +4,7 @@
   "document_id": "studies.guided-setup-and-study-experience",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -75,6 +75,24 @@
   "approval": null
 }
 ---
+
+## Edición enfocada de la propuesta — 2026-11-20
+
+El segundo paso conserva el resumen de la propuesta como entrada al recorrido.
+Al elegir **Editar estructura**, se puede ir a los datos generales, una
+sección o la evaluación desde el selector. Una sección agrupa objetivos,
+lecciones y requisitos en controles de detalle. En espacios estrechos la
+navegación se compacta y conserva el mismo bloque elegido. El foco sigue
+los cambios de vista iniciados desde el editor.
+
+**Guardar cambios** está en la cabecera de edición. Volver al resumen y
+volver a editar conserva el borrador de la misma propuesta. Pedir un
+ajuste sigue siendo una acción explícita y separada.
+
+Evaluación de impacto en el [Plan106 §21](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+y [planificación](session-setup-and-planning.md#edición-enfocada-de-la-propuesta--2026-11-20).
+El cambio afecta la interacción del Client. Las operaciones, permisos y
+capacidades del contexto publicado conservan su alcance.
 
 ## Continuidad en la cabecera y panel adaptativo — 2026-11-20
 

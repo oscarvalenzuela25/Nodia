@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 46,
+  "revision": 47,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -280,6 +280,16 @@
   "approval": null
 }
 ---
+
+## Edición enfocada de la propuesta — 2026-11-20
+
+El editor del segundo paso presenta una zona a la vez y sitúa el guardado
+manual en su cabecera. Se conserva la vista resumida para decidir si usar el
+plan. La [experiencia guiada](features/guided-setup-and-study-experience.md#edición-enfocada-de-la-propuesta--2026-11-20)
+describe la interacción y la [ficha de planificación](features/session-setup-and-planning.md#edición-enfocada-de-la-propuesta--2026-11-20)
+precisa sus efectos. El [Plan106 §21](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+registra la verificación de esta iteración. El alcance corresponde a Client
+y las fichas conservan su estado candidato.
 
 ## Quiz, continuidad y Mis fuentes — 2026-11-20
 

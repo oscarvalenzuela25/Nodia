@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Teacher, edición enfocada de la propuesta — 2026-11-20.** El
+[Plan106 §21](106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+registra el selector de bloques, el guardado desde la cabecera y la
+conservación del borrador al recorrer el editor. La comprobación de la
+integración se registra en ese apartado.
+
 **Teacher, corrección del quiz y continuidad — 2026-11-20.** El
 [Plan106 §20](106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20)
 registra el rediseño de preguntas y resultados, el acceso para retomar desde
