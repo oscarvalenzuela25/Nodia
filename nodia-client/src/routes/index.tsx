@@ -73,7 +73,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: NEWS_ROUTE,
-        element: <BaseLayout>{renderLazyPage(<News />)}</BaseLayout>,
+        element: (
+          <Guard requireSession>
+            <BaseLayout>{renderLazyPage(<News />)}</BaseLayout>
+          </Guard>
+        ),
       },
       ...Object.entries(LEGACY_MODULE_DESTINATIONS).map(([path, destination]) => ({
         path,

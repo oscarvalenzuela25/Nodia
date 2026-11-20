@@ -18,6 +18,8 @@ Los dos handlers de compatibilidad omiten toda lectura de contenidos en base
 de datos y toda consulta externa. El POST conserva la validación de identidad y
 rol vigente. Los clientes anteriores pueden seguir mostrando el vacío público
 sin acceder a credenciales, contenido o procedencias de una cuenta.
+La ruta `/news` de Client requiere sesión validada y abre la vista personal.
+Consultar [Plan105 §19](../../mvp/105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
 
 El GET admite `source_key` con `web-dev`, `node-js`, `go-blog`, `rust-blog` y
 `kubernetes-blog`, `topic=technology|programming|ai`, `order=recent|received`,

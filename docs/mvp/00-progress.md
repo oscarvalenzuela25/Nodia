@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Noticias con sesión — 2026-11-19.** Client requiere sesión validada para
+mostrar el enlace y abrir `/news`. Las visitas anónimas a ese destino llevan
+a Login. Inicio sigue disponible para visitantes sin el aviso de modo demo.
+Las fuentes se configuran por usuario en la vista personal. La verificación
+y adopción del ajuste se registran en
+[Plan105 §19](105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
+
 **NodiaAI, consultas de Market y Caja — 2026-11-19.** La publicación de
 esta rama añade dos lecturas de Listas de Market y cuatro de Caja. Los
 lectores nativos reutilizan la transacción del gateway. PostgreSQL aislado

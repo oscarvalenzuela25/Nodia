@@ -24,8 +24,29 @@ describe("Sidenav", () => {
     });
   });
 
-  it("places public News directly after Home for a visitor and closes the drawer on entry", async () => {
+  it.each([
+    { viewport: "mobile", desktop: false },
+    { viewport: "desktop", desktop: true },
+  ])("hides News from a visitor in the $viewport sidebar", ({ desktop }) => {
     useAuthStore.getState().logout();
+    const mediaQuery = vi.spyOn(window, "matchMedia").mockImplementation(query => ({
+      matches: desktop && query.includes("min-width:1200px"), media: query,
+      onchange: null, addListener: vi.fn(), removeListener: vi.fn(),
+      addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }));
+    try {
+      const router = createMemoryRouter([{
+        path: "*", element: <Sidenav mobileOpen={!desktop} onDrawerToggle={vi.fn()} />,
+      }]);
+      render(<RouterProvider router={router} />);
+      expect(screen.getByRole("button", { name: "Inicio" })).toBeVisible();
+      expect(screen.queryByRole("button", { name: "Noticias" })).not.toBeInTheDocument();
+    } finally {
+      mediaQuery.mockRestore();
+    }
+  });
+
+  it("places News directly after Home for a validated account and closes the drawer on entry", async () => {
     const toggle = vi.fn();
     const router = createMemoryRouter([{ path: "*", element: <Sidenav mobileOpen onDrawerToggle={toggle} /> }]);
     render(<RouterProvider router={router} />);
@@ -36,6 +57,8 @@ describe("Sidenav", () => {
     expect(router.state.location.pathname).toBe("/news");
     expect(toggle).toHaveBeenCalledOnce();
     expect(buttons[1]).toHaveAttribute("aria-current", "page");
+    act(() => useAuthStore.getState().logout());
+    expect(screen.queryByRole("button", { name: "Noticias" })).not.toBeInTheDocument();
   });
 
   it("retains the canonical parent selection on internal pages and selects only a more specific module when present", async () => {

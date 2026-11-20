@@ -74,15 +74,16 @@ resolver condiciones y validar OAuth por separado. [Forem v1](https://developers
 [Plan105 §18.8](../../mvp/105-on-demand-tech-news.md#188-piloto-personal-local-de-dailydev),
 [sección 18](https://daily.dev/tos/#public-api), [OAuth](https://docs.daily.dev/oauth-apps/).
 
-En la ruta pública se conserva una respuesta vacía válida y la capa histórica
-queda fuera del catálogo activo. Mantener el ledger histórico inmutable y
+El GET HTTP de compatibilidad conserva una respuesta vacía válida y la capa
+histórica queda fuera del catálogo activo. Mantener el ledger histórico inmutable y
 entregar el esquema aditivo antes de publicar el Client que usa el nuevo
 contrato. El despliegue sigue las garantías de recuperación por fase de CD.
 
 ## Consecuencias
 
-- La navegación pública conserva su destino canónico y el contrato privado
-  aplica propiedad por usuario incluso si ambas capas usan el mismo editor.
+- Client conserva `/news` como destino canónico con sesión validada según
+  [Plan105 §19](../../mvp/105-on-demand-tech-news.md#19-noticias-con-sesión-y-ajuste-de-inicio--2026-11-19).
+  El contrato privado aplica propiedad por usuario.
 - Un fallo de transporte, cuota o verificación requiere un estado explícito.
   Un error temporal puede conservar resultados vigentes de la misma conexión.
   Desconectar elimina la credencial y la caché activa de Nodia. Revocar el token

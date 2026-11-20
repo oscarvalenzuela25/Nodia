@@ -10,22 +10,23 @@ vi.mock("../../modules/auth/infrastructure/useServices", () => ({ useSignOut: ()
 beforeEach(() => { useAuthStore.getState().logout(); useAuthStore.getState().login({ token: "synthetic-stored", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Synthetic actor" } }); useAuthStore.getState().setSessionStatus("unavailable"); });
 afterEach(() => useAuthStore.getState().logout());
 
-describe("Public News session boundary", () => {
-  it.each(["/news", "/news/"])("keeps %s readable during unavailable session and protects a later private destination", async (path) => {
-    const router = createMemoryRouter([{ element: <SessionRouteLayout />, children: [
-      { path: "/news", element: <input aria-label="Public filter" defaultValue="" /> },
-      { path: "/private", element: <p>Private content</p> },
-    ] }], { initialEntries: [path] });
+describe("Personal News session boundary", () => {
+  it.each(["/news", "/news/"])("waits for a validated session before rendering %s", (path) => {
+    const router = createMemoryRouter([{
+      element: <SessionRouteLayout />,
+      children: [{ path: "/news", element: <p>Personal news content</p> }],
+    }], { initialEntries: [path] });
     render(<RouterProvider router={router} />);
-    const input = screen.getByRole("textbox", { name: "Public filter" });
-    expect(input.closest("[inert]")).toBeNull();
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    await act(() => router.navigate("/private"));
-    expect(screen.queryByText("Private content")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Personal news content")).not.toBeInTheDocument();
     expect(screen.getByRole("alert")).toBeVisible();
+
+    act(() => useAuthStore.getState().setSessionStatus("authenticated"));
+    expect(screen.getByText("Personal news content")).toBeVisible();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
-  it("does not extend the exemption to a News prefix lookalike", () => {
+  it("also protects a nested News destination during a session outage", () => {
     const router = createMemoryRouter([{ element: <SessionRouteLayout />, children: [{ path: "/news/private", element: <p>Protected content</p> }] }], { initialEntries: ["/news/private"] });
     render(<RouterProvider router={router} />);
     expect(screen.queryByText("Protected content")).not.toBeInTheDocument();
