@@ -4,7 +4,7 @@
   "document_id": "studies.session-setup-and-planning",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 38,
+  "revision": 39,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -298,6 +298,21 @@
   "approval": null
 }
 ---
+
+## Edición enfocada de la propuesta — 2026-11-20
+
+En **Revisar el plan**, **Editar estructura** abre el borrador de la propuesta
+vigente. Los grupos de datos, secciones y evaluación permiten modificar el
+bloque elegido. Al volver al resumen se pueden revisar los cambios locales.
+El guardado manual crea una revisión candidata y la aceptación se hace desde
+el resumen con la revisión confirmada. Un fallo conserva el borrador para
+corregirlo o consultar el recibo. Pedir un ajuste con IA conserva su acción y
+sus requisitos propios.
+
+La navegación de campos es local y conserva los IDs y límites vigentes de
+la propuesta. La [experiencia guiada](guided-setup-and-study-experience.md#edición-enfocada-de-la-propuesta--2026-11-20)
+describe los controles y el [Plan106 §21](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+registra la interacción. La ficha conserva su estado candidato.
 
 ## Guía opcional y continuidad — implementación local2026-11-16
 

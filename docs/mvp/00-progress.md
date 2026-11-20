@@ -1,5 +1,51 @@
 # Progreso del MVP — Nodia
 
+**Grafana, emisión automática de CD comprobada — 2026-11-20.** El
+[CD 44673206896](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44673206896)
+activó el [reportero 44673802429](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44673802429).
+Loki aceptó el evento y Explore mostró `succeeded` con ambos componentes en
+`complete`. El fallo y la entrega parcial quedaron verificados en ensayos
+sintéticos. OBS-002 queda cerrado por ese alcance.
+[Plan104 §16](104-logs-and-monitoring-grafana-cloud.md#16-g7-eventos-del-recibo-de-entrega--2026-11-19).
+
+**Grafana, medición operativa y reversión G6 comprobadas — 2026-11-19.** Explore
+registró 294 series recientes, 103.991 bytes de líneas de logs en tres horas y
+40 ejecuciones de sondas. Alloy promedió 0,91 % de una vCPU y su cgroup alcanzó
+52,19 MiB. El retiro y la restauración pasaron en laboratorio. Queda pendiente
+conciliar el acumulado mensual del proveedor. [Plan104 §15](104-logs-and-monitoring-grafana-cloud.md#15-g6-consumo-observado-y-reversión-ensayada--2026-11-19).
+
+**Grafana, G5 de paneles y correo verificado — 2026-11-19.** El tablero de
+observabilidad y cuatro reglas operativas quedaron activos. La prueba aislada
+entregó fallo y recuperación al buzón administrador y quedó pausada.
+[Plan104 §14](104-logs-and-monitoring-grafana-cloud.md#14-g5-paneles-y-correo-comprobados--2026-11-19).
+
+**Grafana, G4 de logs HTTP verificado — 2026-11-19.** El VPS produjo
+eventos saneados HTTP 200, 401 y 404. Loki confirmó los tres y registró
+cero entradas fuera del esquema y cero coincidencias de los canarios.
+[Plan104 §13](104-logs-and-monitoring-grafana-cloud.md#13-g4-logs-http-saneados--2026-11-19).
+
+**Grafana Cloud Free, sondas externas verificadas — 2026-11-19.** Web y API
+quedaron habilitadas con frecuencia de cinco minutos desde São Paulo y Norte
+de Virginia. Grafana registró HTTP 200 y éxito para ambos destinos en ambas
+ubicaciones. [Plan104 §12](104-logs-and-monitoring-grafana-cloud.md#12-sondas-externas-de-web-y-api--2026-11-19).
+
+**Grafana Cloud Free, primeras métricas del VPS — 2026-11-19.** Alloy `1.22.0-1`
+quedó activo y habilitado. Explore comprobó 56 series de CPU, memoria, disco
+y estado de recolectores y unidades. API, worker y Nginx conservaron sus PID.
+[Plan104 §11](104-logs-and-monitoring-grafana-cloud.md#primera-ingesta-comprobada).
+
+**Teacher, edición enfocada de la propuesta — 2026-11-20.** El
+[Plan106 §21](106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+registra el selector de bloques, el guardado desde la cabecera y la
+conservación del borrador al recorrer el editor. La comprobación de la
+integración se registra en ese apartado.
+
+**Teacher, corrección del quiz y continuidad — 2026-11-20.** El
+[Plan106 §20](106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20)
+registra el rediseño de preguntas y resultados, el acceso para retomar desde
+la cabecera y la revisión de **Mis fuentes**. La maqueta usa datos
+sintéticos y la verificación de la integración se registra en ese apartado.
+
 **Teacher, práctica interactiva en la lección — 2026-11-19.** El alcance
 incluye pistas y soluciones plegadas, comprobación de respuestas con clave
 explícita y revisión guiada para respuestas abiertas. La navegación por

@@ -1,0 +1,13 @@
+/var/log/nodia-observability/http.log {
+    daily
+    rotate 7
+    maxsize 25M
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0640 www-data nodia-alloy
+    postrotate
+        /usr/bin/systemctl kill --kill-whom=main --signal=USR1 nginx.service
+    endscript
+}

@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 45,
+  "revision": 47,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -280,6 +280,25 @@
   "approval": null
 }
 ---
+
+## Edición enfocada de la propuesta — 2026-11-20
+
+El editor del segundo paso presenta una zona a la vez y sitúa el guardado
+manual en su cabecera. Se conserva la vista resumida para decidir si usar el
+plan. La [experiencia guiada](features/guided-setup-and-study-experience.md#edición-enfocada-de-la-propuesta--2026-11-20)
+describe la interacción y la [ficha de planificación](features/session-setup-and-planning.md#edición-enfocada-de-la-propuesta--2026-11-20)
+precisa sus efectos. El [Plan106 §21](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+registra la verificación de esta iteración. El alcance corresponde a Client
+y las fichas conservan su estado candidato.
+
+## Quiz, continuidad y Mis fuentes — 2026-11-20
+
+El [Plan106 §20](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20)
+enlaza la [corrección y navegación del quiz](features/lessons-practice-and-review.md#corrección-y-continuidad-del-quiz--2026-11-20),
+la [continuidad desde la cabecera](features/guided-setup-and-study-experience.md#continuidad-en-la-cabecera-y-panel-adaptativo--2026-11-20)
+y los [formatos de Mis fuentes](features/learning-sources.md#formatos-y-cobertura-en-mis-fuentes--2026-11-20).
+El alcance es la interfaz de Teacher y la explicación de sus capacidades.
+El catálogo de NodiaAI conserva la autoridad y operaciones publicadas.
 
 ## Práctica interactiva en la lección — 2026-11-19
 

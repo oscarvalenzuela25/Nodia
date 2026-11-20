@@ -23,6 +23,22 @@ Los comentarios sobre Market y Caja actualizan el índice de
 [Caja](businesses/features/cash-ledger-and-invoice-expenses.md). Los
 cambios corresponden a navegación, presentación y guardado nativo de Caja.
 
+## Edición de la propuesta en Teacher — 2026-11-20
+
+El [producto Teacher](studies/README.md#edición-enfocada-de-la-propuesta--2026-11-20)
+enlaza las fichas candidatas de experiencia guiada y planificación.
+El [Plan106 §21](../../mvp/106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+registra la interacción del segundo paso y su impacto de presentación en Client.
+El catálogo y el contexto publicados conservan su alcance.
+
+## Corrección y continuidad en Teacher — 2026-11-20
+
+El [producto Teacher](studies/README.md#quiz-continuidad-y-mis-fuentes--2026-11-20)
+enlaza las fichas candidatas de práctica, experiencia guiada y fuentes.
+El [Plan106 §20](../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20)
+registra el alcance del Client y los límites de formatos de **Mis fuentes**.
+Las herramientas y el contexto publicados conservan su alcance.
+
 ## Retoque transversal de Client — 2026-11-18
 
 La [evaluación de interfaz](../../evidence/ui-refresh-20261118.md) cubre los

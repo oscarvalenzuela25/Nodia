@@ -4,7 +4,7 @@
   "document_id": "studies.guided-setup-and-study-experience",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 7,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -75,6 +75,38 @@
   "approval": null
 }
 ---
+
+## Edición enfocada de la propuesta — 2026-11-20
+
+El segundo paso conserva el resumen de la propuesta como entrada al recorrido.
+Al elegir **Editar estructura**, se puede ir a los datos generales, una
+sección o la evaluación desde el selector. Una sección agrupa objetivos,
+lecciones y requisitos en controles de detalle. En espacios estrechos la
+navegación se compacta y conserva el mismo bloque elegido. El foco sigue
+los cambios de vista iniciados desde el editor.
+
+**Guardar cambios** está en la cabecera de edición. Volver al resumen y
+volver a editar conserva el borrador de la misma propuesta. Pedir un
+ajuste sigue siendo una acción explícita y separada.
+
+Evaluación de impacto en el [Plan106 §21](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#21-edición-enfocada-de-la-propuesta--2026-11-20)
+y [planificación](session-setup-and-planning.md#edición-enfocada-de-la-propuesta--2026-11-20).
+El cambio afecta la interacción del Client. Las operaciones, permisos y
+capacidades del contexto publicado conservan su alcance.
+
+## Continuidad en la cabecera y panel adaptativo — 2026-11-20
+
+La cabecera ofrece retomar un punto de lectura o evaluación disponible
+junto a **Opciones de la sesión**. La primera lección, la preparación de
+material y la recuperación conservan su contexto y sus acciones
+pertinentes. Un borrador y una solicitud incierta siguen sujetos al
+guardado y a la conciliación existentes.
+
+El panel de **Aprendizaje adaptativo** organiza sus accesos y las acciones
+de **Mis fuentes** con el mismo alcance de lectura y guardado privado de
+la sesión. La presentación de los formatos aclara las diferencias entre
+texto pegado, PDF textual y una imagen o escaneo. [Ficha de fuentes](learning-sources.md#formatos-y-cobertura-en-mis-fuentes--2026-11-20)
+y [Plan106 §20](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20).
 
 ## Acciones y avisos durante el estudio — 2026-11-19
 

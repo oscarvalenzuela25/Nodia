@@ -1,0 +1,60 @@
+prometheus.exporter.unix "nodia_host" {
+	set_collectors = ["cpu", "meminfo", "filesystem", "systemd"]
+
+	filesystem {
+		mount_points_exclude = "^/.+"
+	}
+
+	systemd {
+		unit_include = "^(nodia-api|nodia-ai-worker|nginx)[.]service$"
+	}
+}
+
+discovery.relabel "nodia_host" {
+	targets = prometheus.exporter.unix.nodia_host.targets
+
+	rule {
+		target_label = "job"
+		replacement  = "nodia-host"
+	}
+
+	rule {
+		target_label = "instance"
+		replacement  = sys.env("NODIA_MONITOR_INSTANCE")
+	}
+
+	rule {
+		target_label = "environment"
+		replacement  = sys.env("NODIA_MONITOR_ENVIRONMENT")
+	}
+}
+
+prometheus.scrape "nodia_host" {
+	targets         = discovery.relabel.nodia_host.output
+	scrape_interval = "60s"
+	scrape_timeout  = "10s"
+	forward_to      = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+prometheus.remote_write "grafana_cloud" {
+	endpoint {
+		url              = sys.env("NODIA_GRAFANA_METRICS_URL")
+		follow_redirects = false
+		send_exemplars   = false
+
+		basic_auth {
+			username      = sys.env("NODIA_GRAFANA_METRICS_USER")
+			password_file = sys.env("CREDENTIALS_DIRECTORY") + "/grafana-metrics-token"
+		}
+
+		metadata_config {
+			send = false
+		}
+
+		write_relabel_config {
+			action        = "keep"
+			source_labels = ["__name__"]
+			regex         = "up|node_scrape_collector_success|node_cpu_seconds_total|node_memory_(MemAvailable|MemTotal)_bytes|node_filesystem_(avail|size)_bytes|node_systemd_unit_state"
+		}
+	}
+}
