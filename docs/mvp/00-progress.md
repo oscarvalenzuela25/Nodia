@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Teacher, práctica interactiva en la lección — 2026-11-19.** El alcance
+incluye pistas y soluciones plegadas, comprobación de respuestas con clave
+explícita y revisión guiada para respuestas abiertas. La navegación por
+secciones y los avisos de preparación se registran en
+[Plan106 §19](106-nodia-teacher-guided-ux-redesign.md#19-práctica-interactiva-durante-el-estudio--2026-11-19).
+
 **Noticias con sesión — 2026-11-19.** Client requiere sesión validada para
 mostrar el enlace y abrir `/news`. Las visitas anónimas a ese destino llevan
 a Login. Inicio sigue disponible para visitantes sin el aviso de modo demo.

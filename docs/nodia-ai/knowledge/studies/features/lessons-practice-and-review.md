@@ -4,7 +4,7 @@
   "document_id": "studies.lessons-practice-and-review",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 24,
+  "revision": 25,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -165,6 +165,17 @@
 ---
 
 > Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Práctica interactiva durante la lección — 2026-11-19
+
+Client presenta las pistas y soluciones etiquetadas en controles que se
+abren a voluntad. Los ejercicios numerados con espacios y una clave
+inequívoca permiten comprobar coincidencias y volver a intentar. Una
+respuesta abierta admite revisión con criterios del bloque u orientaciones
+generales. Guardar en un bloque que lo admite registra el texto con su
+versión y revisión mediante el contrato existente. Las comprobaciones de
+estudio son formativas y consumen cero generaciones. La evaluación final
+conserva su autoridad sobre puntos y verificación. [Plan106 §19](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#19-práctica-interactiva-durante-el-estudio--2026-11-19).
 
 ## Práctica adaptativa y enseñanza locales — 2026-11-11
 

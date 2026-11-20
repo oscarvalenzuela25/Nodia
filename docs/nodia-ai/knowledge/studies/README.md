@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 44,
+  "revision": 45,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -280,6 +280,14 @@
   "approval": null
 }
 ---
+
+## Práctica interactiva en la lección — 2026-11-19
+
+La [ficha de práctica](features/lessons-practice-and-review.md#práctica-interactiva-durante-la-lección--2026-11-19)
+describe las pistas, soluciones y comprobaciones locales. La
+[experiencia guiada](features/guided-setup-and-study-experience.md#acciones-y-avisos-durante-el-estudio--2026-11-19)
+describe cómo navegar y seguir la preparación de una evaluación.
+[Plan106 §19](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#19-práctica-interactiva-durante-el-estudio--2026-11-19).
 
 ## Guía opcional y continuidad — implementación local2026-11-16
 
