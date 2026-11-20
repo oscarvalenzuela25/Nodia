@@ -1,0 +1,38 @@
+loki.source.file "nodia_http" {
+	targets = [{
+		__path__    = "/var/log/nodia-observability/http.log",
+		job         = "nodia-http",
+		instance    = sys.env("NODIA_MONITOR_INSTANCE"),
+		environment = sys.env("NODIA_MONITOR_ENVIRONMENT"),
+	}]
+	forward_to              = [loki.process.nodia_http.receiver]
+	tail_from_end           = true
+	on_positions_file_error = "restart_from_end"
+}
+
+loki.process "nodia_http" {
+	// Deny unexpected lines, including additional JSON fields and free text.
+	stage.match {
+		selector            = `{job="nodia-http"} !~ "^[{]\"event\":\"http_request\",\"method\":\"(GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS|OTHER)\",\"route\":\"(liveness|auth|business|teacher|nodia_ai|api_other)\",\"status\":[1-5][0-9]{2},\"duration_s\":[0-9]{1,9}[.][0-9]{3}[}]$"`
+		action              = "drop"
+		drop_counter_reason = "invalid_nodia_http_event"
+	}
+
+	stage.label_keep {
+		values = ["job", "environment", "instance"]
+	}
+
+	forward_to = [loki.write.nodia_cloud.receiver]
+}
+
+loki.write "nodia_cloud" {
+	endpoint {
+		url              = sys.env("NODIA_GRAFANA_LOGS_URL")
+		follow_redirects = false
+
+		basic_auth {
+			username      = sys.env("NODIA_GRAFANA_LOGS_USER")
+			password_file = sys.env("CREDENTIALS_DIRECTORY") + "/grafana-logs-token"
+		}
+	}
+}

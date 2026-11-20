@@ -139,6 +139,22 @@ jobs:
             --github-output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY"
           printf 'migration_rehearsal=%s\n' "$migration_rehearsal" >> "$GITHUB_OUTPUT"
           git diff --check "$base" "$EVENT_HEAD_SHA"
+          observability_changed=false
+          if [[ -n "$(git diff --name-only "$base" "$EVENT_HEAD_SHA" -- ops/production/observability .github/workflows/ci.yml)" ]]; then
+            observability_changed=true
+          fi
+          printf 'observability_changed=%s\n' "$observability_changed" >> "$GITHUB_OUTPUT"
+      - name: Validate Alloy observability configuration
+        if: steps.changes.outputs.observability_changed == 'true'
+        run: |
+          docker run --rm --network none \
+            --mount "type=bind,source=$GITHUB_WORKSPACE/ops/production/observability,target=/observability,readonly" \
+            -e NODIA_MONITOR_INSTANCE=nodia-ci -e NODIA_MONITOR_ENVIRONMENT=ci \
+            -e NODIA_GRAFANA_METRICS_URL=https://metrics.invalid/api/prom/push \
+            -e NODIA_GRAFANA_METRICS_USER=ci -e CREDENTIALS_DIRECTORY=/run/credentials/alloy.service \
+            -e NODIA_GRAFANA_LOGS_URL=https://logs.invalid/loki/api/v1/push -e NODIA_GRAFANA_LOGS_USER=ci \
+            grafana/alloy:v1.22.0@sha256:9acc2529bc1edb7f5b2bd801dd8334ebc80c158e3a9e5526ecd7c9a273d43189 \
+            validate /observability
 
   production-client-config:
     name: Read public production build configuration

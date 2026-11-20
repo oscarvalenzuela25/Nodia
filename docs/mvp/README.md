@@ -463,7 +463,7 @@ real con el artefacto original correcta, publicación todavía pendiente; backen
 | Necesidad | Fuente vigente |
 | --- | --- |
 | Despliegue productivo y CI/CD | [Plan99](99-production-deployment-and-cicd-plan.md), [ADR097 propuesto](../architecture/decisions/ADR-097-monorepo-production-release-pipeline.md) y [ADR099 propuesto: conciliación previa a migraciones](../architecture/decisions/ADR-099-pre-migration-deployment-reconciliation.md) |
-| Logs y monitoreo | [Plan104 — Grafana Cloud Free](104-logs-and-monitoring-grafana-cloud.md): elección confirmada, comparativa/inventario/flujo y etapas previas a instalar; [ADR101 propuesto](../architecture/decisions/ADR-101-grafana-cloud-observability.md). Sin instalación o ingesta acreditadas |
+| Logs y monitoreo | Grafana Cloud Free operativo. [G6](104-logs-and-monitoring-grafana-cloud.md#15-g6-consumo-observado-y-reversión-ensayada--2026-11-19) verificó uso por ventana y reversión aislada. Queda pendiente la conciliación mensual. [G7](104-logs-and-monitoring-grafana-cloud.md#16-g7-eventos-del-recibo-de-entrega--2026-11-19) verificó la emisión automática del recibo de CD a Loki y los casos sintéticos de fallo y entrega parcial. [ADR101 propuesto](../architecture/decisions/ADR-101-grafana-cloud-observability.md) |
 | Instalación de base y bootstrap | [Guía de instalación](database-installation.md) |
 | Seguridad y preparación | [Plan17](17-security-hardening-plan.md), [runbook18](18-security-deployment-runbook.md) y [revisión19](19-prelaunch-review.md), reconciliando sus cortes históricos |
 | Servicios internos | [ADR008](../architecture/decisions/ADR-008-internal-microservices-only.md) y [guía de seguridad](../architecture/internal-microservice-security.md) |
