@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { prepareSource } from './teacher-enrichment-sources.js';
-function textPdf(pages = ['Teacher source']) {
+function textPdf(pages = ['Teacher source'], includeRaster = false) {
   const objects = [
     '<< /Type /Catalog /Pages 2 0 R >>',
     `<< /Type /Pages /Kids [${pages.map((_,i) => `${4+i*2} 0 R`).join(' ')}] /Count ${pages.length} >>`,
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
   ];
   for (const page of pages) {
-    const content = page ? `BT /F1 ${page.length > 30000 ? '0.01' : '12'} Tf 30 100 Td (${page}) Tj ET` : '';
+    const text = page ? `BT /F1 ${page.length > 30000 ? '0.01' : '12'} Tf 30 100 Td (${page}) Tj ET` : '';
+    // Paint a small RGB image without a text layer, as in a scanned page.
+    const raster = includeRaster ? '\nq 100 0 0 100 50 50 cm BI /W 1 /H 1 /BPC 8 /CS /RGB /F /AHx ID E87A21> EI Q' : '';
+    const content = text + raster;
     objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Contents ${objects.length+2} 0 R /Resources << /Font << /F1 3 0 R >> >> >>`,
       `<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
   }
@@ -94,6 +97,10 @@ describe('Teacher source preparation', () => {
     expect(result.pages).toEqual([{ page: 1, text: 'Visible text' }, { page: 2, text: '' }]);
     expect(result.notices).toEqual(['teacher:source_page_without_text']);
     await expect(prepareSource({ title: 'Image-only placeholder', media_type: 'application/pdf', base64: textPdf(['']) }))
+      .rejects.toThrow('teacher:source_no_text');
+  }, 10000);
+  it('refuses a PDF with a real raster image and no text layer', async () => {
+    await expect(prepareSource({ title: 'Scanned source', media_type: 'application/pdf', base64: textPdf([''], true) }))
       .rejects.toThrow('teacher:source_no_text');
   }, 10000);
   it('rejects corrupt, too many pages and excessive extracted text, then releases its worker for the next source', async () => {

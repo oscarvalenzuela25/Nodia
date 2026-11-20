@@ -1,6 +1,12 @@
-import { useEffect, useId, useRef, useState, type ComponentType } from "react";
+import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { Alert, Button, IconButton, LinearProgress, Typography } from "@mui/material";
+import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
+import ChatBubbleOutlineOutlined from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import ExtensionOutlined from "@mui/icons-material/ExtensionOutlined";
+import FolderOpenOutlined from "@mui/icons-material/FolderOpenOutlined";
+import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
+import InsightsOutlined from "@mui/icons-material/InsightsOutlined";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
 import RequestRecovery from "../RequestRecovery";
@@ -11,6 +17,15 @@ import { adaptivePanelKeys, loadAdaptivePanel, type AdaptivePanelKey as PanelKey
 
 type Loaded = Partial<Record<PanelKey, ComponentType<AdaptivePanelProps>>>;
 type Props = Omit<AdaptivePanelProps, "visible"> & { open: boolean; onClose: () => void };
+
+const panelIcons = {
+  sources: <FolderOpenOutlined />,
+  evidence: <InsightsOutlined />,
+  review: <HistoryOutlined />,
+  activities: <ExtensionOutlined />,
+  concepts: <AccountTreeOutlined />,
+  clarifications: <ChatBubbleOutlineOutlined />,
+} satisfies Record<PanelKey, ReactNode>;
 
 /** Load secondary workspaces only by intent; hide instead of discarding drafts. */
 export default function AdaptiveWorkspace(props: Props) {
@@ -66,8 +81,17 @@ function WorkspaceDrawer({ open, onClose, ...props }: Props) {
       <IconButton aria-label={t("core:close")} disabled={locked} onClick={onClose}><CloseOutlined /></IconButton>
     </DrawerHeader>
     {props.command.uncertain && <RequestRecovery command={props.command} onRecovered={props.onResult} />}
-    <PanelTabs>
-      {adaptivePanelKeys.map(key => <Button key={key} ref={node => panelFocus.setTrigger(key, node)} variant={active === key ? "contained" : "outlined"} disabled={busy || loading === key} aria-expanded={active === key} aria-controls={`teacher-adaptive-${props.session.id}-${key}`} onClick={() => void openPanel(key)}>{t(`teacher:adaptive.tabs.${key}`)}</Button>)}
+    <PanelTabs aria-label={t("teacher:adaptive.workspace_sections")}>
+      {adaptivePanelKeys.map(key => <Button
+        key={key}
+        ref={node => panelFocus.setTrigger(key, node)}
+        variant={active === key ? "contained" : "outlined"}
+        startIcon={panelIcons[key]}
+        disabled={busy || loading === key}
+        aria-expanded={active === key}
+        aria-controls={loaded[key] ? `teacher-adaptive-${props.session.id}-${key}` : undefined}
+        onClick={() => void openPanel(key)}
+      >{t(`teacher:adaptive.tabs.${key}`)}</Button>)}
     </PanelTabs>
     {loading && <LinearProgress aria-label={t("core:loading_route")} />}
     {failed && active === failed && <Alert severity="error" action={<Button variant="outlined" disabled={busy || loading !== null} onClick={() => void openPanel(failed)}>{t("teacher:adaptive.retry")}</Button>}>{t("teacher:adaptive.load_failed")}</Alert>}

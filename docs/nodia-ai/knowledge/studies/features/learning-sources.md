@@ -4,7 +4,7 @@
   "document_id": "studies.learning-sources",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 5,
+  "revision": 6,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Teacher y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/101-nodia-teacher-adaptive-upgrade-plan.md",
       "kind": "specification"
@@ -65,6 +69,22 @@
 ---
 
 > Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Formatos y cobertura en Mis fuentes — 2026-11-20
+
+El panel de Teacher distingue texto pegado y PDF con texto seleccionable.
+El PDF se limita a 96 KiB y 12 páginas. Server admite un máximo de 32.000
+caracteres y 131.072 bytes UTF-8 de texto de la fuente. El resultado de
+lectura muestra el contenido extraído y su procedencia por página. Cuando
+un PDF sólo tiene texto en algunas páginas, un aviso indica que hubo
+omisiones. Un PDF sin capa de texto se rechaza.
+
+Para estudiar una foto, una captura o un documento escaneado sin capa de
+texto, el flujo admite pegar una transcripción en el campo de texto. El
+contrato de fuentes procesa texto, con los límites y la autoridad de la
+sesión, y usa ese contenido en las generaciones pertinentes. La revisión
+del panel explica la cobertura de extracción sin ampliar las modalidades
+del contrato ni el catálogo de NodiaAI. [Plan106 §20](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20).
 
 ## Fuentes privadas y citas locales — 2026-11-11
 

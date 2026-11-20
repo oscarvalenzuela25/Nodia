@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { canPollJob, enabled, hasPreparingJob, nextAttemptId, readyJobResult, restoreAttempt, restoreJob, resultNotice, sameAnswer } from "../../../../modules/teacher/infrastructure/presentation";
+import { canPollJob, enabled, hasPreparingJob, nextAttemptId, nextLessonAfterPractice, practiceQuestionLimit, readyJobResult, restoreAttempt, restoreJob, resultNotice, sameAnswer } from "../../../../modules/teacher/infrastructure/presentation";
 import { attemptSchema, createSessionSchema } from "../../../../modules/teacher/infrastructure/schemas";
+import { planFixture } from "../fixtures";
 
 describe("Teacher presentation boundaries", () => {
   it("blocks definition generation only while a reported job is queued or running, not for historical unknowns", () => {
@@ -63,6 +64,35 @@ describe("Teacher presentation boundaries", () => {
     expect(resultNotice(attemptSchema.parse({ ...base, state: "graded", result: "not_passed", percentage: 89.6 }))).toBe("not_passed");
     expect(resultNotice(attemptSchema.parse({ ...base, state: "graded", result: "passed", percentage: 90 }))).toBe("passed");
     expect(resultNotice(attemptSchema.parse({ ...base, scope: "unit_practice", state: "graded", result: null }))).toBe("practice_complete");
+  });
+  it("only advances into a lesson from the exact current-plan graded practice", () => {
+    const [first] = planFixture.outline.sections;
+    const [unit] = first.units;
+    const second = { ...unit, id: "next-unit", title: "Siguiente lección" };
+    const outline = { ...planFixture.outline, sections: [
+      { ...first, units: [unit, second] },
+      { ...first, id: "another-section", units: [{ ...unit, id: "another-unit" }] },
+    ] };
+    const practice = attemptSchema.parse({ attempt_id: "a", session_id: "s", scope: "unit_practice",
+      state: "graded", revision: 1, questions: [], allowed_actions: {}, result: null,
+      plan_revision_id: planFixture.id, section_id: first.id, unit_id: unit.id });
+    expect(nextLessonAfterPractice(outline, planFixture.id, practice)).toEqual({ sectionId: first.id, unit: second });
+    expect(nextLessonAfterPractice(outline, planFixture.id, { ...practice, unit_id: second.id })?.sectionId).toBe("another-section");
+    expect(nextLessonAfterPractice(outline, planFixture.id, { ...practice, section_id: "another-section", unit_id: "another-unit" })).toBeNull();
+    expect(nextLessonAfterPractice(outline, "new-plan", practice)).toBeNull();
+    expect(nextLessonAfterPractice(outline, planFixture.id, { ...practice, scope: "section_final" })).toBeNull();
+    expect(nextLessonAfterPractice(outline, planFixture.id, { ...practice, state: "grading_pending" })).toBeNull();
+  });
+  it("lets a practice reach its first unsubmitted question and keeps the final freely navigable", () => {
+    const attempt = attemptSchema.parse({ attempt_id: "a", session_id: "s", scope: "unit_practice",
+      state: "in_progress", revision: 1, allowed_actions: {}, result: null,
+      questions: ["submitted", "answered", "empty"].map((answer_status, index) => ({
+        question_id: String(index), ordinal: index + 1, answer_status,
+      })) });
+    expect(practiceQuestionLimit(attempt)).toBe(1);
+    expect(practiceQuestionLimit({ ...attempt, state: "graded" })).toBe(2);
+    expect(practiceQuestionLimit({ ...attempt, scope: "section_final" })).toBe(2);
+    expect(practiceQuestionLimit({ ...attempt, questions: [] })).toBe(-1);
   });
   it("can save a draft with unknown day count without inventing a schedule", () => {
     const input = { topic: " Redes ", objective: "Aprender DNS", explanation_language: "es", organization: "topics", day_count: null };
