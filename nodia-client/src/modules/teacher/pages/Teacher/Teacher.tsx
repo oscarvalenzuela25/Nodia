@@ -6,6 +6,9 @@ import SchoolOutlined from "@mui/icons-material/SchoolOutlined";
 import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
 import ArrowForwardOutlined from "@mui/icons-material/ArrowForwardOutlined";
+import CheckCircleOutlineOutlined from "@mui/icons-material/CheckCircleOutlineOutlined";
+import PlayArrowOutlined from "@mui/icons-material/PlayArrowOutlined";
+import TipsAndUpdatesOutlined from "@mui/icons-material/TipsAndUpdatesOutlined";
 import { Link, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import LessonTopics from "../../components/LessonTopics";
@@ -31,12 +34,12 @@ import { lessonPreparationState, studyContinuation } from "../../infrastructure/
 import ReinforcementPanel from "../../components/ReinforcementPanel";
 import { useReinforcementNavigation } from "../../infrastructure/useReinforcementNavigation";
 import { useTeacherAttempt, useTeacherCommand, useTeacherMaterial, useTeacherMessages, useTeacherProposal, useTeacherQuestion, useTeacherSession, useTeacherSessions } from "../../infrastructure/useServices";
-import { cursorBody, enabled, hasPreparingJob, nextAttemptId, readyJobResult, restoreAttempt, restoreJob, resultNotice } from "../../infrastructure/presentation";
+import { cursorBody, enabled, hasPreparingJob, nextAttemptId, nextLessonAfterPractice, practiceQuestionLimit, readyJobResult, restoreAttempt, restoreJob, resultNotice } from "../../infrastructure/presentation";
 import { setupDraftReceiptSchema, type Answer, type CommandResult, type Cursor, type Job, type Session } from "../../infrastructure/schemas";
 import { useSetupDraft } from "../../hooks/useSetupDraft";
 import { TEACHER_NEW_ROUTE } from "../../constants/routes";
 import { SESSION_JOB_COLORS } from "../../infrastructure/sessionList";
-import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanCard, PlanFilters, PlanGrid, PlanSearch, ProductBrand, SessionActions, SessionPage, SessionTitleRow, StateChip, Workspace } from "./styles";
+import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanCard, PlanFilters, PlanGrid, PlanSearch, PracticeResult, ProductBrand, QuizHeader, QuizSteps, SessionActions, SessionPage, SessionTitleRow, StateChip, Workspace } from "./styles";
 
 const SESSION_STATE_COLORS = {
   draft: "default",
@@ -154,9 +157,13 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const lessonHeading = useRef<HTMLHeadingElement>(null);
   const continuationHeading = useRef<HTMLHeadingElement>(null);
   const assessmentHeading = useRef<HTMLHeadingElement>(null);
-  const nextSectionFocus = useRef<string | null>(null);
-  const nextSectionRequest = useRef<Cursor | null>(null);
-  const [nextSectionFailure, setNextSectionFailure] = useState<string | null>(null);
+  const questionHeading = useRef<HTMLHeadingElement>(null);
+  const practiceResultHeading = useRef<HTMLHeadingElement>(null);
+  const finishingPractice = useRef<string | null>(null);
+  const unitFocus = useRef<string | null>(null);
+  const questionFocus = useRef<string | null>(null);
+  const pendingNavigation = useRef<Cursor | null>(null);
+  const [navigationFailure, setNavigationFailure] = useState<"unit" | "question" | null>(null);
   const [archiving, setArchiving] = useState(false);
   const [editingSession, setEditingSession] = useState(false);
   const [selecting, setSelecting] = useState(false);
@@ -189,7 +196,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
 
   const applyResult = useCallback((result: CommandResult) => {
     if (result.job_id) {
-      nextSectionRequest.current = null;
+      pendingNavigation.current = null;
       setJobSelection({ jobId: result.job_id, followResult: true, unitId });
     }
     if (result.proposal_revision_id) setProposalId(result.proposal_revision_id);
@@ -200,7 +207,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   }, [refreshTeacher]);
   const onReady = useCallback((job: Job) => {
     // An explicit destination takes precedence over opening a result automatically.
-    const ref = nextSectionRequest.current ? null : readyJobResult(job, jobSelection);
+    const ref = pendingNavigation.current ? null : readyJobResult(job, jobSelection);
     if (ref && typeof ref.proposal_revision_id === "string") setProposalId(ref.proposal_revision_id);
     const nextAttempt = nextAttemptId(ref, attemptId);
     if (nextAttempt) { setAttemptId(nextAttempt); setQuestionId(null); }
@@ -287,35 +294,66 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
     setHint(null);
     setOutlineExpanded(false);
   };
-  const openNextSection = (cursor: Cursor) => {
-    nextSectionFocus.current = cursor.unit_id;
-    nextSectionRequest.current = null;
-    setNextSectionFailure(null);
+  const openStudyDestination = (cursor: Cursor) => {
+    pendingNavigation.current = null;
+    setNavigationFailure(null);
     setJobSelection(current => current.followResult ? { ...current, followResult: false } : current);
-    openSavedUnit(cursor);
+    if (cursor.attempt_id && cursor.item_id) {
+      questionFocus.current = cursor.item_id;
+      setLocalCursor(cursor);
+      setQuestionId(cursor.item_id);
+      setHint(null);
+    } else {
+      unitFocus.current = cursor.unit_id;
+      openSavedUnit(cursor);
+    }
   };
-  const selectUnit = async (sectionId: string, nextUnitId: string, fromNextSection = false) => {
+  const navigateStudy = async (cursor: Cursor, focusDestination: boolean) => {
+    pendingNavigation.current = focusDestination ? cursor : null;
+    setNavigationFailure(null);
+    const saved = await reinforcementNavigation.choose(cursor, value => command.execute(
+      `sessions/${session.id}/cursor`, { expected_cursor_revision: value.revision, ...cursorBody(value) }, "PATCH",
+    ));
+    if (saved) {
+      if (focusDestination) openStudyDestination(saved);
+      else openSavedUnit(saved);
+    } else if (focusDestination) setNavigationFailure(cursor.attempt_id ? "question" : "unit");
+  };
+  const selectUnit = async (sectionId: string, nextUnitId: string, focusDestination = false) => {
     if (locked || draftAnswer || draftConflict || recordingMessage || !plan?.outline.sections.some(section => section.id === sectionId && section.units.some(unit => unit.id === nextUnitId))) return;
     const cursor: Cursor = { ...session.cursor, phase: "setup", plan_revision_id: plan.id, section_id: sectionId, unit_id: nextUnitId, content_version_id: null, attempt_id: null, item_id: null, block_id: null };
-    nextSectionRequest.current = fromNextSection ? cursor : null;
-    setNextSectionFailure(null);
-    const saved = await reinforcementNavigation.choose(cursor, value => command.execute(`sessions/${session.id}/cursor`, { expected_cursor_revision: value.revision, ...cursorBody(value) }, "PATCH"));
-    if (saved) {
-      if (fromNextSection) openNextSection(saved);
-      else openSavedUnit(saved);
-    } else if (fromNextSection) setNextSectionFailure(unitId);
+    await navigateStudy(cursor, focusDestination);
+  };
+  const selectQuestion = async (id: string) => {
+    if (!attempt.data || locked || draftAnswer || draftConflict || attempt.isFetching || question.isFetching ||
+      !attempt.data.questions.slice(0, practiceQuestionLimit(attempt.data) + 1).some(item => item.question_id === id) ||
+      (question.data?.question_id ?? questionId) === id) return;
+    await navigateStudy({ ...studyCursor(), revision: session.cursor.revision, item_id: id }, true);
   };
   useEffect(() => {
-    if (nextSectionFailure && !command.isPending && !command.uncertain) nextSectionRequest.current = null;
-  }, [command.isPending, command.uncertain, nextSectionFailure]);
+    if (navigationFailure && !command.isPending && !command.uncertain) pendingNavigation.current = null;
+  }, [command.isPending, command.uncertain, navigationFailure]);
   useEffect(() => {
-    if (nextSectionFocus.current !== unitId || material.isFetching || !unitId) return;
+    if (unitFocus.current !== unitId || material.isFetching || !unitId) return;
     const heading = lessonHeading.current ?? continuationHeading.current;
     if (!heading) return;
-    nextSectionFocus.current = null;
+    unitFocus.current = null;
     heading.focus({ preventScroll: true });
     heading.scrollIntoView?.({ block: "start" });
   }, [unitId, material.isFetching, material.data]);
+  useEffect(() => {
+    if (!questionFocus.current || question.data?.question_id !== questionFocus.current || !questionHeading.current) return;
+    questionFocus.current = null;
+    questionHeading.current.focus({ preventScroll: true });
+    questionHeading.current.scrollIntoView?.({ block: "start" });
+  }, [question.data]);
+  useEffect(() => {
+    if (!finishingPractice.current || attempt.data?.attempt_id !== finishingPractice.current ||
+      attempt.data.state !== "graded" || !practiceResultHeading.current) return;
+    finishingPractice.current = null;
+    practiceResultHeading.current.focus({ preventScroll: true });
+    practiceResultHeading.current.scrollIntoView?.({ block: "start" });
+  }, [attempt.data]);
   const continuationContext = plan ? { plan, cursor: localCursor, selectedUnitId: unitId, attemptId,
     attemptPlanRevisionId: attempt.data?.attempt_id === attemptId ? attempt.data?.plan_revision_id : undefined,
     material: material.data, allowedActions: session.allowed_actions, paused: !active } : null;
@@ -335,7 +373,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
   const focusStudy = () => {
     const block = material.data?.kind === "material" && material.data.content_version_id === localCursor.content_version_id && localCursor.block_id
       ? document.getElementById(`teacher-block-${localCursor.block_id}`) : null;
-    const target = attemptId ? assessmentHeading.current : block ?? lessonHeading.current;
+    const target = attemptId ? questionHeading.current ?? assessmentHeading.current : block ?? lessonHeading.current;
     target?.focus({ preventScroll: true });
     target?.scrollIntoView({ block: "start" });
   };
@@ -356,39 +394,139 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         onNew={async job => { await execute(`jobs/${jobId}/new-generation`, { expected_session_revision: session.revision, expected_job_fence: job.fence }); }} />
     : null;
   const budgetNotice = <Alert variant="outlined" severity="info" role="note">{t("teacher:budget", { used: session.dispatches_used, limit: session.dispatch_limit })}</Alert>;
+  const assessment = attempt.data;
+  const questionIndex = assessment?.questions.findIndex(item => item.question_id === (question.data?.question_id ?? questionId)) ?? -1;
+  const questionLimit = assessment ? practiceQuestionLimit(assessment) : -1;
+  const assessmentBusy = locked || attempt.isFetching || question.isFetching;
+  const questionNavigationLocked = assessmentBusy || Boolean(draftAnswer) || draftConflict;
+  const nextQuestion = assessment?.scope === "unit_practice" && assessment.state === "in_progress" &&
+    questionIndex >= 0 && questionIndex < questionLimit ? assessment.questions[questionIndex + 1] : undefined;
+  const practiceComplete = assessment?.scope === "unit_practice" && assessment.state === "graded";
+  const followUpLesson = plan ? nextLessonAfterPractice(plan.outline, plan.id, assessment) : null;
+  const points = typeof assessment?.earned_points === "number" && assessment.denominator_points
+    ? { earned: assessment.earned_points, possible: assessment.denominator_points } : null;
+  const studyOpen = continuation?.kind === "open" || continuation?.kind === "continue";
   const assessmentView = attemptId ? <Panel>
-          {noticeInAssessment && jobNotice}
-          <QueryErrorAlert retryVariant="outlined" isError={attempt.isError || question.isError} isFetching={attempt.isFetching || question.isFetching} onRetry={() => { void attempt.refetch(); void question.refetch(); }} />
-          <TeacherLoading loading={attempt.isLoading && !attempt.data}>
-            {attempt.data && <Stack sx={{ gap: 3 }}>
-              <Typography ref={assessmentHeading} tabIndex={-1} variant="h5" component="h2">{t(attempt.data.scope === "section_final" ? "teacher:final_assessment" : attempt.data.scope === "diagnostic" ? "teacher:diagnostic" : "teacher:practice")}</Typography>
-              <Box component="nav" aria-label={t("teacher:assessment_navigation")} sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(44px,1fr))", gap: 1, "& > button": { minHeight: 44, minWidth: 44, px: 0, whiteSpace: "nowrap" } }}>{attempt.data.questions.map((item, index) => <Button key={item.question_id} variant={question.data?.question_id === item.question_id ? "contained" : "outlined"} disabled={locked || attempt.isFetching || question.isFetching || (attempt.data?.scope !== "section_final" && attempt.data.state === "in_progress" && attempt.data.questions.findIndex(item => item.answer_status !== "submitted") >= 0 && index > attempt.data.questions.findIndex(item => item.answer_status !== "submitted"))} aria-label={t("teacher:question_number", { number: index + 1 })} onClick={() => { if (draftAnswer) return; setQuestionId(item.question_id); setHint(null); void saveCursor({ ...studyCursor(), item_id: item.question_id }); }}>{index + 1}</Button>)}</Box>
-              {question.isLoading && !question.data && <TeacherLoading loading />}
-              {question.data && <QuestionCard key={question.data.question_id} question={question.data} busy={locked || attempt.isFetching || question.isFetching} canSave={enabled(attempt.data.allowed_actions, "save_answers")} canSubmit={enabled(attempt.data.allowed_actions, "submit_question")} final={attempt.data.scope === "section_final"} delivered={attempt.data.state !== "in_progress"} onDraft={setDraftAnswer} onConflictChange={setDraftConflict} onSave={saveAnswer} onReflectionSave={async metadata => { if (!question.data?.response_id) return false; const result = await execute(`sessions/${session.id}/learning/response-metadata`, { expected_session_revision: session.revision, response_id: question.data.response_id, expected_response_revision: question.data.response_revision, ...metadata }); return result !== null; }} onSubmit={async answer => { const result = await execute(`sessions/${session.id}/attempts/${attemptId}/responses/${question.data!.question_id}/submit`, { expected_attempt_revision: attempt.data!.revision, expected_response_revision: question.data!.response_revision, answer }); if (result) setDraftAnswer(null); }} />}
-              {draftAnswer && <Alert severity="warning">{t("teacher:save_before_navigation")}</Alert>}
-              {enabled(attempt.data.allowed_actions, "request_help") && <Button variant="outlined" disabled={locked || Boolean(draftAnswer)} onClick={() => setHelpOpen(true)}>{t("teacher:request_help")}</Button>}
-              {hint && <Alert severity="info"><Typography variant="subtitle2">{t("teacher:hint")}</Typography>{hint}</Alert>}
-              <ConfirmDialog open={helpOpen} onClose={() => { if (!busy) setHelpOpen(false); }} title={t("teacher:request_help")} message={t("teacher:assisted_final_notice")} confirmText={t("teacher:accept_help")} isLoading={busy} onConfirm={async () => { if (!question.data) return; const result = await execute(`sessions/${session.id}/attempts/${attemptId}/help`, { expected_attempt_revision: attempt.data!.revision, question_id: question.data.question_id, accept_assisted_attempt: true }); if (result) { setHelpOpen(false); setHint(result.hint ?? null); } }}><RequestRecovery command={command} onRecovered={result => { applyResult(result); setHelpOpen(false); setHint(result.hint ?? null); }} /></ConfirmDialog>
-              {enabled(attempt.data.allowed_actions, "submit_attempt") && <Button variant="contained" disabled={locked || Boolean(draftAnswer)} onClick={() => void execute(`sessions/${session.id}/attempts/${attemptId}/submit`, { expected_attempt_revision: attempt.data!.revision })}>{t(attempt.data.scope === "section_final" ? "teacher:submit_final" : "teacher:finish_practice")}</Button>}
-              {attempt.data.state !== "in_progress" && <Alert severity={attempt.data.result === "passed" ? "success" : attempt.data.result === "not_passed" ? "warning" : "info"}><Typography variant="h6">{t(`teacher:results.${resultNotice(attempt.data)}`)}</Typography>{attempt.data.earned_points !== null && attempt.data.earned_points !== undefined && attempt.data.denominator_points && <Typography>{t("teacher:points", { earned: attempt.data.earned_points, possible: attempt.data.denominator_points })}</Typography>}</Alert>}
-              {attempt.data.result === "not_passed" && <><ReinforcementPanel projection={attempt.data.reinforcement} currentPlanId={plan?.id ?? null} busy={locked || attempt.isFetching || Boolean(draftAnswer)} failed={reinforcementNavigation.failed} onOpen={id => void openReinforcement(id)} onChooseUnit={() => void chooseTheoryUnit()} /><Actions>{enabled(attempt.data.allowed_actions, "new_attempt") && attempt.data.section_id && <Button variant="contained" disabled={locked} onClick={() => void startAttempt("sections", attempt.data!.section_id!, true)}>{t("teacher:retry_final")}</Button>}</Actions></>}
-              {enabled(attempt.data.allowed_actions, "close_pending") && attempt.data.close_pending_reason && <Button variant="outlined" disabled={locked} onClick={() => void execute(`sessions/${session.id}/attempts/${attemptId}/close-pending`, { expected_attempt_revision: attempt.data!.revision, reason: attempt.data!.close_pending_reason })}>{t("teacher:close_pending")}</Button>}
-            </Stack>}
-          </TeacherLoading>
-        </Panel> : null;
+    {noticeInAssessment && jobNotice}
+    <QueryErrorAlert retryVariant="outlined" isError={attempt.isError || question.isError}
+      isFetching={attempt.isFetching || question.isFetching} onRetry={() => { void attempt.refetch(); void question.refetch(); }} />
+    <TeacherLoading loading={attempt.isLoading && !assessment}>
+      {assessment && <Stack sx={{ gap: { xs: 2, sm: 3 } }}>
+        <QuizHeader>
+          <Typography ref={assessmentHeading} tabIndex={-1} variant="h5" component="h2">
+            {t(assessment.scope === "section_final" ? "teacher:final_assessment" : assessment.scope === "diagnostic" ? "teacher:diagnostic" : "teacher:practice")}
+          </Typography>
+          {questionIndex >= 0 && <Typography variant="body2" color="text.secondary">
+            {t("teacher:quiz_review.progress", { current: questionIndex + 1, total: assessment.questions.length })}
+          </Typography>}
+        </QuizHeader>
+        {practiceComplete && <PracticeResult aria-labelledby="teacher-practice-result">
+          <Box className="practice-result-icon"><CheckCircleOutlineOutlined /></Box>
+          <Stack className="practice-result-main" sx={{ gap: .75 }}>
+            <Typography id="teacher-practice-result" ref={practiceResultHeading} tabIndex={-1} variant="h6" component="h3">
+              {t("teacher:results.practice_complete")}
+            </Typography>
+            {points && <>
+              <Typography variant="subtitle1">{t("teacher:points", points)}</Typography>
+              <LinearProgress variant="determinate" color="success" value={Math.max(0, Math.min(100, 100 * points.earned / points.possible))}
+                aria-label={t("teacher:quiz_review.score_progress")} aria-valuetext={t("teacher:points", points)} />
+            </>}
+          </Stack>
+          {followUpLesson && <Stack className="practice-result-next" sx={{ gap: .5 }}>
+            <Typography variant="body2" color="text.secondary">{followUpLesson.unit.title}</Typography>
+            <Button variant="outlined" size="small" endIcon={<ArrowForwardOutlined />}
+              disabled={questionNavigationLocked || recordingMessage} onClick={() => void selectUnit(followUpLesson.sectionId, followUpLesson.unit.id, true)}>
+              {t("teacher:quiz_review.next_lesson")}
+            </Button>
+          </Stack>}
+          {navigationFailure === "unit" && !command.uncertain &&
+            <Alert severity="error" variant="outlined" sx={{ gridColumn: "1 / -1" }}>{t("teacher:quiz_review.next_lesson_failed")}</Alert>}
+        </PracticeResult>}
+        <QuizSteps aria-label={t("teacher:assessment_navigation")}>
+          {assessment.questions.map((item, index) => <Button key={item.question_id} size="small"
+            variant={questionIndex === index ? "contained" : "outlined"}
+            aria-current={questionIndex === index ? "step" : undefined}
+            aria-label={t("teacher:question_number", { number: index + 1 })}
+            data-submitted={item.answer_status === "submitted" || undefined}
+            disabled={questionNavigationLocked || index > questionLimit}
+            onClick={() => void selectQuestion(item.question_id)}>
+            {index + 1}
+          </Button>)}
+        </QuizSteps>
+        {navigationFailure === "question" && !command.uncertain &&
+          <Alert severity="error" variant="outlined">{t("teacher:quiz_review.navigation_failed")}</Alert>}
+        {question.isLoading && !question.data && <TeacherLoading loading />}
+        {question.data && <QuestionCard key={question.data.question_id} question={question.data} busy={assessmentBusy}
+          canSave={enabled(assessment.allowed_actions, "save_answers")} canSubmit={enabled(assessment.allowed_actions, "submit_question")}
+          final={assessment.scope === "section_final"} delivered={assessment.state !== "in_progress"}
+          headingRef={questionHeading} onDraft={setDraftAnswer} onConflictChange={setDraftConflict} onSave={saveAnswer}
+          hintAction={enabled(assessment.allowed_actions, "request_help") && <Button variant="outlined" startIcon={<TipsAndUpdatesOutlined />}
+            disabled={questionNavigationLocked} onClick={() => setHelpOpen(true)}>{t("teacher:request_help")}</Button>}
+          nextAction={nextQuestion && <Button variant="contained" endIcon={<ArrowForwardOutlined />}
+            disabled={questionNavigationLocked} onClick={() => void selectQuestion(nextQuestion.question_id)}>{t("teacher:quiz_review.next_question")}</Button>}
+          onSubmit={async answer => {
+            if (!question.data) return;
+            const result = await execute(`sessions/${session.id}/attempts/${attemptId}/responses/${question.data.question_id}/submit`, {
+              expected_attempt_revision: assessment.revision, expected_response_revision: question.data.response_revision, answer,
+            });
+            if (result) setDraftAnswer(null);
+          }} />}
+        {draftAnswer && <Alert severity="warning">{t("teacher:save_before_navigation")}</Alert>}
+        {hint && <Alert severity="info"><Typography variant="subtitle2">{t("teacher:hint")}</Typography>{hint}</Alert>}
+        <ConfirmDialog open={helpOpen} onClose={() => { if (!busy) setHelpOpen(false); }}
+          title={t("teacher:request_help")} message={t("teacher:assisted_final_notice")} confirmText={t("teacher:accept_help")}
+          isLoading={busy} onConfirm={async () => {
+            if (!question.data) return;
+            const result = await execute(`sessions/${session.id}/attempts/${attemptId}/help`, {
+              expected_attempt_revision: assessment.revision, question_id: question.data.question_id, accept_assisted_attempt: true,
+            });
+            if (result) { setHelpOpen(false); setHint(result.hint ?? null); }
+          }}>
+          <RequestRecovery command={command} onRecovered={result => { applyResult(result); setHelpOpen(false); setHint(result.hint ?? null); }} />
+        </ConfirmDialog>
+        {enabled(assessment.allowed_actions, "submit_attempt") && <Button variant="contained" fullWidth
+          disabled={questionNavigationLocked} onClick={() => {
+            if (assessment.scope === "unit_practice") finishingPractice.current = attemptId;
+            void execute(`sessions/${session.id}/attempts/${attemptId}/submit`, { expected_attempt_revision: assessment.revision });
+          }}>{t(assessment.scope === "section_final" ? "teacher:submit_final" : "teacher:finish_practice")}</Button>}
+        {assessment.state !== "in_progress" && !practiceComplete &&
+          <Alert severity={assessment.result === "passed" ? "success" : assessment.result === "not_passed" ? "warning" : "info"}>
+            <Typography variant="h6">{t(`teacher:results.${resultNotice(assessment)}`)}</Typography>
+            {points && <Typography>{t("teacher:points", points)}</Typography>}
+          </Alert>}
+        {assessment.result === "not_passed" && <>
+          <ReinforcementPanel projection={assessment.reinforcement} currentPlanId={plan?.id ?? null}
+            busy={questionNavigationLocked} failed={reinforcementNavigation.failed}
+            onOpen={id => void openReinforcement(id)} onChooseUnit={() => void chooseTheoryUnit()} />
+          {enabled(assessment.allowed_actions, "new_attempt") && assessment.section_id && <Actions>
+            <Button variant="contained" disabled={assessmentBusy} onClick={() => {
+              if (assessment.section_id) void startAttempt("sections", assessment.section_id, true);
+            }}>{t("teacher:retry_final")}</Button>
+          </Actions>}
+        </>}
+        {enabled(assessment.allowed_actions, "close_pending") && assessment.close_pending_reason &&
+          <Button variant="outlined" disabled={assessmentBusy} onClick={() => void execute(
+            `sessions/${session.id}/attempts/${attemptId}/close-pending`,
+            { expected_attempt_revision: assessment.revision, reason: assessment.close_pending_reason },
+          )}>{t("teacher:close_pending")}</Button>}
+      </Stack>}
+    </TeacherLoading>
+  </Panel> : null;
 
   return <SessionPage>
     <Header><Box sx={{ width: "100%", minWidth: 0 }}><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><SessionTitleRow><Typography variant="h4" component="h1" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}>{session.title || session.topic}</Typography><StateChip label={t(`teacher:states.${session.state}`)} color={SESSION_STATE_COLORS[session.state]} /></SessionTitleRow><Typography color="text.secondary">{session.objective}</Typography></Box></Header>
     {!editingSession && !selecting && !helpOpen && !archiving && !adaptiveOpen && !diagnosticOpen && <RequestRecovery command={command} onRecovered={result => {
       const matchesSession = result.session_id === session.id || command.uncertain?.path.startsWith(`sessions/${session.id}/`);
       if (matchesSession && !result.thread_id) applyResult(result);
-      const requested = nextSectionRequest.current;
+      const requested = pendingNavigation.current;
       const pending = command.uncertain;
       if (requested && result.session_id === session.id && result.revision === requested.revision + 1
-        && requested.plan_revision_id === plan?.id && session.cursor.revision <= result.revision
+        && (requested.attempt_id ? requested.attempt_id === attemptId : requested.plan_revision_id === plan?.id)
+        && session.cursor.revision <= result.revision
         && pending?.path === `sessions/${session.id}/cursor` && pending.method === "PATCH"
-        && pending.body.expected_cursor_revision === requested.revision && pending.body.unit_id === requested.unit_id) {
-        openNextSection({ ...requested, revision: result.revision });
+        && pending.body.expected_cursor_revision === requested.revision && pending.body.unit_id === requested.unit_id
+        && pending.body.attempt_id === requested.attempt_id && pending.body.item_id === requested.item_id) {
+        openStudyDestination({ ...requested, revision: result.revision });
       }
     }} />}
     {session.state === "paused" && <Alert variant="outlined" severity="info" role="status">{t("teacher:paused_notice")}</Alert>}
@@ -399,6 +537,9 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
       {enabled(session.allowed_actions, "resume") && <Button disabled={busy} variant="contained" onClick={() => void stateCommand("resume")}>{t("teacher:resume")}</Button>}
       <Button variant="outlined" startIcon={<SchoolOutlined />} disabled={busy || recordingMessage || reinforcementNavigation.pending} aria-haspopup="dialog" aria-expanded={adaptiveOpen} onClick={() => setAdaptiveOpen(true)}>{t("teacher:adaptive.workspace")}</Button>
       {archiveOnly ? <Button variant="outlined" disabled={busy} onClick={() => setArchiving(true)}>{t("teacher:archive")}</Button> : <Button variant="outlined" disabled={busy} aria-haspopup="menu" aria-expanded={Boolean(optionsAnchor)} onClick={event => setOptionsAnchor(event.currentTarget)}>{t("teacher:session_options")}</Button>}
+      {studyOpen && <Button variant="outlined" startIcon={<PlayArrowOutlined />} disabled={busy || reinforcementNavigation.pending ||
+        (attemptId ? !assessment || attempt.isLoading || question.isLoading : material.isFetching)}
+        sx={{ marginInlineStart: { sm: "auto" } }} onClick={focusStudy}>{t("teacher:quiz_review.resume_study")}</Button>}
     </SessionActions>
     <Menu anchorEl={optionsAnchor} open={Boolean(optionsAnchor)} onClose={() => setOptionsAnchor(null)} slotProps={{ list: { "aria-label": t("teacher:session_options") } }}>
       {enabled(session.allowed_actions, "edit") && <MenuItem disabled={busy} sx={{ minHeight: 44 }} onClick={() => { setOptionsAnchor(null); setEditingSession(true); }}>{t("teacher:edit_session")}</MenuItem>}
@@ -433,7 +574,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
         onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }}
         onStartFinal={sectionId => { void startAttempt("sections", sectionId); }} /></Panel>
       <Stack sx={{ gap: 3, minWidth: 0 }}>
-        {continuation && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation view={continuation} paused={!active} preparationState={preparationState} headingRef={continuationHeading}
+        {continuation && !studyOpen && <TeacherLoading loading={Boolean(unitId && !attemptId && materialPlanId && material.isLoading && !material.data)}><StudyContinuation view={continuation} paused={!active} preparationState={preparationState} headingRef={continuationHeading}
           jobReadError={lessonJob.isError ? { busy: lessonJob.isFetching, onRetry: lessonJob.refetch } : undefined}
           busy={busy || reinforcementNavigation.pending || recordingMessage || material.isFetching || attempt.isFetching || question.isFetching}
           onSelectUnit={(sectionId, nextUnitId) => { void selectUnit(sectionId, nextUnitId); }} onPrepare={id => { void prepareLesson(id); }} onOpen={focusStudy} onContinue={focusStudy}
@@ -457,7 +598,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
                 })} />
               <Stack sx={{ gap: 1.5 }}>
                 {noticeInLesson && jobNotice}
-                {nextSectionFailure === unitId && !command.uncertain && <Alert variant="outlined" severity="error">{t("teacher:next_section_failed")}</Alert>}
+                {navigationFailure === "unit" && !command.uncertain && <Alert variant="outlined" severity="error">{t("teacher:next_section_failed")}</Alert>}
                 {budgetNotice}
                 <Actions>
                   {session.state === "active" && enabled(lesson.allowed_actions, "prepare_material") &&

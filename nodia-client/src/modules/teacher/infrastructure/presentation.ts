@@ -1,4 +1,4 @@
-import type { AllowedActions, Answer, Attempt, Cursor, Job, Session } from "./schemas";
+import type { AllowedActions, Answer, Attempt, Cursor, Job, Outline, Session } from "./schemas";
 
 /** Historical unknown jobs remain in active_jobs even after local closure. */
 export const hasPreparingJob = (jobs: Session["active_jobs"]) => jobs.some(job => job.state === "queued" || job.state === "running");
@@ -35,6 +35,20 @@ export const cursorBody = (cursor: Cursor) => ({ plan_revision_id: cursor.plan_r
 export function resultNotice(attempt: Attempt): "pending" | "passed" | "not_passed" | "not_independent" | "practice_complete" {
   if (attempt.scope !== "section_final") return attempt.state === "graded" ? "practice_complete" : "pending";
   return attempt.result ?? "pending";
+}
+
+export function nextLessonAfterPractice(outline: Outline, planId: string, attempt: Attempt | undefined) {
+  if (attempt?.scope !== "unit_practice" || attempt.state !== "graded" ||
+    attempt.plan_revision_id !== planId || !attempt.unit_id) return null;
+  const lessons = outline.sections.flatMap(section => section.units.map(unit => ({ sectionId: section.id, unit })));
+  const current = lessons.findIndex(({ sectionId, unit }) => unit.id === attempt.unit_id && sectionId === attempt.section_id);
+  return current < 0 ? null : lessons[current + 1] ?? null;
+}
+
+export function practiceQuestionLimit(attempt: Attempt) {
+  if (attempt.state !== "in_progress" || attempt.scope === "section_final") return attempt.questions.length - 1;
+  const firstOpen = attempt.questions.findIndex(question => question.answer_status !== "submitted");
+  return firstOpen === -1 ? attempt.questions.length - 1 : firstOpen;
 }
 export function answerText(answer: unknown): string {
   if (typeof answer === "string") return answer;

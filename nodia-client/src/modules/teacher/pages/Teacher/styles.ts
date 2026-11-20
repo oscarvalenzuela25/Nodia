@@ -43,4 +43,41 @@ export const Workspace = styled(Box)(({ theme }) => ({ display: "grid", gridTemp
 export const PlanGrid = styled(Box)(({ theme }) => ({ display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: theme.spacing(3, 2), [theme.breakpoints.up("sm")]: { gridTemplateColumns: "repeat(2,minmax(0,1fr))" }, [theme.breakpoints.up("xl")]: { gridTemplateColumns: "repeat(3,minmax(0,1fr))" } }));
 export const Actions = styled(Stack)(({ theme }) => ({ flexDirection: "row", flexWrap: "wrap", gap: theme.spacing(1), "& > button, & > a": { minHeight: 44, [theme.breakpoints.down("sm")]: { width: "100%" } } }));
 export const LessonHeader = styled(Box)(({ theme }) => ({ padding: theme.spacing(3), borderRadius: theme.spacing(1.5), borderLeft: `4px solid ${theme.palette.primary.main}`, background: alpha(theme.palette.primary.main, theme.palette.mode === "dark" ? 0.13 : 0.055), marginBottom: theme.spacing(3) }));
-export const QuestionBody = styled(Stack)(({ theme }) => ({ gap: theme.spacing(2), "& .MuiFormControlLabel-root": { minHeight: 48, margin: 0, borderRadius: theme.spacing(1), border: `1px solid ${theme.palette.divider}`, padding: theme.spacing(.5, 1) }, "& .MuiFormControlLabel-label": { overflowWrap: "anywhere" } }));
+export const QuizHeader = styled(Stack)(({ theme }) => ({
+  flexDirection: "row", alignItems: "baseline", justifyContent: "space-between",
+  flexWrap: "wrap", gap: theme.spacing(.5, 2),
+  "& h2": { fontWeight: 700, scrollMarginBlockStart: theme.spacing(2) },
+}));
+export const QuizSteps = styled("nav")(({ theme }) => ({
+  display: "flex", flexWrap: "wrap", gap: theme.spacing(1),
+  "& .MuiButton-root": { minWidth: 44, paddingInline: theme.spacing(1) },
+  '& [aria-current="step"].Mui-disabled': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.18),
+    color: theme.palette.primary.main,
+    boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.primary.main, 0.65)}`,
+  },
+  '& [data-submitted="true"].MuiButton-outlined:not(.Mui-disabled)': {
+    backgroundColor: alpha(theme.palette.success.main, 0.09),
+    color: theme.palette.success.main,
+    borderColor: alpha(theme.palette.success.main, 0.5),
+  },
+}));
+export const PracticeResult = styled("section")(({ theme }) => ({
+  display: "grid", gridTemplateColumns: "auto minmax(0, 1fr)", alignItems: "start",
+  gap: theme.spacing(1.5), padding: theme.spacing(2), borderRadius: theme.spacing(1.5),
+  border: `1px solid ${alpha(theme.palette.success.main, 0.34)}`,
+  background: alpha(theme.palette.success.main, theme.palette.mode === "dark" ? 0.085 : 0.055),
+  "& .practice-result-icon": {
+    display: "grid", placeItems: "center", width: 44, height: 44,
+    borderRadius: theme.spacing(1.25), color: theme.palette.success.main,
+    backgroundColor: alpha(theme.palette.success.main, 0.13),
+  },
+  "& .practice-result-next": { gridColumn: "1 / -1", alignItems: "flex-start", minWidth: 0 },
+  "& h3": { fontWeight: 700, scrollMarginBlockStart: theme.spacing(2) },
+  "& .MuiLinearProgress-root": { height: 6, borderRadius: theme.spacing(1), maxWidth: 270 },
+  [theme.breakpoints.up("sm")]: {
+    padding: theme.spacing(2.5), gap: theme.spacing(2),
+    gridTemplateColumns: "auto minmax(0, 1fr) auto", alignItems: "center",
+    "& .practice-result-next": { gridColumn: "auto", alignItems: "flex-end", maxWidth: 270, textAlign: "end" },
+  },
+}));

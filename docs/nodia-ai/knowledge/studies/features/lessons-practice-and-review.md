@@ -4,7 +4,7 @@
   "document_id": "studies.lessons-practice-and-review",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 25,
+  "revision": 26,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/95-studies-adaptive-learning.md",
       "kind": "specification"
@@ -165,6 +169,23 @@
 ---
 
 > Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Corrección y continuidad del quiz — 2026-11-20
+
+La tarjeta de pregunta retira los campos de reflexión y confianza. El
+contrato de Server conserva la evidencia histórica. La pista autorizada y
+el guardado de borrador se ofrecen junto a la respuesta. Tras enviarla, la
+corrección muestra las partes confirmadas por Server, incluidos los puntos,
+la respuesta dada, la esperada o los criterios, la explicación y el
+desglose de la rúbrica. Cuando el quiz de práctica tiene una pregunta
+posterior, la corrección permite avanzar hasta ella.
+
+El resultado del quiz ofrece continuar hasta la próxima unidad del plan
+si existe. Sigue la navegación con cursor confirmado. La evaluación final
+conserva sus restricciones de entrega, ayuda y revelación. El rediseño
+cambia la navegación y la presentación del resultado. Las reglas que
+determinan la nota, la verificación y la evidencia conservan el contrato de
+Server. [Plan106 §20](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20).
 
 ## Práctica interactiva durante la lección — 2026-11-19
 

@@ -68,12 +68,46 @@ describe("Teacher question boundary", () => {
     expect(screen.getByRole("radio", { name: "SMTP" })).toBeChecked();
     expect(screen.getByText(/No se confirmó el guardado. Tu borrador se conserva/)).toBeInTheDocument();
   });
-  it("reveals solution and explanation after delivery and disables the frozen answer", () => {
-    render(<QuestionCard question={{ ...question, frozen_answer: { kind: "single_choice", option_id: "b" } }} busy={false} canSave={false} canSubmit={false} final delivered onDraft={vi.fn()} onSave={vi.fn()} onSubmit={vi.fn()} />);
+  it("compares the frozen answer with the expected answer after final delivery", () => {
+    const wrong: Question = { ...question, frozen_answer: { kind: "single_choice", option_id: "b" }, feedback: { ...question.feedback, earned_points: 0 } };
+    render(<QuestionCard question={wrong} busy={false} canSave={false} canSubmit={false} final delivered nextAction={<button>Siguiente pregunta</button>} onDraft={vi.fn()} onSave={vi.fn()} onSubmit={vi.fn()} />);
     expect(screen.getByText("DNS maps names to addresses.")).toBeInTheDocument();
-    expect(screen.getByText("Respuesta correcta: DNS")).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "SMTP" })).toBeDisabled();
-    expect(screen.getByText("Respuesta enviada")).toBeInTheDocument();
+    expect(screen.getByText("Respuesta esperada")).toBeInTheDocument();
+    expect(screen.getByText("DNS")).toBeInTheDocument();
+    expect(screen.getByText("SMTP")).toBeInTheDocument();
+    expect(screen.getByText("0 de 2 puntos")).toBeInTheDocument();
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Siguiente pregunta" })).not.toBeInTheDocument();
+  });
+  it("moves focus to the practice correction and offers the next question only after the answer is frozen", async () => {
+    const next = vi.fn();
+    const props = { busy: false, canSave: true, canSubmit: true, final: false, delivered: false, onDraft: vi.fn(), onSave: vi.fn(), onSubmit: vi.fn(), hintAction: <button>Pedir una pista</button>, nextAction: <button onClick={next}>Siguiente pregunta</button> };
+    const { rerender } = render(<QuestionCard {...props} question={{ ...question, confidence: 0, self_explanation: "historical" }} />);
+    const hint = screen.getByRole("button", { name: "Pedir una pista" });
+    const save = screen.getByRole("button", { name: "Guardar borrador" });
+    expect(save.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByText("historical")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cómo llegaste a tu respuesta")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Siguiente pregunta" })).not.toBeInTheDocument();
+    expect(screen.queryByText("DNS maps names to addresses.")).not.toBeInTheDocument();
+
+    rerender(<QuestionCard {...props} question={{ ...question, response_revision: 2, frozen_answer: { kind: "single_choice", option_id: "a" } }} />);
+    expect(screen.getByRole("heading", { name: "Respuesta correcta" })).toHaveFocus();
+    expect(screen.getAllByText("DNS")).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: "Guardar borrador" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Pedir una pista" })).not.toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Siguiente pregunta" }));
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+  it("separates the written expectations from each rubric comment and preserves partial points", () => {
+    const written: Question = { ...question, kind: "short_text", frozen_answer: { kind: "short_text", text: "My name is Alex." }, feedback: { earned_points: 1, max_points: 6, explanation: "Use the fictional name.", expected_explanation: "Greet the other person and present yourself as Nima.", criteria: [{ criterion_id: "accuracy", points: 1, comment: "The name differs from the prompt." }] } };
+    render(<QuestionCard question={written} busy={false} canSave={false} canSubmit={false} final={false} delivered onDraft={vi.fn()} onSave={vi.fn()} onSubmit={vi.fn()} />);
+    expect(screen.getByRole("heading", { name: "Puntaje parcial" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Qué se esperaba" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Detalle por criterio" })).toBeInTheDocument();
+    expect(screen.getByText("1 de 6 puntos")).toBeInTheDocument();
+    expect(screen.getByText("1 punto")).toBeInTheDocument();
+    expect(screen.getByText("The name differs from the prompt.")).toBeInTheDocument();
   });
   it("distinguishes an explicit I don't know from an untouched answer", async () => {
     const draft = vi.fn();

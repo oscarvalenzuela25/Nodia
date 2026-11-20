@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 45,
+  "revision": 46,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -280,6 +280,15 @@
   "approval": null
 }
 ---
+
+## Quiz, continuidad y Mis fuentes — 2026-11-20
+
+El [Plan106 §20](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20)
+enlaza la [corrección y navegación del quiz](features/lessons-practice-and-review.md#corrección-y-continuidad-del-quiz--2026-11-20),
+la [continuidad desde la cabecera](features/guided-setup-and-study-experience.md#continuidad-en-la-cabecera-y-panel-adaptativo--2026-11-20)
+y los [formatos de Mis fuentes](features/learning-sources.md#formatos-y-cobertura-en-mis-fuentes--2026-11-20).
+El alcance es la interfaz de Teacher y la explicación de sus capacidades.
+El catálogo de NodiaAI conserva la autoridad y operaciones publicadas.
 
 ## Práctica interactiva en la lección — 2026-11-19
 

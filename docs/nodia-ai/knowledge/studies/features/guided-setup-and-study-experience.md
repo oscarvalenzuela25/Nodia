@@ -4,7 +4,7 @@
   "document_id": "studies.guided-setup-and-study-experience",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 7,
+  "revision": 8,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -75,6 +75,20 @@
   "approval": null
 }
 ---
+
+## Continuidad en la cabecera y panel adaptativo — 2026-11-20
+
+La cabecera ofrece retomar un punto de lectura o evaluación disponible
+junto a **Opciones de la sesión**. La primera lección, la preparación de
+material y la recuperación conservan su contexto y sus acciones
+pertinentes. Un borrador y una solicitud incierta siguen sujetos al
+guardado y a la conciliación existentes.
+
+El panel de **Aprendizaje adaptativo** organiza sus accesos y las acciones
+de **Mis fuentes** con el mismo alcance de lectura y guardado privado de
+la sesión. La presentación de los formatos aclara las diferencias entre
+texto pegado, PDF textual y una imagen o escaneo. [Ficha de fuentes](learning-sources.md#formatos-y-cobertura-en-mis-fuentes--2026-11-20)
+y [Plan106 §20](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20).
 
 ## Acciones y avisos durante el estudio — 2026-11-19
 

@@ -878,3 +878,56 @@ la versión final pasaron 306 pruebas de Teacher, el tipado, el lint, la
 compilación y `knowledge:check`.
 [Ficha de práctica](../nodia-ai/knowledge/studies/features/lessons-practice-and-review.md#práctica-interactiva-durante-la-lección--2026-11-19),
 [ficha de experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#acciones-y-avisos-durante-el-estudio--2026-11-19).
+
+## 20. Corrección del quiz, continuidad y Mis fuentes — 2026-11-20
+
+El quiz concentra la pregunta, la respuesta y sus acciones en una tarjeta.
+Se retiran del Client el formulario de reflexión, la confianza declarada y
+su botón de guardado. El contrato y los valores previamente guardados de
+reflexión permanecen disponibles en Server. **Pedir una pista** comparte la
+fila de **Guardar borrador** cuando está permitido. **Finalizar práctica**
+conserva su jerarquía como acción principal.
+
+La corrección separa los puntos confirmados, la respuesta entregada, la
+respuesta esperada o el criterio de una respuesta abierta, la explicación y
+el desglose de la rúbrica cuando existen. El siguiente paso de la corrección
+es **Siguiente pregunta** si queda una en el quiz de práctica. La evaluación
+final conserva las restricciones de ayuda, entrega y revelación del
+[contrato97](97-nodia-teacher-technical-contracts.md#4-política-de-evaluación-concreta).
+El resumen de práctica ofrece **Continuar con la siguiente lección** como
+acción compacta si el plan vigente tiene otra unidad. El avance usa el
+guardado y conciliación del cursor con las reglas existentes.
+
+La continuidad de una lectura o evaluación ya abierta se ofrece en la
+cabecera junto a **Opciones de la sesión**. Los estados que requieren
+iniciar una primera lección, preparar material o resolver una operación
+incierta conservan sus acciones contextuales.
+
+En **Aprendizaje adaptativo**, el espaciado y la jerarquía de acciones
+facilitan el recorrido de **Mis fuentes**. Se puede pegar texto o adjuntar
+un PDF con texto seleccionable de hasta 96 KiB y 12 páginas. Se conserva
+el contenido extraído con su procedencia por página. En un PDF mixto, las
+páginas sin texto se señalan y un PDF sin capa de texto se rechaza. Para
+fotos, capturas y escaneos completos se puede pegar una transcripción.
+El contrato actual procesa texto y la prueba de este alcance usa
+archivos sintéticos. [Contratos de enriquecimiento](97-nodia-teacher-technical-contracts.md#enriquecimiento-comandos-y-consultas).
+
+La maqueta se capturó desde el Client con datos sintéticos. En Chromium a
+1440 y 390 px se comprobó la presentación de la corrección, el acceso de
+la cabecera y el avance al foco de la pregunta o lección. Un conflicto de
+cursor conservó la corrección visible y permitió reintentar. Al abrir una
+final en curso, la corrección y la acción de avance de práctica quedaron
+ocultas. En Mis fuentes se probó el envío de un PDF sintético y la
+presentación de una respuesta simulada de texto extraído. El panel ajustó
+sus controles a 1440, 390 y 320 px y devolvió el foco al cerrar con Escape.
+El extractor real pasó siete pruebas, incluido un PDF de una página que
+sólo contenía una imagen y produjo `source_no_text`. Pasaron 309 pruebas
+de Teacher en Client y la comprobación de publicación de conocimiento.
+
+Esta evolución cambia el recorrido del Client y la explicación de las
+capacidades de fuentes. Las fichas conservan el estado candidato y el
+catálogo de NodiaAI conserva sus operaciones y permisos.
+
+[Ficha de práctica](../nodia-ai/knowledge/studies/features/lessons-practice-and-review.md#corrección-y-continuidad-del-quiz--2026-11-20),
+[experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#continuidad-en-la-cabecera-y-panel-adaptativo--2026-11-20) y
+[Mis fuentes](../nodia-ai/knowledge/studies/features/learning-sources.md#formatos-y-cobertura-en-mis-fuentes--2026-11-20).

@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Teacher, corrección del quiz y continuidad — 2026-11-20.** El
+[Plan106 §20](106-nodia-teacher-guided-ux-redesign.md#20-corrección-del-quiz-continuidad-y-mis-fuentes--2026-11-20)
+registra el rediseño de preguntas y resultados, el acceso para retomar desde
+la cabecera y la revisión de **Mis fuentes**. La maqueta usa datos
+sintéticos y la verificación de la integración se registra en ese apartado.
+
 **Teacher, práctica interactiva en la lección — 2026-11-19.** El alcance
 incluye pistas y soluciones plegadas, comprobación de respuestas con clave
 explícita y revisión guiada para respuestas abiertas. La navegación por
