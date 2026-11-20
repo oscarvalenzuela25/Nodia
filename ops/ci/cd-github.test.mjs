@@ -218,10 +218,10 @@ test('validated action outputs reject multiline injection', t => {
   }
 });
 
-function workflowScript(filename) {
+function workflowScript(filename, index = 0) {
   const text = fs.readFileSync(path.join(root, '.github/workflows', filename), 'utf8');
-  const match = /          script: \|\n([\s\S]*?)(?=\n {0,10}\S|$)/.exec(text);
-  assert.ok(match, 'expected a single reviewed github-script action');
+  const match = Array.from(text.matchAll(/          script: \|\n([\s\S]*?)(?=\n {0,10}\S|$)/g))[index];
+  assert.ok(match, 'expected a reviewed github-script action');
   const source = match[1].split('\n').map(line => line.startsWith('            ') ? line.slice(12) : line).join('\n');
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   return new AsyncFunction('github', 'context', 'core', 'process', source);
@@ -271,6 +271,47 @@ test('dispatcher never retries an uncertain POST or dispatches a PR/mismatched a
     await workflowScript('cd-dispatch.yml')(rejected.github, context, rejected.core, { env: {} });
     assert.equal(rejected.calls.some(([kind]) => kind === 'dispatch'), false);
     assert.deepEqual(rejected.failures, ['trusted_master_ci_required_for_dispatch']);
+  }
+});
+
+test('the production handoff dispatches only its own run ID to the reporter, once', async () => {
+  const context = { repo: { owner: 'oscarvalenzuela25', repo: 'Nodia' }, runId: 999 };
+  for (const dispatchFailure of [false, true]) {
+    const fixture = actionFixture({ dispatchFailure });
+    await workflowScript('cd.yml', 1)(fixture.github, context, fixture.core);
+    assert.deepEqual(fixture.calls, [['dispatch', {
+      ...context.repo, workflow_id: 'cd-observability.yml', ref: 'development',
+      inputs: { cd_run_id: '999' }, request: { timeout: 20000 },
+    }]]);
+    assert.deepEqual(fixture.failures, dispatchFailure ? ['delivery_reporting_dispatch_unconfirmed'] : []);
+  }
+});
+
+test('the reporter verifies the original production run before handing off a receipt identity', async () => {
+  const context = { repo: { owner: 'oscarvalenzuela25', repo: 'Nodia' }, runNumber: 9,
+    payload: { inputs: { cd_run_id: '123' } } };
+  const cd = { ...run(), path: '.github/workflows/cd.yml', event: 'workflow_dispatch',
+    run_attempt: 1, conclusion: 'failure', created_at: '2026-11-20T03:19:20Z' };
+  const fixture = actionFixture({ currentRun: cd });
+  await workflowScript('cd-observability.yml')(fixture.github, context, fixture.core);
+  assert.deepEqual(fixture.failures, []);
+  assert.deepEqual(fixture.result, { cd_run_id: '123', conclusion: 'failure' });
+  assert.equal(fixture.calls[1][1].branch, 'development');
+  assert.equal(fixture.calls[1][1].created, '>=' + cd.created_at);
+
+  const duplicate = actionFixture({ currentRun: cd });
+  duplicate.github.rest.actions.listWorkflowRuns = async () => ({ data: {
+    workflow_runs: [{ run_number: 8, display_title: 'Report delivery 123' }],
+  } });
+  await workflowScript('cd-observability.yml')(duplicate.github, context, duplicate.core);
+  assert.deepEqual(duplicate.result, {});
+  assert.deepEqual(duplicate.info, ['Delivery already has a report request']);
+
+  for (const change of [{ run_attempt: 2 }, { head_branch: 'development' }, { path: '.github/workflows/ci.yml' }]) {
+    const rejected = actionFixture({ currentRun: { ...cd, ...change } });
+    await workflowScript('cd-observability.yml')(rejected.github, context, rejected.core);
+    assert.deepEqual(rejected.result, {});
+    assert.deepEqual(rejected.failures, ['trusted_production_delivery_required']);
   }
 });
 

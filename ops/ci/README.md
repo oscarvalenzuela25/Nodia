@@ -404,6 +404,27 @@ El permiso actions:write se limita a ese job sin checkout. El receptor repite
 el gate antes del checkout, usa contents:read y actions:read, environment
 production y concurrencia sin cancelar la entrega anterior.
 
+### Entrega del recibo a Grafana
+
+El [CD 44666924048](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44666924048)
+publicó ambos componentes y su recibo saneado. GitHub mantenía activo el
+reportero de Grafana en la rama predeterminada y la entrega no inició su
+workflow suscrito a `workflow_run`.
+
+Tras finalizar el trabajo de producción, un job aislado de CD solicita
+`cd-observability.yml` en `development` y pasa únicamente el ID de su
+propia ejecución. El receptor espera por lectura el cierre de esa ejecución,
+verifica identidad, rama, intento y conclusión, y descarta solicitudes
+posteriores para el mismo ID. El envío usa sólo el recibo saneado y la
+credencial de Loki del entorno `cd-observability`. El job de entrega del ID
+carece de checkout y secretos de despliegue. Una respuesta incierta del
+dispatch queda registrada y no se reenvía automáticamente.
+
+Para recuperar un recibo omitido, un operador puede iniciar el workflow
+del reportero en `development` con el ID de la entrega original. Se
+aplican las mismas comprobaciones y ambos procesos quedan enlazados por
+ese ID. La recuperación sólo solicita el informe y nunca llama a CD.
+
 En master, production-baselines consulta el SHA canonico de Pages y la version
 que el gateway verifica realmente en API/worker. cd-selection.mjs une el diff
 del evento con Client-desplegado->HEAD y Server-desplegado->HEAD; solo amplia
