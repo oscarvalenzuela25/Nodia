@@ -6,6 +6,7 @@ import RouteLoader from "../../components/RouteLoader";
 import { LayoutWrapper, MainContainer, PageContent } from "./styles";
 import MobileBottomNav from "../components/MobileBottomNav";
 import useAuth from "../../hooks/useAuth";
+import PwaUpdateNotice from "../../pwa/PwaUpdateNotice";
 
 type Props = PropsWithChildren;
 
@@ -43,6 +44,7 @@ const BaseLayout: FC<Props> = ({ children }) => {
           desktopCollapsed={desktopCollapsed}
           onCollapseToggle={handleCollapseToggle}
         />
+        <PwaUpdateNotice />
         <PageContent mobileNavigation={hasMobileNav}>
           <Suspense fallback={<RouteLoader variant="page" />}>
             {children}

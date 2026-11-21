@@ -1,5 +1,25 @@
 # Especificación del MVP — Nodia
 
+**Avance de lectura de Teacher sin conexión — 2026-11-21.** El candidato
+PWA-006 guarda el punto de lectura en el dispositivo y lo sincroniza con
+la sesión vigente al volver la red. Si otro dispositivo guardó un punto
+distinto, la persona elige cuál conservar. [Plan103 §8](103-pwa-progressive-implementation-plan.md#8-pwa-006--escrituras-offline-y-sincronización).
+
+**Material de Teacher sin conexión — 2026-11-21.** El candidato PWA-005
+permite descargar texto de una lección y abrir su copia cifrada en el
+navegador con la cuenta y sesión que la guardaron. La copia vence a las 24
+horas. [Plan103 §7](103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
+
+**Recuperación de conexión de la PWA — 2026-11-21.** El candidato PWA-003
+distingue desconexión y fallo del API, recupera lecturas con un reintento y
+conserva el borrador abierto hasta el siguiente guardado explícito. La
+verificación del despliegue queda pendiente. [Plan103 §5](103-pwa-progressive-implementation-plan.md#5-pwa-003--desconexión-y-recuperación-comprensibles).
+
+**Actualizaciones de la PWA — 2026-11-21.** El candidato PWA-002 conserva el
+registro de Web Push y permite aplicar una actualización por pestaña. La
+caché cubre archivos públicos con hash del build. El despliegue y la
+verificación posterior quedan pendientes. [Plan103 §4](103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas).
+
 **NodiaAI consulta Listas de Market y Caja — 2026-11-19.** El
 [catálogo](40-nodia-ai-tool-catalog-v1.md#catálogo-histórico-y-extensiones-explícitas)
 publica seis consultas de solo lectura y sus apartados de conocimiento.

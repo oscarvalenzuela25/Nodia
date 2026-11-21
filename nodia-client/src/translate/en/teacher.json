@@ -1,4 +1,21 @@
 {
+  "offline_study": {
+    "library": "Teacher downloads",
+    "download": "Download for offline reading",
+    "cancel": "Cancel download",
+    "open": "Open downloaded copy",
+    "saved": "Copy saved on this device",
+    "reading_synced": "Reading point synced",
+    "failed": "The lesson could not be downloaded",
+    "errors": {
+      "stale": "Your session or the lesson version changed. Reopen the lesson and try again.",
+      "limit": "You reached the limit of 10 downloads. Delete a copy to continue.",
+      "too-large": "This lesson is larger than the download limit.",
+      "invalid": "The lesson could not be prepared for offline reading.",
+      "unavailable": "The offline reader is not ready. Check for a Nodia update and try again.",
+      "quota": "The browser does not have enough space to save this copy."
+    }
+  },
   "selection_unsaved": "AI selection has unapplied changes.",
   "chat_configuration": "Chat configuration",
   "applied_selection": "Applied AI",

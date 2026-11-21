@@ -29,6 +29,7 @@ import {
   GetTeacherSessionsDto,
   PatchCursorDto,
   PatchProposalDto,
+  PatchReadingPointDto,
   PatchResponsesDto,
   PatchSessionDto,
   PatchSetupDraftDto,
@@ -384,6 +385,16 @@ export class TeacherController {
     @Body() b: PatchCursorDto,
   ) {
     return this.command.execute(actorReference(r.auth), id, k, 'cursor', b);
+  }
+  @Patch('sessions/:id/reading-point')
+  @Header('Cache-Control', 'no-store')
+  readingPoint(
+    @Req() r: AuthRequest,
+    @Headers('idempotency-key') k: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() b: PatchReadingPointDto,
+  ) {
+    return this.command.execute(actorReference(r.auth), id, k, 'reading_point', b);
   }
   @Post('sessions/:id/pause') @HttpCode(200) pause(
     @Req() r: AuthRequest,

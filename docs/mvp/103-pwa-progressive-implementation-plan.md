@@ -1,6 +1,6 @@
 # PWA de Nodia — plan de implementación por entregas
 
-> Estado vigente conciliado2026-11-16: plan en revisión; PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15), tras implementación y publicación/verificación HTTPS de§12. La confirmación no detalla dispositivos ni acredita toda la matriz de compatibilidad. PWA-002…006 permanecen planificados. §11 y§14 conservan sus cortes históricos; ver [TODO](TODO.md).
+> Estado vigente al 2026-11-21. PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15), tras implementación y verificación HTTPS (§12). PWA-002, PWA-003, PWA-005 y el punto de lectura de PWA-006 implementados como candidatos locales (§4, §5, §7 y §8). PWA-004 sigue su entrega independiente (§6). §11 y §14 conservan sus cortes históricos. Ver [TODO](TODO.md).
 > Fecha: 2026-11-13. Rama de planificación: `codex/plan-pwa-installation`, desde `development`.
 > Rama histórica de implementación local: `codex/pwa-001-installation`, desde development/origin en `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica1 seleccionada. La publicación posterior se registra en§12; no repetir esa operación al retomar el QA de instalación.
 > Fuentes: [Client08](08-stack-frontend.md), [auth14](14-authentication.md), [privacidad89](89-module-access-and-user-data-scope.md), [rutas ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md), [rendimiento37](37-web-performance-implementation-plan.md), [producción99](99-production-deployment-and-cicd-plan.md) y [diseño Client](../../nodia-client/DESIGN.md).
@@ -15,11 +15,11 @@ cierre no depende de caché offline, avisos de actualización, push o sincroniza
 | Orden / ítem | Resultado entregable | Dependencia | Prioridad / estimación inicial |
 | --- | --- | --- | --- |
 | **PWA-001** | **Instalación, iconos y ventana propia; funciones online** | App actual publicada por HTTPS | **Primera entrega obligatoria; 1–2 días de trabajo** |
-| PWA-002 | Service worker con caché estática acotada y actualización controlada | PWA-001 | Planificado; 1–2 días adicionales |
-| PWA-003 | Experiencia clara ante desconexión y recuperación online | PWA-002 para pantalla disponible sin red | Planificado; 0,5–1 día adicional |
+| PWA-002 | Service worker con caché estática acotada y actualización controlada | PWA-001 y registro raíz compartido | Candidato local (§4) |
+| PWA-003 | Experiencia clara ante desconexión y recuperación online | PWA-002 para pantalla disponible sin red | Candidato local (§5) |
 | PWA-004 | Notificaciones push de eventos definidos | Contrato de eventos y worker navegador; independiente de offline de datos | Planificado; 2–5 días adicionales |
-| PWA-005 | Lectura offline de datos de un módulo expresamente elegido | PWA-002/003 y decisión de privacidad/persistencia | Planificado; estimación tras definir módulo, previsiblemente semanas |
-| PWA-006 | Escrituras offline y sincronización del módulo elegido | PWA-005 y contratos backend de conflicto/idempotencia | Planificado; estimación propia, previsiblemente semanas adicionales |
+| PWA-005 | Lectura offline de material de estudio de Teacher | PWA-002/003 y política de privacidad/persistencia | Candidato local (§7) |
+| PWA-006 | Punto de lectura de Teacher sin conexión y sincronización | PWA-005, recibo y revisión del cursor de Teacher | Piloto HTTPS local verificado en Chrome para Windows con Server y PostgreSQL. Origen publicado pendiente |
 
 Son estimaciones para una persona dedicada, sujetas a QA y disponibilidad de
 dispositivos; no son fechas comprometidas. El rango anterior de3–5 días para la
@@ -151,33 +151,105 @@ AC01–AC12 sí pertenecen al mismo ítem; no se pospone una instalación rota.
 
 ## 4. PWA-002 — caché estática y actualizaciones controladas
 
-Ítem posterior; no es una dependencia oculta de PWA-001.
+Implementado como candidato local. Ver la [decisión de arquitectura propuesta](../architecture/decisions/ADR-112-pwa-controlled-release-updates.md).
 
-- [ ] Revisar compatibilidad de la versión elegida de vite-plugin-pwa/Workbox con Vite8 y Node del proyecto; fijar dependencias y lockfile. Elegir generateSW o injectManifest por necesidades comprobadas, sin introducir ambos mecanismos.
-- [ ] Especificar un allowlist acotado de assets públicos versionados. Comparar tamaño/arranque con plan37; no descargar por defecto todos los módulos diferidos, medios o material de Teacher.
-- [ ] Mantener fuera de la caché SW `/api`, autenticación/OAuth, respuestas privadas, archivos firmados/R2, observaciones IA y metadatos operativos del CD. No almacenar ni repetir POST/PUT/PATCH/DELETE ni respuestas401/403 como contenido recuperable.
-- [ ] Diseñar aviso traducido de versión disponible, actualización explícita y aplazamiento seguro ante formulario/borrador/trabajo en curso. Evitar recargas automáticas que pierdan contexto.
-- [ ] Resolver versión anterior/nueva entre pestañas y lazy chunks: no retirar recursos usados por clientes activos sin una estrategia probada; probar dos releases consecutivos y rollback.
-- [ ] Definir namespace, límites y limpieza sólo de las cachés propias de Nodia. Preservar las reglas del usuario/dispositivo y el almacenamiento ajeno.
-- [ ] Validar headers del SW, scope, MIME, registro en el build y exclusión de desarrollo/previews según la política elegida. Preparar retirada/unregister controlado que sólo afecte el registro propio; quitar el archivo del servidor no basta para retirar un SW existente.
-- [ ] Probar actualización pendiente/aceptada/aplazada, dos pestañas, recurso ausente y desconexión durante instalación. QA de auth/permisos y reapertura en los entornos que se declaren soportados.
+- [x] Integrar metadatos en el build de Vite y usar un worker raíz compartido para actualizaciones y el futuro flujo de Web Push. La evaluación de Workbox se resolvió con el worker nativo y el generador de metadatos, con las dependencias vigentes del proyecto.
+- [x] Acotar la caché a JavaScript, CSS y fuentes públicas con hash del artefacto, de hasta 2 MiB por archivo. Calentar sólo JavaScript y CSS de entrada y guardar el resto bajo demanda.
+- [x] Aplicar la lista a lecturas GET de scripts, estilos y fuentes del mismo origen. Mantener navegación, API y autenticación sobre la red, con la autoridad habitual. Validar HTTP 200 y MIME del recurso antes de cachear.
+- [x] Ofrecer «Actualizar ahora» y «Más tarde» en ES/EN. La versión se activa sin recargar las demás pestañas. Ediciones, formularios abiertos y mutaciones de la pestaña solicitante permiten abrir la versión nueva en otra pestaña.
+- [x] Reservar `nodia-static-v1-<versión>` para recursos de Nodia y conservar la versión activa y dos cachés anteriores. Recuperar recursos antiguos ya consultados por su URL con hash. La falta de un módulo diferido antiguo conduce al estado de error con recuperación explícita.
+- [x] Validar relación entre HTML, worker, recursos declarados y `/pwa-release.json` en el artefacto. Mantener `/service-worker.js` en el scope raíz y aplicar la configuración de producción en un contexto seguro.
+- [x] Probar en Chromium dos publicaciones consecutivas, aplazamiento, aplicación con dos pestañas, un formulario real, recurso ausente y reversión local.
+- [ ] Comparar arranque en el origen publicado según plan37 y verificar recuperación con los recursos y navegadores del despliegue.
+- [ ] Verificar el rollback del release publicado, que mantiene el registro de push. La retirada completa del worker requiere un procedimiento que contemple la suscripción vinculada.
+- [ ] Probar desconexión durante instalación, auth/permisos y reapertura en los entornos que se declaren soportados.
 
 Aceptación: nueva versión ofrecida y aplicada sin perder borradores; API conserva
 su autoridad online; recursos públicos anteriores/nuevos tienen recuperación
 probada. Comparación de rendimiento y rollout/rollback documentados. Evaluar ADR
 si la estrategia introduce garantías compartidas o alternativas costosas.
 
+### Verificación local — 2026-11-21
+
+Dos builds de producción de Client se sirvieron por turnos en un origen
+seguro de loopback con Chrome 158.0.8127.36 y un API sintético. En una pestaña se abrió
+el formulario real **Nuevo proveedor** y se editaron el nombre y el impuesto.
+En la otra se aplazó la actualización y luego se aplicó. El primer cambio
+de documento ocurrió sólo en la pestaña que lo pidió y conservó su ruta,
+parámetros y fragmento. El formulario conservó el documento, ambos valores y
+sus controles. Se guardó en una sola petición exitosa del fixture y después
+esa pestaña aplicó la versión nueva y mostró el proveedor guardado.
+
+Al devolver HTTP 404 para el script de entrada de la versión publicada, el
+candidato falló la instalación y la versión activa siguió mostrando avisos.
+Al restaurar el script, el candidato esperó la acción de la persona. Chrome
+mantuvo el registro raíz y la suscripción FCM del perfil de prueba tras el
+cambio de worker. Se inyectaron eventos push por Chrome DevTools antes,
+durante la espera y después de la activación. El worker mostró el aviso y su
+payload conservó el destino canónico. La entrega remota de extremo a extremo
+pertenece a los ensayos de PWA-004 por plataforma.
+
+El worker nuevo recuperó desde caché el script de entrada que había preparado
+para la versión anterior, mientras el origen servía sólo la publicación actual.
+La inspección encontró 136 entradas y todas correspondían a `/assets/`.
+Al revertir el origen a la publicación anterior, la pestaña solicitante
+volvió a esa versión con la misma URL y el proveedor guardado. La otra
+pestaña siguió abierta en la versión posterior. La suscripción FCM se
+conservó también durante la reversión. Se dio de baja la suscripción de
+prueba, se retiró el registro del navegador aislado y se cerró el origen.
+
+Pasaron el build con tipado, 39 regresiones de Client, 34 pruebas de
+artefactos y publicación en Linux y la validación de conocimiento. El
+artefacto validó 12 archivos públicos PWA, incluida la versión, y comprobó
+que el cuerpo del worker coincide con la fuente. El candidato prepara dos
+archivos de entrada que suman 558.536 bytes sin comprimir. El worker en el
+ensayo ocupó 16.014 bytes sin comprimir y cerca de 5,7 kB con gzip. La
+comparación de arranque en el origen publicado queda pendiente.
+
 ## 5. PWA-003 — desconexión y recuperación comprensibles
 
-- [ ] Definir pantalla de arranque sin red con shell estático de PWA-002 y acción de reintento; distinguir primera visita sin recursos, desconexión posterior y fallo de API.
-- [ ] Tratar online/offline del navegador como una pista: conexión a red no demuestra disponibilidad del servidor ni sesión válida.
-- [ ] Acordar qué controles requieren red y cómo conservan borradores locales ya existentes. No presentar una operación no enviada como guardada ni confirmar automáticamente al reconectar.
-- [ ] Distinguir fallos transitorios de401/403/404/410; preservar ocultación de contenido rechazado y aislamiento por cuenta/sesión. No crear persistencia de datos privados en esta fase.
-- [ ] Probar caída de red, API inaccesible con internet, expiración/revocación, cambio de cuenta y recuperación explícita, sin loops de reintentos o avisos duplicados.
+Implementado como candidato local. Ver la [decisión de arquitectura propuesta](../architecture/decisions/ADR-113-pwa-connection-recovery.md).
+
+- [x] Ofrecer un aviso traducido de desconexión o problema con el servidor y un reintento en la vista y el modal. Conservar los formularios montados.
+- [x] Usar el estado del navegador como señal de red y validar el liveness real de `GET /api/v1`. Tratar fallos sin respuesta como problemas de alcance cuando el navegador todavía indica conexión.
+- [x] Revalidar la sesión cuando esté indisponible según el flujo vigente y reintentar lecturas GET activas que fallaron por conectividad. Los HTTP 401/403/404/410 conservan el manejo por sesión o módulo.
+- [x] Impedir que una escritura intentada sin conexión quede en cola de TanStack Query. La recuperación conserva el borrador en memoria y requiere una acción explícita para guardar.
+- [x] Servir una página estática de contingencia cuando falle el transporte de una navegación controlada. Ofrecer reintento en la misma URL y conservar las respuestas HTTP del origen. La primera visita requiere que el navegador pueda cargar el sitio para instalar el worker.
+- [x] Probar en Chromium la desconexión real del navegador, el API con 503, el borrador preservado, un único guardado explícito y el arranque sin conexión.
+- [ ] Comprobar disponibilidad, reconexión y alcance de autenticación en el origen publicado y las plataformas declaradas. Verificar los escenarios de expiración y cambio de cuenta de extremo a extremo.
 
 Aceptación: el usuario entiende por qué no puede completar una acción y puede
 recuperar la vista online sin perder su borrador. No se anuncian consultas o
 escrituras offline de datos del negocio.
+
+### Verificación local — 2026-11-21
+
+Se reprodujo en el candidato anterior que **Guardar** sin conexión dejaba
+una mutación en espera y la enviaba al reconectar. Con PWA-003, Chrome 158
+mostró **Sin conexión a internet** al deshabilitar la red en un formulario
+real de Proveedores. El intento de guardado dejó el formulario abierto.
+Con el navegador en línea y el API de prueba en HTTP 503 se mostró
+**Problema con el servidor**. El reintento exitoso mantuvo el documento, la
+URL y los valores de nombre e impuesto. El servidor del fixture registró
+cero envíos automáticos y un único `POST 201` después de pulsar **Guardar**.
+
+Con el worker activo, una segunda pestaña abierta sin red recibió la página
+estática de contingencia. Volvió a la ruta exacta, con sus parámetros y
+fragmento, al pulsar **Reintentar** tras recuperar la conexión. Una
+respuesta HTTP 503 de navegación del origen se conservó íntegra.
+
+Con red activa, un HTTP 503 de la consulta de proveedores mostró el aviso de
+servidor. Una comprobación con HTTP 200 y HTML inesperado mantuvo el aviso.
+Con la respuesta válida, **Reintentar conexión** recuperó la consulta GET y la
+tabla. El sondeo no envió un encabezado de autorización. Un HTTP 403 siguió
+el tratamiento del módulo. En un viewport de 375 px, la acción de reintento
+midió 44 px, fue alcanzable por teclado y el aviso conservó el foco en el
+campo activo al desconectarse. El modal no tuvo desbordamiento horizontal.
+
+Pasaron 114 pruebas dirigidas de Client, que incluyeron clasificación de
+errores, concurrencia del reintento, guardado sin red, guardias de sesión y
+el worker de push y navegación. El ensayo utilizó un API sintético y se
+cerró el origen de prueba al terminar.
 
 ## 6. PWA-004 — notificaciones push
 
@@ -195,34 +267,110 @@ la aplicación mantiene su mecanismo de consulta de estado habitual.
 
 ## 7. PWA-005 — lectura offline por módulo
 
-No se convierte toda Nodia en offline como un solo ticket. Primero elegir un
-módulo y un caso acotado; material de estudio descargable es una posibilidad por
-evaluar, no una capacidad aprobada. IA remota/login/generación siguen online.
+El 2026-11-21 el usuario eligió Teacher como primer módulo y pidió descargar
+material de estudio, abrirlo sin conexión y asociarlo a la cuenta correcta.
+El candidato local reutiliza la lectura autorizada del material vigente de
+una lección. Su política se detalla en el [ADR114 propuesto](../architecture/decisions/ADR-114-teacher-offline-study-copies.md)
+y en la [ficha de material sin conexión](../nodia-ai/knowledge/studies/features/offline-study-material.md).
 
-- [ ] Definir datos descargables, vigencia, límites, cuotas y significado de «copia descargada» frente a autoridad del servidor.
-- [ ] Revisar privacidad, equipo compartido, cambio de cuenta, logout, revocación, cifrado y eliminación. Sin red no se puede comprobar una revocación nueva; el producto debe decidir qué datos puede exponer en esas condiciones.
-- [ ] Crear ADR de persistencia local/esquema/migraciones y contrato del módulo; no persistir indiscriminadamente todo el caché de TanStack o tokens.
-- [ ] Diseñar descarga explícita, progreso/cancelación, control de cuota y limpieza; probar fallo parcial, pérdida de almacenamiento y disco lleno sin afirmar durabilidad que el navegador no garantice.
-- [ ] Resolver refresco/versiones, señales de desactualizado y borrado seguro por alcance. Aislar cuentas/negocios y respetar propiedad de datos.
-- [ ] Probar reapertura sin red, datos expirados, credenciales cambiadas, dispositivo compartido y reconexión; revisar caché y almacenamiento local sin secretos en evidencias.
+- [x] Implementar descarga explícita de teoría, ejemplos y resúmenes de una unidad, con cancelación y confirmación tras guardar.
+- [x] Mantener una copia de hasta 256 KiB por unidad y diez copias por concesión, por 24 horas. Etiquetarlas como copias descargadas y reemplazarlas desde Teacher en línea.
+- [x] Cifrar la copia y vincularla a cuenta y sesión. Aplicar invalidación ante salida, sesión o cuenta nueva y revocación conocida. Ofrecer eliminación de una copia.
+- [x] Validar la disponibilidad del lector público con el worker antes de confirmar. Abrirlo desde Descargas de Teacher o desde el aviso de arranque sin red.
+- [x] Probar en Chrome la reapertura sin red, el cambio de cuenta en el mismo perfil, el acceso directo a la ruta anterior, el borrado y una revocación conocida.
+- [ ] Verificar la entrega en un origen publicado y las plataformas declaradas, la recuperación tras purga del navegador y el comportamiento con cuota agotada en cada plataforma.
 
-Aceptación: sólo el caso/módulo acordado funciona sin red y distingue datos
-descargados de datos vigentes. Requiere revisión y estimación propias antes de
-implementar; no hereda aprobación de PWA-001.
+### Verificación local — 2026-11-21
+
+Chrome 158 usó el Client compilado, una API de prueba y dos cuentas
+sintéticas en el mismo perfil. A descargó una lección desde el Teacher real,
+cerró la pestaña de la app y abrió el lector en una pestaña nueva sin red.
+La copia mostró el texto de la unidad y su vigencia con cero peticiones al API
+en esa apertura. Los registros locales mostraron cifrado AES-GCM con clave no
+exportable y la caché del worker sólo contenía recursos públicos.
+
+El cambio de cuenta retiró el contenido abierto para A. B tampoco recuperó
+la copia al abrir directamente el enlace guardado de A. B pudo descargar y
+eliminar su propio material. Una revocación conocida del API retiró el
+contenido de otra pestaña y continuó bloqueándolo al volver sin red.
+El ensayo se ejecutó en un perfil aislado de laboratorio.
+Con el reloj de Chrome controlado, la copia seguía abriendo tras 23 horas
+sin red con la misma sesión local. Al superar 24 horas dejó de abrir.
+
+Pasaron el build con tipado, 394 pruebas de Client, 35 pruebas de artefactos
+en Linux y la validación de las fichas candidatas. La comprobación del build
+validó los 13 recursos PWA y el cuerpo del worker. El servidor y el navegador
+del ensayo se cerraron al terminar.
 
 ## 8. PWA-006 — escrituras offline y sincronización
 
-- [ ] Elegir operaciones elegibles y excluir las que exigen autorización/confirmación online vigente. La elección de un módulo no habilita todas sus mutaciones.
-- [ ] Diseñar ADR y contrato Server para identidad de operación, idempotencia, revisión/fence, orden, conflictos y resultados inciertos. No permitir replay de inferencias o efectos externos desconocidos.
-- [ ] Modelar cola durable local con estados visibles: borrador, pendiente de envío, en proceso, aplicada, rechazada/conflicto o resultado incierto; distinguirlos del éxito confirmado.
-- [ ] Revalidar sesión/actor/módulos/ownership al enviar; no usar un permiso antiguo ni una confirmación genérica como autorización actual.
-- [ ] Implementar resolución de conflictos, cancelación previa a envío y reconciliación, conservando la misma identidad al recuperar un resultado incierto.
-- [ ] Tratar sincronización en background como mejora dependiente del navegador; debe existir recuperación con la app abierta y acción del usuario.
-- [ ] Probar doble dispositivo/pestaña, cierre abrupto, respuesta perdida después de commit, red oscilante, cola parcial y cambio de cuenta; no trasladar pendientes al nuevo actor.
+La primera operación admitida es **Guardar punto de lectura** en los bloques
+descargados de Teacher. Se almacena una intención cifrada por estudio bajo
+la cuenta, sesión y vigencia de la copia (§7). Las copias anteriores mantienen
+la lectura. Volver a descargar incorpora la revisión para guardar el punto.
+El alcance cubre la posición de lectura. La práctica, las evaluaciones y
+otras escrituras requieren sus propios contratos.
 
-Aceptación: cada operación admitida se reconcilia sin duplicar efectos ni anunciar
-éxito antes de confirmación, con conflictos recuperables y pruebas backend/locales
-por garantía. Estimación y aceptación específicas por operación/módulo.
+- [x] Reconciliar cada envío por UUID y revisión de cursor. Si se pierde la
+  respuesta, consultar el recibo antes de repetir el mismo comando.
+- [x] Validar acceso a Teacher, ownership y versión de plan/material en
+  Server. Persistir el cursor y el recibo juntos, sin migración de base de datos.
+- [x] Mostrar el punto pendiente, el envío incierto, la confirmación, el
+  rechazo o el conflicto. Permitir reintentar y descartar un punto sin enviar.
+- [x] Al volver la red, reanudar con Teacher o el lector abiertos y la sesión
+  vigente. Si otro dispositivo guardó el mismo punto, usar la revisión actual.
+  Con puntos distintos, mostrar ambos y permitir **Usar este punto** o
+  **Conservar el del servidor**. La primera elección vuelve a comprobar la
+  revisión mostrada y la segunda descarta el pendiente sin escribir.
+- [x] Verificar el piloto HTTPS local en Windows con Server y PostgreSQL.
+- [ ] Verificar el candidato en un origen publicado y en dispositivos físicos distintos.
+
+### 8.1. Verificación local — 2026-11-21
+
+- Server compilado y PostgreSQL 16 aislado, con dos sesiones autenticadas.
+  Dos comandos concurrentes sobre la misma revisión devolvieron HTTP 200 y
+  409. La consulta del recibo y la repetición exacta devolvieron el primer
+  resultado, con un solo avance del cursor y del conjunto de bloques visitados.
+  Reutilizar el UUID con contenido distinto se rechazó. La elección explícita
+  avanzó una vez desde la revisión vigente. Se comprobó la protección por
+  permisos, ownership, material obsoleto, evaluación activa y alcance del
+  endpoint limitado a bloques de lectura.
+  [Integración de dominio](../../nodia-server/test/teacher-domain.integration.mjs).
+- Build de Client en Chrome 158 para Windows, dos perfiles aislados con
+  la misma cuenta de prueba y sesiones distintas, sobre un API HTTP simulado.
+  Cada perfil guardó sin red y recuperó su punto al reabrir el lector. Una
+  respuesta truncada después de confirmar se recuperó por recibo, con un
+  solo PATCH confirmado. Una interrupción anterior a las cabeceras permitió
+  comprobar también el reenvío con el mismo UUID. Se verificaron ambas
+  elecciones de conflicto y el aislamiento al cambiar de cuenta. Borrar la
+  copia con un punto pendiente y volver a descargar la misma lección no
+  reactivó la intención ni generó una petición de recibo o escritura.
+- El contrato y las decisiones se registran en el [ADR115 propuesto](../architecture/decisions/ADR-115-teacher-offline-reading-sync.md)
+  y la [ficha de avance sin conexión](../nodia-ai/knowledge/studies/features/offline-reading-progress.md).
+
+### 8.2. Piloto HTTPS en Windows — 2026-11-21
+
+Se probó el build de Client en dos perfiles temporales de Chrome 158 en el
+mismo PC, con TLS 1.3 en loopback y un certificado limitado a esos perfiles.
+La misma cuenta sintética usó dos sesiones distintas. El API de Teacher
+ejecutó el controlador, los casos de uso y los recibos reales de Server
+sobre PostgreSQL 16 descartable. La revisión automática bloqueó la apertura
+del túnel público. La verificación de un origen publicado queda pendiente.
+
+1. Ambos perfiles descargaron **Cómo funciona DNS** con el cursor en
+   revisión 3. Se cortó la red en cada perfil. Se guardó **Teoría de DNS**
+   en A y **Ejemplo de resolución** en B. Al cerrar y reabrir el lector sin
+   red, ambos conservaron su selección. El cursor en PostgreSQL seguía en 3.
+2. Al reconectar A, Server confirmó el punto de teoría con HTTP 200 y
+   revisión 4. B recibió HTTP 409 al reconectar y vio los dos puntos con
+   sus opciones. Server conservó teoría hasta que B pulsó **Usar este
+   punto**. Se confirmó el ejemplo con HTTP 200 y revisión 5.
+3. A guardó el resumen sin red desde revisión 4 y obtuvo otro conflicto.
+   **Conservar el del servidor** mantuvo el ejemplo en revisión 5. La
+   elección produjo cero PATCH y siguió aplicada tras recargar el lector.
+4. Se consultó el recibo de B y se repitió su último PATCH con el mismo
+   identificador y cuerpo. Se recuperó el mismo resultado HTTP 200. En
+   PostgreSQL quedaron dos recibos y dos bloques visitados, una vez cada uno.
 
 ## 9. Seguimiento y entregables
 
@@ -230,14 +378,17 @@ por garantía. Estimación y aceptación específicas por operación/módulo.
 - [x] Ficha candidata e índices enlazados; entrada explícita de fuente para validación, sin publicación.
 - [x] Desarrollar PWA-001 desde development actualizado, en su propia rama; publicación y verificación HTTPS registradas en§12.
 - [x] Registrar aceptación humana de funcionamiento y cierre de PWA-001 por alcance (§15); conservar la matriz AC01–AC12 como evidencia por criterio, sin inventar pruebas de dispositivos.
-- [ ] Revisar y priorizar PWA-002/003 después de la primera entrega.
-- [ ] Elegir eventos push antes de PWA-004 y módulo/política offline antes de PWA-005/006.
+- [x] Implementar PWA-002 y PWA-003 como candidatos locales (§4 y §5).
+- [ ] Verificar la actualización, la reversión y la reconexión con el artefacto publicado.
+- [ ] Elegir eventos push antes de PWA-004.
+- [x] Elegir Teacher y verificar su lectura offline por cuenta en laboratorio (PWA-005, §7).
+- [x] Implementar y verificar el punto de lectura de Teacher como primera operación elegible de PWA-006 (§8).
+- [ ] Verificar PWA-005 y PWA-006 en el despliegue y las plataformas declaradas.
 
-El corte inicial fue documental. El candidato local posterior implementa
-manifiesto, iconos, metadatos y validación del artefacto/publicación; no añade
-dependencias, service worker ni cambios del VPS. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
-permanece draft/implemented por PWA-001, con aprobación nula y sin publicación
-de contexto IA; las entregas posteriores continúan planificadas.
+El corte inicial fue documental. El candidato PWA-001 posterior implementó
+manifiesto, iconos, metadatos y validación del artefacto. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
+permanece draft/implemented, con aprobación nula. Esta ficha y las candidatas de
+Estudios siguen fuera del contexto publicado de NodiaAI.
 Los reportes intermedios van a output/ o .tmp/; sólo evidencia durable útil se
 consolida en la entrega. La [guía de instalación](pwa-installation-guide.md)
 distingue pasos de usuario y compatibilidad realmente comprobada.

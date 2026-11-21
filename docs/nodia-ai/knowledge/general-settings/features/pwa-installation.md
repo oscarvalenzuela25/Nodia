@@ -4,11 +4,11 @@
   "document_id": "general-settings.pwa-installation",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 6,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "PWA-001 implements manifest, HTML metadata, selected option1 vector favicon and app icons, with artifact/publication checks. Plan103 section12 records publication and exact public HTTPS verification of ten original CI assets. The user confirmed correct operation and requested closure on2026-11-16 (section15); PWA-001 is closed for the delivered online-installation scope. Browser/device/version were not specified; no comprehensive platform certification is inferred. PWA-002…006 remain planned: no service worker, offline persistence, push or synchronization. No new deployment or AI context publication."
+    "notes": "PWA-001 está publicado y aceptado para la instalación online. PWA-002 y PWA-003 tienen candidatos locales de actualización controlada y recuperación de conexión. PWA-004 se sigue como entrega independiente. PWA-005 y PWA-006 tienen candidatos locales para descargar material y sincronizar el punto de lectura de Teacher."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Client y contexto transversal conforme AGENTS",
@@ -35,13 +35,13 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-17",
+    "checked_on": "2026-11-21",
     "evidence_paths": [
       "docs/evidence/pwa-001-local-20261113.md",
       "docs/evidence/pages-public-convergence-20261114.md",
       "docs/mvp/103-pwa-progressive-implementation-plan.md"
     ],
-    "notes": "Local static assets, build, auth unit regressions and CI/CD checks verified. Chrome/Edge persistent profiles return no manifest/installability errors; browser mode only, without installation or standalone auth. No device or production acceptance. Installation belongs to the user's browser and operating system; no AI tool applies. Favicon follow-up: Client build/types,31 Linux PWA/artifact checks without skips and10 built assets verified; visual comparison of existing PNG192/32 and common vector. No deployment or personal-cache/installation verification; plan103 section13 records scope. User acceptance and functional closure on2026-11-16 are recorded in plan103 section15; the confirmation does not identify platform/version/device or establish execution of every AC01–AC12 scenario. Earlier technical limits are preserved."
+    "notes": "Plan103 §12–15 conserva publicación, comprobaciones estáticas y aceptación de PWA-001. PWA-002 verificó la actualización por pestaña y la continuidad de la suscripción de prueba. PWA-003 verificó en Chrome la distinción entre desconexión y fallo del API, el reintento y la recuperación del formulario con guardado manual. El alcance publicado de PWA-002 y PWA-003 sigue pendiente."
   },
   "approval": null
 }
@@ -55,6 +55,25 @@ El menú del avatar ofrece **Actualizar información** encima de **Cerrar sesió
 Recarga la página actual con su URL completa. Es una acción del navegador que
 la persona inicia desde la PWA o la pestaña. Ver
 [plan103 §16](../../../../mvp/103-pwa-progressive-implementation-plan.md#16-recargar-la-página-desde-el-avatar--2026-11-17).
+
+## Actualizar la versión de Nodia
+
+El candidato local de PWA-002 compara la versión abierta con la publicada y
+avisa cuando la actualización está lista. **Más tarde** conserva la pestaña
+actual. **Actualizar ahora** aplica la versión en la pestaña que hizo la
+solicitud. Si hay trabajo en curso, la interfaz ofrece abrir la nueva versión
+en otra pestaña para continuar la edición en la original. Ver
+[Plan103 §4](../../../../mvp/103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas).
+
+## Recuperar la conexión
+
+El candidato local de PWA-003 indica si el navegador detecta que perdió la
+red o si Nodia detecta un problema al comunicarse con el servidor. **Reintentar
+conexión** comprueba el API y recupera lecturas fallidas sin volver a abrir la
+vista. Los formularios conservan el borrador en memoria. El usuario vuelve a
+pulsar **Guardar** cuando recupera la conexión. Si la app controlada por su
+worker se abre sin red, la página de contingencia ofrece reintentar la misma
+URL. [Plan103 §5](../../../../mvp/103-pwa-progressive-implementation-plan.md#5-pwa-003--desconexión-y-recuperación-comprensibles).
 
 ## Qué resuelve y qué significa
 
@@ -74,7 +93,9 @@ esas funciones ni mantener el navegador ejecutándose permanentemente.
 | Solicitud ilustrativa | Intención y respuesta segura |
 | --- | --- |
 | «Quiero instalar Nodia» | Consultar el origen y la plataforma en la guía y plan103. PWA-001 está publicado y aceptado por alcance; esa aceptación no certifica dispositivos no identificados. El chat no instala una app por el usuario. |
-| «¿Funcionará sin internet?» | La primera entrega mantiene funciones online. Offline de datos/sincronización son ítems posteriores sin implementación acreditada. |
+| «¿Funcionará sin internet?» | PWA-003 muestra la desconexión y conserva el formulario abierto. En los candidatos locales de Teacher se puede leer [material descargado](../../studies/features/offline-study-material.md) y guardar [el punto de lectura](../../studies/features/offline-reading-progress.md) hasta volver a conectarse. |
+| «Se cayó la conexión mientras editaba» | Mantener la vista abierta, pulsar **Reintentar conexión** y guardar de forma explícita cuando el API vuelva a responder. |
+| «¿Puedo terminar mi formulario antes de actualizar?» | Usar Más tarde para continuar en la misma pestaña. La elección de otra pestaña no recarga el formulario. |
 | «Instálala y dame acceso a Teacher» | La instalación es una acción local del navegador; el acceso depende de la asignación y sesión existentes, con la excepción super_admin documentada. No conceder módulos por instalar. |
 | «Envíame avisos cuando termine» | Push permanece en planificación y requiere eventos, permisos y suscripción del dispositivo; no fingir alta o entrega. |
 
@@ -84,7 +105,8 @@ esas funciones ni mantener el navegador ejecutándose permanentemente.
 | --- | --- | --- |
 | Instalar/abrir/desinstalar | Local, navegador/sistema, con acción de la persona | Plan103§3; sin endpoint o herramienta IA nueva. |
 | Login y uso de módulos online | Contratos actuales de Nodia | Auth14, política89 y destinos canónicos ADR092; instalación no modifica autoridad. |
-| Caché, push, descarga y sincronización | Flujos futuros por definir/implementar | Plan103§4–8; no operativos por esta ficha. |
+| Actualizar la versión | Acción local por pestaña | Plan103§4. La versión publicada se valida antes de aplicar y la caché se limita a archivos públicos con hash. |
+| Push y capacidades offline | Seguimiento separado por plataforma y entrega | Plan103§5–8. Los datos y mutaciones conservan el contrato online. |
 
 `integration_status: not_applicable` describe la ausencia justificada de una
 herramienta IA para instalar en el dispositivo. No significa que la PWA esté

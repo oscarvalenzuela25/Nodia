@@ -168,10 +168,12 @@ test('archive export attributes cannot silently change archive contents', t => {
     /archive_export_attributes_denied/);
 });
 
-test('a PWA source requires its built manifest and icons before packaging without rebuilding', t => {
+test('a PWA source requires its built manifest, icons and unchanged public worker before packaging without rebuilding', t => {
   if (!needLinux(t)) return;
   const f = fixture(t);
+  const worker = 'self.addEventListener("push", () => {});\n';
   f.write('nodia-client/public/manifest.webmanifest', '{"synthetic_source_marker":true}');
+  f.write('nodia-client/public/service-worker.js', worker);
   const sourceSha = f.commit();
   const options = { ...f.options, sourceSha, environment: { ...f.environment, GITHUB_SHA: sourceSha } };
   captureSource(options); buildFixture(f);
@@ -179,12 +181,46 @@ test('a PWA source requires its built manifest and icons before packaging withou
   pwaFixture(path.join(f.root, 'nodia-client/dist'));
   fs.rmSync(path.join(f.root, 'nodia-client/dist/icons/icon-512.png'));
   assert.throws(() => packageArtifact(options), /pwa_asset_missing/);
-  pwaFixture(path.join(f.root, 'nodia-client/dist'));
+  const assets = pwaFixture(path.join(f.root, 'nodia-client/dist'));
+  assert.throws(() => packageArtifact(options), /pwa_asset_missing/);
+  assets.write('service-worker.js', '/* stale build */');
+  assert.throws(() => packageArtifact(options), /pwa_service_worker_source_mismatch/);
+  assets.write('service-worker.js', worker);
   const result = packageArtifact(options);
   assert.equal(result.build_invoked_by_packager, false);
   const manifest = JSON.parse(fs.readFileSync(path.join(f.output, result.manifest_file)));
   assert.ok(manifest.files.some(item => item.path === 'dist/manifest.webmanifest'));
   assert.ok(manifest.files.some(item => item.path === 'dist/icons/icon-maskable-512.png'));
+  assert.ok(manifest.files.some(item => item.path === 'dist/service-worker.js'));
+  assert.equal(verifyArtifact(options).archive_content_verified, true);
+});
+
+test('a versioned PWA package requires generated metadata and retains the source worker check', t => {
+  if (!needLinux(t)) return;
+  const f = fixture(t);
+  const worker = 'self.addEventListener("push", () => {});\n';
+  f.write('nodia-client/public/manifest.webmanifest', '{"synthetic_source_marker":true}');
+  f.write('nodia-client/public/service-worker.js', worker);
+  f.write('nodia-client/pwaBuild.ts', 'export {};\n');
+  const sourceSha = f.commit();
+  const options = { ...f.options, sourceSha, environment: { ...f.environment, GITHUB_SHA: sourceSha } };
+  captureSource(options);
+  const dist = path.join(f.root, 'nodia-client/dist');
+  const assets = pwaFixture(dist);
+  assets.write('service-worker.js', worker);
+  assert.throws(() => packageArtifact(options), /pwa_update_version_invalid/);
+  const version = '1'.repeat(24);
+  const entry = ['/assets/index-12345678.js'];
+  const html = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+  assets.write('index.html', html.replace('</head>',
+    `<script type="module" src="${entry[0]}"></script><meta name="nodia-release" content="${version}"></head>`));
+  assets.write(entry[0].slice(1), 'export {};\n');
+  assets.write('pwa-release.json', `${JSON.stringify({ version })}\n`);
+  const prefix = `const nodiaRelease = ${JSON.stringify({ version, entry, assets: entry })};\n`;
+  assets.write('service-worker.js', `${prefix}${worker}/* changed behavior */`);
+  assert.throws(() => packageArtifact(options), /pwa_service_worker_source_mismatch/);
+  assets.write('service-worker.js', `${prefix}${worker}`);
+  assert.equal(packageArtifact(options).build_invoked_by_packager, false);
   assert.equal(verifyArtifact(options).archive_content_verified, true);
 });
 

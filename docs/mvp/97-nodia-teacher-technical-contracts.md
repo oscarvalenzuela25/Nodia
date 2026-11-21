@@ -1,5 +1,30 @@
 # Contratos técnicos de Nodia Teacher
 
+## Punto de lectura sincronizable — 2026-11-21
+
+`PATCH /teacher/sessions/:id/reading-point` usa `Idempotency-Key` y recibe
+`expected_cursor_revision`, `plan_revision_id`, `section_id`, `unit_id`,
+`content_version_id` y `block_id`. Devuelve HTTP 200 con `session_id`,
+`revision` y `cursor_revision`. La transacción valida la autoridad, material
+vigente y revisión, actualiza el cursor de lectura y agrega el bloque al
+conjunto de visitados. Una evaluación activa protege su cursor.
+
+`GET /teacher/requests/:key` permite recuperar el resultado confirmado. Los
+HTTP 409 `revision_conflict`, `reading_material_outdated` y
+`reading_point_unavailable` distinguen cambio concurrente, copia anterior y
+cursor ocupado por una evaluación. El cliente consulta el cursor actual
+para resolver puntos distintos. La decisión queda en el
+[ADR115 propuesto](../architecture/decisions/ADR-115-teacher-offline-reading-sync.md)
+y la prueba en [Plan103 §8](103-pwa-progressive-implementation-plan.md#8-pwa-006--escrituras-offline-y-sincronización).
+
+## Material sin conexión — 2026-11-21
+
+PWA-005 agrega una copia local de los bloques de lectura de una unidad. La
+descarga vuelve a ejecutar la lectura autorizada del material y exige la
+versión mostrada. El lector por cuenta y sesión se registra en
+[Plan103 §7](103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo)
+y en el [ADR114 propuesto](../architecture/decisions/ADR-114-teacher-offline-study-copies.md).
+
 ## Alta guiada Client — continuidad2026-11-15
 
 [Plan106](106-nodia-teacher-guided-ux-redesign.md) comienza con un wizard local

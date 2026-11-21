@@ -7,6 +7,8 @@ export const queryClient = new QueryClient({
     if (query.meta?.errorNotification !== 'handled-locally') notifyHttpError(error);
   } }),
   defaultOptions: {
+    // An offline submit must fail now instead of being queued and sent on reconnect.
+    mutations: { networkMode: "always", retry: false },
     queries: {
       refetchOnMount: true,
       refetchOnWindowFocus: false,

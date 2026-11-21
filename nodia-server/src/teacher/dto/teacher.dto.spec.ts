@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { CreateSessionDto, PatchSetupDraftDto, PauseDto, ProposePlanDto, SetupMessageDto, TeacherModelsDto } from './teacher.dto.js';
+import { CreateSessionDto, PatchReadingPointDto, PatchSetupDraftDto, PauseDto, ProposePlanDto, SetupMessageDto, TeacherModelsDto } from './teacher.dto.js';
 
 const options = { whitelist: true, forbidNonWhitelisted: true };
 const validateDto = <T extends object>(type: new () => T, body: object) => validate(plainToInstance(type, body), options);
@@ -46,5 +46,30 @@ describe('Teacher create and setup draft HTTP contracts', () => {
     expect(await validateDto(PauseDto, { ...pause, pending_setup_draft: { text: 'unsent' } })).not.toHaveLength(0);
     expect(await validateDto(SetupMessageDto, { expected_session_revision: 1, text: 'hello' })).toHaveLength(0);
     expect(await validateDto(SetupMessageDto, { expected_session_revision: 1, expected_draft_revision: 0, text: 'hello' })).toHaveLength(0);
+  });
+});
+
+describe('Teacher reading point HTTP contract', () => {
+  it('requires the study anchor and revision and excludes assessment and cursor fields', async () => {
+    const reference = 'db3d747b-57dd-4cec-96a5-270374a22209';
+    const point = {
+      expected_cursor_revision: 1,
+      plan_revision_id: reference,
+      section_id: reference,
+      unit_id: reference,
+      content_version_id: reference,
+      block_id: 'example',
+    };
+    expect(await validateDto(PatchReadingPointDto, point)).toHaveLength(0);
+    for (const fields of [
+      { phase: 'practice' },
+      { attempt_id: reference },
+      { item_id: reference },
+      { expected_cursor_revision: 0 },
+      { content_version_id: undefined },
+      { section_id: 'invalid' },
+      { block_id: '' },
+      { block_id: 'x'.repeat(65) },
+    ]) expect(await validateDto(PatchReadingPointDto, { ...point, ...fields })).not.toHaveLength(0);
   });
 });

@@ -165,7 +165,16 @@ function clientPackage(root, output, sourceSha, verified) {
   const sourceFiles = inventory(input, { source: true });
   ensure(sourceFiles.some(item => item.path === 'index.html'), 'client_index_required');
   ensure(sourceFiles.every(item => !forbiddenPackagePath(item.path)), 'operational_data_in_client_dist');
-  validatePwaAssets(input, { required: fs.existsSync(path.join(root, 'nodia-client/public/manifest.webmanifest')) });
+  const publicWorker = path.join(root, 'nodia-client/public/service-worker.js');
+  const workerRequired = fs.existsSync(publicWorker);
+  const pwaProfile = validatePwaAssets(input, {
+    required: fs.existsSync(path.join(root, 'nodia-client/public/manifest.webmanifest')),
+    workerRequired,
+    updateRequired: fs.existsSync(path.join(root, 'nodia-client/pwaBuild.ts')),
+    readerRequired: fs.existsSync(path.join(root, 'nodia-client/nodia-teacher/downloads.html')),
+  });
+  if (workerRequired) ensure(pwaProfile?.workerSourceSha ===
+    sha(fs.readFileSync(publicWorker)), 'pwa_service_worker_source_mismatch');
   const stage = fs.mkdtempSync(path.join(output, '.client-stage-'));
   let complete = false;
   try {

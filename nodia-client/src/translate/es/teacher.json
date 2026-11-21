@@ -1,4 +1,21 @@
 {
+  "offline_study": {
+    "library": "Descargas de Teacher",
+    "download": "Descargar para leer sin conexión",
+    "cancel": "Cancelar descarga",
+    "open": "Abrir copia descargada",
+    "saved": "Copia guardada en este dispositivo",
+    "reading_synced": "Punto de lectura sincronizado",
+    "failed": "No se pudo descargar la lección",
+    "errors": {
+      "stale": "La sesión o la versión de la lección cambió. Vuelve a abrirla e inténtalo nuevamente.",
+      "limit": "Alcanzaste el límite de 10 descargas. Elimina una copia para continuar.",
+      "too-large": "La lección supera el límite de tamaño de una descarga.",
+      "invalid": "El material recibido no se pudo preparar para lectura sin conexión.",
+      "unavailable": "El lector sin conexión aún no está listo. Comprueba si Nodia tiene una actualización y vuelve a intentarlo.",
+      "quota": "El navegador no tiene espacio disponible para guardar esta copia."
+    }
+  },
   "selection_unsaved": "Hay cambios de IA sin aplicar.",
   "chat_configuration": "Configuración del chat",
   "applied_selection": "IA aplicada",

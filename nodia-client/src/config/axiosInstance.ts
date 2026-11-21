@@ -1,10 +1,11 @@
 import axios, {
-  type AxiosError,
+  AxiosError,
   type AxiosInstance,
   type CreateAxiosDefaults,
 } from "axios";
 import envs from "./.envs";
 import i18n from "../translate";
+import { connectionMonitor, isBrowserOffline, offlineRequestCode } from "../pwa/connectionMonitor";
 
 // Preserve the machine code independently of localized feedback.
 const serverMessages = new WeakMap<object, string>();
@@ -41,6 +42,10 @@ const buildConfig = (
 
 const applyDefaultInterceptors = (instance: AxiosInstance) => {
   instance.interceptors.request.use((config) => {
+    const method = config.method?.toUpperCase() ?? "GET";
+    if (isBrowserOffline() && !["GET", "HEAD", "OPTIONS"].includes(method)) {
+      throw new AxiosError(i18n.t("core:connection_offline_save"), offlineRequestCode, config);
+    }
     if (typeof FormData !== "undefined" && config.data instanceof FormData) {
       if (config.headers) {
         delete config.headers["Content-Type"];
@@ -53,6 +58,7 @@ const applyDefaultInterceptors = (instance: AxiosInstance) => {
   instance.interceptors.response.use(
     (response) => response,
     (error: AxiosError<{ message?: string; error?: string }>) => {
+      connectionMonitor.observeFailure(error);
       const data = error.response?.data;
       if (typeof data?.message === "string")
         serverMessages.set(error, data.message);

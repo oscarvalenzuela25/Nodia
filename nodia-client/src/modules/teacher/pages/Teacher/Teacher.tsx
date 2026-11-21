@@ -19,6 +19,8 @@ import ConfirmDialog from "../../../../components/ConfirmDialog";
 import BaseModal from "../../../../components/BaseModal";
 import RequestRecovery from "../../components/RequestRecovery";
 import NewMaterialVersion from "../../components/NewMaterialVersion";
+import OfflineLessonDownload from "../../components/OfflineLessonDownload/OfflineLessonDownload";
+import { supportsPwaRegistration } from "../../../../pwa/pushRegistration";
 import SessionForm from "../../components/SessionForm";
 import SelectionPanel from "../../components/SelectionPanel";
 import PlanReview from "../../components/PlanReview";
@@ -37,7 +39,8 @@ import { useTeacherAttempt, useTeacherCommand, useTeacherMaterial, useTeacherMes
 import { cursorBody, enabled, hasPreparingJob, nextAttemptId, nextLessonAfterPractice, practiceQuestionLimit, readyJobResult, restoreAttempt, restoreJob, resultNotice } from "../../infrastructure/presentation";
 import { setupDraftReceiptSchema, type Answer, type CommandResult, type Cursor, type Job, type Session } from "../../infrastructure/schemas";
 import { useSetupDraft } from "../../hooks/useSetupDraft";
-import { TEACHER_NEW_ROUTE } from "../../constants/routes";
+import { useOfflineReadingSync } from "../../hooks/useOfflineReadingSync";
+import { TEACHER_DOWNLOADS_ROUTE, TEACHER_NEW_ROUTE } from "../../constants/routes";
 import { SESSION_JOB_COLORS } from "../../infrastructure/sessionList";
 import { Actions, ArchivedFilter, Header, LessonHeader, Page, Panel, PlanCard, PlanFilters, PlanGrid, PlanSearch, PracticeResult, ProductBrand, QuizHeader, QuizSteps, SessionActions, SessionPage, SessionTitleRow, StateChip, Workspace } from "./styles";
 
@@ -59,7 +62,12 @@ function Plans() {
   const command = useTeacherCommand();
   const openResult = (result: CommandResult) => { if (result.session_id) void navigate(`/nodia-teacher/${result.session_id}`); };
   return <Page>
-    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box><Button variant="contained" startIcon={<AddOutlined />} disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button></Header>
+    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box>
+      <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, width: { xs: "100%", sm: "auto" } }}>
+        {supportsPwaRegistration() && <Button variant="outlined" href={TEACHER_DOWNLOADS_ROUTE} sx={{ minHeight: 44 }}>{t("teacher:offline_study.library")}</Button>}
+        <Button variant="contained" startIcon={<AddOutlined />} disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button>
+      </Stack>
+    </Header>
     <RequestRecovery command={command} onRecovered={openResult} />
     <PlanFilters>
       <PlanSearch><InputSearch value={search} onChange={value => { setSearch(value); setPage(1); }} placeholder={t("teacher:search")} disabled={command.isPending || sessions.isFetching} /></PlanSearch>
@@ -601,6 +609,16 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
                 {navigationFailure === "unit" && !command.uncertain && <Alert variant="outlined" severity="error">{t("teacher:next_section_failed")}</Alert>}
                 {budgetNotice}
                 <Actions>
+                  {supportsPwaRegistration() && enabled(lesson.allowed_actions, "read_theory") &&
+                    <OfflineLessonDownload key={lesson.content_version_id} studyId={session.id} unitId={unitId}
+                      planRevisionId={materialPlanId} contentVersionId={lesson.content_version_id}
+                      title={plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title ?? ""}
+                      readingContext={section ? {
+                        sectionId: section.id,
+                        cursorRevision: session.cursor.revision,
+                        savedBlockId: session.cursor.content_version_id === lesson.content_version_id ? session.cursor.block_id : null,
+                      } : undefined}
+                      disabled={!active || material.isFetching || material.isError} />}
                   {session.state === "active" && enabled(lesson.allowed_actions, "prepare_material") &&
                     <NewMaterialVersion sessionId={session.id} planRevisionId={plan.id} unitId={unitId} contentVersionId={lesson.content_version_id} sessionRevision={session.revision}
                       busy={fetching || material.isFetching || reinforcementNavigation.pending} command={command} onQueued={applyResult} />}
@@ -629,6 +647,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
 export default function Teacher() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { user, sessionVersion } = useAuth();
+  useOfflineReadingSync();
   const scope = `${user?.id}:${sessionVersion}`;
   return sessionId ? <TeacherSession key={`${scope}:${sessionId}`} sessionId={sessionId} /> : <Plans key={scope} />;
 }
