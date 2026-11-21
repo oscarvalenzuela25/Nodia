@@ -21,9 +21,12 @@ function publicRequest(directory, change = value => value) {
     assert.equal(options.method, 'GET'); assert.equal(options.redirect, 'error'); assert.equal(options.cache, 'no-store');
     assert.equal(options.headers.Authorization, undefined);
     const pathname = new URL(url).pathname;
-    const contentType = pathname === '/' ? 'text/html' : pathname.endsWith('.webmanifest') ? 'application/manifest+json' :
-      pathname.endsWith('.svg') ? 'image/svg+xml' : pathname.endsWith('.ico') ? 'image/vnd.microsoft.icon' : 'image/png';
-    return change(new Response(fs.readFileSync(path.join(directory, pathname === '/' ? 'index.html' : pathname.slice(1))), {
+    const reader = pathname === '/nodia-teacher/downloads';
+    const contentType = pathname === '/' || reader ? 'text/html' : pathname.endsWith('.webmanifest') ? 'application/manifest+json' :
+      pathname.endsWith('.svg') ? 'image/svg+xml' : pathname.endsWith('.ico') ? 'image/vnd.microsoft.icon' :
+        pathname.endsWith('.js') ? 'text/javascript' : pathname.endsWith('.json') ? 'application/json' : 'image/png';
+    const filename = pathname === '/' ? 'index.html' : pathname.slice(1) + (reader ? '.html' : '');
+    return change(new Response(fs.readFileSync(path.join(directory, filename)), {
       headers: { 'content-type': contentType }, status: 200,
     }), pathname);
   };
@@ -46,6 +49,68 @@ test('historical builds remain valid; removing only the manifest or its HTML lin
   assert.throws(() => validatePwaAssets(f.directory, { required: true }), /pwa_manifest_link_invalid/);
   f.updateManifest();
   assert.throws(() => validatePwaAssets(f.directory), /pwa_manifest_link_invalid/);
+});
+
+test('a push build requires the stable worker script, and verifies its public bytes and JavaScript MIME', async t => {
+  const f = fixture(t);
+  const filename = 'service-worker.js', url = '/' + filename;
+  assert.throws(() => validatePwaAssets(f.directory, { workerRequired: true }), /pwa_asset_missing/);
+  f.write(filename, '<!doctype html>SPA fallback');
+  assert.throws(() => validatePwaAssets(f.directory), /pwa_service_worker_script_invalid/);
+  f.write(filename, 'self.addEventListener("push", () => {});');
+  const result = await verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory) });
+  assert.equal(result.pwa_assets_count, 11);
+  await assert.rejects(verifyPublishedPwaAssets(f.directory, { pollLimit: 1,
+    request: publicRequest(f.directory, (response, pathname) => pathname === url
+      ? new Response('<!doctype html>SPA fallback', { headers: { 'content-type': 'text/html' } }) : response),
+  }), error => error.message === 'pwa_public_asset_mime_invalid' && error.pwa_failed_asset_path === url);
+  await assert.rejects(verifyPublishedPwaAssets(f.directory, { pollLimit: 1,
+    request: publicRequest(f.directory, (response, pathname) => pathname === url
+      ? new Response('/* stale script */', { headers: { 'content-type': 'application/javascript' } }) : response),
+  }), error => error.message === 'pwa_public_asset_digest_mismatch' && error.pwa_failed_asset_path === url);
+});
+
+test('a versioned build binds the HTML, public version, and worker metadata to the built entry assets', async t => {
+  const f = fixture(t);
+  const version = '1'.repeat(24);
+  const entry = ['/assets/index-12345678.js'];
+  const original = fs.readFileSync(path.join(f.directory, 'index.html'), 'utf8');
+  const body = 'self.addEventListener("push", () => {});\n';
+  f.write('index.html', original.replace('</head>',
+    `<script type="module" src="${entry[0]}"></script><meta name="nodia-release" content="${version}"></head>`));
+  const worker = `const nodiaRelease = ${JSON.stringify({ version, entry, assets: entry })};\n${body}`;
+  f.write('service-worker.js', worker);
+  f.write('pwa-release.json', `${JSON.stringify({ version })}\n`);
+  assert.throws(() => validatePwaAssets(f.directory, { updateRequired: true }), /pwa_asset_missing/);
+  f.write(entry[0].slice(1), 'export {};');
+  const profile = validatePwaAssets(f.directory, { updateRequired: true });
+  assert.equal(profile.workerSourceSha, createHash('sha256').update(body).digest('hex'));
+  assert.equal((await verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory) })).pwa_assets_count, 12);
+  f.write('service-worker.js', worker.replace(version, '2'.repeat(24)));
+  assert.throws(() => validatePwaAssets(f.directory), /pwa_update_worker_metadata_invalid/);
+});
+
+test('the offline reader is bound to the exact public HTML and asset bytes of the artifact', async t => {
+  const f = fixture(t);
+  const version = '1'.repeat(24);
+  const assetPath = '/assets/downloads-12345678.js';
+  const source = 'export {}';
+  const html = `<script type="module" src="${assetPath}"></script>`;
+  const original = fs.readFileSync(path.join(f.directory, 'index.html'), 'utf8');
+  f.write('index.html', original.replace('</head>', `${html}<meta name="nodia-release" content="${version}"></head>`));
+  f.write('pwa-release.json', `${JSON.stringify({ version })}\n`);
+  f.write(assetPath.slice(1), source);
+  f.write('nodia-teacher/downloads.html', html);
+  const reader = { html, assets: [{ path: assetPath, bytes: source.length, sha256: createHash('sha256').update(source).digest('hex') }] };
+  const metadata = { version, entry: [assetPath], assets: [assetPath], teacherReader: reader };
+  const writeWorker = value => f.write('service-worker.js', `const nodiaRelease = ${JSON.stringify(value)};\n`);
+  writeWorker(metadata);
+  assert.equal((await verifyPublishedPwaAssets(f.directory, { request: publicRequest(f.directory) })).pwa_assets_count, 13);
+  f.write(assetPath.slice(1), 'export 0;');
+  assert.throws(() => validatePwaAssets(f.directory, { readerRequired: true }), /pwa_teacher_reader_asset_mismatch/);
+  f.write(assetPath.slice(1), source);
+  writeWorker({ ...metadata, teacherReader: undefined });
+  assert.throws(() => validatePwaAssets(f.directory, { readerRequired: true }), /pwa_teacher_reader_invalid/);
 });
 
 test('favicon cache version must match the shared vector bytes without accepting foreign or arbitrary URLs', async t => {

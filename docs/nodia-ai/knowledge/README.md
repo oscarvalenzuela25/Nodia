@@ -1,5 +1,31 @@
 # Contexto funcional de productos para NodiaAI
 
+## Punto de lectura de Teacher sin conexión — 2026-11-21
+
+La [ficha candidata de avance](studies/features/offline-reading-progress.md)
+describe el guardado, la recuperación del envío y la elección si dos
+dispositivos marcan puntos distintos.
+
+## Material de Teacher sin conexión — 2026-11-21
+
+La [ficha candidata de Estudios](studies/features/offline-study-material.md)
+documenta la descarga, el acceso por cuenta y sesión y la vigencia de la
+copia. [Plan103 §7](../../mvp/103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
+
+## Recuperación de conexión de la PWA — 2026-11-21
+
+La [ficha de instalación y evolución PWA](general-settings/features/pwa-installation.md)
+registra el [candidato PWA-003](../../mvp/103-pwa-progressive-implementation-plan.md#5-pwa-003--desconexión-y-recuperación-comprensibles).
+El reintento puede recuperar lecturas y mantiene el formulario abierto para
+que la persona decida cuándo guardar.
+
+## Actualización de la PWA — 2026-11-21
+
+La [ficha de instalación y evolución PWA](general-settings/features/pwa-installation.md)
+registra el [candidato PWA-002](../../mvp/103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas)
+y distingue el aviso de versión de la recarga desde el menú. La actualización
+se aplica por pestaña y los archivos públicos pueden reutilizarse desde caché.
+
 El catálogo `nodia-ai-business-pos/5` publica los apartados de consulta de
 [Listas de Market](businesses/features/market-shopping-lists.md#consultas-de-solo-lectura-en-nodiaai)
 y [Caja de Negocios](businesses/features/cash-ledger-and-invoice-expenses.md#consultas-de-solo-lectura-en-nodiaai).

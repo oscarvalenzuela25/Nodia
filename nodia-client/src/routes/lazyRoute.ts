@@ -1,4 +1,5 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
+import { getPageRelease } from "../pwa/updateRegistration";
 
 /**
  * Wraps dynamic imports with automatic recovery in case of stale asset hashes
@@ -11,6 +12,8 @@ export function lazyWithRetry<T extends ComponentType>(
     try {
       return await factory();
     } catch (error) {
+      // A versioned release offers an explicit update without unloading other work in this tab.
+      if (getPageRelease()) throw error;
       const isChunkError =
         error instanceof Error &&
         (error.message.includes("dynamically imported module") ||

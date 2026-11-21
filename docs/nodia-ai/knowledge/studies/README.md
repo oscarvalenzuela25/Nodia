@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 47,
+  "revision": 49,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -280,6 +280,18 @@
   "approval": null
 }
 ---
+
+## Punto de lectura descargado — 2026-11-21
+
+La [ficha de avance sin conexión](features/offline-reading-progress.md)
+describe la sincronización y la elección entre puntos de dos dispositivos.
+[Plan103 §8](../../../mvp/103-pwa-progressive-implementation-plan.md#8-pwa-006--escrituras-offline-y-sincronización).
+
+## Material descargable — 2026-11-21
+
+La [ficha de material sin conexión](features/offline-study-material.md)
+describe el candidato PWA-005, el límite por navegador, la lectura por cuenta
+y el resultado de las pruebas. [Plan103 §7](../../../mvp/103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
 
 ## Edición enfocada de la propuesta — 2026-11-20
 

@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import { useEffect, type PropsWithChildren } from "react";
 import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { Skeleton } from "boneyard-js/react";
 import { Navigate } from "react-router";
@@ -7,6 +7,9 @@ import useRetainedSessionView from "../providers/hooks/useRetainedSessionView";
 import { useAuthorizationContext } from "../services/authorizationService";
 import { canAccessModule } from "../store/generalSettings/helpers";
 import { GuardNotice } from "./styles";
+import { NODIA_TEACHER_ROUTE } from "../modules/teacher/constants/routes";
+import { clearOfflineStudyGrant, offlineStudyScope } from "../modules/teacher/infrastructure/offlineStudyIdentity";
+import useAuthStore from "../store/authStore";
 
 type Props = PropsWithChildren<{ modulePath: string }>;
 
@@ -15,6 +18,14 @@ export default function GuardStrict({ children, modulePath }: Props) {
   const { t } = useTranslation(["auth", "core"]);
   const context = useAuthorizationContext({ enabled: isSessionActive && Boolean(actorScope) });
   const isBusy = !isSessionActive || context.isFetching;
+  const denied = Boolean(context.data && !canAccessModule(context.data, modulePath));
+  useEffect(() => {
+    if (modulePath === NODIA_TEACHER_ROUTE && isSessionActive && context.isSuccess && !context.isFetching && denied) {
+      const current = useAuthStore.getState();
+      const scope = offlineStudyScope(current.token, current.user?.id);
+      if (scope && actorScope === `${current.user?.id}:${current.sessionVersion}`) clearOfflineStudyGrant(scope);
+    }
+  }, [actorScope, context.isFetching, context.isSuccess, denied, isSessionActive, modulePath]);
   // A retry without cached data resets query status to pending; retain its notice.
   const hasContextError =
     context.isError ||
@@ -55,7 +66,7 @@ export default function GuardStrict({ children, modulePath }: Props) {
     );
   }
 
-  if (!canAccessModule(context.data, modulePath))
+  if (denied)
     return <Navigate to="/" replace />;
 
   // Keep the authorized view mounted during refresh, with its controls disabled.

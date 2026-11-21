@@ -2,6 +2,7 @@ import { AxiosError, type AxiosAdapter } from "axios";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createAxiosInstance, getServerErrorCode } from "../../config/axiosInstance";
 import i18n from "../../translate";
+import { offlineRequestCode } from "../../pwa/connectionMonitor";
 
 afterEach(async () => {
   await i18n.changeLanguage("es");
@@ -53,6 +54,21 @@ describe("rate limit feedback", () => {
       response: { status: 503 },
     });
   });
+});
+
+it("rejects a write before its adapter when offline and permits a new explicit attempt", async () => {
+  const online = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+  const adapter = vi.fn<AxiosAdapter>(async config => ({ config, status: 200, statusText: "OK", headers: {}, data: {} }));
+  const api = createAxiosInstance({ adapter });
+  try {
+    await expect(api.post("/providers", { name: "Draft" })).rejects.toMatchObject({ code: offlineRequestCode });
+    expect(adapter).not.toHaveBeenCalled();
+    online.mockReturnValue(true);
+    await api.post("/providers", { name: "Draft" });
+    expect(adapter).toHaveBeenCalledOnce();
+  } finally {
+    online.mockRestore();
+  }
 });
 
 describe("image-generation backend feedback", () => {

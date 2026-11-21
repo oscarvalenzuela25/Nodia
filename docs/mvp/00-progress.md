@@ -1,5 +1,35 @@
 # Progreso del MVP — Nodia
 
+**Avance de lectura de Teacher sin conexión — 2026-11-21.** PWA-006 está
+implementado como candidato local. Server y PostgreSQL verificaron recibos
+idempotentes y escrituras concurrentes. Dos perfiles Chrome verificaron el
+guardado tras reabrir sin red, la recuperación de una respuesta perdida,
+las dos opciones de conflicto y el cambio de cuenta. El piloto HTTPS local
+en Windows repitió el flujo con Server y PostgreSQL reales. Confirmó ambos
+desenlaces y un reenvío idempotente. Queda pendiente el origen publicado.
+[Plan103 §8.2](103-pwa-progressive-implementation-plan.md#82-piloto-https-en-windows--2026-11-21).
+
+**Material de Teacher sin conexión — 2026-11-21.** Chrome verificó PWA-005
+con descargas de dos cuentas de prueba en el mismo perfil. El lector abrió
+sin red desde una pestaña nueva, retiró la copia anterior al cambiar de cuenta
+y comprobó caducidad, eliminación y revocación conocida. Queda pendiente la
+verificación del despliegue. [Plan103 §7](103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
+
+**Recuperación de conexión de la PWA — 2026-11-21.** PWA-003 está implementado
+como candidato local. Chrome verificó la distinción entre desconexión y HTTP
+503 con red, el reintento de lectura, el arranque sin red desde un registro
+previo y la conservación del formulario real de Proveedores. El servidor de
+prueba registró un solo guardado, iniciado por el operador tras recuperar la
+conexión. [Plan103 §5](103-pwa-progressive-implementation-plan.md#5-pwa-003--desconexión-y-recuperación-comprensibles).
+
+**Actualizaciones de la PWA — 2026-11-21.** PWA-002 está implementado como
+candidato local. El build vincula el HTML, el worker y el manifiesto público
+de versión. La persona puede aplazar la actualización y conservar la pestaña
+con una edición abierta. El registro raíz continúa gestionando Web Push.
+Chromium comprobó el cambio entre dos builds con un formulario en edición,
+el guardado posterior y la conservación de la suscripción de prueba. El
+despliegue publicado queda pendiente. [Plan103 §4](103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas).
+
 **Grafana, emisión automática de CD comprobada — 2026-11-20.** El
 [CD 44673206896](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44673206896)
 activó el [reportero 44673802429](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44673802429).

@@ -6,6 +6,7 @@ import { TeacherService, type TeacherScope } from '../teacher.service.js';
 import {
   TEACHER_GENERATION_PORT,
   type PrivateKey,
+  type PublicBlock,
   type TeacherAnswer,
   type TeacherGenerationJob,
   type TeacherGenerationPort,
@@ -49,6 +50,11 @@ import type { LearningBlueprint } from '../types/teacher-learning.types.js';
 import type { BlueprintSlot } from '../types/teacher.types.js';
 
 type Body = Record<string, unknown>;
+const offlineReadingKinds: ReadonlySet<PublicBlock['kind']> = new Set([
+  'explanation',
+  'example',
+  'summary',
+]);
 type Target = {
   proposalId?: string;
   unitId?: string;
@@ -355,6 +361,24 @@ export class ExecuteTeacherCommandUseCase {
     if (op === 'cursor') {
       editable(scope);
       return this.cursor(scope, b, b.expected_cursor_revision);
+    }
+    if (op === 'reading_point') {
+      editable(scope);
+      if (s.current_plan_revision_id !== b.plan_revision_id)
+        teacherError('reading_material_outdated');
+      return this.cursor(
+        scope,
+        {
+          phase: 'theory',
+          plan_revision_id: b.plan_revision_id,
+          section_id: b.section_id,
+          unit_id: b.unit_id,
+          content_version_id: b.content_version_id,
+          block_id: b.block_id,
+        },
+        b.expected_cursor_revision,
+        true,
+      );
     }
     if (op === 'message') {
       editable(scope);
@@ -674,12 +698,21 @@ export class ExecuteTeacherCommandUseCase {
     scope: TeacherScope,
     b: Body,
     expected: unknown,
+    readingOnly = false,
   ): Promise<Body> {
     const { manager: m, session: s, actor } = scope;
     const [c]: { revision: number }[] = await m.query(
       'SELECT revision FROM teacher_cursors WHERE session_id=$1 FOR UPDATE',
       [s!.id],
     );
+    if (readingOnly) {
+      const [assessment] = await m.query(
+        `SELECT 1 FROM teacher_cursors c JOIN teacher_attempts a ON a.session_id=c.session_id AND a.id=c.attempt_id
+         WHERE c.session_id=$1 AND a.is_active AND a.state IN ('in_progress','submitted','grading_pending')`,
+        [s!.id],
+      );
+      if (assessment) teacherError('reading_point_unavailable');
+    }
     cas(c.revision, expected);
     const revision = b.plan_revision_id ?? null,
       section = b.section_id ?? null,
@@ -710,14 +743,23 @@ export class ExecuteTeacherCommandUseCase {
       if (!row) teacherError('invalid_input', 400);
     }
     if (content) {
-      const [row] = await m.query(
-        'SELECT public_blocks FROM teacher_content_versions WHERE session_id=$1 AND plan_revision_id=$2 AND unit_id=$3 AND id=$4',
+      const [row]: {
+        public_blocks: { id: string; kind?: PublicBlock['kind'] }[];
+        publication_state: string;
+      }[] = await m.query(
+        'SELECT public_blocks,publication_state FROM teacher_content_versions WHERE session_id=$1 AND plan_revision_id=$2 AND unit_id=$3 AND id=$4',
         [s!.id, revision, unit, content],
       );
+      if (!row) teacherError('invalid_input', 400);
+      if (readingOnly && row.publication_state !== 'current')
+        teacherError('reading_material_outdated');
       if (
-        !row ||
-        (block &&
-          !row.public_blocks.some((v: { id: string }) => v.id === block))
+        block &&
+        !row.public_blocks.some(
+          ({ id, kind }) =>
+            id === block &&
+            (!readingOnly || kind === undefined || offlineReadingKinds.has(kind)),
+        )
       )
         teacherError('invalid_input', 400);
     }

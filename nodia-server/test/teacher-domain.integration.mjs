@@ -42,6 +42,7 @@ const user = '9007199254740993',
   otherSession = randomUUID(),
   superSession = randomUUID();
 const actor = { userId: user, sessionId: session },
+  secondDevice = { userId: user, sessionId: randomUUID() },
   other = { userId: '2', sessionId: otherSession },
   superActor = { userId: '3', sessionId: superSession };
 let serveTimer;
@@ -105,7 +106,7 @@ try {
  CREATE TABLE user_modules(user_id bigint,module_id bigint,is_active boolean NOT NULL DEFAULT true);
  INSERT INTO users(id) VALUES(${user}),(2),(3),(4);INSERT INTO roles(id,key) VALUES(1,'super_admin');INSERT INTO user_roles(user_id,role_id) VALUES(3,1);
  INSERT INTO module_groups(id,name) VALUES(1,'Studies'),(2,'Renamed group');INSERT INTO modules(id,key,link,module_group_id) VALUES(1,'nodia_teacher','/nodia-teacher',1);INSERT INTO user_modules(user_id,module_id) VALUES(${user},1),(2,1);`);
-  for (const a of [actor, other, superActor])
+  for (const a of [actor, secondDevice, other, superActor])
     await db.query(
       "INSERT INTO auth_sessions(public_id,user_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",
       [a.sessionId, a.userId],
@@ -217,6 +218,69 @@ try {
       );
       return result;
     });
+  const httpActors = new Map([
+    ['Device B', secondDevice],
+    ['Other owner', other],
+  ]);
+  class HarnessModule {}
+  Module({
+    controllers: [TeacherController, TeacherRequestsController],
+    providers: [
+      { provide: TeacherService, useValue: store },
+      { provide: ReadTeacherUseCase, useValue: read },
+      { provide: ExecuteTeacherCommandUseCase, useValue: command },
+    ],
+  })(HarnessModule);
+  app = await NestFactory.create(HarnessModule, { logger: false });
+  app.setGlobalPrefix('api/v1');
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (
+      typeof origin === 'string' &&
+      /^http:\/\/(?:127\.0\.0\.1|localhost):\d+$/.test(origin)
+    ) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Vary', 'Origin');
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Authorization,Content-Type,Idempotency-Key,Accept-Language',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET,POST,PATCH,OPTIONS',
+      );
+    }
+    if (req.method === 'OPTIONS') {
+      res.status(204).end();
+      return;
+    }
+    next();
+  });
+  app.use('/api/v1/teacher', teacherBodyParser);
+  app.use((req, _res, next) => {
+    const current = httpActors.get(req.headers.authorization) ?? actor;
+    req.auth = {
+      user: {
+        id: current.userId,
+        name: 'Synthetic',
+        email: 'fixture@example.test',
+        image_url: null,
+      },
+      sessionId: current.sessionId,
+    };
+    next();
+  });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  app.useGlobalFilters(new AllExceptionsFilter());
+  await app.listen(0, '127.0.0.1');
+  const url = await app.getUrl();
   let id,
     revision = 1;
   await check(
@@ -828,6 +892,236 @@ try {
         )[0].n,
         1,
       );
+      const readingPoint = {
+        plan_revision_id: planId,
+        section_id: sectionId,
+        unit_id: unitId,
+        content_version_id: saved.content_version_id,
+      };
+      const readingUrl = `${url}/api/v1/teacher/sessions/${id}/reading-point`;
+      const requestsUrl = `${url}/api/v1/teacher/requests`;
+      const patchReading = (key, payload, authorization) =>
+        fetch(readingUrl, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(key && { 'Idempotency-Key': key }),
+            ...(authorization && { authorization }),
+          },
+          body: JSON.stringify(payload),
+        });
+      const expectReadingError = async (response, status, code) => {
+        assert.equal(response.status, status);
+        assert.deepEqual(await response.json(), {
+          code,
+          message: `teacher:${code}`,
+        });
+      };
+      await check(
+        'HTTP reading points reconcile two authenticated devices and recover a lost response without duplicate progress',
+        async () => {
+          const base = current.cursor.revision;
+          const devices = [
+            { key: randomUUID(), block: 'theory' },
+            { key: randomUUID(), block: 'example', authorization: 'Device B' },
+          ].map((device) => ({
+            ...device,
+            payload: {
+              ...readingPoint,
+              block_id: device.block,
+              expected_cursor_revision: base,
+            },
+          }));
+          await expectReadingError(
+            await patchReading(null, devices[0].payload),
+            400,
+            'invalid_input',
+          );
+          const responses = await Promise.all(
+            devices.map(({ key, payload, authorization }) =>
+              patchReading(key, payload, authorization),
+            ),
+          );
+          assert.deepEqual(responses.map((r) => r.status).sort(), [200, 409]);
+          const winnerIndex = responses.findIndex((response) => response.ok);
+          const winner = devices[winnerIndex];
+          const loser = devices[1 - winnerIndex];
+          await expectReadingError(
+            responses[1 - winnerIndex],
+            409,
+            'revision_conflict',
+          );
+          // Recover from the durable receipt after discarding the successful HTTP body.
+          assert.equal(
+            responses[winnerIndex].headers.get('Cache-Control'),
+            'no-store',
+          );
+          await responses[winnerIndex].body.cancel();
+          const receipt = {
+            session_id: id,
+            revision: base + 1,
+            cursor_revision: base + 1,
+          };
+          const recovered = await fetch(`${requestsUrl}/${winner.key}`, {
+            headers: winner.authorization
+              ? { authorization: winner.authorization }
+              : {},
+          });
+          assert.equal(recovered.status, 200);
+          const { completed_at, ...durable } = await recovered.json();
+          assert.ok(Number.isFinite(Date.parse(completed_at)));
+          assert.deepEqual(durable, {
+            request_key: winner.key,
+            operation: 'reading_point',
+            session_id: id,
+            http_status: 200,
+            receipt,
+          });
+          await expectReadingError(
+            await fetch(`${requestsUrl}/${loser.key}`),
+            404,
+            'not_found',
+          );
+          await expectReadingError(
+            await fetch(`${requestsUrl}/${winner.key}`, {
+              headers: { authorization: 'Other owner' },
+            }),
+            404,
+            'not_found',
+          );
+          await expectReadingError(
+            await patchReading(randomUUID(), winner.payload, 'Other owner'),
+            404,
+            'not_found',
+          );
+          const retry = await patchReading(
+            winner.key,
+            winner.payload,
+            winner.authorization,
+          );
+          assert.equal(retry.status, 200);
+          assert.deepEqual(await retry.json(), receipt);
+          await expectReadingError(
+            await patchReading(winner.key, loser.payload, winner.authorization),
+            409,
+            'idempotency_conflict',
+          );
+          const visits = async () =>
+            (
+              await db.query(
+                'SELECT revision,visited_block_ids FROM teacher_unit_progress WHERE session_id=$1 AND content_version_id=$2',
+                [id, readingPoint.content_version_id],
+              )
+            )[0];
+          assert.deepEqual(await visits(), {
+            revision: 1,
+            visited_block_ids: [winner.block],
+          });
+          const afterRace = await read.detail(actor, id);
+          assert.equal(afterRace.cursor.revision, base + 1);
+          assert.equal(afterRace.cursor.phase, 'theory');
+          assert.equal(afterRace.cursor.block_id, winner.block);
+          assert.equal(afterRace.cursor.attempt_id, null);
+          const followUp = {
+            ...loser.payload,
+            expected_cursor_revision: base + 1,
+          };
+          const accepted = await patchReading(
+            randomUUID(),
+            followUp,
+            loser.authorization,
+          );
+          assert.equal(accepted.status, 200);
+          assert.deepEqual(await accepted.json(), {
+            session_id: id,
+            revision: base + 2,
+            cursor_revision: base + 2,
+          });
+          assert.deepEqual(await visits(), {
+            revision: 2,
+            visited_block_ids: [winner.block, loser.block],
+          });
+          await expectReadingError(
+            await patchReading(randomUUID(), {
+              ...followUp,
+              expected_cursor_revision: base + 2,
+              plan_revision_id: randomUUID(),
+            }),
+            409,
+            'reading_material_outdated',
+          );
+          await expectReadingError(
+            await patchReading(randomUUID(), {
+              ...followUp,
+              expected_cursor_revision: base + 2,
+              block_id: 'unknown',
+            }),
+            400,
+            'invalid_input',
+          );
+          const guidedPractice = {
+            ...followUp,
+            expected_cursor_revision: base + 2,
+            block_id: 'practice',
+          };
+          await expectReadingError(
+            await patchReading(randomUUID(), guidedPractice),
+            400,
+            'invalid_input',
+          );
+          await db.query(
+            "UPDATE teacher_content_versions SET publication_state='superseded' WHERE id=$1",
+            [readingPoint.content_version_id],
+          );
+          await expectReadingError(
+            await patchReading(randomUUID(), {
+              ...followUp,
+              expected_cursor_revision: base + 2,
+            }),
+            409,
+            'reading_material_outdated',
+          );
+          await db.query(
+            "UPDATE teacher_content_versions SET publication_state='current' WHERE id=$1",
+            [readingPoint.content_version_id],
+          );
+          await db.query(
+            'UPDATE auth_sessions SET revoked_at=clock_timestamp() WHERE public_id=$1',
+            [secondDevice.sessionId],
+          );
+          const revokedPatch = await patchReading(
+            winner.key,
+            winner.payload,
+            'Device B',
+          );
+          assert.equal(revokedPatch.status, 401);
+          await revokedPatch.arrayBuffer();
+          const revokedReceipt = await fetch(`${requestsUrl}/${winner.key}`, {
+            headers: { authorization: 'Device B' },
+          });
+          assert.equal(revokedReceipt.status, 401);
+          await revokedReceipt.arrayBuffer();
+          assert.deepEqual(await visits(), {
+            revision: 2,
+            visited_block_ids: [winner.block, loser.block],
+          });
+          const online = await fetch(`${url}/api/v1/teacher/sessions/${id}/cursor`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Idempotency-Key': randomUUID(),
+            },
+            body: JSON.stringify({ ...guidedPractice, phase: 'theory' }),
+          });
+          assert.equal(online.status, 200);
+          assert.equal((await online.json()).cursor_revision, base + 3);
+          assert.deepEqual(await visits(), {
+            revision: 3,
+            visited_block_ids: [winner.block, loser.block, 'practice'],
+          });
+        },
+      );
+      current = await read.detail(actor, id);
       const practice = await perform(
         'start_practice',
         id,
@@ -880,6 +1174,16 @@ try {
       current = await read.detail(actor, id);
       assert.equal(current.state, 'paused');
       assert.equal(current.cursor.item_id, first.question_id);
+      const offlineAtPractice = {
+        ...readingPoint,
+        block_id: 'theory',
+        expected_cursor_revision: current.cursor.revision,
+      };
+      await expectReadingError(
+        await patchReading(randomUUID(), offlineAtPractice),
+        409,
+        'session_paused',
+      );
       const pausedQuestion = await read.question(
         actor,
         id,
@@ -890,6 +1194,16 @@ try {
       await perform('resume', id, {
         expected_session_revision: current.revision,
       });
+      const afterResume = (await read.detail(actor, id)).cursor;
+      await expectReadingError(
+        await patchReading(randomUUID(), {
+          ...offlineAtPractice,
+          expected_cursor_revision: afterResume.revision,
+        }),
+        409,
+        'reading_point_unavailable',
+      );
+      assert.deepEqual((await read.detail(actor, id)).cursor, afterResume);
       const resumedAttempt = await read.attempt(actor, id, attempt.attempt_id);
       const submitted = await perform(
         'submit_question',
@@ -1226,64 +1540,6 @@ try {
   await check(
     'HTTP runs compiled DTOs with unknown-field rejection, UTF8/body bound and real session ownership',
     async () => {
-      class HarnessModule {}
-      Module({
-        controllers: [TeacherController, TeacherRequestsController],
-        providers: [
-          { provide: TeacherService, useValue: store },
-          { provide: ReadTeacherUseCase, useValue: read },
-          { provide: ExecuteTeacherCommandUseCase, useValue: command },
-        ],
-      })(HarnessModule);
-      app = await NestFactory.create(HarnessModule, { logger: false });
-      app.setGlobalPrefix('api/v1');
-      app.use((req, res, next) => {
-        const origin = req.headers.origin;
-        if (
-          typeof origin === 'string' &&
-          /^http:\/\/(?:127\.0\.0\.1|localhost):\d+$/.test(origin)
-        ) {
-          res.setHeader('Access-Control-Allow-Origin', origin);
-          res.setHeader('Access-Control-Allow-Credentials', 'true');
-          res.setHeader('Vary', 'Origin');
-          res.setHeader(
-            'Access-Control-Allow-Headers',
-            'Authorization,Content-Type,Idempotency-Key,Accept-Language',
-          );
-          res.setHeader(
-            'Access-Control-Allow-Methods',
-            'GET,POST,PATCH,OPTIONS',
-          );
-        }
-        if (req.method === 'OPTIONS') {
-          res.status(204).end();
-          return;
-        }
-        next();
-      });
-      app.use('/api/v1/teacher', teacherBodyParser);
-      app.use((req, _res, next) => {
-        req.auth = {
-          user: {
-            id: user,
-            name: 'Synthetic',
-            email: 'fixture@example.test',
-            image_url: null,
-          },
-          sessionId: session,
-        };
-        next();
-      });
-      app.useGlobalPipes(
-        new ValidationPipe({
-          whitelist: true,
-          forbidNonWhitelisted: true,
-          transform: true,
-        }),
-      );
-      app.useGlobalFilters(new AllExceptionsFilter());
-      await app.listen(0, '127.0.0.1');
-      const url = await app.getUrl();
       const bad = await fetch(`${url}/api/v1/teacher/sessions`, {
         method: 'POST',
         headers: {
@@ -1397,9 +1653,9 @@ try {
       'No operational DB, migration adoption, publication or deployment.',
     ],
   };
-  mkdirSync('output', { recursive: true });
+  mkdirSync('.tmp', { recursive: true });
   writeFileSync(
-    'output/teacher-domain-integration.json',
+    '.tmp/teacher-domain-integration.json',
     JSON.stringify(report, null, 2) + '\n',
   );
   console.log(JSON.stringify(report, null, 2));
