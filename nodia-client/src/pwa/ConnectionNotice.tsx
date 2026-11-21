@@ -15,7 +15,7 @@ export default function ConnectionNotice({ inDialog = false }: { inDialog?: bool
 
   return (
     <>
-      <Box component="span" role="status" sx={visuallyHidden}>
+      <Box component="span" aria-live="polite" aria-atomic="true" sx={visuallyHidden}>
         {status !== "available" ? `${title}. ${description}` : ""}
       </Box>
       {status !== "available" && (
