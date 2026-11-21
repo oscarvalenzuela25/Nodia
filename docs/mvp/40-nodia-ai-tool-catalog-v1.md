@@ -33,6 +33,33 @@ por negocio al ejecutar los lectores nativos.
 
 El flag `published:false` de la extensión no concede ni retira autoridad de ejecución: la publicación efectiva procede exclusivamente del registro explícito y del conocimiento aprobado compilado. La extensión es un insumo de auditoría, sin permisos adicionales; no sustituye elegibilidad actual, autoridad por chat/negocio/archivo o confirmación humana para los efectos de Productos. La [ficha aprobada del recorrido](../nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md) y su evidencia mantienen separados aprobación, implementación local, publicación y aceptación real.
 
+### Descubrimiento de Productos y precios — 2026-11-21
+
+El catálogo candidato `nodia-ai-business-pos/6` identifica en español el
+listado del catálogo y su precio de venta. `nodia_products_list` ya estaba
+publicada en el release anterior, donde la búsqueda «listado de los
+productos con su precio» no la encontraba. El buscador conserva coincidencias
+literales y admite términos completos sin acentos ni conectores habituales.
+Agentic y API key reciben la descripción y una indicación para seleccionar
+la lectura cuando aparece en el índice autorizado. Si falta identificar el
+negocio, el turno puede incluir la búsqueda de negocios cuando esté disponible.
+Las coincidencias ambiguas requieren una aclaración.
+
+Para un negocio identificado, `q.business_id_eq` acota la consulta.
+`sale_price` indica el precio regular en CLP y `effective_price` el precio
+vigente según la oferta habilitada. `measurement_unit` informa la unidad y
+`meta.total_pages` indica si quedan páginas. Se consultan activos por defecto
+y Server filtra los negocios según la autoridad vigente. El contrato de
+lectura y la [ficha aprobada de Productos](../nodia-ai/knowledge/businesses/features/products.md#lecturas-disponibles-en-ai-15)
+conservan su revisión.
+
+La [regresión del gateway compilado](../../nodia-server/test/nodia-ai-business-reads.integration.mjs)
+sobre PostgreSQL aislado cubre el índice de Agentic y API key, el descubrimiento
+en español, los precios normales y de oferta, el cero, la paginación y el acceso
+del propietario y colaborador. También verifica que los negocios ajenos
+quedan fuera y que la revocación se aplica al recuperar un resultado previo.
+La prueba usa sesiones de laboratorio, sin llamadas a proveedores.
+
 ## Cómo conoce NodiaAI los productos
 
 Cada módulo registra una descripción funcional, recursos, operaciones, esquemas públicos, reglas de ámbito y medidas admitidas. NodiaAI descubre las capacidades relevantes y pide el detalle necesario; no necesita cargar 156 definiciones en cada turno. La publicación real incluye sólo herramientas verificadas y autorizadas para la sesión, el modo y el modelo seleccionados.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "catalog_release": "nodia-ai-business-pos/5",
+  "catalog_release": "nodia-ai-business-pos/6",
   "context_module_route": "/tools/nodia-ai",
   "source_paths": [
     "docs/nodia-ai/knowledge/businesses/README.md",
@@ -1142,7 +1142,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -1182,7 +1182,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -2272,7 +2272,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -2312,7 +2312,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -2853,7 +2853,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -2913,7 +2913,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -3057,7 +3057,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -3177,7 +3177,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -3237,7 +3237,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -3421,7 +3421,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -3623,7 +3623,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -3663,7 +3663,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "548113df5ea88bdaf7f70eb0b7ed66cdcb5dadabdb65614a306d67d9075045c2"
+          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
@@ -5814,7 +5814,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-context/use-case/build-nodia-ai-context.use-case.ts",
-          "sha256": "d2e86e9c1fa08cc8f39f0d511cf2f729d08d2c1184349f3ac15092e4de5c2516"
+          "sha256": "6d1d5b1e2b3b1aa5494b925961dcefe6922584fc93f8165f8a344eaf3dbca65a"
         },
         {
           "path": "nodia-server/src/nodia-ai-context/use-case/prepare-nodia-ai-admission.use-case.ts",

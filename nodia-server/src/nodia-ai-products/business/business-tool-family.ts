@@ -44,7 +44,9 @@ const definitions: readonly [BusinessReadOperation, string, string, string][] =
       'products_list',
       'Products',
       'List',
-      'List current products with permitted code, name, provider, stock and price-variation filters.',
+      'List catalog products and selling prices for an accessible business, with code, name, provider, stock and price-variation filters. ' +
+        'Productos del catálogo del negocio, listado con nombre, precio de venta regular y precio vigente con oferta. ' +
+        'Resolve the business with nodia_businesses_list if needed, filter by q.business_id_eq and check meta.total_pages for a complete list.',
     ],
     [
       'product_logs_get',

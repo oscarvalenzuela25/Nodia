@@ -1,5 +1,14 @@
 # Contexto funcional de productos para NodiaAI
 
+## Catálogo de Productos y precios — 2026-11-21
+
+El [catálogo40](../../mvp/40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21)
+describe la mejora de descubrimiento en español de
+[`nodia_products_list`](businesses/features/products.md#lecturas-disponibles-en-ai-15).
+La consulta utiliza precios del catálogo actual y el ámbito autorizado de
+Negocios. Los resultados paginados incluyen el precio regular, el vigente y
+la unidad. La revisión firmada de Productos sigue vigente.
+
 ## Punto de lectura de Teacher sin conexión — 2026-11-21
 
 La [ficha candidata de avance](studies/features/offline-reading-progress.md)

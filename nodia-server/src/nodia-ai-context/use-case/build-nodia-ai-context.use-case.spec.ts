@@ -288,6 +288,51 @@ describe('BuildNodiaAiContextUseCase', () => {
       useCase.execute({ ...input, capabilityIndex: oversized }),
     ).toThrow('context_limit');
   });
+  it('guides product-price selection only when the current discovery index offers the read', () => {
+    const useCase = new BuildNodiaAiContextUseCase(
+      knowledge() as unknown as LoadNodiaAiKnowledgeUseCase,
+      policy,
+    );
+    const input = {
+      moduleRoutes: ['/nodia-ai', '/business'],
+      throughSeq: '1',
+      history: [],
+      mode: 'api_key',
+      toolSelection: {
+        schema_version: 1,
+        phase: 'discovery',
+        catalog_hash: 'a'.repeat(64),
+      },
+    };
+    const instructions = (ids: string[], phase = 'discovery') =>
+      JSON.parse(
+        useCase.execute({
+          ...input,
+          toolSelection: { ...input.toolSelection, phase },
+          capabilityIndex: {
+            schema_version: 1,
+            catalog_version: 'test/1',
+            catalog_hash: input.toolSelection.catalog_hash,
+            selection_required: true,
+            modules: [{
+              module_key: 'businesses',
+              resources: ids.map((id) => ({
+                resource_key: id === 'nodia_products_list' ? 'products' : 'businesses',
+                capabilities: [{ capability_id: id, tool_name: id, kind: 'read', description: 'Read' }],
+              })),
+            }],
+          },
+        }).prompt,
+      ).instructions;
+
+    const productsList = 'nodia_products_list', businessesList = 'nodia_businesses_list';
+    expect(instructions([productsList, businessesList])).toContain('cuánto cuestan');
+    expect(instructions([productsList, businessesList])).toContain(businessesList);
+    expect(instructions([productsList])).toContain(productsList);
+    expect(instructions([productsList])).not.toContain(businessesList);
+    expect(instructions([businessesList])).not.toContain(productsList);
+    expect(instructions([productsList, businessesList], 'execution')).not.toContain(productsList);
+  });
   const snapshot = (): NodiaAiCompactionSnapshot => ({
     id: 'f32a0ebe-9865-4e5d-9b38-25a886a6c694',
     revision: 2,

@@ -41,6 +41,15 @@ const contracts = {
   schema: ['CatalogDescribeInput', 'CapabilitySchemas'],
   entities: ['EntitySearchInput', 'EntityCandidates'],
 } as const;
+const catalogStopWords = new Set([
+  'a', 'an', 'and', 'con', 'de', 'del', 'el', 'en', 'for', 'la', 'las', 'los',
+  'mi', 'of', 'para', 'por', 'su', 'sus', 'the', 'un', 'una', 'with', 'y',
+]);
+function catalogTokens(value: string): string[] {
+  return (
+    value.normalize('NFD').replace(/\p{M}/gu, '').match(/[\p{L}\p{N}]+/gu) ?? []
+  );
+}
 function fail(code = 'invalid_tool_input'): never {
   throw new Error(`nodia_ai:${code}`);
 }
@@ -211,14 +220,15 @@ export class DiscoverNodiaAiToolsUseCase {
     if (kind === 'search') {
       const term =
         typeof input.query === 'string' ? input.query.toLowerCase().trim() : '';
-      const matching = visible.filter(
-        (tool) =>
-          (!input.module_key || tool.moduleKey === input.module_key) &&
-          (!term ||
-            `${tool.toolName} ${tool.description} ${tool.moduleKey} ${tool.resourceKey}`
-              .toLowerCase()
-              .includes(term)),
-      );
+      const terms = catalogTokens(term).filter((word) => !catalogStopWords.has(word));
+      const matching = visible.filter((tool) => {
+        if (input.module_key && tool.moduleKey !== input.module_key) return false;
+        const text = `${tool.toolName} ${tool.description} ${tool.moduleKey} ${tool.resourceKey}`.toLowerCase();
+        if (text.includes(term)) return true;
+        if (!terms.length) return false;
+        const tokens = new Set(catalogTokens(text));
+        return terms.every((word) => tokens.has(word));
+      });
       const cursorScope = knowledgeHash(
         canonicalKnowledge({
           catalog: this.registry.catalogVersion,
