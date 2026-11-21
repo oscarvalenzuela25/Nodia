@@ -5,8 +5,9 @@
 corrige el descubrimiento en español del listado de productos y sus precios.
 Chromium verificó el aviso en cuatro anchos y dos idiomas. En la VM, el
 gateway compilado verificó precios de catálogo, paginado y alcance por
-negocio en PostgreSQL 16 aislado. Pasó también el circuito de chat API con
-transporte sintético. Queda pendiente una conversación con un proveedor real.
+negocio en PostgreSQL 16 aislado. OpenAI API key completó un turno con
+el modelo configurado y once precios cotejados con el catálogo del negocio.
+[Evidencia en la VM](../evidence/nodia-ai-products-real-api-20261121.md).
 [Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
 y [catálogo40](40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21).
 
