@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ContactModal from "../../../../../../../../../modules/business/pages/BusinessDetail/components/ProvidersTab/components/ContactModal";
 const close = vi.fn();
@@ -108,9 +108,23 @@ describe("ContactModal", () => {
       screen.getByLabelText("Comentarios (opcional)"),
       "No perder",
     );
+    await user.click(screen.getByRole("button", { name: /Horario de visitas/ }));
+    const monday = within(screen.getByRole("group", { name: "Lunes" }));
+    const timePending = monday.getByRole("checkbox", { name: "Hora por confirmar" });
+    timePending.focus();
+    await user.keyboard(" ");
+    expect(monday.queryByLabelText("Desde")).not.toBeInTheDocument();
+    const visitDescription = monday.getByLabelText("Descripción de la visita (opcional)");
+    await user.type(visitDescription, "Despacho");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
     await waitFor(() => expect(save).toHaveBeenCalledOnce());
+    expect(save).toHaveBeenCalledWith(
+      expect.objectContaining({ schedule: { monday: [{ from: null, to: null, description: "Despacho" }] } }),
+      expect.any(String),
+    );
     expect(close).not.toHaveBeenCalled();
+    expect(timePending).toBeChecked();
+    expect(visitDescription).toHaveValue("Despacho");
     expect(screen.getByLabelText(/Nombre del contacto/)).toHaveValue(
       "María Pérez",
     );

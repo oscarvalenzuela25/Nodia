@@ -47,6 +47,7 @@ import { sileo } from "sileo";
 import { TableSkeleton } from "../../../../../../components/skeletons";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
 import ConfirmDialog from "../../../../../../components/ConfirmDialog";
+import ProviderVisitPreference from "../../../../../notifications/components/ProviderVisitPreference";
 import {
   useProviders,
   useCreateProvider,
@@ -212,22 +213,12 @@ export const ProvidersTab: FC<Props> = ({
       if (selectedProvider) {
         await updateMutation.mutateAsync({
           id: selectedProvider.id,
-          payload: {
-            name: data.name,
-            tax: data.tax,
-            fields: data.fields,
-            use_ocr: data.use_ocr,
-            is_active: data.is_active,
-          },
+          payload: data,
         });
       } else {
         await createMutation.mutateAsync({
           business_id: businessId,
-          name: data.name,
-          tax: data.tax,
-          fields: data.fields,
-          use_ocr: data.use_ocr,
-          is_active: data.is_active,
+          ...data,
         });
       }
 
@@ -267,6 +258,7 @@ export const ProvidersTab: FC<Props> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <ProviderVisitPreference key={businessId} businessId={businessId} />
       {loadingProviderId !== null && <LinearProgress aria-label={t("provider_contacts:loading")} />}
       {failedProvider && <Alert severity="error" action={<Button variant="outlined" disabled={loadingProviderId !== null || isBusy}
         onClick={() => { if (!isBusy) void openContacts(failedProvider); }}>{t("core:retry")}</Button>}>

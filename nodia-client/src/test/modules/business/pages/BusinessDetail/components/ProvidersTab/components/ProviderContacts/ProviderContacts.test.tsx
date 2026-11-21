@@ -30,7 +30,10 @@ const contact = {
   phone: [{ number: "+56987654321" }],
   email: "maria@example.test",
   description: null,
-  schedule: { monday: [{ from: "09:00", to: "12:00" }] },
+  schedule: {
+    monday: [{ from: "09:00", to: "12:00" }],
+    wednesday: [{ from: null, to: null, description: "Despacho" }],
+  },
   version: 1,
   is_active: true,
   created_at: "2026-10-05T12:00:00Z",
@@ -75,6 +78,8 @@ describe("ProviderContacts", () => {
       screen.getByRole("link", { name: "Redactar correo" }),
     ).toHaveAttribute("href", "mailto:maria%40example.test");
     expect(screen.getByText("Lunes: 09:00–12:00")).toBeInTheDocument();
+    expect(screen.getByText("Miércoles: hora por confirmar")).toBeInTheDocument();
+    expect(screen.getByText("Despacho")).toBeInTheDocument();
   });
   it("shows an empty state with creation action", async () => {
     vi.mocked(services.getContacts).mockResolvedValue({

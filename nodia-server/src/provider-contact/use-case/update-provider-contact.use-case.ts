@@ -11,6 +11,7 @@ import {
   ToggleProviderContactDto,
 } from '../dto/provider-contact.dto.js';
 import {
+  assertPendingContactVisitsSpecified,
   contactHash,
   normalizeContact,
   validateContactId,
@@ -43,6 +44,9 @@ export class UpdateProviderContactUseCase {
         const values = normalizeContact(
           'name' in dto ? dto : { ...current, is_active: dto.is_active },
         );
+        if ('name' in dto) {
+          assertPendingContactVisitsSpecified(current.schedule, dto.schedule);
+        }
         if (
           await (manager
             ? this.service.updateVersion(

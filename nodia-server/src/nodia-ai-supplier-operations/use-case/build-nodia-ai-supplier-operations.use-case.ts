@@ -38,6 +38,7 @@ import { UpdateProviderUseCase } from '../../provider/use-case/update-provider.u
 import { CreateProviderContactUseCase } from '../../provider-contact/use-case/create-provider-contact.use-case.js';
 import { UpdateProviderContactUseCase } from '../../provider-contact/use-case/update-provider-contact.use-case.js';
 import {
+  hasPendingContactVisit,
   normalizeContact,
   validateVersion,
   validateRequestKey,
@@ -330,6 +331,7 @@ class SupplierOperation implements NodiaAiNativeOperation {
         name: 'Validation',
         ...contactCommand,
       } as unknown as ContactValues);
+      if (hasPendingContactVisit(normalized.schedule)) return invalid();
       for (const k of Object.keys(contactCommand))
         command[k] = (normalized as unknown as NodiaAiJsonObject)[k];
     }
@@ -867,6 +869,13 @@ class SupplierOperation implements NodiaAiNativeOperation {
             );
     if (this.operation !== 'create' && !target)
       throw new NotFoundException('Target not found for this scope');
+    // A legacy full replacement cannot represent these existing visits.
+    // This check also runs on confirmation, under the target row lock.
+    if (
+      this.contact && this.operation === 'update' &&
+      hasPendingContactVisit(target?.schedule)
+    )
+      throw new ConflictException('nodia_ai:provider_contact_visit_time_pending');
     const transferReferences =
       !this.contact &&
       this.operation === 'update' &&

@@ -1,34 +1,67 @@
 # Progreso del MVP — Nodia
 
+**Experiencia del lector offline de Teacher — 2026-11-21.** En producción
+se sirven la presentación formateada, la acción persistente para abrir la
+copia y la comparación de los puntos en conflicto. Chrome comprobó el
+recorrido offline y el foco en laboratorio. CI, CD y los archivos del
+lector publicado pasaron la verificación. [Plan103 §8.4](103-pwa-progressive-implementation-plan.md#84-lectura-y-resolución-de-conflictos-más-claras--2026-11-21).
+
 **Avance de lectura de Teacher sin conexión — 2026-11-21.** PWA-006 está
-implementado como candidato local. Server y PostgreSQL verificaron recibos
-idempotentes y escrituras concurrentes. Dos perfiles Chrome verificaron el
-guardado tras reabrir sin red, la recuperación de una respuesta perdida,
-las dos opciones de conflicto y el cambio de cuenta. El piloto HTTPS local
-en Windows repitió el flujo con Server y PostgreSQL reales. Confirmó ambos
-desenlaces y un reenvío idempotente. Queda pendiente el origen publicado.
-[Plan103 §8.2](103-pwa-progressive-implementation-plan.md#82-piloto-https-en-windows--2026-11-21).
+publicado. Dos perfiles Chrome con una misma cuenta verificaron persistencia
+sin red, reintento tras un fallo de transporte y ambas elecciones de conflicto.
+El cursor avanzó de 3 a 5 y la opción de conservar el punto del servidor no
+generó otra escritura. El piloto local verificó además el reenvío idempotente.
+[Plan103 §8.3](103-pwa-progressive-implementation-plan.md#83-publicación-https--2026-11-21).
 
 **Material de Teacher sin conexión — 2026-11-21.** Chrome verificó PWA-005
 con descargas de dos cuentas de prueba en el mismo perfil. El lector abrió
 sin red desde una pestaña nueva, retiró la copia anterior al cambiar de cuenta
-y comprobó caducidad, eliminación y revocación conocida. Queda pendiente la
-verificación del despliegue. [Plan103 §7](103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
+y comprobó caducidad, eliminación y revocación conocida. El origen publicado
+confirmó descarga y reapertura sin red en dos perfiles de Chrome para Windows.
+[Plan103 §7](103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
 
-**Recuperación de conexión de la PWA — 2026-11-21.** PWA-003 está implementado
-como candidato local. Chrome verificó la distinción entre desconexión y HTTP
+**Recuperación de conexión de la PWA — 2026-11-21.** PWA-003 se publicó con
+Teacher. Chrome en laboratorio verificó la distinción entre desconexión y HTTP
 503 con red, el reintento de lectura, el arranque sin red desde un registro
 previo y la conservación del formulario real de Proveedores. El servidor de
 prueba registró un solo guardado, iniciado por el operador tras recuperar la
 conexión. [Plan103 §5](103-pwa-progressive-implementation-plan.md#5-pwa-003--desconexión-y-recuperación-comprensibles).
 
-**Actualizaciones de la PWA — 2026-11-21.** PWA-002 está implementado como
-candidato local. El build vincula el HTML, el worker y el manifiesto público
+**Actualizaciones de la PWA — 2026-11-21.** PWA-002 se publicó con Teacher.
+El build vincula el HTML, el worker y el manifiesto público
 de versión. La persona puede aplazar la actualización y conservar la pestaña
 con una edición abierta. El registro raíz continúa gestionando Web Push.
 Chromium comprobó el cambio entre dos builds con un formulario en edición,
-el guardado posterior y la conservación de la suscripción de prueba. El
-despliegue publicado queda pendiente. [Plan103 §4](103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas).
+el guardado posterior y la conservación de la suscripción de prueba. Queda
+pendiente repetir el cambio y la reversión en producción. [Plan103 §4](103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas).
+
+**Contactos y recordatorios de visitas — 2026-11-20.** El alcance de Contactos
+distingue una visita con hora por confirmar de un día sin visita. El contrato
+y su verificación por canal se registran en
+[Plan31](31-provider-contacts-proposal.md#día-de-visita-con-hora-por-confirmar--2026-11-20).
+El [Plan103 §6.1](103-pwa-progressive-implementation-plan.md#61-regla-de-hora-y-destinatario)
+registra el contrato de alarma opcional por proveedor, preferencia personal por
+negocio y alta/baja por instalación. La [implementación local 004.02](103-pwa-progressive-implementation-plan.md#64-implementación-local-de-server--00402)
+incorpora los contratos en Server, cálculo horario y planificación persistente.
+Pasaron los ensayos HTTP y de concurrencia con PostgreSQL 16 aislado. La
+[entrega 004.03](103-pwa-progressive-implementation-plan.md#65-entrega-web-push-desde-server--00403)
+comprobó destinatarios, firma, cifrado, caducidad y recuperación del envío
+con transporte sintético. La
+[entrega 004.04](103-pwa-progressive-implementation-plan.md#66-client-y-apertura-del-negocio--00404)
+incorporó el formulario, el consentimiento por negocio e instalación y la
+apertura del destino bajo los permisos actuales. El
+[piloto HTTPS 004.05](103-pwa-progressive-implementation-plan.md#67-piloto-https-y-retirada--00405)
+verificó la entrega real en Chrome para Windows con la pestaña cerrada y
+la apertura del negocio autorizado al pulsar el aviso del sistema. La baja
+desde la interfaz HTTPS confirmó la revocación y retirada de la suscripción
+local. Una visita de control posterior a la revocación por API completó su
+ventana con cero intentos. En Edge para Windows, WNS aceptó el envío real y
+el worker lo recibió con el sitio cerrado. En Chrome para Android, el
+operador recibió el aviso con Nodia cerrada y abrió el negocio correcto desde
+el aviso del worker instrumentado del piloto. Tras la baja por API, una nueva
+visita completó su ventana con cero intentos. Quedan por verificar en Android
+la apertura con el worker original y la baja desde la interfaz, además del
+clic nativo en Edge.
 
 **Grafana, emisión automática de CD comprobada — 2026-11-20.** El
 [CD 44673206896](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44673206896)

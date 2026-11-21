@@ -17,10 +17,14 @@ import { ADMIN_ROUTES, LEGACY_MODULE_DESTINATIONS } from "./moduleDestinations";
 import LegacyModuleRedirect from "./LegacyModuleRedirect";
 import SessionRouteLayout from "./SessionRouteLayout";
 import { NEWS_ROUTE } from "../modules/news/constants/routes";
+import { NOTIFICATIONS_ROUTE } from "../modules/notifications/constants/routes";
 
 // Lazy-loaded route pages (Code Splitting per route)
 const Home = lazyWithRetry(() => import("../modules/home/pages/Home"));
 const News = lazyWithRetry(() => import("../modules/news/pages/News"));
+const NotificationSettings = lazyWithRetry(
+  () => import("../modules/notifications/pages/NotificationSettings/NotificationSettings"),
+);
 const NodiaAI = lazyWithRetry(() => import("../modules/nodiaAi/pages/NodiaAI"));
 const Teacher = lazyWithRetry(() => import("../modules/teacher/pages/Teacher"));
 const TeacherNew = lazyWithRetry(() => import("../modules/teacher/pages/TeacherNew"));
@@ -71,6 +75,14 @@ const router = createBrowserRouter([
     element: <SessionRouteLayout />,
     errorElement: <RouteError />,
     children: [
+      {
+        path: NOTIFICATIONS_ROUTE,
+        element: (
+          <Guard requireSession>
+            <BaseLayout>{renderLazyPage(<NotificationSettings />)}</BaseLayout>
+          </Guard>
+        ),
+      },
       {
         path: NEWS_ROUTE,
         element: (

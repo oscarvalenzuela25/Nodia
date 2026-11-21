@@ -6,6 +6,7 @@ import useAuthStore from "../../store/authStore";
 import useGeneralSettingsStore from "../../store/generalSettings/generalSettingsStore";
 import { queryClient } from "../../config/reactQuery";
 import i18n from "../../translate";
+import { saveProviderVisitPreference } from "../../modules/notifications/infrastructure/services";
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const originalAdapter = mainInstance.defaults.adapter;
@@ -144,11 +145,14 @@ describe("API session renewal", () => {
 });
 
 describe("active session transport gate", () => {
-  it("cancels a queued account-scoped download before authenticating as a replacement user", async () => {
+  it.each([
+    ["download", (sessionVersion: number) => mainInstance.get("/teacher/sessions/test/units/test", { expectedAuthSessionVersion: sessionVersion })],
+    ["mutation", (sessionVersion: number) => saveProviderVisitPreference({ userId: "42", sessionVersion }, "business-a", true)],
+  ] as const)("cancels a queued account-scoped %s before authenticating as a replacement user", async (_kind, send) => {
     const adapter = vi.fn();
     mainInstance.defaults.adapter = adapter;
     const { sessionVersion } = useAuthStore.getState();
-    const request = mainInstance.get("/teacher/sessions/test/units/test", { expectedAuthSessionVersion: sessionVersion });
+    const request = send(sessionVersion);
     useAuthStore.getState().login({ ...session, token: "next-token", user: { id: "43", name: "Next user" } });
     await expect(request).rejects.toMatchObject({ code: "ERR_CANCELED" });
     expect(adapter).not.toHaveBeenCalled();

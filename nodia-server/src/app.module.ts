@@ -19,6 +19,7 @@ import { BusinessShoppingListModule } from './business-shopping-list/business-sh
 import { BusinessActionModule } from './business-action/business-action.module.js';
 import { ProviderModule } from './provider/provider.module.js';
 import { ProviderContactModule } from './provider-contact/provider-contact.module.js';
+import { VisitNotificationsModule } from './visit-notifications/visit-notifications.module.js';
 import { InvoiceModule } from './invoice/invoice.module.js';
 import { ProductModule } from './product/product.module.js';
 import { SaleModule } from './sale/sale.module.js';
@@ -55,6 +56,7 @@ import { NewsModule } from './news/news.module.js';
     BusinessShoppingListModule,
     ProviderModule,
     ProviderContactModule,
+    VisitNotificationsModule,
     InvoiceModule,
     ProductModule,
     SaleModule,

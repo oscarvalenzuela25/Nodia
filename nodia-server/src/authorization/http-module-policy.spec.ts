@@ -6,6 +6,31 @@ import { describe, expect, it } from 'vitest';
 import { resolveHttpModulePolicy } from './http-module-policy.js';
 
 describe('HTTP module policy', () => {
+  it('keeps personal installation management and business preferences under separate authority', () => {
+    const installation = ['notifications/web-push'];
+    for (const method of ['GET', 'PUT', 'DELETE']) {
+      expect(
+        resolveHttpModulePolicy(installation, ['installations/:installationId'], method),
+      ).toEqual({ routes: [], match: 'all' });
+    }
+    expect(resolveHttpModulePolicy(installation, ['config'], 'GET')).toEqual({
+      routes: [],
+      match: 'all',
+    });
+    expect(resolveHttpModulePolicy(installation, ['config'], 'PUT')).toBeUndefined();
+    expect(resolveHttpModulePolicy(installation, ['installations'], 'GET')).toBeUndefined();
+
+    const preferences = ['businesses/:businessId/notification-preferences'];
+    for (const method of ['GET', 'PUT']) {
+      expect(resolveHttpModulePolicy(preferences, ['provider-visits'], method)).toEqual({
+        routes: ['/business'],
+        match: 'all',
+      });
+    }
+    expect(resolveHttpModulePolicy(preferences, ['provider-visits'], 'DELETE')).toBeUndefined();
+    expect(resolveHttpModulePolicy(preferences, ['other-type'], 'GET')).toBeUndefined();
+  });
+
   it('admits only the exact Personal News operations for an authenticated owner', () => {
     const controller = ['news/personal'];
     for (const [method, handler] of [

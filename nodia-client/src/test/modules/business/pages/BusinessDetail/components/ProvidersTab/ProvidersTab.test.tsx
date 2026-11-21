@@ -16,6 +16,10 @@ vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/P
   getContacts: vi.fn(), createContact: vi.fn(), updateContact: vi.fn(), toggleContact: vi.fn(),
 }));
 
+vi.mock("../../../../../../../modules/notifications/components/ProviderVisitPreference", () => ({
+  default: () => null,
+}));
+
 vi.mock("sileo", () => ({
   sileo: {
     info: vi.fn(),
@@ -52,6 +56,7 @@ const mockProviders: ProviderEntity[] = [
     name: "Lácteos del Sur",
     use_ocr: true,
     tax: 19,
+    visit_alarm_time: "10:15",
     fields: {
       code: { value: "COD_PROD", instructions: "Tomar código numérico" },
       cost_price: "VALOR_NETO",
@@ -150,7 +155,7 @@ describe("ProvidersTab Component", () => {
   // Deliberately keep the server-shaped numeric ID: this regression protects
   // the create/refetch/contact handoff rather than assuming UUID-shaped fixtures.
   const newlyCreatedProvider: ProviderEntity = { ...mockProviders[0], id: 101 as unknown as string,
-    name: "Proveedor Nuevo", fields: {} };
+    name: "Proveedor Nuevo", fields: {}, visit_alarm_time: "11:45" };
 
   const createProviderThroughForm = async () => {
     let created = false;
@@ -167,11 +172,13 @@ describe("ProvidersTab Component", () => {
     await user.click(screen.getByTestId("manage-providers-btn"));
     await user.click(screen.getByTestId("add-single-provider-menu-item"));
     await user.type(screen.getByRole("textbox", { name: /Nombre de Empresa \/ Proveedor/ }), newlyCreatedProvider.name);
+    await user.type(screen.getByRole("textbox", { name: "Hora de alarma de visitas" }), "11:45");
     await user.click(screen.getByTestId("save-provider-btn"));
     await screen.findByText(newlyCreatedProvider.name);
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(businessServices.createProvider).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
       business_id: "biz-123", name: newlyCreatedProvider.name, tax: 19, is_active: true,
+      visit_alarm_time: "11:45",
     }));
     expect(vi.mocked(businessServices.getProviders).mock.calls.length).toBeGreaterThanOrEqual(2);
   };
@@ -316,7 +323,10 @@ describe("ProvidersTab Component", () => {
     });
   });
 
-  it("opens edit modal when clicking Editar in the 3-dots menu", async () => {
+  it("loads the current alarm and retries clearing it without losing the draft after a failed edit", async () => {
+    vi.mocked(businessServices.updateProvider)
+      .mockRejectedValueOnce(new Error("synthetic update failure"))
+      .mockResolvedValueOnce({ ...mockProviders[0], visit_alarm_time: null });
     renderWithClient(<ProvidersTab businessId="biz-123" />);
 
     await waitFor(() => {
@@ -331,6 +341,21 @@ describe("ProvidersTab Component", () => {
     expect(screen.getByDisplayValue("COD_PROD")).toBeInTheDocument();
     expect(screen.getByDisplayValue("VALOR_NETO")).toBeInTheDocument();
     expect(screen.getByDisplayValue("VALOR_BRUTO")).toBeInTheDocument();
+
+    const alarm = screen.getByRole("textbox", { name: "Hora de alarma de visitas" });
+    expect(alarm).toHaveValue("10:15");
+    await user.clear(alarm);
+    await user.click(screen.getByTestId("save-provider-btn"));
+
+    await waitFor(() => expect(sileo.error).toHaveBeenCalledOnce());
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(alarm).toHaveValue("");
+    const update = expect.objectContaining({ visit_alarm_time: null });
+    expect(businessServices.updateProvider).toHaveBeenNthCalledWith(1, "prov-101", update);
+
+    await user.click(screen.getByTestId("save-provider-btn"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(businessServices.updateProvider).toHaveBeenNthCalledWith(2, "prov-101", update);
   });
 
   it("paginates providers table with 50 rows per page by default and allows changing page", async () => {

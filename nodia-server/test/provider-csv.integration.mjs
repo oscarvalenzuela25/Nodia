@@ -16,6 +16,7 @@ import qs from 'qs';
 import { ProviderModule } from '../dist/provider/provider.module.js';
 import { providerImportBodyParser } from '../dist/provider/provider-import-body-parser.js';
 import { CreateProviderContacts1791220000000 } from '../dist/migrations/1791220000000-CreateProviderContacts.js';
+import { AddProviderVisitAlarmTime1793840000000 } from '../dist/migrations/1793840000000-AddProviderVisitAlarmTime.js';
 import { createServer } from '../../nodia-client/node_modules/vite/dist/node/index.js';
 
 // Disposable DB, synthetic auth, real compiled HTTP/DTO/ORM and actual Client CSV parser.
@@ -80,11 +81,14 @@ try {
   };
   db = new DataSource(options);
   await db.initialize();
-  await db.query('CREATE TABLE businesses(id uuid PRIMARY KEY)');
+  await db.query(
+    "CREATE TABLE businesses(id uuid PRIMARY KEY, sales_timezone varchar(64) NOT NULL DEFAULT 'America/Santiago')",
+  );
   await db.query(
     `CREATE TABLE providers(use_ocr boolean NOT NULL DEFAULT false,id bigserial PRIMARY KEY,business_id uuid NOT NULL REFERENCES businesses(id),name varchar(255) NOT NULL,tax int NOT NULL DEFAULT 19,fields jsonb NOT NULL DEFAULT '{}',is_active boolean NOT NULL DEFAULT true,created_at timestamp NOT NULL DEFAULT now(),updated_at timestamp NOT NULL DEFAULT now())`,
   );
   const runner = db.createQueryRunner();
+  await new AddProviderVisitAlarmTime1793840000000().up(runner);
   await new CreateProviderContacts1791220000000().up(runner);
   await runner.release();
   const business = randomUUID(),
@@ -170,6 +174,7 @@ try {
     email: null,
     schedule: {
       monday: [{ from: '09:00', to: '11:00', description: 'Entrega semanal' }],
+      wednesday: [{ from: null, to: null, description: 'Hora pendiente' }],
     },
     description: 'Uno\nDos',
     is_active: false,
@@ -205,6 +210,7 @@ try {
     (
       await call(`providers/${foreign.id}`, 'PUT', {
         name: 'Must stay private',
+        visit_alarm_time: '08:45',
       })
     ).status,
     404,
@@ -232,6 +238,7 @@ try {
     3,
   );
   const before = await snapshot();
+  assert.deepEqual(before.contacts[0].schedule, contact.schedule);
   assert.equal((await call('provider/import', 'POST', payload)).status, 201);
   assert.deepEqual(await snapshot(), before);
   for (const lang of ['es', 'en']) {
@@ -256,6 +263,13 @@ try {
   const edit = buildImportPayload(parseCSV(view.body), business);
   edit[0].tax = 7;
   edit[0].contacts[0].description = 'Actualizado';
+  const legacyEdit = structuredClone(edit);
+  delete legacyEdit[0].contacts[0].schedule.wednesday;
+  assert.equal(
+    (await call('providers/import', 'POST', { items: legacyEdit })).status,
+    409,
+  );
+  assert.deepEqual(await snapshot(), before);
   assert.equal(
     (await call('providers/import', 'POST', { items: edit })).status,
     201,
@@ -378,6 +392,20 @@ try {
     (await call(`providers/export-csv?ids=9223372036854775808`)).status,
     400,
   );
+  const currentView = await call(
+    `providers/export-csv?business_id=${business}&ids=${providerId}`,
+  );
+  const removal = buildImportPayload(parseCSV(currentView.body), business);
+  const [updatedContact] = removal[0].contacts;
+  updatedContact.schedule.wednesday = [];
+  assert.equal(
+    (await call('providers/import', 'POST', { items: removal })).status,
+    201,
+  );
+  assert.deepEqual(
+    (await snapshot()).contacts.find((row) => row.id === updatedContact.id).schedule,
+    { monday: contact.schedule.monday },
+  );
   assert.equal(
     (
       await call('providers/import', 'POST', {
@@ -395,6 +423,50 @@ try {
     ).status,
     413,
   );
+
+  const providerPath = `providers/${providerId}`;
+  assert.equal((await call(providerPath)).body.visit_alarm_time, null);
+  const timed = await call(providerPath, 'PUT', { visit_alarm_time: '08:45' });
+  assert.equal(timed.status, 200);
+  assert.equal(timed.body.visit_alarm_time, '08:45');
+  assert.equal((await call(providerPath)).body.visit_alarm_time, '08:45');
+  const list = await call(`providers?all=true&q[business_id_eq]=${business}`);
+  assert.equal(list.body.data.find((provider) => provider.id === providerId).visit_alarm_time, '08:45');
+  const untouched = await call(providerPath, 'PUT', {});
+  assert.equal(untouched.status, 200);
+  assert.equal(untouched.body.visit_alarm_time, '08:45');
+  assert.equal(untouched.body.updated_at, timed.body.updated_at);
+
+  const alarmCsv = await call(`providers/export-csv?business_id=${business}&ids=${providerId}`);
+  assert.doesNotMatch(alarmCsv.body.split('\n')[0], /visit_alarm_time/);
+  const legacyCsvItems = buildImportPayload(parseCSV(alarmCsv.body), business);
+  assert.equal((await call('providers/import', 'POST', { items: legacyCsvItems })).status, 201);
+  assert.equal((await call(providerPath)).body.visit_alarm_time, '08:45');
+  assert.equal((await call('providers/import', 'POST', {
+    items: [{ ...legacyCsvItems[0], visit_alarm_time: null }],
+  })).status, 400);
+  assert.equal((await call(providerPath, 'PUT', { visit_alarm_time: '24:00' })).status, 400);
+  assert.equal((await call(providerPath)).body.visit_alarm_time, '08:45');
+  await assert.rejects(
+    db.query('UPDATE providers SET visit_alarm_time = $1 WHERE id = $2', ['24:00', providerId]),
+    (error) => error.code === '23514',
+  );
+  const cleared = await call(providerPath, 'PUT', { visit_alarm_time: null });
+  assert.equal(cleared.status, 200);
+  assert.equal(cleared.body.visit_alarm_time, null);
+  assert.equal((await call(providerPath)).body.visit_alarm_time, null);
+  const withExplicitAlarm = await call('providers', 'POST', {
+    business_id: business,
+    name: 'Configured visit alarm',
+    visit_alarm_time: '00:00',
+  });
+  assert.equal(withExplicitAlarm.status, 201);
+  assert.equal(withExplicitAlarm.body.visit_alarm_time, '00:00');
+  assert.equal(
+    (await call(`providers/${withExplicitAlarm.body.id}`)).body.visit_alarm_time,
+    '00:00',
+  );
+
   console.log(
     JSON.stringify({
       requests,
@@ -403,6 +475,7 @@ try {
       concurrency: true,
       scope: true,
       validation: true,
+      visitAlarm: 'Nullable HH:mm, native edit/read, CSV preservation and SQL validation',
     }),
   );
 } finally {

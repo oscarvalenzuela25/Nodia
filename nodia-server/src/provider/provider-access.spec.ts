@@ -51,6 +51,7 @@ function fixture(visible: string[] = [origin], superAdmin = false) {
     throw new Error('Unexpected synthetic persistence query');
   });
   const builder = {
+    addSelect: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
     andWhere: vi.fn().mockReturnThis(),
     orderBy: vi.fn().mockReturnThis(),

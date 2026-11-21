@@ -14,6 +14,8 @@ import { NodiaAiWorker } from './nodia-ai-runtime/nodia-ai.worker.js';
 import { NodiaAiExecutionModule } from './nodia-ai-execution/nodia-ai-execution.module.js';
 import { NodiaAiOperationsModule } from './nodia-ai-operations/nodia-ai-operations.module.js';
 import { TeacherModule } from './teacher/teacher.module.js';
+import { ProviderVisitPlanningModule } from './provider-visit-planning/provider-visit-planning.module.js';
+import { ProviderVisitDeliveryModule } from './visit-notifications/delivery/provider-visit-delivery.module.js';
 
 /** Standalone process: importing the HTTP app never starts these consumers. */
 @Module({
@@ -27,6 +29,8 @@ import { TeacherModule } from './teacher/teacher.module.js';
     NodiaAiSecureFlowModule,
     NodiaAiOperationsModule,
     TeacherModule,
+    ProviderVisitPlanningModule,
+    ProviderVisitDeliveryModule,
   ],
   providers: [
     RunNodiaAiStageUseCase,

@@ -1,12 +1,13 @@
 import { useEffect, type PropsWithChildren } from "react";
 import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { Skeleton } from "boneyard-js/react";
-import { Navigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import useRetainedSessionView from "../providers/hooks/useRetainedSessionView";
 import { useAuthorizationContext } from "../services/authorizationService";
 import { canAccessModule } from "../store/generalSettings/helpers";
 import { GuardNotice } from "./styles";
+import { isBusinessReturnPath } from "./businessReturnPath";
 import { NODIA_TEACHER_ROUTE } from "../modules/teacher/constants/routes";
 import { clearOfflineStudyGrant, offlineStudyScope } from "../modules/teacher/infrastructure/offlineStudyIdentity";
 import useAuthStore from "../store/authStore";
@@ -14,6 +15,7 @@ import useAuthStore from "../store/authStore";
 type Props = PropsWithChildren<{ modulePath: string }>;
 
 export default function GuardStrict({ children, modulePath }: Props) {
+  const { pathname } = useLocation();
   const { isDemo, canMount, actorScope, isSessionActive, isRefreshing } = useRetainedSessionView();
   const { t } = useTranslation(["auth", "core"]);
   const context = useAuthorizationContext({ enabled: isSessionActive && Boolean(actorScope) });
@@ -31,7 +33,10 @@ export default function GuardStrict({ children, modulePath }: Props) {
     context.isError ||
     (!context.data && context.isFetching && context.errorUpdatedAt > 0);
 
-  if (isDemo) return <Navigate to="/login" replace />;
+  if (isDemo) {
+    const state = isBusinessReturnPath(pathname) ? { businessReturnPath: pathname } : undefined;
+    return <Navigate to="/login" state={state} replace />;
+  }
   if (!canMount)
     return <LinearProgress aria-label={t("auth:session_restoring")} />;
 

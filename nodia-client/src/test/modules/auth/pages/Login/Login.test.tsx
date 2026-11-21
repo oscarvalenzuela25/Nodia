@@ -23,11 +23,12 @@ vi.mock("@react-oauth/google", async () => ({
   googleLogout: vi.fn(),
 }));
 const session = { token: "nodia-jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Oscar", image_url: "https://example.com/avatar.png" } };
-const renderLogin = () => {
+const renderLogin = (state?: unknown) => {
   const router = createMemoryRouter([
     { path: "/login", element: <PublicLayout><Login /></PublicLayout> },
     { path: "/", element: <div data-testid="home" /> },
-  ], { initialEntries: ["/login"] });
+    { path: "/business/:id", element: <div data-testid="business" /> },
+  ], { initialEntries: [{ pathname: "/login", state }] });
   render(<RouterProvider router={router} />);
   return router;
 };
@@ -118,6 +119,24 @@ describe("Login", () => {
     expect(useAuthStore.getState()).toMatchObject(session);
     expect(JSON.parse(localStorage.getItem("authStore")!).state).toEqual(session);
     expect(sileo.success).toHaveBeenCalled();
+  });
+
+  it("keeps a validated business destination after a rejected account and resumes it after sign-in", async () => {
+    const path = "/business/9601aa95-dd70-4af3-a5cf-50dd553a4ae9";
+    const error = new AxiosError("Forbidden");
+    error.response = { status: 403, data: { message: "auth:access_denied" }, headers: {}, statusText: "Forbidden", config: {} as never };
+    vi.mocked(loginWithGoogle).mockRejectedValueOnce(error).mockResolvedValueOnce(session);
+    const router = renderLogin({ businessReturnPath: path });
+
+    const login = screen.getByRole("button", { name: "Google" });
+    await userEvent.click(login);
+    await waitFor(() => expect(sileo.error).toHaveBeenCalledOnce());
+    expect(router.state.location.pathname).toBe("/login");
+    expect(useAuthStore.getState().token).toBeNull();
+
+    await userEvent.click(login);
+    expect(await screen.findByTestId("business")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(path);
   });
 
   it("disables interaction while the backend is checking the credential", async () => {

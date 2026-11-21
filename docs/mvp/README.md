@@ -1,11 +1,11 @@
 # Especificación del MVP — Nodia
 
-**Avance de lectura de Teacher sin conexión — 2026-11-21.** El candidato
-PWA-006 guarda el punto de lectura en el dispositivo y lo sincroniza con
+**Avance de lectura de Teacher sin conexión — 2026-11-21.** PWA-006 está
+publicado. Guarda el punto de lectura en el dispositivo y lo sincroniza con
 la sesión vigente al volver la red. Si otro dispositivo guardó un punto
-distinto, la persona elige cuál conservar. [Plan103 §8](103-pwa-progressive-implementation-plan.md#8-pwa-006--escrituras-offline-y-sincronización).
+distinto, la persona elige cuál conservar. [Plan103 §8.3](103-pwa-progressive-implementation-plan.md#83-publicación-https--2026-11-21).
 
-**Material de Teacher sin conexión — 2026-11-21.** El candidato PWA-005
+**Material de Teacher sin conexión — 2026-11-21.** PWA-005 ya publicado
 permite descargar texto de una lección y abrir su copia cifrada en el
 navegador con la cuenta y sesión que la guardaron. La copia vence a las 24
 horas. [Plan103 §7](103-pwa-progressive-implementation-plan.md#7-pwa-005--lectura-offline-por-módulo).
@@ -19,6 +19,25 @@ verificación del despliegue queda pendiente. [Plan103 §5](103-pwa-progressive-
 registro de Web Push y permite aplicar una actualización por pestaña. La
 caché cubre archivos públicos con hash del build. El despliegue y la
 verificación posterior quedan pendientes. [Plan103 §4](103-pwa-progressive-implementation-plan.md#4-pwa-002--caché-estática-y-actualizaciones-controladas).
+
+**Contactos y recordatorios de visitas — 2026-11-20.** El
+[Plan31](31-provider-contacts-proposal.md#día-de-visita-con-hora-por-confirmar--2026-11-20)
+admite un día de visita con hora por confirmar. El
+[Plan103 §6.1](103-pwa-progressive-implementation-plan.md#61-regla-de-hora-y-destinatario)
+documenta el contrato de alarma del proveedor, preferencia personal por negocio
+y alta por instalación. La [entrega 004.02](103-pwa-progressive-implementation-plan.md#64-implementación-local-de-server--00402)
+implementa esos contratos en Server y verifica la planificación con PostgreSQL
+16 aislado. La [entrega 004.03](103-pwa-progressive-implementation-plan.md#65-entrega-web-push-desde-server--00403)
+incorpora el consumidor de envío cifrado y su verificación en laboratorio.
+La [entrega 004.04](103-pwa-progressive-implementation-plan.md#66-client-y-apertura-del-negocio--00404)
+incorpora la alarma, los ajustes y el service worker con apertura autenticada.
+El [piloto HTTPS 004.05](103-pwa-progressive-implementation-plan.md#67-piloto-https-y-retirada--00405)
+verificó la entrega con la pestaña cerrada, la apertura del negocio desde el
+aviso de Windows y la baja del dispositivo. En Chrome para Android, el
+operador recibió el aviso con Nodia cerrada y abrió el negocio correcto con
+el worker instrumentado del piloto. El
+[ADR111](../architecture/decisions/ADR-111-web-push-provider-visit-reminders.md)
+queda propuesto.
 
 **NodiaAI consulta Listas de Market y Caja — 2026-11-19.** El
 [catálogo](40-nodia-ai-tool-catalog-v1.md#catálogo-histórico-y-extensiones-explícitas)

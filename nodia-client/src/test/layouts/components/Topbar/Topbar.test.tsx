@@ -77,8 +77,11 @@ describe("Topbar", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Abrir menú de cuenta" }));
 
-    const refresh = screen.getByRole("menuitem", { name: "Actualizar información" });
-    expect(refresh).toHaveFocus();
+    const notifications = screen.getByRole("menuitem", { name: "Notificaciones" });
+    expect(notifications).toHaveAttribute("href", "/notifications");
+    expect(notifications).toHaveFocus();
+    await userEvent.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Actualizar información" })).toHaveFocus();
     await userEvent.keyboard("{ArrowDown}");
     expect(screen.getByRole("menuitem", { name: "Cerrar sesión" })).toHaveFocus();
   });

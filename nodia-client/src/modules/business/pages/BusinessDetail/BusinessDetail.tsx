@@ -176,7 +176,10 @@ const BusinessDetail: FC = () => {
   const canManageBusiness = business?.user_role === "owner" || (!!user && business?.owner_id === user.id);
 
   // Badge counts (products, providers and collaborators are already available in business entity)
-  const { data: invoicesData } = useInvoices({ q: { business_id_eq: id }, limit: 1 });
+  const { data: invoicesData } = useInvoices(
+    { q: { business_id_eq: id }, limit: 1 },
+    { enabled: Boolean(business) && !isError },
+  );
 
   const totalProducts = business?.products_count ?? 0;
   const totalProviders = business?.total_providers_count ?? 0;

@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer';
+import { OmitType } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   ArrayNotEmpty,
@@ -17,7 +18,9 @@ export class ImportProviderContactDto extends ContactValuesDto {
   @IsOptional() @Matches(/^[1-9]\d{0,18}$/) id?: string;
   @IsOptional() @IsInt() @Min(1) @Max(2147483646) version?: number;
 }
-export class ImportProviderItemDto extends CreateProviderDto {
+export class ImportProviderItemDto extends OmitType(CreateProviderDto, [
+  'visit_alarm_time',
+] as const) {
   @IsOptional() @Matches(/^[1-9]\d{0,18}$/) id?: string;
   @IsOptional()
   @IsArray()

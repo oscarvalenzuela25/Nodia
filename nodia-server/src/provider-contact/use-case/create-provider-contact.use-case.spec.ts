@@ -90,6 +90,18 @@ describe('Create provider contact', () => {
       },
     });
   });
+  it('keeps an explicit visit with a pending time and omits an empty day', async () => {
+    const result = await useCase.execute('1', {
+      ...payload(),
+      schedule: {
+        monday: [{ from: null, to: null, description: '  Por confirmar  ' }],
+        tuesday: [],
+      },
+    });
+    expect(result.schedule).toEqual({
+      monday: [{ from: null, to: null, description: 'Por confirmar' }],
+    });
+  });
   it.each([
     { name: ' ' },
     { phone: [{ number: '912345678' }] },
@@ -100,6 +112,9 @@ describe('Create provider contact', () => {
     { schedule: { monday: [{ from: '09:00', to: '09:00' }] } },
     { schedule: { monday: [{ from: '24:00', to: '25:00' }] } },
     { schedule: { monday: [{ from: '09:00' }] } },
+    { schedule: { monday: [{ from: null }] } },
+    { schedule: { monday: [{ from: '09:00', to: null }] } },
+    { schedule: { monday: [{ from: null, to: '10:00' }] } },
     { schedule: { monday: [{ from: '09:00', to: '10:00', arbitrary: true }] } },
     {
       schedule: {

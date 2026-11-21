@@ -15,6 +15,7 @@ import {
 
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
+import TimeInput from "../../../../../../../../components/inputs/TimeInput";
 import type { ProviderEntity } from "../../../../../../infrastructure/types";
 import {
   FormContainer,
@@ -36,6 +37,10 @@ const providerSchema = z.object({
     .int("business:provider_tax_integer")
     .min(0, "business:provider_tax_min")
     .max(100, "business:provider_tax_max"),
+  visit_alarm_time: z.string().regex(
+    /^(?:(?:[01]\d|2[0-3]):[0-5]\d)?$/,
+    "business:provider_visit_alarm_time_invalid",
+  ),
   code: fieldMappingSchema,
   cost_price: fieldMappingSchema,
   cost_price_tax: fieldMappingSchema,
@@ -50,6 +55,7 @@ export type ProviderFormValues = z.infer<typeof providerSchema>;
 export interface ProviderFormData {
   name: string;
   tax: number;
+  visit_alarm_time?: string | null;
   fields: Record<string, unknown>;
   use_ocr: boolean;
   is_active: boolean;
@@ -100,6 +106,7 @@ export const ProviderModal: FC<Props> = ({
     defaultValues: {
       name: "",
       tax: 19,
+      visit_alarm_time: "",
       code: defaultFieldMapping,
       cost_price: defaultFieldMapping,
       cost_price_tax: defaultFieldMapping,
@@ -128,6 +135,7 @@ export const ProviderModal: FC<Props> = ({
           initialData.tax !== undefined && initialData.tax !== null
             ? Number(initialData.tax)
             : 19,
+        visit_alarm_time: initialData.visit_alarm_time ?? "",
         code: extractField(rawFields.code),
         cost_price: extractField(rawFields.cost_price),
         cost_price_tax: extractField(rawFields.cost_price_tax),
@@ -140,6 +148,7 @@ export const ProviderModal: FC<Props> = ({
       reset({
         name: "",
         tax: 19,
+        visit_alarm_time: "",
         code: defaultFieldMapping,
         cost_price: defaultFieldMapping,
         cost_price_tax: defaultFieldMapping,
@@ -177,6 +186,9 @@ export const ProviderModal: FC<Props> = ({
     await onSubmit({
       name: data.name.trim(),
       tax: Number(data.tax),
+      ...(data.visit_alarm_time !== (initialData?.visit_alarm_time ?? "")
+        ? { visit_alarm_time: data.visit_alarm_time || null }
+        : {}),
       fields: fieldsRecord,
       use_ocr: data.use_ocr,
       is_active: data.is_active,
@@ -274,6 +286,24 @@ export const ProviderModal: FC<Props> = ({
               required
               disabled={isSubmitting}
               data-testid="provider-tax-input"
+            />
+          )}
+        />
+
+        <Controller
+          name="visit_alarm_time"
+          control={control}
+          render={({ field, fieldState }) => (
+            <TimeInput
+              {...field}
+              label={t("business:provider_visit_alarm_time_label")}
+              error={fieldState.invalid}
+              helperText={
+                fieldState.error?.message
+                  ? t(fieldState.error.message)
+                  : t("business:provider_visit_alarm_time_help")
+              }
+              disabled={isSubmitting}
             />
           )}
         />

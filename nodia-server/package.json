@@ -40,6 +40,7 @@
     "test:rental:integration": "npm run build && node test/rental.integration.mjs",
     "test:provider-contacts:integration": "npm run build && node test/provider-contacts.integration.mjs",
     "test:provider-csv:integration": "npm run build && node test/provider-csv.integration.mjs",
+    "test:pwa-004:integration": "npm run build && node test/visit-notifications.integration.mjs && node test/provider-visit-planning.integration.mjs && node test/provider-visit-delivery.integration.mjs",
     "test:business-sales:integration": "npm run build && node test/business-sales.integration.mjs",
     "test:product-alias:integration": "node test/product-alias.integration.mjs",
     "test:product-alias:http": "node test/product-alias-http.integration.mjs",
@@ -133,7 +134,8 @@
     "qs": "^6.16.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^1.1.1"
+    "typeorm": "^1.1.1",
+    "web-push": "4.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^12.0.0",
@@ -147,6 +149,7 @@
     "@types/pg": "^8.23.1",
     "@types/qs": "^6.15.1",
     "@types/supertest": "^7.0.0",
+    "@types/web-push": "3.6.4",
     "@vitest/coverage-v8": "^4.1.2",
     "oxlint": "^1.58.0",
     "prettier": "^3.4.2",

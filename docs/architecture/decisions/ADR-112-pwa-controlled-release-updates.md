@@ -5,8 +5,9 @@
 
 ## Contexto
 
-El diseño de Nodia usa un único service worker raíz para actualizaciones y Web Push. Una
-publicación cambia los nombres de archivos emitidos por Vite. En un mismo
+Nodia usa un único service worker raíz para actualizaciones y para los
+recordatorios de visitas en el piloto de Web Push. Una publicación cambia
+los nombres de archivos emitidos por Vite. En un mismo
 perfil pueden convivir una pestaña con una edición en curso y otra lista para
 usar la última versión. La suscripción y el destino de los avisos dependen
 del registro raíz.

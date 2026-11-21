@@ -52,6 +52,7 @@ function harness(entity: unknown = Product, row: unknown = product) {
     getParameters: vi.fn(() => ({})),
     andWhere: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
+    addSelect: vi.fn().mockReturnThis(),
     addOrderBy: vi.fn().mockReturnThis(),
     orderBy: vi.fn().mockReturnThis(),
     skip: vi.fn().mockReturnThis(),
@@ -232,13 +233,14 @@ describe('AI-15 Negocios reads', () => {
       /private|path_storage|not-public/,
     );
   });
-  it('keeps supplier tax zero and omits uncontracted mapping JSON', async () => {
+  it('keeps supplier tax zero within the published projection', async () => {
     const { context } = harness(Provider, {
       ...common,
       business_id: uuid,
       name: 'Supplier',
       tax: 0,
       fields: { arbitrary: 'instructions' },
+      visit_alarm_time: '08:45',
     });
     const result = await uc.execute(
       'providers_get',
@@ -247,6 +249,7 @@ describe('AI-15 Negocios reads', () => {
     );
     expect(result.data).toMatchObject({ tax: 0 });
     expect(JSON.stringify(result)).not.toContain('instructions');
+    expect(result.data).not.toHaveProperty('visit_alarm_time');
   });
   it('validates public results against their own contract, including absence and invalid historical values', async () => {
     const registry = new NodiaAiToolRegistryUseCase([family], 'fixture_v1');
@@ -485,6 +488,24 @@ describe('AI-15 Negocios reads', () => {
       isActive: true,
     });
     expect(JSON.stringify(result)).not.toContain('creation_key');
+  });
+  it('rejects a contact page whose pending visits are outside the published result contract', async () => {
+    const { context } = harness(ProviderContact, {
+      ...common,
+      provider_id: '1',
+      name: 'Contact',
+      phone: [],
+      schedule: {
+        monday: [{ from: '09:00', to: '12:00' }],
+        friday: [{ from: null, to: null }],
+      },
+      email: null,
+      description: null,
+      version: 1,
+    });
+    await expect(
+      uc.execute('provider_contacts_list', { provider_id: '1' }, context),
+    ).rejects.toThrow('nodia_ai:provider_contact_visit_time_pending');
   });
   it.each([
     ['nodia_products_list', { all: true }],

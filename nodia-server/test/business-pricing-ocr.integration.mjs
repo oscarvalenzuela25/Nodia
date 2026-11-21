@@ -9,6 +9,7 @@ import { DataSource } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
 import { UpdateProviderDto } from '../dist/provider/dto/update-provider.dto.js';
 import { ProviderOcrAndOptionalInvoiceCode1793680000000 } from '../dist/migrations/1793680000000-ProviderOcrAndOptionalInvoiceCode.js';
+import { AddProviderVisitAlarmTime1793840000000 } from '../dist/migrations/1793840000000-AddProviderVisitAlarmTime.js';
 import { CreateProviderContacts1791220000000 } from '../dist/migrations/1791220000000-CreateProviderContacts.js';
 import { CreateBusinessCashCategories1793690000000 } from '../dist/migrations/1793690000000-CreateBusinessCashCategories.js';
 import { CreateBusinessCashMovements1793700000000 } from '../dist/migrations/1793700000000-CreateBusinessCashMovements.js';
@@ -82,6 +83,8 @@ try {
   const columns = await db.query("SELECT table_name,column_name,is_nullable,column_default FROM information_schema.columns WHERE table_schema='public' AND ((table_name='providers' AND column_name='use_ocr') OR (table_name='invoices' AND column_name='code')) ORDER BY table_name");
   assert.equal(columns[0].is_nullable, 'YES'); assert.equal(columns[1].is_nullable, 'NO'); assert.equal(columns[1].column_default, 'false');
   checks.push('real_migration_preserves_legacy_provider_and_invoice_bytes_default_false_nullable_folio');
+  const alarmRunner = db.createQueryRunner();
+  try { await new AddProviderVisitAlarmTime1793840000000().up(alarmRunner); } finally { await alarmRunner.release(); }
   const actor = { userId: '3', sessionId: businessAccessTestSession('3') };
   const suppliers = new ProviderService(db.getRepository(Provider));
   const normal = await suppliers.create({ business_id: business, name: 'Manual supplier' }, undefined, actor);

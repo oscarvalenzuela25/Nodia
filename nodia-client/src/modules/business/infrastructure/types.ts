@@ -211,6 +211,7 @@ export interface ProviderEntity {
   business_id: string;
   name: string;
   tax: number;
+  visit_alarm_time?: string | null;
   use_ocr: boolean;
   fields?: ProviderFieldsMapping;
   is_active: boolean;
@@ -222,6 +223,7 @@ export interface CreateProviderPayload {
   business_id: string;
   name: string;
   tax?: number;
+  visit_alarm_time?: string | null;
   use_ocr?: boolean;
   fields?: Record<string, unknown>;
   is_active?: boolean;
@@ -230,6 +232,7 @@ export interface CreateProviderPayload {
 export interface UpdateProviderPayload {
   name?: string;
   tax?: number;
+  visit_alarm_time?: string | null;
   use_ocr?: boolean;
   fields?: Record<string, unknown>;
   is_active?: boolean;

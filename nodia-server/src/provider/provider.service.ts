@@ -1,4 +1,5 @@
 import { validateProviderOcrPreference } from './provider-ocr-preference.js';
+import { validateProviderVisitAlarmTime } from './provider-visit-alarm-time.js';
 import { requireCompatibleProviderTransfers } from './use-case/provider-transfer.rules.js';
 import {
   BadRequestException,
@@ -98,7 +99,9 @@ export class ProviderService {
     const repository =
       actor?.transaction?.getRepository(Provider) ?? this.providerRepository;
     const scope = await resolveBusinessAccess(repository.manager, actor!);
-    const qb = repository.createQueryBuilder('provider');
+    const qb = repository
+      .createQueryBuilder('provider')
+      .addSelect('provider.visit_alarm_time');
     validateRansackEnvelope(q);
 
     if (includes) {
@@ -153,6 +156,7 @@ export class ProviderService {
     const provider = await scopeBusinessQuery(
       repository
         .createQueryBuilder('provider')
+        .addSelect('provider.visit_alarm_time')
         .leftJoinAndSelect('provider.business', 'business')
         .where('provider.id = :id', { id }),
       'provider.business_id',
@@ -258,6 +262,7 @@ export class ProviderService {
     actor?: ActorReference,
   ): Promise<Provider> {
     validateProviderOcrPreference(createProviderDto.use_ocr);
+    validateProviderVisitAlarmTime(createProviderDto.visit_alarm_time);
     return this.transaction(
       manager ?? actor?.transaction,
       async (transaction) => {
@@ -269,6 +274,7 @@ export class ProviderService {
         );
         const payload = {
           ...createProviderDto,
+          visit_alarm_time: createProviderDto.visit_alarm_time ?? null,
           tax:
             createProviderDto.tax !== undefined &&
             createProviderDto.tax !== null
@@ -292,12 +298,14 @@ export class ProviderService {
     actor?: ActorReference,
   ): Promise<Provider> {
     validateProviderOcrPreference(updateProviderDto.use_ocr);
+    validateProviderVisitAlarmTime(updateProviderDto.visit_alarm_time);
     const repository =
       manager?.getRepository(Provider) ?? this.providerRepository;
     const scope = await resolveBusinessAccess(repository.manager, actor!);
     const provider = await scopeBusinessQuery(
       repository
         .createQueryBuilder('provider')
+        .addSelect('provider.visit_alarm_time')
         .where('provider.id = :id', { id }),
       'provider.business_id',
       scope,
@@ -316,15 +324,24 @@ export class ProviderService {
           : updateProviderDto.name,
       }),
     };
+    const previousAlarm = provider.visit_alarm_time;
     Object.assign(provider, payload);
-    return repository.save(provider);
+    const effectiveAlarm = provider.visit_alarm_time;
+    // TypeORM's save snapshots omit hidden columns, so only include a changed alarm.
+    if (effectiveAlarm === previousAlarm) provider.visit_alarm_time = undefined;
+    const saved = await repository.save(provider);
+    saved.visit_alarm_time = effectiveAlarm;
+    return saved;
   }
 
   async createBulk(
     bulkDto: BulkCreateProviderDto,
     actor?: ActorReference,
   ): Promise<Provider[]> {
-    for (const item of bulkDto.items) validateProviderOcrPreference(item.use_ocr);
+    for (const item of bulkDto.items) {
+      validateProviderOcrPreference(item.use_ocr);
+      validateProviderVisitAlarmTime(item.visit_alarm_time);
+    }
     return this.transaction(actor?.transaction, async (manager) => {
       await assertBusinessesAccess(
         manager,
@@ -334,6 +351,7 @@ export class ProviderService {
       );
       const payload = bulkDto.items.map((item) => ({
         ...item,
+        visit_alarm_time: item.visit_alarm_time ?? null,
         tax:
           item.tax !== undefined && item.tax !== null ? Number(item.tax) : 19,
         name: item.name ? item.name.trim().toLowerCase() : item.name,
@@ -351,6 +369,7 @@ export class ProviderService {
   ): Promise<Provider[]> {
     const items = bulkDto.items.map((item) => {
       validateProviderOcrPreference(item.use_ocr);
+      validateProviderVisitAlarmTime(item.visit_alarm_time);
       if (
         typeof item.id !== 'string' ||
         !/^\d{1,19}$/.test(item.id) ||

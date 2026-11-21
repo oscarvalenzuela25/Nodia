@@ -29,6 +29,9 @@ describe("ProviderModal Component", () => {
     expect(
       screen.getByTestId("provider-tax-input").querySelector("input")
     ).toHaveValue(19);
+    const alarm = screen.getByRole("textbox", { name: "Hora de alarma de visitas" });
+    expect(alarm).toHaveValue("");
+    expect(alarm).toHaveAccessibleDescription(/30 minutos.*09:00.*coincide con el inicio/);
 
     expect(screen.getByTestId("provider-use-ocr-checkbox").querySelector("input")).not.toBeChecked();
     expect(screen.queryByTestId("provider-field-code-input")).not.toBeInTheDocument();
@@ -60,7 +63,7 @@ describe("ProviderModal Component", () => {
     });
   });
 
-  it("submits provider with mapped invoice fields including instructions, tax, and active status", async () => {
+  it("submits a civil alarm time with the invoice mappings", async () => {
     mockOnSubmit.mockResolvedValueOnce(undefined);
 
     render(
@@ -74,6 +77,7 @@ describe("ProviderModal Component", () => {
     // Enter name
     const nameInput = screen.getByTestId("provider-name-input").querySelector("input")!;
     await user.type(nameInput, "Distribuidora Central");
+    await user.type(screen.getByRole("textbox", { name: "Hora de alarma de visitas" }), "08:45");
 
     // Enter invoice mapping columns
     await user.click(screen.getByTestId("provider-use-ocr-checkbox").querySelector("input")!);
@@ -110,6 +114,7 @@ describe("ProviderModal Component", () => {
       name: "Distribuidora Central",
       use_ocr: true,
       tax: 19,
+      visit_alarm_time: "08:45",
       fields: {
         code: {
           value: "COD_ARTICULO",
@@ -122,6 +127,32 @@ describe("ProviderModal Component", () => {
       },
       is_active: true,
     });
+  });
+
+  it("focuses an invalid alarm after submit and lets the user correct it without losing the draft", async () => {
+    render(<ProviderModal open onClose={mockOnClose} onSubmit={mockOnSubmit} />);
+
+    const name = screen.getByRole("textbox", { name: /Nombre de Empresa \/ Proveedor/ });
+    const alarm = screen.getByRole("textbox", { name: "Hora de alarma de visitas" });
+    await user.type(name, "Proveedor nuevo");
+    await user.type(alarm, "24:00");
+    expect(alarm).not.toHaveAttribute("aria-invalid", "true");
+    await user.click(screen.getByTestId("save-provider-btn"));
+
+    await waitFor(() => {
+      expect(alarm).toHaveAccessibleDescription("Ingresa una hora de 24 horas en formato HH:mm.");
+      expect(alarm).toHaveFocus();
+    });
+    expect(alarm).toHaveValue("24:00");
+    expect(name).toHaveValue("Proveedor nuevo");
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+
+    await user.clear(alarm);
+    await user.type(alarm, "00:00");
+    await user.click(screen.getByTestId("save-provider-btn"));
+    await waitFor(() => expect(mockOnSubmit).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ name: "Proveedor nuevo", visit_alarm_time: "00:00" }),
+    ));
   });
 
   it("submits provider without mapping fields when left empty", async () => {
@@ -228,8 +259,12 @@ describe("ProviderModal Component", () => {
     expect(screen.getByTestId("provider-field-code-input").querySelector("input")).toHaveValue("PRODUCTO");
     await user.click(checkbox);
     await user.click(screen.getByTestId("save-provider-btn"));
-    await waitFor(() => expect(mockOnSubmit).toHaveBeenCalledWith(expect.objectContaining({
-      use_ocr: false, fields: { code: { value: "PRODUCTO", instructions: "Keep me" }, future: { value: "EXTRA", instructions: "Untouched" } },
-    })));
+    await waitFor(() => expect(mockOnSubmit).toHaveBeenCalledWith({
+      name: "Proveedor existente",
+      tax: 19,
+      use_ocr: false,
+      is_active: true,
+      fields: { code: { value: "PRODUCTO", instructions: "Keep me" }, future: { value: "EXTRA", instructions: "Untouched" } },
+    }));
   });
 });

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
@@ -30,6 +31,7 @@ import { GetAllProvidersUseCase } from '../../../provider/use-case/get-all-provi
 import { ProviderContactService } from '../../../provider-contact/provider-contact.service.js';
 import { ProviderContact } from '../../../provider-contact/entities/provider-contact.entity.js';
 import { GetProviderContactsUseCase } from '../../../provider-contact/use-case/get-provider-contacts.use-case.js';
+import { hasPendingContactVisit } from '../../../provider-contact/use-case/contact-validation.js';
 import { TranslationService } from '../../../translation/translation.service.js';
 import { Translation } from '../../../translation/entities/translation.entity.js';
 import { UserRole } from '../../../user/entities/user-role.entity.js';
@@ -173,6 +175,12 @@ function publicRow(resource: string, row: unknown): NodiaAiJsonObject {
       };
     }
     case 'provider_contacts':
+      // The published result requires both times. Keep the old wire contract
+      // and reject this page instead of returning a partial visit schedule.
+      if (hasPendingContactVisit(value.schedule))
+        throw new ConflictException(
+          'nodia_ai:provider_contact_visit_time_pending',
+        );
       return project(value, [
         ...common,
         'provider_id',
