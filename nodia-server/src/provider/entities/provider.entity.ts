@@ -34,6 +34,9 @@ export class Provider {
   @Column({ type: 'boolean', default: false })
   use_ocr: boolean;
 
+  @Column({ type: 'varchar', length: 5, nullable: true, select: false })
+  visit_alarm_time?: string | null;
+
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 

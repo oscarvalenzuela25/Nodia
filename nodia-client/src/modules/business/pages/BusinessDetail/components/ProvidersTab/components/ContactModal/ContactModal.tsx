@@ -10,6 +10,8 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   IconButton,
   Typography,
 } from "@mui/material";
@@ -65,6 +67,7 @@ export default function ContactModal({
   const submitting = useRef(false);
   const {
     control,
+    clearErrors,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ContactForm>({
@@ -88,7 +91,7 @@ export default function ContactModal({
     if (!request.current || !uncertain)
       request.current = {
         key: request.current?.key ?? crypto.randomUUID(),
-        values: contactPayload(form),
+        values: contactPayload(form, contact?.schedule),
       };
     try {
       await onSave(request.current.values, request.current.key);
@@ -270,42 +273,59 @@ export default function ContactModal({
           </AccordionSummary>
           <AccordionDetails id={`${formId}-schedule`}>
             {CONTACT_DAYS.map((day) => (
-              <DayRow key={day}>
-                <Typography variant="subtitle2">
+              <DayRow
+                key={day}
+                role="group"
+                aria-labelledby={`${formId}-${day}`}
+              >
+                <Typography id={`${formId}-${day}`} variant="subtitle2">
                   {t(`provider_contacts:days.${day}`)}
                 </Typography>
                 <Controller
-                  name={`schedule.${day}.from`}
+                  name={`schedule.${day}.timePending`}
                   control={control}
                   render={({ field }) => (
-                    <TextInput
-                      {...field}
-                      id={`${formId}-${day}-from`}
-                      type="time"
-                      label={t("provider_contacts:from")}
-                      disabled={disabled}
-                      error={!!errors.schedule?.[day]?.from}
-                      helperText={errorText(
-                        errors.schedule?.[day]?.from?.message,
-                      )}
-                    />
-                  )}
-                />
-                <Controller
-                  name={`schedule.${day}.to`}
-                  control={control}
-                  render={({ field }) => (
-                    <TextInput
-                      {...field}
-                      id={`${formId}-${day}-to`}
-                      type="time"
-                      label={t("provider_contacts:to")}
-                      disabled={disabled}
-                      error={!!errors.schedule?.[day]?.to}
-                      helperText={errorText(
-                        errors.schedule?.[day]?.to?.message,
-                      )}
-                    />
+                    <>
+                      <FormControlLabel
+                        label={t("provider_contacts:time_pending")}
+                        control={
+                          <Checkbox
+                            name={field.name}
+                            checked={field.value}
+                            disabled={disabled}
+                            onBlur={field.onBlur}
+                            onChange={(_, checked) => {
+                              field.onChange(checked);
+                              if (checked) {
+                                clearErrors([
+                                  `schedule.${day}.from`,
+                                  `schedule.${day}.to`,
+                                ]);
+                              }
+                            }}
+                          />
+                        }
+                      />
+                      {!field.value &&
+                        (["from", "to"] as const).map((bound) => (
+                          <Controller
+                            key={bound}
+                            name={`schedule.${day}.${bound}`}
+                            control={control}
+                            render={({ field: timeField, fieldState }) => (
+                              <TextInput
+                                {...timeField}
+                                id={`${formId}-${day}-${bound}`}
+                                type="time"
+                                label={t(`provider_contacts:${bound}`)}
+                                disabled={disabled}
+                                error={!!fieldState.error}
+                                helperText={errorText(fieldState.error?.message)}
+                              />
+                            )}
+                          />
+                        ))}
+                    </>
                   )}
                 />
                 <Controller

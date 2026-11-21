@@ -725,8 +725,9 @@ describe('AI-22 supplier operations', () => {
     });
   });
   it('status changes preserve native contact fields and increment version once', async () => {
-    const f = fixture(),
-      before = structuredClone(f.contact),
+    const f = fixture();
+    f.contact.schedule = { friday: [{ from: null, to: null }] };
+    const before = structuredClone(f.contact),
       { operation, step } = await f.prepared(
         'provider_contacts_prepare_set_active',
         { business_id: business, provider_id: '7', id: '8', is_active: false },
@@ -738,12 +739,33 @@ describe('AI-22 supplier operations', () => {
       version: 2,
     });
   });
+  it.each([{}, { schedule: {} }])(
+    'protects pending visits from legacy replacement with %j',
+    async (change) => {
+      const f = fixture();
+      f.contact.schedule = { friday: [{ from: null, to: null }] };
+      await expect(
+        f.op('provider_contacts_prepare_update').prepare(
+          {
+            business_id: business,
+            provider_id: '7',
+            id: '8',
+            name: 'New',
+            ...change,
+          },
+          f.context,
+        ),
+      ).rejects.toThrow('nodia_ai:provider_contact_visit_time_pending');
+      expect(f.contactService.updateVersion).not.toHaveBeenCalled();
+    },
+  );
   it('rejects stale contact versions and revocation before calling writers', async () => {
     const f = fixture(),
       { operation, step } = await f.prepared(
         'provider_contacts_prepare_update',
         { business_id: business, provider_id: '7', id: '8', name: 'New' },
       );
+    f.contact.schedule = { friday: [{ from: null, to: null }] };
     f.contact.version = 2;
     await expect(operation.executeConfirmed(step, f.context)).rejects.toThrow(
       'nodia_ai:preconditions_changed',
@@ -790,6 +812,20 @@ describe('AI-22 supplier operations', () => {
           f.context,
         ),
       ).rejects.toThrow('Invalid contact');
+  });
+  it('keeps pending visits out of the legacy native preparation contract', async () => {
+    const f = fixture();
+    await expect(
+      f.op('provider_contacts_prepare_create').prepare(
+        {
+          business_id: business,
+          provider_id: '7',
+          name: 'Person',
+          schedule: { monday: [{ from: null, to: null }] },
+        },
+        f.context,
+      ),
+    ).rejects.toThrow('nodia_ai:invalid_input');
   });
   it('reprepares stored edits without changing the intent key and forbids editing it', async () => {
     const f = fixture(),

@@ -19,6 +19,13 @@ const personalNewsOperations = new Set([
   'DELETE connections/:provider',
 ]);
 
+const ownWebPushOperations = new Set([
+  'GET config',
+  'GET installations/:installationId',
+  'PUT installations/:installationId',
+  'DELETE installations/:installationId',
+]);
+
 const moduleByControllerPath: Readonly<Record<string, string>> = {
   user: USERS,
   users: USERS,
@@ -76,6 +83,19 @@ function policyForPath(
   if (path === 'news/personal' && handlerPaths.length === 1 &&
       personalNewsOperations.has(`${method} ${normalize(handlerPaths[0])}`)) {
     return { routes: [], match: 'all' };
+  }
+  if (path === 'notifications/web-push') {
+    return handlerPaths.length === 1 &&
+      ownWebPushOperations.has(`${method} ${normalize(handlerPaths[0])}`)
+      ? { routes: [], match: 'all' }
+      : undefined;
+  }
+  if (path === 'businesses/:businessId/notification-preferences') {
+    return handlerPaths.length === 1 &&
+      normalize(handlerPaths[0]) === 'provider-visits' &&
+      (method === 'GET' || method === 'PUT')
+      ? { routes: [BUSINESS], match: 'all' }
+      : undefined;
   }
   // Only this exact operation is session-only here; its use case checks current super_admin.
   if (

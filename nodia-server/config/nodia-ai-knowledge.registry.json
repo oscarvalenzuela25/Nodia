@@ -1146,7 +1146,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -1186,7 +1186,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -1230,7 +1230,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -1272,7 +1272,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -1314,7 +1314,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -2276,7 +2276,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -2316,7 +2316,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -2360,7 +2360,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -2402,7 +2402,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -2857,7 +2857,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
@@ -2917,7 +2917,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
@@ -2981,7 +2981,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3023,7 +3023,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3061,7 +3061,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
@@ -3181,7 +3181,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
@@ -3241,7 +3241,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
@@ -3305,7 +3305,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3351,7 +3351,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3425,7 +3425,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -3469,7 +3469,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3511,7 +3511,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3553,7 +3553,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3627,7 +3627,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -3667,7 +3667,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "b42a0f396734969f9712e7b627278791b007a505377f98dfe66c0d3ce95493e1"
+          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
         }
       ],
       "input_schema": {
@@ -3711,7 +3711,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",
@@ -3753,7 +3753,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-supplier-operations/use-case/build-nodia-ai-supplier-operations.use-case.ts",
-          "sha256": "8fa866e8e8876a8e51fb5f45d17b8633a1ededb11200e476631d29b1f9479cd5"
+          "sha256": "2f130bc14d15b548123f9bc69a34c9b3857cffc683c7f3c693df246f6ad5b26f"
         },
         {
           "path": "nodia-server/src/nodia-ai-write-tools/use-case/build-nodia-ai-write-tools.use-case.ts",

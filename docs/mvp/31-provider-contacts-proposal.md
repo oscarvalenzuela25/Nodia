@@ -4,6 +4,11 @@
 > Fecha: 2026-10-05
 > Dependencias: [modelo de dominio](03-domain-model-erd.md), [restricciones de diseño](07-design-constraints.md), [revisión técnica](19-prelaunch-review.md), [ADR propuesto](../architecture/decisions/ADR-014-provider-contacts.md)
 
+El [alcance del 2026-11-20](#día-de-visita-con-hora-por-confirmar--2026-11-20)
+amplía el contrato original para registrar un día de visita con hora por
+confirmar. Los [recordatorios PWA-004](103-pwa-progressive-implementation-plan.md#6-pwa-004--notificaciones-push)
+tienen su propia planificación.
+
 La ampliación permite registrar vendedores, contactos de despacho y otras personas o áreas asociadas a un proveedor comercial. El usuario autorizó la implementación el 2026-10-05: Server y Client están implementados y verificados localmente. Tras revisar la incidencia de endpoints reportada, la migración está aplicada en la BD local configurada, con respaldo previo. Aprobación documental, sesión real y otros entornos siguen pendientes.
 
 ## Requisitos expresados
@@ -80,6 +85,8 @@ El horario semanal pertenece a cada contacto, confirmado por el usuario el 2026-
 ```
 
 Usar listas de rangos permite ampliar a mañana y tarde sin cambiar el formato persistido. Esta versión admite como máximo un rango por día, en Client y Server; se validan días permitidos, horas `HH:mm`, inicio y fin completos e inicio anterior a fin. Los rangos nocturnos y múltiples rangos requieren una decisión de producto antes de incluirlos. Son horas locales semanales de Chile (`America/Santiago`), no fechas UTC ni desplazamientos fijos; el cambio estacional conserva la hora de visita local.
+
+Para días con hora por confirmar, aplicar la [ampliación del 2026-11-20](#día-de-visita-con-hora-por-confirmar--2026-11-20).
 
 ## Interfaz implementada
 
@@ -252,3 +259,75 @@ la corrección en `development` (`6b7f15a5`). La
 La causa exacta del 404 y la verificación autenticada del cambio en producción
 quedan sin evidencia directa. Si reaparece el incidente, capturar petición,
 error y versión de la sesión afectada.
+
+## Día de visita con hora por confirmar — 2026-11-20
+
+El día semanal sigue perteneciendo al contacto. El contrato de `schedule`
+admite hasta una entrada por día en la columna JSONB `personal_info_provider.schedule`.
+
+| Estado del día | Representación |
+| --- | --- |
+| Sin visita | Día omitido o lista vacía |
+| Visita con horario | `[{"from":"10:30","to":"12:00"}]` |
+| Visita con hora por confirmar | `[{"from":null,"to":null}]` |
+
+La descripción opcional conserva su límite de 255 caracteres en ambas variantes.
+Cuando hay horas, deben ser `HH:mm` locales y el inicio debe preceder al fin.
+Se requieren las dos claves, con ambas horas completas o ambas explícitamente
+en `null`. Una sola hora o un campo ausente dentro de una entrada son inválidos.
+La zona semanal sigue siendo `America/Santiago`. Los intervalos guardados
+conservan su representación y el JSONB admite la ampliación sin migración ni
+conversión de datos existentes.
+
+El editor de Contactos permite distinguir un día con visita de un día sin visita,
+también al dejar la hora por confirmar. El CSV usa la misma estructura en el JSON
+de `contacts` y conserva las versiones, la validación y la atomicidad existentes.
+
+Al reemplazar un horario que ya tiene una hora pendiente, el PUT y el CSV
+deben enviar explícitamente la clave de cada día pendiente. Enviar el rango
+de dos `null` lo conserva, un rango completo confirma el horario y `[]` quita
+esa visita. Omitir un día pendiente rechaza el reemplazo y protege los datos
+cuando una pestaña anterior interpreta las horas nulas como campos vacíos. El
+editor actualizado serializa `[]` cuando se quita deliberadamente un día que
+estaba pendiente. La respuesta normaliza esa lista vacía a día sin visita.
+Para un horario sin días pendientes, `schedule: {}` sigue vaciándolo.
+
+El orden de despliegue entrega Server antes de que Client pueda guardar la
+nueva variante. Un Client anterior requiere actualizarse para editar con
+seguridad un horario pendiente. Un rollback de Server debe considerar la
+lectura y edición de la variante nueva antes de permitir escrituras.
+
+La hora de alarma por proveedor y el envío quedan en
+[Plan103 §6](103-pwa-progressive-implementation-plan.md#6-pwa-004--notificaciones-push).
+La [ficha candidata de horarios](../nodia-ai/knowledge/businesses/features/supplier-visit-schedules.md)
+registra el alcance y las dependencias de contexto. El cierre histórico de
+PCON-001 cubre la apertura recuperable de Contactos.
+
+### Compatibilidad de NodiaAI
+
+El resultado publicado de `nodia_provider_contacts_list` v2 exige dos horas
+en cada rango. Si una página contiene una visita con hora pendiente, la lectura
+interna devuelve `nodia_ai:provider_contact_visit_time_pending`. Los adaptadores
+de chat sanitizan el error. La consulta y edición de esos horarios se realiza
+en **Proveedores → Contactos**. Los preparadores de reemplazo completo de la
+revisión anterior rechazan el reemplazo de esos contactos. La confirmación
+comprueba la versión actual e impide que una propuesta antigua quite una visita pendiente.
+El cambio de actividad sigue disponible y conserva el horario. La UI y el CSV
+admiten la variante nueva. Los contratos firmados quedan intactos y ampliar
+las herramientas requiere una publicación versionada con evidencia propia.
+
+### Verificación del contrato de hora pendiente
+
+HTTP real de NestJS compilado con PostgreSQL 16 aislado verificó alta con
+hora pendiente, replay, cambio de actividad, compatibilidad con intervalos,
+rechazo al omitir un día pendiente y retirada explícita con `[]`. El ensayo
+de CSV completó 31 peticiones con exportación en Server, parser real de Client
+e importación en Server. Cubrió ES/EN, ida y vuelta de los dos `null`, retirada
+intencional, rollback, concurrencia, ámbito y validación. El fixture CSV incorpora
+`businesses.sales_timezone` para reproducir el esquema actual en las lecturas.
+
+Chrome a 320 px en español y 900 px en inglés verificó alta, lectura y edición
+desde el formulario, tarjeta móvil y tabla de escritorio, incluida la retirada
+del día con un `PUT` explícito y verificación de la fila persistida. El navegador
+usó Vite, NestJS y PostgreSQL 16 aislado. La aceptación en producción requiere
+su propia comprobación.

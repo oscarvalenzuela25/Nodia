@@ -21,6 +21,7 @@ import nodiaAiEs from "./es/nodiaAi.json";
 import nodiaAiErrorsEs from "./es/nodia_ai.json";
 import teacherEs from "./es/teacher.json";
 import newsEs from "./es/news.json";
+import notificationsEs from "./es/notifications.json";
 
 // en
 import authEn from "./en/auth.json";
@@ -42,6 +43,7 @@ import nodiaAiEn from "./en/nodiaAi.json";
 import nodiaAiErrorsEn from "./en/nodia_ai.json";
 import teacherEn from "./en/teacher.json";
 import newsEn from "./en/news.json";
+import notificationsEn from "./en/notifications.json";
 
 export const SUPPORTED_LANGUAGES = ["es", "en"] as const;
 export const DEFAULT_LANGUAGE = "es";
@@ -97,6 +99,7 @@ const resources = {
     nodia_ai: nodiaAiErrorsEs,
     teacher: teacherEs,
     news: newsEs,
+    notifications: notificationsEs,
   },
   en: {
     auth: authEn,
@@ -118,6 +121,7 @@ const resources = {
     nodia_ai: nodiaAiErrorsEn,
     teacher: teacherEn,
     news: newsEn,
+    notifications: notificationsEn,
   },
 };
 
@@ -148,6 +152,7 @@ i18n
       "nodia_ai",
       "teacher",
       "news",
+      "notifications",
     ],
     defaultNS: "home",
     interpolation: {

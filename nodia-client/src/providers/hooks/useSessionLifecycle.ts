@@ -1,12 +1,20 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { refreshSession, restoreSession } from "../../config/api";
-import useAuthStore from "../../store/authStore";
+import { queryClient } from "../../config/reactQuery";
+import useAuthStore, { hasActiveSession } from "../../store/authStore";
+import { needsPushReconciliation } from "../../modules/notifications/infrastructure/pushOwnership";
+import { PUSH_SUBSCRIPTION_CHANGED } from "../../pwa/pushRegistration";
 
 export default function useSessionLifecycle() {
+  const { i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? i18n.language;
   const token = useAuthStore((state) => state.token);
   const expiresAt = useAuthStore((state) => state.expiresAt);
   const sessionStatus = useAuthStore((state) => state.sessionStatus);
   const isRefreshing = useAuthStore((state) => state.isRefreshing);
+  const userId = useAuthStore((state) => state.user?.id);
+  const sessionVersion = useAuthStore((state) => state.sessionVersion);
   const lastAttemptAt = useRef(0);
 
   useEffect(() => {
@@ -53,6 +61,42 @@ export default function useSessionLifecycle() {
     window.addEventListener("storage", syncSession);
     return () => window.removeEventListener("storage", syncSession);
   }, []);
+
+  useEffect(() => {
+    if (!userId || sessionStatus !== "authenticated" || isRefreshing) return;
+    let stopped = false;
+    let pending = false;
+    const reconcile = () => {
+      if (pending || document.visibilityState === "hidden" || !needsPushReconciliation(userId)) return;
+      const actor = { userId, sessionVersion };
+      const isCurrent = () => {
+        const auth = useAuthStore.getState();
+        return !stopped && hasActiveSession(auth) && auth.user?.id === userId && auth.sessionVersion === sessionVersion;
+      };
+      if (!isCurrent()) return;
+      pending = true;
+      void import("../../modules/notifications/infrastructure/useServices")
+        .then(({ pushDeviceQueryOptions }) => {
+          if (isCurrent()) return queryClient.fetchQuery(pushDeviceQueryOptions(actor, language));
+        })
+        .catch(() => undefined)
+        .finally(() => { pending = false; });
+    };
+    const onPushMessage = (event: MessageEvent) => {
+      if (event.data?.type === PUSH_SUBSCRIPTION_CHANGED) reconcile();
+    };
+
+    reconcile();
+    document.addEventListener("visibilitychange", reconcile);
+    window.addEventListener("online", reconcile);
+    navigator.serviceWorker?.addEventListener("message", onPushMessage);
+    return () => {
+      stopped = true;
+      document.removeEventListener("visibilitychange", reconcile);
+      window.removeEventListener("online", reconcile);
+      navigator.serviceWorker?.removeEventListener("message", onPushMessage);
+    };
+  }, [isRefreshing, language, sessionStatus, sessionVersion, userId]);
 
   return { sessionStatus };
 }

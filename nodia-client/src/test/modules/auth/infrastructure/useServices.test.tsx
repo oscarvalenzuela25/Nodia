@@ -1,4 +1,4 @@
-import { act, cleanup, renderHook } from "@testing-library/react";
+import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { AxiosError } from "axios";
 import { googleLogout } from "@react-oauth/google";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -9,12 +9,14 @@ import useAuthStore from "../../../../store/authStore";
 import { loginWithGoogle, logoutSession } from "../../../../modules/auth/infrastructure/services";
 import { useGoogleSignIn, useSignOut } from "../../../../modules/auth/infrastructure/useServices";
 import type { AuthResponse } from "../../../../modules/auth/infrastructure/types";
+import { cleanupPushOnLogout } from "../../../../modules/notifications/infrastructure/pushInstallation";
 
 vi.mock("../../../../modules/auth/infrastructure/services", () => ({
   loginWithGoogle: vi.fn(),
   logoutSession: vi.fn(),
 }));
 vi.mock("@react-oauth/google", () => ({ googleLogout: vi.fn() }));
+vi.mock("../../../../modules/notifications/infrastructure/pushInstallation", () => ({ cleanupPushOnLogout: vi.fn() }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 
 const session = (): AuthResponse => ({
@@ -87,6 +89,18 @@ describe("explicit authentication feedback", () => {
       title: i18n.t("auth:logout_success"),
     });
     expect(sileo.error).not.toHaveBeenCalled();
+  });
+
+  it("revokes the server session even if browser push cleanup fails", async () => {
+    useAuthStore.getState().login(session());
+    vi.mocked(cleanupPushOnLogout).mockRejectedValue(new Error("Browser unavailable"));
+    const { result } = renderHook(() => useSignOut());
+
+    await act(() => result.current.mutateAsync());
+
+    await waitFor(() => expect(cleanupPushOnLogout).toHaveBeenCalledExactlyOnceWith("42"));
+    expect(logoutSession).toHaveBeenCalledOnce();
+    expect(useAuthStore.getState().sessionStatus).toBe("anonymous");
   });
 
   it("keeps the logout failure warning while local credentials stay cleared", async () => {

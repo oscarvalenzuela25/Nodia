@@ -31,6 +31,12 @@ export const DayRow = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2, 0),
   borderBottom: `1px solid ${theme.palette.divider}`,
   "& > :first-child, & > :last-child": { gridColumn: "1 / -1" },
+  "& > .MuiFormControlLabel-root": {
+    gridColumn: "1 / -1",
+    minHeight: 44,
+    margin: 0,
+    justifySelf: "start",
+  },
 }));
 export const ContactActions = styled(Box)(({ theme }) => ({
   display: "flex",

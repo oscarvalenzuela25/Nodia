@@ -4,11 +4,11 @@
   "document_id": "general-settings.pwa-installation",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 9,
+  "revision": 10,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "PWA-001 está publicado y aceptado para la instalación online. PWA-002 y PWA-003 tienen candidatos locales de actualización controlada y recuperación de conexión. PWA-004 se sigue como entrega independiente. PWA-005 y PWA-006 tienen candidatos locales para descargar material y sincronizar el punto de lectura de Teacher."
+    "notes": "PWA-001 está publicado y aceptado para la instalación online. PWA-002 y PWA-003 se publicaron con Teacher y conservan sus verificaciones por alcance. PWA-004 usa el mismo registro raíz en su piloto y tiene evidencia por plataforma en el Plan103. PWA-005 y PWA-006 están publicados y verificados en Chrome para Windows."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Client y contexto transversal conforme AGENTS",
@@ -41,7 +41,7 @@
       "docs/evidence/pages-public-convergence-20261114.md",
       "docs/mvp/103-pwa-progressive-implementation-plan.md"
     ],
-    "notes": "Plan103 §12–15 conserva publicación, comprobaciones estáticas y aceptación de PWA-001. PWA-002 verificó la actualización por pestaña y la continuidad de la suscripción de prueba. PWA-003 verificó en Chrome la distinción entre desconexión y fallo del API, el reintento y la recuperación del formulario con guardado manual. El alcance publicado de PWA-002 y PWA-003 sigue pendiente."
+    "notes": "Plan103 §12–15 conserva publicación, comprobaciones estáticas y aceptación de PWA-001. PWA-002 verificó la actualización por pestaña y la continuidad de la suscripción de prueba. PWA-003 verificó en Chrome la distinción entre desconexión y fallo del API, el reintento y la recuperación del formulario con guardado manual. Las verificaciones específicas de PWA-002 y PWA-003 en producción siguen pendientes."
   },
   "approval": null
 }
@@ -58,7 +58,7 @@ la persona inicia desde la PWA o la pestaña. Ver
 
 ## Actualizar la versión de Nodia
 
-El candidato local de PWA-002 compara la versión abierta con la publicada y
+PWA-002 compara la versión abierta con la publicada y
 avisa cuando la actualización está lista. **Más tarde** conserva la pestaña
 actual. **Actualizar ahora** aplica la versión en la pestaña que hizo la
 solicitud. Si hay trabajo en curso, la interfaz ofrece abrir la nueva versión
@@ -67,7 +67,7 @@ en otra pestaña para continuar la edición en la original. Ver
 
 ## Recuperar la conexión
 
-El candidato local de PWA-003 indica si el navegador detecta que perdió la
+PWA-003 indica si el navegador detecta que perdió la
 red o si Nodia detecta un problema al comunicarse con el servidor. **Reintentar
 conexión** comprueba el API y recupera lecturas fallidas sin volver a abrir la
 vista. Los formularios conservan el borrador en memoria. El usuario vuelve a
@@ -93,11 +93,11 @@ esas funciones ni mantener el navegador ejecutándose permanentemente.
 | Solicitud ilustrativa | Intención y respuesta segura |
 | --- | --- |
 | «Quiero instalar Nodia» | Consultar el origen y la plataforma en la guía y plan103. PWA-001 está publicado y aceptado por alcance; esa aceptación no certifica dispositivos no identificados. El chat no instala una app por el usuario. |
-| «¿Funcionará sin internet?» | PWA-003 muestra la desconexión y conserva el formulario abierto. En los candidatos locales de Teacher se puede leer [material descargado](../../studies/features/offline-study-material.md) y guardar [el punto de lectura](../../studies/features/offline-reading-progress.md) hasta volver a conectarse. |
+| «¿Funcionará sin internet?» | PWA-003 muestra la desconexión y conserva el formulario abierto. En Teacher se puede leer [material descargado](../../studies/features/offline-study-material.md) y guardar [el punto de lectura](../../studies/features/offline-reading-progress.md) hasta volver a conectarse. |
 | «Se cayó la conexión mientras editaba» | Mantener la vista abierta, pulsar **Reintentar conexión** y guardar de forma explícita cuando el API vuelva a responder. |
 | «¿Puedo terminar mi formulario antes de actualizar?» | Usar Más tarde para continuar en la misma pestaña. La elección de otra pestaña no recarga el formulario. |
 | «Instálala y dame acceso a Teacher» | La instalación es una acción local del navegador; el acceso depende de la asignación y sesión existentes, con la excepción super_admin documentada. No conceder módulos por instalar. |
-| «Envíame avisos cuando termine» | Push permanece en planificación y requiere eventos, permisos y suscripción del dispositivo; no fingir alta o entrega. |
+| «Envíame avisos cuando termine» | Consultar los eventos admitidos por [recordatorios de visitas](../../businesses/features/supplier-visit-reminders.md) y el estado de consentimiento y suscripción. |
 
 ## Operaciones y contratos
 

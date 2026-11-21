@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { isEmail, isUUID } from 'class-validator';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
@@ -10,6 +10,7 @@ import {
 
 const object = (value: unknown): value is Record<string, unknown> =>
   Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+const time = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const invalid = (field: string): never => {
   throw new BadRequestException(`Invalid contact ${field}`);
 };
@@ -27,6 +28,34 @@ export function validateRequestKey(key: string): void {
 export function validateVersion(version: number): void {
   if (!Number.isInteger(version) || version < 1 || version > 2147483646)
     invalid('version');
+}
+export function hasPendingContactVisit(schedule: unknown): boolean {
+  return (
+    object(schedule) &&
+    CONTACT_DAYS.some((day) => {
+      const visits = schedule[day];
+      return (
+        Array.isArray(visits) &&
+        visits.some(
+          (visit) => object(visit) && visit.from === null && visit.to === null,
+        )
+      );
+    })
+  );
+}
+export function assertPendingContactVisitsSpecified(
+  current: ContactSchedule,
+  replacement: ContactSchedule,
+): void {
+  if (
+    CONTACT_DAYS.some(
+      (day) => current[day]?.[0]?.from === null && !Object.hasOwn(replacement, day),
+    )
+  ) {
+    throw new ConflictException(
+      'Reload the contact before editing its pending visit days',
+    );
+  }
 }
 export function normalizeContact(input: ContactValues): ContactValues {
   if (
@@ -86,7 +115,14 @@ export function normalizeContact(input: ContactValues): ContactValues {
       )
         invalid('schedule');
       const { from, to, description } = range;
-      const time = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+      if (
+        description !== undefined &&
+        (typeof description !== 'string' || description.length > 255)
+      )
+        invalid('schedule description');
+      const note = typeof description === 'string' ? description.trim() : '';
+      const details = note ? { description: note } : {};
+      if (from === null && to === null) return { from, to, ...details };
       if (
         typeof from !== 'string' ||
         typeof to !== 'string' ||
@@ -94,19 +130,8 @@ export function normalizeContact(input: ContactValues): ContactValues {
         !time.test(to) ||
         from >= to
       )
-        invalid('schedule');
-      if (
-        description !== undefined &&
-        (typeof description !== 'string' || description.length > 255)
-      )
-        invalid('schedule description');
-      return {
-        from,
-        to,
-        ...(typeof description === 'string' && description.trim()
-          ? { description: description.trim() }
-          : {}),
-      };
+        return invalid('schedule');
+      return { from, to, ...details };
     });
   }
   return {
