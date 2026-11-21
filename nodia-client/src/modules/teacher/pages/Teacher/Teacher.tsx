@@ -19,7 +19,7 @@ import ConfirmDialog from "../../../../components/ConfirmDialog";
 import BaseModal from "../../../../components/BaseModal";
 import RequestRecovery from "../../components/RequestRecovery";
 import NewMaterialVersion from "../../components/NewMaterialVersion";
-import OfflineLessonDownload from "../../components/OfflineLessonDownload/OfflineLessonDownload";
+import OfflineLessonDownload from "../../components/OfflineLessonDownload";
 import { supportsPwaRegistration } from "../../../../pwa/pushRegistration";
 import SessionForm from "../../components/SessionForm";
 import SelectionPanel from "../../components/SelectionPanel";

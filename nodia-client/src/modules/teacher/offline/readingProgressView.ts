@@ -1,44 +1,107 @@
 import type spanish from "../../../translate/es/teacher_offline_reader.json";
 import {
   discardOfflineReadingIntent, queueOfflineReadingPoint, readOfflineReadingProgress, resolveOfflineReadingConflict,
-  type OfflineReadingPoint, type OfflineStudyCopy,
+  type OfflineReadingIntent, type OfflineReadingPoint, type OfflineStudyCopy,
 } from "../infrastructure/offlineStudy";
 
 type Copy = typeof spanish.progress;
 
-function button(label: string, action: (control: HTMLButtonElement) => void) {
+function button(label: string, action: () => void) {
   const control = document.createElement("button");
   control.type = "button";
   control.textContent = label;
-  control.onclick = () => action(control);
+  control.onclick = () => {
+    if (control.getAttribute("aria-disabled") !== "true") action();
+  };
   return control;
+}
+
+function pointDescription(parent: HTMLElement, label: string) {
+  const pair = document.createElement("div");
+  const term = document.createElement("dt");
+  const description = document.createElement("dd");
+  term.textContent = label;
+  pair.append(term, description);
+  parent.append(pair);
+  return description;
+}
+
+function setDisabled(control: HTMLButtonElement, disabled: boolean) {
+  control.setAttribute("aria-disabled", String(disabled));
 }
 
 export function createReadingProgressView(copy: OfflineStudyCopy, text: Copy, syncReading: () => Promise<void>) {
   const container = document.createElement("div");
   container.className = "reading-progress";
+  container.dataset.state = "empty";
   const status = document.createElement("p");
   status.setAttribute("role", "status");
+  status.tabIndex = -1;
   const error = document.createElement("p");
   error.setAttribute("role", "alert");
-  const details = document.createElement("div");
+  const details = document.createElement("dl");
+  details.className = "reading-choices";
+  details.hidden = true;
+  const localTitle = pointDescription(details, text.thisDevice);
+  const remoteTitle = pointDescription(details, text.server);
   const actions = document.createElement("div");
   actions.className = "actions";
   container.append(status, error, details, actions);
 
-  const controls = new Map<string, HTMLButtonElement>();
+  const headings = new Map<string, HTMLHeadingElement>();
+  const controls = new Map<string, { control: HTMLButtonElement; marker: HTMLElement }>();
+  let currentIntent: OfflineReadingIntent | null = null;
+  let currentBlock: string | undefined;
   let working = false;
   let sequence = 0;
 
   const sameCopy = (point: OfflineReadingPoint | null | undefined) => Boolean(point &&
     point.unitId === copy.unitId && point.contentVersionId === copy.contentVersionId);
   const blockTitle = (point: OfflineReadingPoint | null | undefined) =>
-    sameCopy(point) ? copy.blocks.find(block => block.id === point?.blockId)?.title ?? text.anotherSection : text.anotherSection;
+    (point && sameCopy(point) ? headings.get(point.blockId)?.textContent : null) ?? text.anotherSection;
 
-  function actionLabel(label: string, value: string) {
-    const line = document.createElement("p");
-    line.textContent = `${label} ${value}`;
-    return line;
+  function focusHeading(target: HTMLHeadingElement | undefined) {
+    target?.focus({ preventScroll: true });
+    target?.scrollIntoView({ block: "start" });
+  }
+
+  const resume = button(text.resume, () => focusHeading(currentBlock ? headings.get(currentBlock) : undefined));
+  const pending = document.createElement("a");
+  pending.textContent = text.openPending;
+  const useLocal = button(text.useLocal, () => void resolve("local"));
+  useLocal.className = "button-primary";
+  const keepServer = button(text.useServer, () => void resolve("server"));
+  const sync = button(text.sync, () => void perform(syncReading));
+  sync.className = "button-primary";
+  const discard = button(text.discard, () => {
+    const intent = currentIntent;
+    if (intent) void perform(async () => { await discardOfflineReadingIntent(copy.studyId, intent.requestKey); });
+  });
+  discard.className = "button-quiet";
+  actions.append(pending, useLocal, keepServer, sync, resume, discard);
+  actions.hidden = true;
+  for (const action of actions.children) (action as HTMLElement).hidden = true;
+
+  async function resolve(choice: "local" | "server") {
+    const intent = currentIntent;
+    const remote = intent?.serverCursor;
+    if (!intent || !remote || (choice === "local" && navigator.onLine === false)) return;
+    await perform(async () => {
+      if (await resolveOfflineReadingConflict(copy.studyId, intent.requestKey, choice, remote) && choice === "local") {
+        await syncReading();
+      }
+    });
+  }
+
+  function updateDisabled() {
+    const offline = navigator.onLine === false;
+    for (const [blockId, { control }] of controls) {
+      setDisabled(control, working || blockId === currentBlock || (currentIntent !== null && currentIntent.state !== "pending"));
+    }
+    setDisabled(useLocal, working || offline);
+    setDisabled(keepServer, working);
+    setDisabled(sync, working || offline);
+    setDisabled(discard, working);
   }
 
   async function refresh() {
@@ -50,96 +113,95 @@ export function createReadingProgressView(copy: OfflineStudyCopy, text: Copy, sy
       return;
     }
     if (!container.isConnected || turn !== sequence) return;
+    const focused = document.activeElement;
     const intent = state.intent;
+    currentIntent = intent;
     const here = intent?.copyId === copy.id && sameCopy(intent.point);
+    const elsewhere = Boolean(intent && !here);
     const confirmed = state.confirmed && state.confirmed.revision >= (copy.readingContext?.cursorRevision ?? 0)
       ? state.confirmed : null;
     const authoritativePoint = confirmed
-      ? (sameCopy(confirmed.point) ? confirmed.point?.blockId : null)
+      ? (sameCopy(confirmed.point) ? confirmed.point?.blockId : undefined)
       : copy.readingContext?.savedBlockId;
-    const localPoint = here ? intent?.point.blockId : authoritativePoint;
-    for (const [blockId, control] of controls) {
-      control.setAttribute("aria-pressed", String(blockId === localPoint));
-      control.disabled = working || blockId === localPoint || (intent !== null && intent.state !== "pending");
-    }
-    details.replaceChildren();
-    actions.replaceChildren();
-    const online = navigator.onLine !== false;
-    if (!intent) {
-      status.textContent = confirmed && sameCopy(confirmed.point) ? text.synced : "";
-      return;
-    }
-    if (!here) {
-      status.textContent = text.pendingElsewhere;
-      const pending = document.createElement("a");
-      pending.href = `#${encodeURIComponent(intent.copyId)}`;
-      pending.textContent = text.openPending;
-      actions.append(pending);
-      return;
-    }
+    const matchingBlock = here ? intent?.point.blockId : authoritativePoint;
+    currentBlock = matchingBlock && headings.has(matchingBlock) ? matchingBlock : undefined;
+    const conflict = Boolean(here && intent?.state === "conflict" && intent.serverCursor);
+    const canSync = Boolean(here && (intent?.state === "pending" || intent?.state === "uncertain"));
 
-    if (intent.state === "conflict" && intent.serverCursor) {
-      status.textContent = text.conflict;
-      details.append(actionLabel(text.thisDevice, blockTitle(intent.point)),
-        actionLabel(text.server, blockTitle(intent.serverCursor.point)));
-      const remote = intent.serverCursor;
-      const local = button(text.useLocal, (control) => void perform(control, async () => {
-        await resolveOfflineReadingConflict(copy.studyId, intent.requestKey, "local", remote);
-        await syncReading();
-      }));
-      local.disabled = working || !online;
-      const keep = button(text.useServer, (control) => void perform(control, async () => {
-        await resolveOfflineReadingConflict(copy.studyId, intent.requestKey, "server", remote);
-      }));
-      keep.disabled = working;
-      actions.append(local, keep);
-      return;
+    let summary = "";
+    if (elsewhere) summary = text.pendingElsewhere;
+    else if (conflict) summary = text.conflict;
+    else if (intent?.state === "rejected") summary = intent.issue === "stale" ? text.outdated : text.unavailable;
+    else if (intent?.state === "pending") summary = text.pending;
+    else if (intent?.state === "uncertain") summary = text.uncertain;
+    else if (currentBlock) summary = confirmed ? text.synced : text.saved;
+
+    if (status.textContent !== summary) status.textContent = summary;
+    container.dataset.state = elsewhere ? "pending" : intent?.state ?? (currentBlock ? "saved" : "empty");
+    details.hidden = !conflict;
+    if (conflict && intent?.serverCursor) {
+      localTitle.textContent = blockTitle(intent.point);
+      remoteTitle.textContent = blockTitle(intent.serverCursor.point);
     }
-    if (intent.state === "rejected") {
-      status.textContent = intent.issue === "stale" ? text.outdated : text.unavailable;
-    } else {
-      status.textContent = intent.state === "pending" ? text.pending : text.uncertain;
-      const sync = button(text.sync, (control) => void perform(control, syncReading));
-      sync.disabled = working || !online;
-      actions.append(sync);
+    if (elsewhere && intent) pending.href = `#${encodeURIComponent(intent.copyId)}`;
+    pending.hidden = !elsewhere;
+    useLocal.hidden = !conflict;
+    keepServer.hidden = !conflict;
+    sync.hidden = !canSync;
+    resume.hidden = !currentBlock;
+    discard.hidden = !here || conflict || intent?.state === "uncertain";
+    actions.hidden = [...actions.children].every(action => (action as HTMLElement).hidden);
+
+    for (const [blockId, { control, marker }] of controls) {
+      const marked = blockId === currentBlock;
+      control.setAttribute("aria-pressed", String(marked));
+      marker.hidden = !marked;
+      marker.textContent = here ? text.markedLocal : text.marked;
     }
-    if (intent.state !== "uncertain") {
-      const discard = button(text.discard, (control) => void perform(control, async () => {
-        await discardOfflineReadingIntent(copy.studyId, intent.requestKey);
-      }));
-      discard.disabled = working;
-      actions.append(discard);
+    updateDisabled();
+    if (focused instanceof HTMLElement && actions.contains(focused) && focused.hidden) {
+      if (summary) status.focus();
+      else headings.values().next().value?.focus();
     }
   }
 
-  async function perform(control: HTMLButtonElement, run: () => Promise<void>) {
+  async function perform(run: () => Promise<void>) {
     if (working) return;
     working = true;
     container.setAttribute("aria-busy", "true");
-    control.disabled = true;
+    updateDisabled();
     error.textContent = "";
     try { await run(); }
     catch { if (container.isConnected) error.textContent = text.failed; }
     finally {
       working = false;
       container.removeAttribute("aria-busy");
+      updateDisabled();
       await refresh();
     }
   }
 
-  function saveButton(blockId: string, title: string) {
-    const control = button(text.save, (pressed) => void perform(pressed, async () => {
+  function registerBlock(blockId: string, heading: HTMLHeadingElement, canSave: boolean) {
+    heading.tabIndex = -1;
+    headings.set(blockId, heading);
+    if (!canSave) return;
+    const control = button(text.save, () => void perform(async () => {
       await queueOfflineReadingPoint(copy.id, blockId);
-      if (navigator.onLine !== false) {
-        await refresh();
-        await syncReading();
-      }
+      await refresh();
+      if (navigator.onLine !== false) await syncReading();
     }));
     control.className = "reading-point";
-    control.setAttribute("aria-label", `${text.save} · ${title}`);
-    control.disabled = true;
-    controls.set(blockId, control);
-    return control;
+    control.setAttribute("aria-label", `${text.save} · ${heading.textContent}`);
+    setDisabled(control, true);
+    const marker = document.createElement("span");
+    marker.className = "reading-marker";
+    marker.hidden = true;
+    const footer = document.createElement("div");
+    footer.className = "reading-block-actions";
+    footer.append(control, marker);
+    controls.set(blockId, { control, marker });
+    return footer;
   }
-  return { container, saveButton, refresh };
+
+  return { container, registerBlock, refresh };
 }

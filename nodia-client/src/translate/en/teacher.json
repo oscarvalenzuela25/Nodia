@@ -2,6 +2,7 @@
   "offline_study": {
     "library": "Teacher downloads",
     "download": "Download for offline reading",
+    "update": "Update downloaded copy",
     "cancel": "Cancel download",
     "open": "Open downloaded copy",
     "saved": "Copy saved on this device",
