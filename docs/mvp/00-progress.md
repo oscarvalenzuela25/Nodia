@@ -7,7 +7,10 @@ Chromium verificó el aviso en cuatro anchos y dos idiomas. En la VM, el
 gateway compilado verificó precios de catálogo, paginado y alcance por
 negocio en PostgreSQL 16 aislado. OpenAI API key completó un turno con
 el modelo configurado y once precios cotejados con el catálogo del negocio.
-[Evidencia en la VM](../evidence/nodia-ai-products-real-api-20261121.md).
+[Evidencia de API key](../evidence/nodia-ai-products-real-api-20261121.md).
+Codex Agentic resolvió el negocio por nombre y respondió con los once
+precios. Gemini Agentic completó el `tools/list` de descubrimiento y agotó
+el tiempo antes de consultar. [Evidencia de Agentic](../evidence/nodia-ai-products-agentic-20261121.md).
 [Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
 y [catálogo40](40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21).
 
