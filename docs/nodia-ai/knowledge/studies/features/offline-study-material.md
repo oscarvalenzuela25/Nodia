@@ -4,11 +4,11 @@
   "document_id": "studies.offline-study-material",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Candidato local PWA-005 en Client sobre la lectura autorizada y versionada de Teacher. El despliegue sigue pendiente."
+    "notes": "PWA-005 publicado y verificado con Chrome para Windows. La iteración del lector recupera el acceso a la copia vigente al reabrir Teacher y presenta la estructura de lectura del Markdown."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -40,6 +40,10 @@ La persona puede leer una copia de la teoría, ejemplos y resumen de una
 lección ya preparada en Teacher. La copia corresponde a la versión que
 guardó y permanece disponible en ese navegador durante 24 horas. La
 biblioteca señala que es una **Copia descargada** y muestra su caducidad.
+En Teacher, **Abrir copia descargada** reaparece si coincide la versión y la
+sesión de esa copia. Si hay material nuevo, **Actualizar copia descargada**
+permite reemplazarla. En el lector se conservan títulos, listas y código. Los
+rótulos de enlaces e imágenes se muestran como texto.
 
 Con el [punto de lectura sin conexión](offline-reading-progress.md) se puede
 marcar un bloque de una descarga que incluya la revisión de lectura.

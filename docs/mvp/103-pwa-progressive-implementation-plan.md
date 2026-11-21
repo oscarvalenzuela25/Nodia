@@ -18,7 +18,7 @@ cierre no depende de caché offline, avisos de actualización, push o sincroniza
 | PWA-002 | Service worker con caché estática acotada y actualización controlada | PWA-001 y registro raíz compartido | Candidato local (§4) |
 | PWA-003 | Experiencia clara ante desconexión y recuperación online | PWA-002 para pantalla disponible sin red | Candidato local (§5) |
 | PWA-004 | Notificaciones push de eventos definidos | Contrato de eventos y worker navegador; independiente de offline de datos | Planificado; 2–5 días adicionales |
-| PWA-005 | Lectura offline de material de estudio de Teacher | PWA-002/003 y política de privacidad/persistencia | Candidato local (§7) |
+| PWA-005 | Lectura offline de material de estudio de Teacher | PWA-002/003 y política de privacidad/persistencia | Publicado y verificado en Chrome para Windows (§8.3) |
 | PWA-006 | Punto de lectura de Teacher sin conexión y sincronización | PWA-005, recibo y revisión del cursor de Teacher | Piloto HTTPS local verificado en Chrome para Windows con Server y PostgreSQL. Origen publicado pendiente |
 
 Son estimaciones para una persona dedicada, sujetas a QA y disponibilidad de
@@ -372,6 +372,50 @@ del túnel público. La verificación de un origen publicado queda pendiente.
    identificador y cuerpo. Se recuperó el mismo resultado HTTP 200. En
    PostgreSQL quedaron dos recibos y dos bloques visitados, una vez cada uno.
 
+### 8.3. Publicación HTTPS — 2026-11-21
+
+PWA-005/006 y la base de actualización y reconexión se integraron por los
+[PR 83](https://github.com/oscarvalenzuela25/Nodia/pull/83) y
+[PR 84](https://github.com/oscarvalenzuela25/Nodia/pull/84). Pasaron el
+[CI de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44872170628)
+y el [CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44873017820)
+para `c13ef763`. Dos perfiles de Chrome para Windows descargaron la misma
+lección sintética, guardaron puntos distintos y los recuperaron al reabrir sin
+red. Se completó un reintento después de fallar la consulta de un recibo. El
+segundo perfil recibió el conflicto y **Usar este punto** avanzó el cursor a
+revisión 5. En otro conflicto, **Conservar el del servidor** dejó esa revisión
+con cero escrituras después de elegir.
+
+### 8.4. Lectura y resolución de conflictos más claras — 2026-11-21
+
+El lector offline mantiene a la vista la conexión, la vigencia de la copia y
+el estado del punto de lectura. El acceso **Ir al punto de lectura** lleva el
+foco al bloque elegido. En un conflicto se muestran los dos puntos con sus
+orígenes y cada acción conserva el flujo con teclado. La lección conserva
+párrafos, listas, citas, énfasis y código mediante elementos semánticos. El
+renderizador recibe el Markdown persistido y construye nodos con texto, sin
+ejecutar el HTML del material ni solicitar recursos externos.
+
+Teacher restaura el acceso **Abrir copia descargada** al volver a una lección
+que ya tiene una copia vigente para la misma cuenta, sesión y versión. Si se
+publicó material nuevo, ofrece actualizar la copia. La presentación reutiliza
+los contratos de sesión, vigencia y revisión de PWA-005/006.
+
+Chrome 158 en Windows verificó dos perfiles con la misma cuenta sintética,
+un API de prueba y el build de producción en loopback. Se restauró el acceso
+a la copia al recargar Teacher. El lector abrió sin red, marcó dos puntos
+distintos y enfocó el bloque con **Ir al punto de lectura** a 320 px. Se
+comprobó el diseño a 390 px en oscuro y a 1280 px en claro, el recibo tras
+perder la respuesta y la navegación por teclado durante el conflicto. Se
+verificaron las dos elecciones, el cambio de cuenta y la eliminación offline
+seguida de una nueva descarga sin reactivar el pendiente anterior.
+
+Los recursos públicos del lector pasaron de 34.123 a 101.638 bytes
+minificados y de 13.823 a 32.980 bytes con gzip local. Los 13 archivos
+incluyendo HTML permanecen dentro de 512 KiB y 32 archivos. El parser se
+carga al abrir una copia y el worker lo prepara con el resto de los recursos
+para que esté disponible sin red.
+
 ## 9. Seguimiento y entregables
 
 - [x] Plan creado con PWA-001 independiente y fases posteriores desglosadas.
@@ -383,7 +427,8 @@ del túnel público. La verificación de un origen publicado queda pendiente.
 - [ ] Elegir eventos push antes de PWA-004.
 - [x] Elegir Teacher y verificar su lectura offline por cuenta en laboratorio (PWA-005, §7).
 - [x] Implementar y verificar el punto de lectura de Teacher como primera operación elegible de PWA-006 (§8).
-- [ ] Verificar PWA-005 y PWA-006 en el despliegue y las plataformas declaradas.
+- [x] Verificar PWA-005 y PWA-006 en el despliegue con dos perfiles de Chrome para Windows (§8.3).
+- [ ] Completar las pruebas en las plataformas declaradas y en dispositivos físicos distintos.
 
 El corte inicial fue documental. El candidato PWA-001 posterior implementó
 manifiesto, iconos, metadatos y validación del artefacto. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)

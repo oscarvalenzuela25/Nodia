@@ -4,11 +4,11 @@
   "document_id": "studies.offline-reading-progress",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Candidato local PWA-006. Guarda y sincroniza el punto de lectura de Teacher. Verificación del despliegue pendiente."
+    "notes": "PWA-006 publicado y verificado en Chrome para Windows. La iteración de UI permite volver al bloque guardado y comparar visualmente los dos puntos de un conflicto."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -41,6 +41,8 @@ descargada. El punto se conserva cifrado bajo la cuenta y sesión que guardaron
 la copia, con la misma vigencia. Al recuperar la conexión con Teacher o el
 lector abiertos y la sesión vigente, se consulta el recibo del envío y se
 sincroniza la posición. La persona también puede reintentar desde el lector.
+**Ir al punto de lectura** vuelve al bloque marcado. En un conflicto, el
+lector identifica el origen de cada punto antes de ofrecer la elección.
 
 ## Solicitudes en lenguaje natural
 
