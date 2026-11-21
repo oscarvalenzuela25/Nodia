@@ -246,11 +246,15 @@ export default function ProviderContacts({
           (contact.schedule[day] ?? []).map((range) => (
             <Box key={`${day}-${range.from}`} sx={{ mb: 0.5 }}>
               <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                {t("provider_contacts:day_range", {
-                  day: t(`provider_contacts:days.${day}`),
-                  from: range.from,
-                  to: range.to,
-                })}
+                {range.from === null
+                  ? t("provider_contacts:day_pending", {
+                      day: t(`provider_contacts:days.${day}`),
+                    })
+                  : t("provider_contacts:day_range", {
+                      day: t(`provider_contacts:days.${day}`),
+                      from: range.from,
+                      to: range.to,
+                    })}
               </Typography>
               {range.description && (
                 <Typography

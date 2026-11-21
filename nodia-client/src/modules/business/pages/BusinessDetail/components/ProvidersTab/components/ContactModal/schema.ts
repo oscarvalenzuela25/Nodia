@@ -5,12 +5,14 @@ export { normalizedPhone } from "../../../../../../../../utils/phoneNumbers";
 import {
   CONTACT_DAYS,
   type ContactDay,
+  type ContactSchedule,
   type ContactValues,
   type ProviderContact,
 } from "../ProviderContacts/types";
 const daySchema = z.object({
   from: z.string(),
   to: z.string(),
+  timePending: z.boolean(),
   description: z.string().max(255, "provider_contacts:too_long"),
 });
 export const contactFormSchema = z
@@ -61,6 +63,7 @@ export const contactFormSchema = z
     });
     for (const day of CONTACT_DAYS) {
       const range = values.schedule[day];
+      if (range.timePending) continue;
       if (!range.from && !range.to && !range.description.trim()) continue;
       const time = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
       if (!time.test(range.from))
@@ -97,19 +100,39 @@ export function defaultContactForm(contact?: ProviderContact): ContactForm {
         })
       : [{ country: "CL", number: "" }],
     schedule: Object.fromEntries(
-      CONTACT_DAYS.map((day) => [
-        day,
-        {
-          from: contact?.schedule[day]?.[0]?.from ?? "",
-          to: contact?.schedule[day]?.[0]?.to ?? "",
-          description: contact?.schedule[day]?.[0]?.description ?? "",
-        },
-      ]),
-    ) as Record<ContactDay, { from: string; to: string; description: string }>,
+      CONTACT_DAYS.map((day) => {
+        const visit = contact?.schedule[day]?.[0];
+        return [
+          day,
+          {
+            from: visit?.from ?? "",
+            to: visit?.to ?? "",
+            timePending: visit?.from === null,
+            description: visit?.description ?? "",
+          },
+        ];
+      }),
+    ) as Record<ContactDay, z.infer<typeof daySchema>>,
   };
 }
-export function contactPayload(form: ContactForm): ContactValues {
+export function contactPayload(
+  form: ContactForm,
+  previousSchedule?: ContactSchedule,
+): ContactValues {
   const parsed = contactFormSchema.parse(form);
+  const schedule: ContactSchedule = {};
+  for (const day of CONTACT_DAYS) {
+    const visit = parsed.schedule[day];
+    if (!visit.timePending && !visit.from) {
+      if (previousSchedule?.[day]?.[0]?.from === null) schedule[day] = [];
+      continue;
+    }
+    const description = visit.description.trim();
+    const hours = visit.timePending
+      ? { from: null, to: null }
+      : { from: visit.from, to: visit.to };
+    schedule[day] = [{ ...hours, ...(description ? { description } : {}) }];
+  }
   return {
     name: parsed.name,
     email: parsed.email || null,
@@ -118,22 +141,6 @@ export function contactPayload(form: ContactForm): ContactValues {
     phone: parsed.phone
       .filter((p) => p.number.trim())
       .map((p) => ({ number: normalizedPhone(p.country, p.number)! })),
-    schedule: Object.fromEntries(
-      CONTACT_DAYS.filter((day) => parsed.schedule[day].from).map((day) => {
-        const range = parsed.schedule[day];
-        return [
-          day,
-          [
-            {
-              from: range.from,
-              to: range.to,
-              ...(range.description.trim()
-                ? { description: range.description.trim() }
-                : {}),
-            },
-          ],
-        ];
-      }),
-    ),
+    schedule,
   };
 }

@@ -7,6 +7,7 @@ import { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sileo } from "sileo";
 import GuardStrict from "../../routes/GuardStrict";
+import NoGuard from "../../routes/NoGuard";
 import useAuthStore from "../../store/authStore";
 import { mainInstance } from "../../config/api";
 import { queryClient } from "../../config/reactQuery";
@@ -84,6 +85,28 @@ afterEach(() => {
 });
 
 describe("GuardStrict", () => {
+  it("resumes a canonical business after sign-in and checks its current access", async () => {
+    const path = "/business/9601aa95-dd70-4af3-a5cf-50dd553a4ae9";
+    const adapter = vi.fn(async (config: InternalAxiosRequestConfig) =>
+      response(config, { roles: [], actions: [], modules: [] }),
+    );
+    mainInstance.defaults.adapter = adapter;
+    const router = createMemoryRouter([
+      { path: "/business/:id", element: <GuardStrict modulePath="/business"><PrivatePage /></GuardStrict> },
+      { path: "/login", element: <NoGuard><button onClick={signIn}>Sign in</button></NoGuard> },
+      { path: "/", element: <p>Home page</p> },
+    ], { initialEntries: [path] });
+    render(<QueryClientProvider client={queryClient}><RouterProvider router={router} /></QueryClientProvider>);
+
+    const login = await screen.findByRole("button", { name: "Sign in" });
+    expect(router.state.location).toMatchObject({ pathname: "/login", state: { businessReturnPath: path } });
+    expect(adapter).not.toHaveBeenCalled();
+    await userEvent.click(login);
+    expect(await screen.findByText("Home page")).toBeInTheDocument();
+    expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ url: expect.stringMatching(/\/authorization\/context$/) }));
+    expect(screen.queryByText("Private control")).not.toBeInTheDocument();
+  });
+
   it("redirects a visitor to login without requesting context or page data", async () => {
     const adapter = vi.fn();
     mainInstance.defaults.adapter = adapter;

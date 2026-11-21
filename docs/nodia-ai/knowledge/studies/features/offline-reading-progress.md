@@ -4,11 +4,11 @@
   "document_id": "studies.offline-reading-progress",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "PWA-006 publicado y verificado en Chrome para Windows. La iteración de UI permite volver al bloque guardado y comparar visualmente los dos puntos de un conflicto."
+    "notes": "PWA-006 publicado. Guardado offline, reintento y ambas decisiones de conflicto verificados con una lección sintética en dos perfiles de Chrome para Windows. La interfaz permite volver al bloque guardado y comparar los dos puntos."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -24,7 +24,7 @@
   "verification": {
     "checked_on": "2026-11-21",
     "evidence_paths": ["docs/mvp/103-pwa-progressive-implementation-plan.md", "nodia-server/test/teacher-domain.integration.mjs"],
-    "notes": "El piloto HTTPS local en dos perfiles Chrome para Windows verificó el guardado sin red, ambas decisiones de conflicto y el reenvío idempotente contra Server y PostgreSQL 16 reales. El laboratorio con API de prueba verificó la recuperación de una respuesta perdida y el aislamiento al cambiar de cuenta."
+    "notes": "El piloto publicado verificó reapertura sin red, reintento y confirmación, conflicto con ambos puntos y las dos decisiones en Chrome para Windows. El ensayo HTTPS local con Server y PostgreSQL 16 comprobó la idempotencia al repetir el mismo PATCH. El laboratorio con API de prueba verificó recuperación de una respuesta perdida y separación al cambiar de cuenta."
   },
   "approval": null
 }

@@ -1,4 +1,5 @@
 import { Transform } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsInt,
@@ -8,10 +9,15 @@ import {
   IsString,
   IsUUID,
   Length,
+  Matches,
   Max,
   Min,
   ValidateIf,
 } from 'class-validator';
+import {
+  INVALID_PROVIDER_VISIT_ALARM_TIME,
+  PROVIDER_VISIT_ALARM_TIME_PATTERN,
+} from '../provider-visit-alarm-time.js';
 
 export class CreateProviderDto {
   @IsNotEmpty()
@@ -39,6 +45,13 @@ export class CreateProviderDto {
   @ValidateIf((_object, value) => value !== undefined)
   @IsBoolean()
   use_ocr?: boolean;
+
+  @ApiPropertyOptional({ type: String, nullable: true, example: '08:45' })
+  @IsOptional()
+  @Matches(PROVIDER_VISIT_ALARM_TIME_PATTERN, {
+    message: INVALID_PROVIDER_VISIT_ALARM_TIME,
+  })
+  visit_alarm_time?: string | null;
 
   @IsOptional()
   @IsBoolean()

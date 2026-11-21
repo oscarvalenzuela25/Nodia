@@ -143,6 +143,7 @@ try {
       monday: [
         { from: '09:00', to: '12:00', description: 'Visita del vendedor' },
       ],
+      wednesday: [{ from: null, to: null, description: 'Hora pendiente' }],
       thursday: [{ from: '14:00', to: '17:00' }],
     },
     description: 'Pedidos y coordinación de despacho.',
@@ -162,6 +163,7 @@ try {
     [201, 201],
   );
   assert.equal(created[0].body.id, created[1].body.id);
+  assert.deepEqual(created[0].body.schedule, values.schedule);
   assert.equal(
     (
       await db.query('SELECT count(*)::int count FROM personal_info_provider')
@@ -226,10 +228,16 @@ try {
   assert.equal(inactive.status, 200);
   assert.deepEqual(inactive.body.schedule, values.schedule);
   assert.equal(inactive.body.is_active, false);
+  const omitted = await call(`1/contacts/${id}`, 'PUT', {
+    ...values,
+    schedule: {},
+    version: 3,
+  });
+  assert.equal(omitted.status, 409);
   const clear = await call(`1/contacts/${id}`, 'PUT', {
     ...values,
     phone: [],
-    schedule: {},
+    schedule: { wednesday: [] },
     email: null,
     description: null,
     version: 3,

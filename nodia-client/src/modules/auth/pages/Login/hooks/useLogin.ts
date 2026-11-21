@@ -1,12 +1,15 @@
 import { useRef } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import type { CredentialResponse } from "@react-oauth/google";
 import { isAxiosError } from "axios";
 import { useGoogleSignIn } from "../../../infrastructure/useServices";
 import { notifyAuthError } from "../../../../../services/authFeedback";
+import { businessReturnPath } from "../../../../../routes/businessReturnPath";
 
 const useLogin = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const destination = businessReturnPath(state);
   const mutation = useGoogleSignIn();
   const submitting = useRef(false);
   const handleError = () => notifyAuthError(undefined, "auth:google_failed");
@@ -16,9 +19,9 @@ const useLogin = () => {
     submitting.current = true;
     mutation.mutate(credential, {
       onSettled: () => { submitting.current = false; },
-      onSuccess: () => navigate("/", { replace: true }),
+      onSuccess: () => navigate(destination ?? "/", { replace: true }),
       onError: (error) => {
-        if (isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0)) {
+        if (!destination && isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0)) {
           navigate("/", { replace: true });
         }
       },

@@ -26,6 +26,17 @@ registra el [candidato PWA-002](../../mvp/103-pwa-progressive-implementation-pla
 y distingue el aviso de versión de la recarga desde el menú. La actualización
 se aplica por pestaña y los archivos públicos pueden reutilizarse desde caché.
 
+## Horarios y recordatorios de visitas — 2026-11-20
+
+Las candidatas de [horarios de Contactos](businesses/features/supplier-visit-schedules.md)
+y [recordatorios de visitas](businesses/features/supplier-visit-reminders.md)
+recogen el contrato nativo de hora por confirmar y la implementación local de
+alarma, preferencias, suscripción y planificación de [PWA-004.02](../../mvp/103-pwa-progressive-implementation-plan.md#64-implementación-local-de-server--00402),
+la entrega Server de [PWA-004.03](../../mvp/103-pwa-progressive-implementation-plan.md#65-entrega-web-push-desde-server--00403)
+y la interfaz y apertura de [PWA-004.04](../../mvp/103-pwa-progressive-implementation-plan.md#66-client-y-apertura-del-negocio--00404).
+La revisión aprobada de [Contactos](businesses/features/supplier-contacts.md)
+conserva su cuerpo y firma. Las nuevas fichas quedan en borrador.
+
 El catálogo `nodia-ai-business-pos/5` publica los apartados de consulta de
 [Listas de Market](businesses/features/market-shopping-lists.md#consultas-de-solo-lectura-en-nodiaai)
 y [Caja de Negocios](businesses/features/cash-ledger-and-invoice-expenses.md#consultas-de-solo-lectura-en-nodiaai).

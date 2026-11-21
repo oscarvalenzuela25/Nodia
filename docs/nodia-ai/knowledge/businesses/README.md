@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 68,
+  "revision": 73,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -312,6 +312,18 @@
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
+
+## Horarios y recordatorios de visitas — 2026-11-20
+
+La [ampliación de horarios](features/supplier-visit-schedules.md) permite
+registrar el día de visita del contacto con hora por confirmar. Los
+[recordatorios por proveedor](features/supplier-visit-reminders.md) tienen
+implementación Server local de alarma, preferencias, suscripciones,
+planificación y entrega con verificación en laboratorio. Client incorpora el
+ajuste por proveedor, negocio e instalación y revalida el acceso al abrir un
+aviso. El piloto en dispositivos reales sigue pendiente. La
+ficha aprobada de [Contactos](features/supplier-contacts.md)
+conserva el alcance de su revisión publicada.
 
 Market agrupa **Proveedores**, **Productos**, **Facturas** y **Listas**.
 En Caja, las descripciones de categorías y movimientos manuales son

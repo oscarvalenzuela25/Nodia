@@ -9,7 +9,7 @@ export const CONTACT_DAYS = [
   "sunday",
 ] as const;
 export type ContactDay = (typeof CONTACT_DAYS)[number];
-const rangeSchema = z
+const timedVisitSchema = z
   .object({
     from: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/),
     to: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/),
@@ -17,9 +17,14 @@ const rangeSchema = z
   })
   .strict()
   .refine((range) => range.from < range.to);
+const untimedVisitSchema = z.strictObject({
+  from: z.null(),
+  to: z.null(),
+  description: z.string().max(255).optional(),
+});
 export const contactScheduleSchema = z.partialRecord(
   z.enum(CONTACT_DAYS),
-  z.array(rangeSchema).max(1),
+  z.array(z.union([timedVisitSchema, untimedVisitSchema])).max(1),
 );
 export const contactValuesSchema = z.object({
   name: z.string().trim().min(1).max(255),

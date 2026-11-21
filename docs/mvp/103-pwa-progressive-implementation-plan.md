@@ -1,6 +1,6 @@
 # PWA de Nodia — plan de implementación por entregas
 
-> Estado vigente al 2026-11-21. PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15), tras implementación y verificación HTTPS (§12). PWA-002, PWA-003, PWA-005 y el punto de lectura de PWA-006 implementados como candidatos locales (§4, §5, §7 y §8). PWA-004 sigue su entrega independiente (§6). §11 y §14 conservan sus cortes históricos. Ver [TODO](TODO.md).
+> Estado vigente al 2026-11-21. PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15). PWA-005 y el punto de lectura de PWA-006 se publicaron y verificaron en Chrome para Windows con las bases de PWA-002/003 (§8.3). PWA-002/003 conservan sus verificaciones de despliegue por alcance (§4 y §5). PWA-004 sigue su entrega independiente (§6). §11 y §14 conservan sus cortes históricos. Ver [TODO](TODO.md).
 > Fecha: 2026-11-13. Rama de planificación: `codex/plan-pwa-installation`, desde `development`.
 > Rama histórica de implementación local: `codex/pwa-001-installation`, desde development/origin en `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica1 seleccionada. La publicación posterior se registra en§12; no repetir esa operación al retomar el QA de instalación.
 > Fuentes: [Client08](08-stack-frontend.md), [auth14](14-authentication.md), [privacidad89](89-module-access-and-user-data-scope.md), [rutas ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md), [rendimiento37](37-web-performance-implementation-plan.md), [producción99](99-production-deployment-and-cicd-plan.md) y [diseño Client](../../nodia-client/DESIGN.md).
@@ -15,17 +15,17 @@ cierre no depende de caché offline, avisos de actualización, push o sincroniza
 | Orden / ítem | Resultado entregable | Dependencia | Prioridad / estimación inicial |
 | --- | --- | --- | --- |
 | **PWA-001** | **Instalación, iconos y ventana propia; funciones online** | App actual publicada por HTTPS | **Primera entrega obligatoria; 1–2 días de trabajo** |
-| PWA-002 | Service worker con caché estática acotada y actualización controlada | PWA-001 y registro raíz compartido | Candidato local (§4) |
-| PWA-003 | Experiencia clara ante desconexión y recuperación online | PWA-002 para pantalla disponible sin red | Candidato local (§5) |
-| PWA-004 | Notificaciones push de eventos definidos | Contrato de eventos y worker navegador; independiente de offline de datos | Planificado; 2–5 días adicionales |
+| PWA-002 | Service worker con caché estática acotada y actualización controlada | PWA-001 y registro compartido con Web Push | Publicado con Teacher (§8.3). Validación del cambio de versión y reversión pendiente (§4) |
+| PWA-003 | Experiencia clara ante desconexión y recuperación online | PWA-002 para pantalla disponible sin red | Publicado con Teacher (§8.3). Validación específica en producción pendiente (§5) |
+| PWA-004 | Recordatorios push de visitas de proveedores | Horarios de Contactos y service worker; independiente de la caché y sincronización offline | 004.02–.04 en laboratorio (§6.4–6.6). Piloto HTTPS 004.05 verificado en Chrome para Windows (§6.7) |
 | PWA-005 | Lectura offline de material de estudio de Teacher | PWA-002/003 y política de privacidad/persistencia | Publicado y verificado en Chrome para Windows (§8.3) |
-| PWA-006 | Punto de lectura de Teacher sin conexión y sincronización | PWA-005, recibo y revisión del cursor de Teacher | Piloto HTTPS local verificado en Chrome para Windows con Server y PostgreSQL. Origen publicado pendiente |
+| PWA-006 | Punto de lectura de Teacher sin conexión y sincronización | PWA-005, recibo y revisión del cursor de Teacher | Publicado y verificado en dos perfiles Chrome para Windows (§8.3) |
 
 Son estimaciones para una persona dedicada, sujetas a QA y disponibilidad de
 dispositivos; no son fechas comprometidas. El rango anterior de3–5 días para la
 base robusta corresponde aproximadamente a PWA-001/002/003 juntos, no al primer
-ítem aislado. Los ítems posteriores permanecen en planificación y no se ejecutan
-como parte de PWA-001. Push no exige habilitar escrituras offline.
+ítem aislado. Las entregas posteriores avanzan por separado de PWA-001. Push
+es independiente de las escrituras offline.
 
 ## 2. Punto de partida comprobado y límites
 
@@ -151,9 +151,11 @@ AC01–AC12 sí pertenecen al mismo ítem; no se pospone una instalación rota.
 
 ## 4. PWA-002 — caché estática y actualizaciones controladas
 
-Implementado como candidato local. Ver la [decisión de arquitectura propuesta](../architecture/decisions/ADR-112-pwa-controlled-release-updates.md).
+La base de actualización se publicó con Teacher (§8.3). Las pruebas de
+cambio de versión y reversión en producción siguen pendientes. Ver la
+[decisión de arquitectura propuesta](../architecture/decisions/ADR-112-pwa-controlled-release-updates.md).
 
-- [x] Integrar metadatos en el build de Vite y usar un worker raíz compartido para actualizaciones y el futuro flujo de Web Push. La evaluación de Workbox se resolvió con el worker nativo y el generador de metadatos, con las dependencias vigentes del proyecto.
+- [x] Integrar metadatos en el build de Vite y usar el mismo registro raíz para actualizaciones y el piloto de Web Push. La evaluación de Workbox se resolvió con el worker nativo y el generador de metadatos, con las dependencias vigentes del proyecto.
 - [x] Acotar la caché a JavaScript, CSS y fuentes públicas con hash del artefacto, de hasta 2 MiB por archivo. Calentar sólo JavaScript y CSS de entrada y guardar el resto bajo demanda.
 - [x] Aplicar la lista a lecturas GET de scripts, estilos y fuentes del mismo origen. Mantener navegación, API y autenticación sobre la red, con la autoridad habitual. Validar HTTP 200 y MIME del recurso antes de cachear.
 - [x] Ofrecer «Actualizar ahora» y «Más tarde» en ES/EN. La versión se activa sin recargar las demás pestañas. Ediciones, formularios abiertos y mutaciones de la pestaña solicitante permiten abrir la versión nueva en otra pestaña.
@@ -208,7 +210,9 @@ comparación de arranque en el origen publicado queda pendiente.
 
 ## 5. PWA-003 — desconexión y recuperación comprensibles
 
-Implementado como candidato local. Ver la [decisión de arquitectura propuesta](../architecture/decisions/ADR-113-pwa-connection-recovery.md).
+La base de reconexión se publicó con Teacher (§8.3). La verificación
+específica de PWA-003 en producción sigue pendiente. Ver la
+[decisión de arquitectura propuesta](../architecture/decisions/ADR-113-pwa-connection-recovery.md).
 
 - [x] Ofrecer un aviso traducido de desconexión o problema con el servidor y un reintento en la vista y el modal. Conservar los formularios montados.
 - [x] Usar el estado del navegador como señal de red y validar el liveness real de `GET /api/v1`. Tratar fallos sin respuesta como problemas de alcance cuando el navegador todavía indica conexión.
@@ -253,23 +257,559 @@ cerró el origen de prueba al terminar.
 
 ## 6. PWA-004 — notificaciones push
 
-- [ ] Elegir eventos concretos y destinatarios autorizados, por ejemplo finalización de un trabajo ya existente. Definir retención, deduplicación y qué se considera entrega frente a lectura.
-- [ ] Diseñar contrato backend de suscripciones por usuario/dispositivo, alta/baja idempotente, revocación y limpieza de endpoints expirados. Credenciales push sólo en servidor; una URL de suscripción tampoco pertenece a logs públicos.
-- [ ] Pedir permiso tras acción explícita, manejar denegación/revocación y preferencias; no condicionar el uso de la app a aceptar notificaciones.
-- [ ] Implementar envío por el flujo durable adecuado del backend, con límites/reintentos conocidos; no hacer del SW del teléfono un worker permanente.
-- [ ] Payload mínimo sin datos sensibles de Teacher/ventas/finanzas/chat; al abrir, resolver sesión y autorización del destino canónico otra vez.
-- [ ] Verificar soporte real por plataforma. En iOS comprobar requisitos de instalación/versión y permisos en dispositivo; dejar explícitos los entornos no soportados.
-- [ ] Probar cuentas múltiples, logout, permisos retirados, suscripción obsoleta, repetición del evento y enlace sin sesión/módulo; observar fallos sin almacenar contenido privado.
+**Alcance inicial planificado el 2026-11-20.** Enviar un recordatorio por cada
+visita prevista de un contacto activo de un proveedor activo. El horario semanal
+del contacto se mantiene en [Plan31](31-provider-contacts-proposal.md#día-de-visita-con-hora-por-confirmar--2026-11-20).
+La hora de alarma se configura opcionalmente en el proveedor y se aplica a sus
+contactos. La primera entrega comprende recordatorios por visita. Un resumen
+diario agrupado queda como ampliación independiente. El
+[ADR111 propuesto](../architecture/decisions/ADR-111-web-push-provider-visit-reminders.md)
+describe la frontera de planificación, autoridad y entrega.
 
-Aceptación: sólo los destinatarios permitidos reciben el evento definido, con
-activación y baja verificadas. No se promete entrega inmediata ni garantizada;
-la aplicación mantiene su mecanismo de consulta de estado habitual.
+### 6.1 Regla de hora y destinatario
+
+**Contrato de PWA-004.01, documentado el 2026-11-20.** El ajuste de hora se comparte
+entre los contactos del proveedor. La preferencia de recibir avisos es personal
+por negocio. El permiso y la suscripción se activan en cada instalación.
+
+#### Alarma del proveedor
+
+Mostrar **Hora de alarma de visitas** en el formulario habitual de Proveedores.
+El valor `visit_alarm_time` es un campo propio de `providers`, nullable y en
+formato `HH:mm` de 24 horas. Alta con valor omitido crea `null`. En la edición,
+omitirlo conserva el ajuste y `null` selecciona el cálculo automático. El
+formulario envía `null` al limpiar el campo. Usar el contrato existente de
+alta/edición y su autoridad por negocio. Las cargas CSV de esta primera entrega
+conservan la alarma en proveedores existentes y crean nuevos proveedores con
+`null`. La edición del ajuste se hace desde el formulario. La fecha y el
+horario semanal siguen en Contactos.
+
+| Datos de la visita del miércoles | Hora de alarma del proveedor | Aviso |
+| --- | --- | --- |
+| Inicio a las 10:30 | 08:45 | Miércoles a las 08:45 |
+| Inicio a las 10:30 | Vacía | Miércoles a las 10:00 |
+| Día de visita con hora por confirmar | Vacía | Miércoles a las 09:00 |
+| Día de visita con hora por confirmar | 08:45 | Miércoles a las 08:45 |
+| Inicio a las 10:30 | 10:30 o posterior | Miércoles a las 10:00, con advertencia visible en el ajuste |
+| Sin visita el miércoles | Cualquiera | No se genera un aviso para ese día |
+
+La hora fija se interpreta el día de la visita. Si coincide con el inicio
+conocido o cae después, se propone aplicar los 30 minutos previos solo a esa
+visita. El proveedor conserva su ajuste para los demás horarios. Esta excepción
+mantiene el aviso útil cuando se modifica un contacto o hay contactos con horas
+distintas. Mostrar la hora efectiva o la advertencia al editar los datos afectados.
+
+Resolver cada fecha civil en `America/Santiago` y guardar `send_at` en UTC. Para
+los 30 minutos previos, resolver primero el inicio a un instante y restar 30
+minutos reales. Una visita a las 00:15 puede avisarse a las 23:45 del día
+anterior. Como regla propuesta en el cambio estacional, usar la primera
+ocurrencia de una hora repetida y desplazar una hora inexistente por la duración
+del salto. Comparar la alarma fija con el inicio después de resolver ambos
+instantes. Caducar cada aviso 30 minutos después de `send_at` o al inicio
+conocido de la visita, lo que suceda primero. Si cambia un horario y el nuevo
+aviso queda en el pasado, solo se admite dentro de esa ventana y si la misma
+ocurrencia todavía no tuvo una entrega aceptada para esa suscripción.
+
+#### Destinatarios y preferencias
+
+- Es elegible el dueño o un colaborador activo del negocio con cuenta activa y
+  acceso vigente a `/business`. El negocio, proveedor y contacto deben estar
+  activos. El bypass administrativo permite editar el proveedor conforme a su
+  política habitual. Para recibir avisos, también requiere una relación explícita
+  con ese negocio y opt-in personal.
+- En **Negocios → Proveedores**, cada persona puede habilitar **Avisos de visitas
+  de este negocio** para su propia cuenta. Persistir un booleano por `(user_id,
+  business_id)`, con ausencia equivalente a desactivado. Nadie activa avisos a
+  nombre de otro usuario. La preferencia se aplica a todas las instalaciones
+  activadas de esa cuenta. Deshabilitarla afecta a ese negocio en todos sus
+  dispositivos.
+- Revalidar relación, acceso y preferencia antes de cada despacho. Si se retira
+  la relación o el módulo, cesan los envíos. Si se recupera el acceso, el
+  opt-in guardado vuelve a aplicarse a nuevas visitas bajo la autoridad actual.
+  Los envíos cancelados por pérdida de acceso no se reponen.
+
+[Autoridad de Negocios](89-module-access-and-user-data-scope.md#contratos-y-barreras).
+
+#### Activación por dispositivo
+
+1. En **Mi cuenta → Notificaciones**, mostrar el estado de **este dispositivo**.
+   La unidad es la instalación PWA o perfil de navegador del origen de Nodia.
+   Preparar el service worker y obtener la clave pública antes de habilitar el botón.
+   Tras tocar **Activar en este dispositivo**, solicitar permiso del navegador
+   con esa misma acción. Si ya está concedido, la acción confirma el alta en
+   Nodia. Un permiso denegado se gestiona desde la configuración del navegador
+   o sistema y la UI permite volver a comprobarlo.
+2. Con permiso concedido, registrar la suscripción de Web Push en Server con la
+   sesión actual. La cuenta y el `sid` se derivan de la autenticación. Usar
+   un `installation_id` aleatorio en ese perfil, sin fingerprint, y vincular
+   la suscripción a `(user_id, installation_id)`. Registrar el `sid` para
+   propagar la revocación explícita de esa sesión a la instalación. La UI
+   confirma **Activo** tras el acuse de Server. Para recibir avisos también debe
+   estar activada la preferencia del negocio. En iOS/iPadOS se activa desde la
+   app añadida a la pantalla de inicio.
+3. **Desactivar en este dispositivo** revoca el alta en Server y cancela la
+   suscripción local. Afecta a esa instalación, con las otras instalaciones y
+   preferencias vigentes. Mostrar **Baja pendiente** si queda por confirmar una
+   parte del cierre. Un logout explícito intenta cancelar la suscripción local
+   de esa cuenta. La revocación de su `sid` en Server invalida el alta vinculada.
+   Si el navegador está sin conexión, conservar la baja pendiente, impedir que
+   se registre la cuenta siguiente sobre la suscripción previa y finalizar la
+   limpieza al reconectar.
+   Un aviso ya aceptado por el intermediario aún puede llegar con texto genérico.
+4. La expiración normal de la sesión de navegación conserva el consentimiento
+   de la instalación. El aviso puede llegar mientras su suscripción siga
+   vigente y el destinatario tenga acceso. Su destino exige volver a iniciar
+   sesión cuando corresponda. Al entrar de nuevo con la misma cuenta, solo
+   se puede vincular la nueva sesión a un alta activa que coincida con la
+   instalación y la suscripción local. Tras una baja o revocación, volver a
+   activar requiere acción explícita. Si se cambia de cuenta en el mismo
+   perfil, retirar la suscripción previa antes de registrar la nueva.
+5. Al volver a la app, conciliar el estado del navegador y del servidor. Ante
+   permiso retirado, suscripción ausente o confirmación de endpoint expirado,
+   marcar **Requiere reactivar** y esperar dicha acción. Usar `pushsubscriptionchange`
+   como señal adicional cuando esté disponible.
+
+La gestión de la propia instalación sigue accesible con sesión válida aunque
+se pierda el módulo Negocios. Opera exclusivamente sobre la cuenta autenticada.
+Ver [permiso y suscripciones Push](https://www.w3.org/TR/push-api/#permission) y
+[Web Push de Apple](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers).
+
+#### Contratos y estados de PWA-004.01
+
+| Operación planificada | Entrada y resultado |
+| --- | --- |
+| Alta y edición de proveedor | `visit_alarm_time` opcional y nullable en el contrato de Proveedores. Devolver el valor vigente en la edición. |
+| `GET` / `PUT` `/businesses/:businessId/notification-preferences/provider-visits` | Consultar o fijar `{ enabled: boolean }` de la cuenta actual. Habilitar exige relación y acceso a Negocios. Una lectura administrativa global queda fuera de este ajuste personal. |
+| `GET` `/notifications/web-push/config` | Devolver configuración pública del ambiente, incluida la clave pública VAPID y su identificador. |
+| `GET` / `PUT` / `DELETE` `/notifications/web-push/installations/:installationId` | Estado, registro y baja propios. El alta recibe la suscripción del navegador, identificador de clave y revisión esperada. La baja usa la revisión observada. La respuesta contiene estado, revisión y fecha, con los datos de transporte reservados a Server. |
+
+Hay una suscripción activa por cuenta e instalación, y cada endpoint pertenece a
+una sola alta activa. La API rechaza reutilizar un endpoint vigente de otra
+cuenta. Usa actualización condicional para evitar que un reintento obsoleto
+reactive una instalación dada de baja. Repetir un alta idéntica aún vigente o
+una baja ya aplicada devuelve su estado actual. En un registro nuevo la
+revisión esperada es cero. La rotación reemplaza el transporte en la misma
+instalación mediante una revisión nueva y queda vinculada al `sid` vigente.
+
+Conservar estados `active`, `revoked` y `expired`. Validar `endpoint`, `p256dh`
+y `auth` al registrar. Al revocar o constatar expiración, retirar endpoint y
+claves de transporte del registro activo. Mantener el registro mínimo de baja
+mientras su sesión pueda aceptar reintentos y hasta 30 días después de su
+cierre. Conservar metadatos operativos mínimos de entregas durante 30 días,
+con las credenciales y el contenido fuera de logs y del historial de entrega.
+Los estados de entrega descritos en §6.3 se guardan aparte del consentimiento.
+Estos contratos siguen en revisión y requieren verificación de implementación.
+
+### 6.2 Recorrido de datos
+
+```mermaid
+flowchart TD
+    A[Horario de contacto y hora opcional del proveedor] --> B[Calcular fecha y hora de cada aviso]
+    B --> C[Guardar avisos pendientes en PostgreSQL]
+    C --> D[Worker toma avisos cuyo envío corresponde]
+    D --> E{¿Visita, autoridad y suscripción vigentes?}
+    E -->|Sí| F[Enviar Web Push cifrado]
+    E -->|No| G[Cancelar envío pendiente]
+    F --> H[Service worker muestra el aviso]
+    H --> I[Al pulsarlo, abrir el destino autorizado en Negocios]
+```
+
+### 6.3 Entregas y verificación
+
+| Paso | Trabajo | Gate para continuar |
+| --- | --- | --- |
+| 004.01 | Documentado en §6.1. Alarma por proveedor, destinatarios, consentimiento, suscripción y ciclo de baja definidos para revisión. | Revisar los ejemplos de hora, cambio de cuenta y revocación junto con el contrato. |
+| 004.02 | Implementado y verificado en Server local (§6.4). Incluye el ajuste del proveedor, preferencias, suscripciones, cálculo y planificación durable. | Pasaron los ensayos de contratos HTTP y concurrencia con PostgreSQL 16 aislado. |
+| 004.03 | Implementado en Server y verificado con PostgreSQL aislado y transporte sintético (§6.5). Revalida destinatarios y suscripciones, firma VAPID, cifra y limita los intentos a la ventana del aviso. | Pasaron los casos de clave inválida, endpoint vencido, cuota, indisponibilidad, respuesta ambigua, expiración y revocación. La recepción en navegador se verifica en 004.04/004.05. |
+| 004.04 | Implementado en Client local (§6.6). Alarma nativa en Proveedores, preferencia personal por negocio, alta/baja por instalación y worker en el scope raíz. El aviso abre `/business/:id` y pasa por la autoridad habitual. | La verificación local usa Chromium y cuentas sintéticas. Antes de habilitar el piloto en un origen público, desplegar esquema y Server compatibles y comprobar el artefacto servido. |
+| 004.05 | Piloto HTTPS verificado en Chrome para Windows (§6.7). Recepción con la pestaña cerrada, apertura del negocio al pulsar el aviso de Windows y baja desde la UI. La prueba de una visita nueva tras la revocación por API acreditó cero intentos durante su ventana. | Completar los ensayos de otros navegadores y dispositivos que se declaren soportados. iOS/iPadOS requiere una prueba en la PWA de la pantalla de inicio. |
+
+La identidad lógica del aviso incluye negocio, proveedor/contacto y fecha civil
+de la visita. La revisión de la fuente permite invalidar un pendiente obsoleto.
+La entrega se deduplica por aviso y suscripción. Se libera la transacción antes
+del POST externo. Un resultado ambiguo se conserva como tal y la política de
+recuperación debe considerar que un reenvío puede mostrar otra notificación.
+La respuesta del servicio push acredita aceptación del mensaje. La visualización
+y la lectura requieren evidencia propia. La agenda del negocio sigue siendo la
+fuente de la hora y del estado vigente de la visita.
+
+Web Push requiere un `endpoint` HTTPS y claves de suscripción `p256dh`/`auth`.
+Validar el destino con una política de salida limitada a servicios push
+soportados y sin seguir redirecciones. Custodiar la clave VAPID privada en
+Server y proteger los datos de suscripción en reposo. El aviso en pantalla
+bloqueada usa texto genérico y el destino contiene la referencia mínima
+necesaria para navegar. [RFC 8030](https://www.rfc-editor.org/rfc/rfc8030.html),
+[RFC 8291](https://www.rfc-editor.org/rfc/rfc8291.html),
+[RFC 8292](https://www.rfc-editor.org/rfc/rfc8292.html) y
+[Web Push de Apple](https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers).
+
+### 6.4 Implementación local de Server — 004.02
+
+Las dos capturas compartidas antes del desarrollo son propuestas de interfaz
+con datos de ejemplo. Muestran la hora de alarma en Proveedores y los ajustes
+de notificaciones. Pertenecen al directorio local de capturas. Client y el
+service worker de notificaciones corresponden a 004.04.
+
+- La [migración 179384](../../nodia-server/src/migrations/1793840000000-AddProviderVisitAlarmTime.ts)
+  añade `providers.visit_alarm_time` nullable. Las altas sin hora parten en
+  `null`, una edición que omite el campo conserva su valor y una edición con
+  `null` lo borra. El contrato nativo lo devuelve en el listado y detalle de
+  Proveedores. La importación CSV conserva el ajuste existente y usa `null`
+  para altas nuevas. El CSV mantiene su formato.
+- La [migración 179385](../../nodia-server/src/migrations/1793850000000-CreateVisitNotificationSettings.ts)
+  registra preferencias por cuenta y negocio e instalaciones propias con control
+  de revisión. Los [endpoints de configuración](../../nodia-server/src/visit-notifications/visit-notifications.controller.ts)
+  distinguen ausencia de alta, alta activa, revocada y expirada. Antes de guardar
+  se valida URL HTTPS de un host admitido, clave P-256, secreto de suscripción y
+  expiración informada. Server cifra `endpoint` y claves en reposo con AES-256-GCM
+  asociado a la cuenta e instalación. Una huella del endpoint impide dos altas
+  activas para el mismo destino. La revocación explícita de la sesión vinculada
+  da de baja la instalación en la misma transacción y retira el material de
+  transporte. La expiración normal del login preserva el consentimiento.
+- La [configuración de registro](../../nodia-server/src/visit-notifications/web-push-config.ts)
+  requiere `WEB_PUSH_PUBLIC_KEY` (pública VAPID P-256 en base64url),
+  `WEB_PUSH_SUBSCRIPTION_KEY` (32 bytes hexadecimales para cifrado en reposo) y
+  `WEB_PUSH_ENDPOINT_HOSTS` (lista separada por comas de hosts HTTPS admitidos).
+  Configuración ausente o inválida deshabilita el alta. La lectura de
+  configuración expone `enabled`, `public_key` y `key_id`. Los estados de la
+  instalación exponen su UUID, estado, revisión y fecha de actualización. El
+  envío firmado con la clave VAPID privada corresponde a 004.03.
+- La [migración 179386](../../nodia-server/src/migrations/1793860000000-PlanProviderVisits.ts)
+  crea cola y ocurrencias en PostgreSQL. Los cambios de actividad, traslado,
+  alarma o agenda actualizan la revisión y encolan trabajo en la misma
+  transacción del cambio, también cuando el origen es CSV. La migración
+  encola registros históricos elegibles. El
+  [planificador](../../nodia-server/src/provider-visit-planning/use-case/reconcile-provider-visit-planning.use-case.ts)
+  reclama trabajo por proveedor con `FOR UPDATE SKIP LOCKED`, calcula por páginas
+  de hasta 48 contactos y confirma el avance y las ocurrencias en una sola
+  transacción. Las fechas elegibles llegan hasta siete días civiles desde hoy
+  en `America/Santiago`. El recálculo conserva las ocurrencias vigentes dentro
+  de su ventana de aviso. El cálculo guarda UTC y el motivo de
+  la hora elegida, incluido el ajuste cuando la alarma fija quedaría tarde.
+- El [worker de planificación](../../nodia-server/src/provider-visit-planning/provider-visit-planning.worker.ts)
+  consume la cola con un intervalo de 15 segundos y renueva los proveedores
+  activos con agenda cada 24 horas. Cancela o expira las ocurrencias que dejan
+  de aplicar y limpia lotes de ocurrencias e instalaciones retiradas conforme
+  a la retención de §6.1. La fila candidata a envío debe conservar estado
+  `planned`, tener `send_at <= ahora < expires_at` y coincidir con la revisión
+  vigente en `provider_visit_planning_queue`. La comprobación de destinatarios
+  y la entrega por instalación corresponden a 004.03.
+
+El [ADR111](../architecture/decisions/ADR-111-web-push-provider-visit-reminders.md)
+permanece propuesto. La [ficha candidata de recordatorios](../nodia-ai/knowledge/businesses/features/supplier-visit-reminders.md)
+registra este alcance parcial. La entrega, la interfaz de notificaciones y el
+piloto mantienen los gates de 004.03–004.05.
+
+#### Verificación de 004.02
+
+Los ensayos de [preferencias y suscripciones](../../nodia-server/test/visit-notifications.integration.mjs)
+y [planificación](../../nodia-server/test/provider-visit-planning.integration.mjs)
+pasaron con Server compilado y PostgreSQL 16 aislado. El primer ensayo cubrió
+permisos HTTP, datos cifrados, dos instalaciones, revisiones, baja y una carrera
+entre alta y revocación de sesión. El segundo cubrió migración ascendente,
+descendente y nuevamente ascendente, encolado de datos históricos, dos
+consumidores concurrentes, recuperación tras rollback inyectado, cambios de
+agenda y actividad, avance entre páginas de contactos, renovación del horizonte
+y limpieza. Pasaron las 12 pruebas de cálculo, incluidas medianoche y las dos
+transiciones del horario estacional. La regresión [CSV de Proveedores](../../nodia-server/test/provider-csv.integration.mjs)
+pasó 46 peticiones y conservó la alarma en una reimportación histórica.
+La instalación completa desde una base vacía pasó 47 comprobaciones. Pasaron
+también los ensayos de Contactos y las siete comprobaciones de precios/OCR.
+La suite completa de Server pasó 6370 pruebas en 376 archivos, con una prueba
+omitida, usando `--testTimeout=20000` en esa ejecución. Pasaron la compilación,
+la comprobación de artefactos y los pins locales de conocimiento. Oxlint
+conservó un aviso previo de `no-unsafe-finally` en un fixture ajeno al cambio.
+
+La [configuración local reproducible](../../nodia-server/package.json) expone
+`npm run test:pwa-004:integration`. El alcance verificado usa instalaciones y
+suscripciones sintéticas. La aceptación con navegadores reales corresponde a
+004.04/004.05 y el transporte a 004.03.
+
+### 6.5 Entrega Web Push desde Server — 004.03
+
+El [worker de entrega](../../nodia-server/src/visit-notifications/delivery/provider-visit-delivery.worker.ts)
+se registra en el proceso independiente de Server. La
+[migración 179387](../../nodia-server/src/migrations/1793870000000-CreateProviderVisitDeliveries.ts)
+crea el registro de entregas y protege la deduplicación frente a un rollback con
+registros. El
+[registro de entregas](../../nodia-server/src/visit-notifications/delivery/web-push-delivery.store.ts)
+identifica un aviso por negocio, proveedor, contacto, fecha civil, usuario e
+instalación. Conserva la revisión de la ocurrencia y de la instalación. El
+worker reclama por lease y comprueba nuevamente las revisiones, la ventana de
+envío, los registros activos, la relación explícita con el negocio, el acceso
+vigente a Negocios, la preferencia personal y la suscripción. La expiración
+normal del login conserva la suscripción y la revocación explícita la invalida.
+
+La transacción confirma que puede comenzar el intento antes de abrir HTTPS.
+Si el proceso se interrumpe antes de confirmar el intento, otro worker puede
+recuperar el lease. Si se interrumpe después, el resultado pasa a `unknown`.
+Ese estado y `accepted` bloquean reenvíos de la misma entrega. Una baja u otro
+cambio posterior a esa última verificación puede coincidir con un envío en
+curso. La aplicación revalida sesión y acceso al destino cuando se abre el aviso.
+
+El [adaptador](../../nodia-server/src/visit-notifications/delivery/web-push-transport.ts)
+usa la clave privada VAPID `WEB_PUSH_PRIVATE_KEY` del mismo par P-256 que
+`WEB_PUSH_PUBLIC_KEY` y el contacto operativo `WEB_PUSH_SUBJECT` (`mailto:` o
+HTTPS). Desencripta la suscripción con `WEB_PUSH_SUBSCRIPTION_KEY`. Solo conecta
+por HTTPS a un host admitido mediante `WEB_PUSH_ENDPOINT_HOSTS`, con resolución
+y conexión limitadas a una dirección pública verificada, validación del
+certificado contra el hostname original y sin redirecciones. Para el formato
+Web Push usa `web-push` con cifrado `aes128gcm` y autenticación VAPID. La fecha
+de expiración limita el TTL de cada intento. La carga tiene `version: 1`,
+`kind: "provider_visit"`, `path: "/business/<uuid>"` y `notificationId` opaco.
+El contenido visible corresponde a Client y deriva del tipo de aviso. Los
+logs operativos excluyen las credenciales, los cuerpos y los endpoints.
+
+Se permiten hasta tres intentos. Los rechazos HTTP 429 y 503 y los errores DNS
+previos a la conexión se reintentan con espera de 15 y 30 segundos más una
+variación de hasta 3 segundos, respetando un `Retry-After` posterior. Si no
+queda margen de entrega antes de caducar, el aviso expira. Un resultado 404 o
+410 vence solo la revisión de la suscripción que hizo el intento. Otros 5xx
+y errores de conexión posteriores al inicio del POST quedan `unknown`. Una
+respuesta 2xx representa aceptación del servicio de transporte. La
+visualización en un dispositivo requiere la verificación de 004.04/004.05.
+
+#### Verificación de 004.03
+
+`npm run test:pwa-004:integration` pasó con Server compilado y PostgreSQL 16
+aislado. El [ensayo de entrega](../../nodia-server/test/provider-visit-delivery.integration.mjs)
+verificó el aislamiento por negocio, suscripción y preferencia, incluido el
+administrador sin relación explícita. Dos workers concurrentes respetaron la
+identidad por instalación. Se comprobaron la revocación antes de un intento y
+entre intentos, `Retry-After`, el límite de tres, la caducidad, la respuesta
+ambigua y la recuperación antes y después de iniciar el intento. Un 410 de una
+revisión anterior conservó una suscripción que había rotado.
+
+Pasaron 31 pruebas focalizadas, que cubren el cálculo de reintentos y el
+[protocolo Web Push](../../nodia-server/src/visit-notifications/delivery/web-push-transport.spec.ts).
+Las pruebas capturan la petición HTTPS, descifran el mensaje con la clave de
+la instalación sintética y verifican la firma VAPID, el TTL y el destino TLS.
+La suite de Server pasó 6401 pruebas en 378 archivos, con una omitida. La
+instalación completa en PostgreSQL 16 pasó 47 comprobaciones. Pasaron el build
+y la verificación local de conocimiento. Oxlint conservó un aviso previo en
+un fixture ajeno al cambio.
+Las respuestas del servicio push fueron simuladas.
+
+### 6.6 Client y apertura del negocio — 004.04
+
+- En **Negocios → Market → Proveedores**, el formulario de proveedor edita la
+  alarma opcional `visit_alarm_time` en hora de Santiago. Mantiene una alarma
+  intacta sin enviarla de nuevo, envía `null` al borrarla y conserva el borrador
+  cuando falla el guardado. El control de avisos de la pestaña guarda la
+  preferencia de la cuenta para ese negocio.
+- En **Mi cuenta → Notificaciones**, Client prepara la clave pública y el
+  registro del worker, solicita la suscripción desde el botón y muestra
+  **Activo** al confirmar Server. El estado contempla permiso denegado,
+  instalación requerida en iOS/iPadOS, baja pendiente y suscripción que
+  requiere reactivación. El cambio de cuenta retira el transporte anterior del
+  navegador antes de vincular otro. El cierre explícito intenta la baja local y
+  Server revoca la sesión vinculada. La renovación ordinaria conserva el alta
+  sólo si coincide la suscripción activa.
+- `/service-worker.js` usa un registro raíz, muestra texto genérico en español
+  o inglés y valida la versión, la clase, el identificador y el destino
+  canónico del payload. Al pulsar el aviso intenta recargar una pestaña con ese
+  mismo destino o abrir la URL exacta. Client valida la sesión y las
+  asignaciones vigentes, y Server comprueba el acceso al negocio. Si es preciso
+  iniciar sesión, Client conserva el destino validado en el historial de esa
+  navegación. El worker no intercepta peticiones ni añade Cache Storage.
+
+El empaquetado verifica que el script compilado conserve los bytes del asset de
+origen y la verificación pública comprueba los bytes y el MIME. En Chromium
+local se probó actualizar A → B → A conservando un solo registro y retirar ese
+registro con un script de laboratorio en la misma URL. Para revertir a una
+versión anterior a Web Push, primero retirar el envío y publicar la retirada en
+la URL estable durante el periodo en que los navegadores puedan actualizarse.
+Devolver un 404 o servir el fallback HTML deja registros previos en equipos
+que aún no procesaron la retirada. La retirada en el origen público queda para
+el piloto.
+
+Chromium recibió un push de DevTools e invocó `showNotification`. Con el clic
+sintético, una pestaña ya abierta en el negocio volvió a navegar por red. Para
+la rama de ventana nueva, el ensayo navegó a la URL exacta solicitada al
+navegador. Con cuentas y respuestas HTTP sintéticas, comprobó el acceso
+autorizado, la renovación fallida seguida de login y vuelta al destino, el
+módulo retirado sin petición al negocio y la denegación HTTP del negocio para
+otra cuenta y para un usuario con permisos retirados. Los 32 ensayos de assets
+y empaquetado pasaron en Linux x64 con el Node fijado por CI. También pasaron
+85 pruebas focalizadas de Server de política HTTP, autoridad del negocio,
+alarma y notificaciones. Un ensayo separado con NestJS y PostgreSQL 16
+revalidó las rutas de preferencias y el alta, la baja y el aislamiento de
+suscripciones con el guard de módulos real.
+
+El ensayo de interfaz verificó en escritorio el permiso bloqueado y el alta y
+baja de la instalación con suscripción y API sintéticas. A 390 px guardó la
+preferencia del negocio y creó un proveedor desde el formulario con alarma
+`08:45`. Los ensayos de Client cubren además el borrado explícito, los
+reintentos de baja tras desconexión y el aislamiento ante cambios de cuenta.
+Pasaron 3372 pruebas en 415 archivos, el chequeo de tipos, el lint de Client y
+el build de producción. El artefacto compilado validó los 11 assets PWA,
+incluido el worker idéntico al de origen.
+
+La entrega a través de un servicio push público, la visualización en el sistema
+operativo y la apertura de una ventana nueva mediante una acción real quedan
+para 004.05, incluida la PWA instalada en iOS/iPadOS.
+
+### 6.7 Piloto HTTPS y retirada — 004.05
+
+El piloto del 2026-11-20 usa un origen HTTPS temporal con certificado válido,
+un Client compilado, un NestJS aislado y PostgreSQL 16 desechable. Sólo el
+operador puede ingresar. El dominio sirve el manifiesto y el worker del build
+con los tipos MIME y bytes verificados. El API real de notificaciones, el guard
+de módulos, el planificador y el consumidor usan un negocio, una cuenta y
+claves efímeras de prueba. Los controles para programar y detener el ensayo
+están en loopback. El destino Web Push admitido en este ensayo es FCM.
+
+La [consulta del piloto](../../ops/lab/pwa-004-pilot-snapshot.sql) emite un
+recibo agregado y de solo lectura para la cuenta y el negocio de prueba.
+Registrar consentimiento, instalaciones activas y revocadas, ocurrencias
+vigentes, estados de entrega, intentos y causas agrupadas. FCM `201` confirma
+la aceptación por el transporte. Los eventos de Chrome y la navegación
+posterior acreditan etapas distintas del recorrido.
+
+| Ensayo en Chrome 158 para Windows 10 | Resultado observado |
+| --- | --- |
+| 20:50 UTC, primer envío con cero páginas de Nodia | FCM aceptó y Chrome recibió. Chrome descartó el aviso con `DELIVERY_PERMISSION_DENIED` al perderse el permiso de la sesión de automatización. |
+| 20:53 UTC, permiso de prueba conservado y cero páginas de Nodia | FCM aceptó en un intento. Chrome registró recepción, despacho al worker y `Notification displayed` a las 20:53:01 UTC. El navegador siguió en ejecución. |
+| 20:56–21:01 UTC, nueva visita después de la baja | El `DELETE` autenticado devolvió 200 y dejó la instalación `revoked`, sin datos de transporte y con el opt-in del negocio activo. La visita distinta estuvo vigente cinco minutos. El worker avanzó de 358 a 651 ciclos durante la ventana, con cero errores y cero filas de entrega para esa visita. El total quedó en dos intentos y dos aceptaciones FCM, ambos anteriores a la baja. |
+
+El evento de presentación de Chrome se observó con un permiso temporal de
+prueba activo. La apertura desde el aviso del sistema quedó pendiente en ese ensayo. El
+control remoto de Windows se detuvo al no poder comprobar la URL del navegador
+y no se observó un clic humano ni una lectura autorizada posterior atribuible
+al aviso. La apertura del negocio y la baja desde la interfaz conservan la
+evidencia sintética de §6.6. La matriz móvil tampoco se ensayó en este origen.
+
+Para el control posterior a la baja, mantener habilitada la preferencia del
+negocio, programar otra visita y comparar los intentos y los eventos del
+navegador hasta que caduque. Un aviso aceptado antes de la baja todavía puede
+estar en el centro de notificaciones. El control corresponde a la nueva
+ocurrencia programada después de confirmar `revoked`.
+
+Al terminar el ensayo se apagaron el emisor, la API, el gateway y el túnel.
+Se eliminaron la base desechable y los archivos efímeros de acceso y control
+del servidor. Una petición pública posterior al worker devolvió 530. El
+perfil local de Chrome quedó cerrado en `.tmp/`. La política de ejecución
+impidió borrar ese directorio de forma recursiva.
+
+#### Repetición asistida en Windows
+
+En otro origen HTTPS temporal, FCM aceptó el aviso de las 21:32 UTC y Chrome
+registró su presentación con cero páginas de Nodia abiertas. El operador
+confirmó que el aviso no aparecía en el Centro de actividades. La consulta de
+`ToastNotifier.Setting` al identificador de Google Chrome devolvió
+`DisabledForApplication`, lo que identifica un bloqueo por aplicación en
+Windows. Se pidió al operador habilitar ese remitente antes de repetir el
+clic del sistema.
+
+En esta repetición se pulsó **Desactivar en este dispositivo** en el Client
+HTTPS. La API autenticada confirmó `revoked` y `PushManager.getSubscription()`
+devolvió `null` a las 21:36:48 UTC. Se programó una visita distinta para las
+21:38 UTC, con la preferencia del negocio activada. A las 21:38:11 UTC el
+worker había ejecutado nuevos ciclos y el total de intentos seguía en dos.
+
+Una vez que el operador habilitó las notificaciones de Chrome, Windows devolvió
+`Enabled`. Se reactivó deliberadamente la instalación, se cerraron las páginas
+de Nodia y se habilitó otra vez la preferencia del negocio. Chrome registró la
+presentación a las 21:39:08 UTC y el operador confirmó que el aviso apareció en
+Windows. Al pulsar el cuerpo, el aviso se cerró. El perfil temporal conservó
+cero páginas del piloto, el registro de Chrome carecía del evento de clic y el
+API registró cero lecturas nuevas del negocio. Se eligió repetir en Chrome
+habitual. El helper de Chromium activo en Windows lanza Chrome con el ID del
+aviso y el arranque resuelve el perfil dentro del directorio de datos del
+proceso. [Activación nativa](https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/notification_helper/)
+· [Selección de perfil](https://chromium.googlesource.com/chromium/src/+/91ba9c5ad23d04f49e3472e703b58b666641d3cb/chrome/browser/ui/startup/startup_browser_creator.cc)
+
+Los avisos de las 21:55 y 21:57 UTC fueron aceptados por FCM en un intento
+cada uno. El alta que recibió ambos reutilizó la instalación del perfil
+temporal, y una petición autenticada al manifiesto desde ese perfil confirmó
+que el acceso al piloto se había abierto allí. Se revocó esa instalación y
+se confirmó la eliminación de su suscripción local a las 21:57:46 UTC. Se
+cerró ese proceso de Chrome y el navegador habitual seguía en ejecución.
+El envío quedó condicionado al alta en el navegador habitual y al cierre de
+la pestaña del piloto.
+
+#### Apertura desde el aviso de Windows
+
+El piloto confirmó el alta de una instalación distinta en el Chrome habitual
+del operador a las 22:12:55 UTC. La instalación temporal quedó revocada.
+El operador cerró la pestaña y dejó Chrome en ejecución. A las 22:14 UTC,
+FCM aceptó el nuevo aviso con HTTP 201 en un intento. El operador pulsó el
+aviso de Windows y su captura mostró **Panadería piloto 004.05** en el destino
+canónico `/business/:id`. A las 22:14:21 UTC, la comprobación del API registró
+una lectura autorizada adicional del negocio exacto. El resumen comercial
+mostró alertas porque el fixture aislado ofrece un conjunto acotado de datos.
+Este ensayo acredita la entrega y apertura del destino en Chrome para Windows.
+
+Al finalizar, la API confirmó la revocación de la instalación del Chrome
+habitual a las 22:18:50 UTC. El recibo final registró dos instalaciones
+revocadas, cero activas y cero datos de transporte retenidos. Se verificó la
+retirada de la base, las credenciales de acceso, la API, el gateway y el túnel.
+La URL temporal dejó de servir el worker y devolvió 530.
+
+#### Verificación en Edge para Windows
+
+En Edge 157.0.4341.60, un perfil aislado registró una suscripción real de
+WNS en `wns2-bn3p.notify.windows.com`. El transporte compilado de Nodia
+envió el payload canónico cifrado y WNS respondió HTTP 201. El service
+worker de Client se ejecutó desde un origen de loopback seguro. Edge
+registró recepción, despacho, `Notification displayed` y fin del evento,
+con cero páginas del origen abiertas en todo el recorrido. La apertura
+desde una notificación visible del sistema en Edge habitual queda pendiente.
+Al retirar el entorno se comprobó la baja de la suscripción local, la
+desinstalación del worker y el cierre del servidor y perfil de prueba.
+
+#### Verificación en Chrome para Android
+
+El origen HTTPS temporal sirvió el manifiesto, los iconos y el worker.
+El gateway registró un acceso autenticado desde Chrome 158 en Android 14.
+El operador informó que instaló la app y llegó al inicio. El estado del
+servidor se mantuvo sin intentos mientras se preparó el aviso con la
+preferencia de negocio deshabilitada. A las 22:35:57 UTC, el API registró
+HTTP 200 para el alta desde Chrome en Android. Tras el cierre de la app
+informado por el operador, se habilitó la preferencia. A las 22:36:49 UTC
+se comprobó la aceptación de FCM con HTTP 201 en un intento. El operador
+confirmó que el aviso llegó. Al tocar su cuerpo, el aviso se cerró sin abrir
+una pantalla; el API registró cero lecturas del negocio. La recepción queda
+comprobada para ese dispositivo. Sigue pendiente la apertura del destino.
+Se preparó una repetición con diagnóstico local del worker en el artefacto
+temporal del piloto para distinguir evento de toque y resultado de apertura.
+El operador informó que la primera página de diagnóstico quedó esperando la
+activación. La segunda versión comprueba un marcador de activación del worker
+y muestra el estado del registro. Chromium de laboratorio verificó la
+transición desde el worker original y la respuesta HTTPS de los archivos.
+El operador confirmó «Diagnóstico listo» en Android y cerró la página de
+diagnóstico y Nodia antes del envío. FCM aceptó el aviso de diagnóstico en
+un intento (HTTP 201, constatado a las 22:55:25 UTC). Al tocarlo, Chrome abrió
+**Panadería piloto 004.05**, según el operador. A las 22:57:42 UTC, el API
+se constató una lectura autorizada de la ruta canónica del negocio y cero
+denegaciones. Este resultado corresponde al worker con instrumentación del
+piloto. Queda pendiente repetir la apertura con el worker original y
+determinar la causa del primer intento fallido.
+
+La sesión HTTPS temporal venció antes de que se registrara una baja desde la
+interfaz de Android. A las 23:00:05 UTC se revocó la instalación aislada
+mediante el `DELETE` autenticado del API. La base confirmó cero instalaciones
+activas y la retirada del material de transporte de la instalación revocada.
+Se reactivó la preferencia personal del negocio y se programó una visita
+distinta con ventana de entrega de 23:01 a 23:06 UTC. La observación del
+control terminó a las 23:06:02 UTC con cero filas de entrega y cero intentos
+para esa visita. El worker pasó de 893 a 1191 ciclos, sin errores. La baja
+desde el botón y la retirada de la suscripción local en Android quedan por
+comprobar.
+
+Al cerrar el piloto de Android se retiraron la API, la base desechable, los
+archivos de acceso y control, el gateway y el túnel. El origen público
+devolvió HTTP 530 al solicitar el worker después del cierre.
+
+El 2026-11-20 el usuario decidió aplazar la validación de Web Push en iPhone
+y retomar el tema si aparecen fallos. iOS sigue sin verificación en un
+dispositivo real. PWA-002 y PWA-003 tienen sus propios criterios de avance.
 
 ## 7. PWA-005 — lectura offline por módulo
 
 El 2026-11-21 el usuario eligió Teacher como primer módulo y pidió descargar
 material de estudio, abrirlo sin conexión y asociarlo a la cuenta correcta.
-El candidato local reutiliza la lectura autorizada del material vigente de
+PWA-005 reutiliza la lectura autorizada del material vigente de
 una lección. Su política se detalla en el [ADR114 propuesto](../architecture/decisions/ADR-114-teacher-offline-study-copies.md)
 y en la [ficha de material sin conexión](../nodia-ai/knowledge/studies/features/offline-study-material.md).
 
@@ -278,7 +818,8 @@ y en la [ficha de material sin conexión](../nodia-ai/knowledge/studies/features
 - [x] Cifrar la copia y vincularla a cuenta y sesión. Aplicar invalidación ante salida, sesión o cuenta nueva y revocación conocida. Ofrecer eliminación de una copia.
 - [x] Validar la disponibilidad del lector público con el worker antes de confirmar. Abrirlo desde Descargas de Teacher o desde el aviso de arranque sin red.
 - [x] Probar en Chrome la reapertura sin red, el cambio de cuenta en el mismo perfil, el acceso directo a la ruta anterior, el borrado y una revocación conocida.
-- [ ] Verificar la entrega en un origen publicado y las plataformas declaradas, la recuperación tras purga del navegador y el comportamiento con cuota agotada en cada plataforma.
+- [x] Verificar la descarga y reapertura sin red desde el origen publicado en Chrome para Windows (§8.3).
+- [ ] Verificar las plataformas restantes, la recuperación tras purga del navegador y el comportamiento con cuota agotada.
 
 ### Verificación local — 2026-11-21
 
@@ -323,7 +864,8 @@ otras escrituras requieren sus propios contratos.
   **Conservar el del servidor**. La primera elección vuelve a comprobar la
   revisión mostrada y la segunda descarta el pendiente sin escribir.
 - [x] Verificar el piloto HTTPS local en Windows con Server y PostgreSQL.
-- [ ] Verificar el candidato en un origen publicado y en dispositivos físicos distintos.
+- [x] Verificar guardado, reconexión y resolución desde el origen publicado en dos perfiles de Chrome para Windows (§8.3).
+- [ ] Repetir el recorrido en dispositivos físicos distintos.
 
 ### 8.1. Verificación local — 2026-11-21
 
@@ -374,17 +916,41 @@ del túnel público. La verificación de un origen publicado queda pendiente.
 
 ### 8.3. Publicación HTTPS — 2026-11-21
 
-PWA-005/006 y la base de actualización y reconexión se integraron por los
-[PR 83](https://github.com/oscarvalenzuela25/Nodia/pull/83) y
-[PR 84](https://github.com/oscarvalenzuela25/Nodia/pull/84). Pasaron el
-[CI de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44872170628)
+El lote de Teacher incorpora PWA-005/006 y las bases de actualización y
+reconexión de PWA-002/003. Se integró en `development` con el
+[PR 83](https://github.com/oscarvalenzuela25/Nodia/pull/83) y se promovió a
+`master` con el [PR 84](https://github.com/oscarvalenzuela25/Nodia/pull/84).
+El primer CI detectó un conflicto de semántica accesible en los diálogos.
+El indicador de conexión conserva su anuncio con `aria-live` y `aria-atomic`.
+
+El [CI de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44872170628)
 y el [CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44873017820)
-para `c13ef763`. Dos perfiles de Chrome para Windows descargaron la misma
-lección sintética, guardaron puntos distintos y los recuperaron al reabrir sin
-red. Se completó un reintento después de fallar la consulta de un recibo. El
-segundo perfil recibió el conflicto y **Usar este punto** avanzó el cursor a
-revisión 5. En otro conflicto, **Conservar el del servidor** dejó esa revisión
-con cero escrituras después de elegir.
+pasaron para `c13ef763`. CD instaló Server y Client y verificó los 13
+recursos de la PWA. La comprobación HTTPS desde el PC confirmó el API activo,
+el rechazo de una sesión anónima, el scope del worker y la versión
+`124b910c147c65273a59ec16`. Los once archivos del lector coinciden con los
+metadatos de ese worker.
+
+En dos perfiles de Chrome para Windows se autenticó la misma cuenta con
+sesiones distintas. Ambos descargaron la misma versión de una lección
+sintética de DNS y reabrieron el lector sin red con el worker activo. Los
+perfiles conservaron los puntos diferentes que habían marcado.
+
+1. A guardó **Un nombre y una dirección: caso ficticio** desde revisión 3.
+   Su primera consulta de recibo al reconectar falló por transporte y el
+   lector mostró el resultado pendiente de confirmar. **Sincronizar ahora**
+   recuperó el mismo intento. El PATCH respondió HTTP 200 y la lectura
+   posterior confirmó revisión 4.
+2. B había marcado **Qué hace DNS y qué no hace**. Al reconectar recibió
+   `409 revision_conflict`. El lector mostró ambos títulos y conservó
+   revisión 4. **Usar este punto** devolvió HTTP 200 y dejó el punto de B
+   en revisión 5.
+3. A había marcado **Idea central** sin red desde revisión 4. Ante el segundo
+   conflicto, **Conservar el del servidor** dejó el punto de B en revisión 5
+   con cero PATCH posteriores a la elección, incluso al recargar.
+
+La repetición deliberada del mismo PATCH se comprobó en §8.2. La prueba
+publicada cubre dos perfiles de un mismo PC.
 
 ### 8.4. Lectura y resolución de conflictos más claras — 2026-11-21
 
@@ -416,22 +982,38 @@ incluyendo HTML permanecen dentro de 512 KiB y 32 archivos. El parser se
 carga al abrir una copia y el worker lo prepara con el resto de los recursos
 para que esté disponible sin red.
 
+[PR 85](https://github.com/oscarvalenzuela25/Nodia/pull/85) y
+[PR 86](https://github.com/oscarvalenzuela25/Nodia/pull/86) integraron la
+entrega. El [CI de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44877292270)
+y el [CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44878161812)
+pasaron en `8d63163d`. La versión publicada `443becb4f02108594e215676`
+verificó los 13 archivos del lector por HTTPS y el mensaje de inicio de
+sesión desde un perfil limpio de Chrome, con el material oculto.
+
 ## 9. Seguimiento y entregables
 
 - [x] Plan creado con PWA-001 independiente y fases posteriores desglosadas.
 - [x] Ficha candidata e índices enlazados; entrada explícita de fuente para validación, sin publicación.
 - [x] Desarrollar PWA-001 desde development actualizado, en su propia rama; publicación y verificación HTTPS registradas en§12.
 - [x] Registrar aceptación humana de funcionamiento y cierre de PWA-001 por alcance (§15); conservar la matriz AC01–AC12 como evidencia por criterio, sin inventar pruebas de dispositivos.
-- [x] Implementar PWA-002 y PWA-003 como candidatos locales (§4 y §5).
-- [ ] Verificar la actualización, la reversión y la reconexión con el artefacto publicado.
-- [ ] Elegir eventos push antes de PWA-004.
+- [x] Implementar PWA-002 y PWA-003 (§4 y §5) y publicar sus bases con Teacher (§8.3).
+- [ ] Verificar la actualización y reversión de PWA-002 y la recuperación de PWA-003 en el despliegue.
+- [x] Identificar como primer evento push la visita de un contacto de proveedor (§6).
+- [x] Documentar los contratos de PWA-004.01 para revisión (§6.1).
+- [x] Implementar localmente los contratos de Server y la planificación durable (PWA-004.02, §6.4).
+- [x] Verificar PWA-004.02 con Server compilado y PostgreSQL 16 aislado.
+- [x] Implementar y verificar en laboratorio el consumidor de entrega Web Push (PWA-004.03, §6.5).
+- [x] Implementar el service worker y la interfaz de notificaciones (PWA-004.04, §6.6).
+- [x] Ejecutar el piloto HTTPS de entrega, apertura y retirada en Chrome para Windows (PWA-004.05, §6.7).
+- [ ] Completar la matriz de otros navegadores y dispositivos de PWA-004.05 según el alcance de soporte.
 - [x] Elegir Teacher y verificar su lectura offline por cuenta en laboratorio (PWA-005, §7).
 - [x] Implementar y verificar el punto de lectura de Teacher como primera operación elegible de PWA-006 (§8).
-- [x] Verificar PWA-005 y PWA-006 en el despliegue con dos perfiles de Chrome para Windows (§8.3).
-- [ ] Completar las pruebas en las plataformas declaradas y en dispositivos físicos distintos.
+- [x] Publicar PWA-005 y PWA-006 y verificar ambas en dos perfiles de Chrome para Windows (§8.3).
+- [ ] Completar la verificación de PWA-005 y PWA-006 en las plataformas declaradas y en dispositivos físicos distintos.
 
 El corte inicial fue documental. El candidato PWA-001 posterior implementó
-manifiesto, iconos, metadatos y validación del artefacto. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
+manifiesto, iconos, metadatos y validación del artefacto, sin añadir
+dependencias, service worker ni cambios del VPS. La [ficha funcional](../nodia-ai/knowledge/general-settings/features/pwa-installation.md)
 permanece draft/implemented, con aprobación nula. Esta ficha y las candidatas de
 Estudios siguen fuera del contexto publicado de NodiaAI.
 Los reportes intermedios van a output/ o .tmp/; sólo evidencia durable útil se

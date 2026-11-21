@@ -18,7 +18,14 @@ export const useGoogleSignIn = () => useMutation({
 
 export const useSignOut = () => useMutation({
   mutationFn: async () => {
-    useAuthStore.getState().logout();
+    const auth = useAuthStore.getState();
+    const userId = auth.user?.id;
+    if (userId) {
+      void import("../../notifications/infrastructure/pushInstallation")
+        .then(({ cleanupPushOnLogout }) => cleanupPushOnLogout(userId))
+        .catch(() => undefined);
+    }
+    auth.logout();
     googleLogout();
     await logoutSession();
   },

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   Avatar,
   Stack,
@@ -18,6 +18,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import useProfileMenu from "./hooks/useProfileMenu";
 import ThemeSelector from "../ThemeSelector";
 import ThemePresetSelector from "../../../components/ThemePresetSelector";
@@ -25,6 +26,7 @@ import LanguageSelector from "../../../components/LanguageSelector";
 import { TopbarRoot } from "./styles";
 import AiProviderIndicators from "./components/AiProviderIndicators";
 import { useCanAccessModule } from "../../../store/generalSettings/useGeneralSettings";
+import { NOTIFICATIONS_ROUTE } from "../../../modules/notifications/constants/routes";
 
 type Props = {
   onDrawerToggle: () => void;
@@ -128,6 +130,18 @@ const Topbar: FC<Props> = ({
                 {user?.email}
               </Typography>
               <Divider />
+              <MenuItem
+                component={Link}
+                to={NOTIFICATIONS_ROUTE}
+                onClick={closeMenu}
+                disabled={isBusy}
+                sx={{ minHeight: 44 }}
+              >
+                <ListItemIcon>
+                  <NotificationsOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>{t("notifications:title")}</ListItemText>
+              </MenuItem>
               <MenuItem
                 onClick={() => window.location.reload()}
                 disabled={isBusy}

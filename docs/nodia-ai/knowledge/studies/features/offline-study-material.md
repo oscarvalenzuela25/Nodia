@@ -4,11 +4,11 @@
   "document_id": "studies.offline-study-material",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "PWA-005 publicado y verificado con Chrome para Windows. La iteración del lector recupera el acceso a la copia vigente al reabrir Teacher y presenta la estructura de lectura del Markdown."
+    "notes": "PWA-005 publicado. Descarga y reapertura sin red verificadas en Chrome para Windows contra Teacher en producción. El lector muestra la estructura del Markdown y restaura el acceso a copias vigentes."
   },
   "integration_status": "not_applicable",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",

@@ -13,6 +13,7 @@ import { Provider } from '../entities/provider.entity.js';
 import { ProviderContact } from '../../provider-contact/entities/provider-contact.entity.js';
 import { Business } from '../../business/entities/business.entity.js';
 import {
+  assertPendingContactVisitsSpecified,
   contactHash,
   normalizeContact,
   validateContactId,
@@ -87,7 +88,14 @@ export class ImportProvidersUseCase {
           .update(`provider-csv:${index}:${hash}`)
           .digest('hex');
         const key = `${digest.slice(0, 8)}-${digest.slice(8, 12)}-4${digest.slice(13, 16)}-a${digest.slice(17, 20)}-${digest.slice(20, 32)}`;
-        return { id: contact.id, version: contact.version, values, hash, key };
+        return {
+          id: contact.id,
+          version: contact.version,
+          schedule: contact.schedule,
+          values,
+          hash,
+          key,
+        };
       });
       return { ...item, name, contacts };
     });
@@ -205,6 +213,10 @@ export class ImportProvidersUseCase {
                 'Contact changed; download its latest version',
               );
             if (same) continue;
+            assertPendingContactVisitsSpecified(
+              current.schedule,
+              contact.schedule,
+            );
             const result = await contacts
               .createQueryBuilder()
               .update()

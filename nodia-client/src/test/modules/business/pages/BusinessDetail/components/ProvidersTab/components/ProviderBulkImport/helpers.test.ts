@@ -3,7 +3,7 @@ import { buildImportPayload, escapeCsvValue, parseCSV } from '../../../../../../
 const businessId = '11111111-1111-4111-8111-111111111111';
 describe('Provider CSV round trip', () => {
   it('preserves IDs, zero, false, multiline text, multiple contacts and historical mapping', () => {
-    const contacts = [{ id: '9007199254740993', version: 4, name: 'María, "Sur"', phone: [{ number: '+56987654321' }], email: null, schedule: { monday: [{ from: '09:00', to: '11:00', description: 'Entrega, semanal' }] }, description: 'Primera línea\nSegunda línea', is_active: false }, { name: 'Pedro' }];
+    const contacts = [{ id: '9007199254740993', version: 4, name: 'María, "Sur"', phone: [{ number: '+56987654321' }], email: null, schedule: { monday: [{ from: '09:00', to: '11:00', description: 'Entrega, semanal' }], wednesday: [{ from: null, to: null }] }, description: 'Primera línea\nSegunda línea', is_active: false }, { name: 'Pedro' }];
     const fields = { code: 'SKU', custom: { value: 'Extra' }, cost_price: { value: '', instructions: 'Solo instrucciones' } };
     const csv = 'name,tax,is_active,id,contacts,fields_json,field_code,field_cost_price,instructions_cost_price,csv_version\r\n' + ['Sur, "Chile"\nSucursal', 0, false, '9007199254740994', JSON.stringify(contacts), JSON.stringify(fields), 'SKU', '', 'Solo instrucciones', '2'].map(escapeCsvValue).join(',');
     const rows = parseCSV('\uFEFF' + csv);

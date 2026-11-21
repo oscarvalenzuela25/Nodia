@@ -11,11 +11,10 @@ export type ContactDay = (typeof CONTACT_DAYS)[number];
 export interface ContactPhone {
   number: string;
 }
-export interface ContactTimeRange {
-  from: string;
-  to: string;
-  description?: string;
-}
+export type ContactTimeRange = (
+  | { from: string; to: string }
+  | { from: null; to: null }
+) & { description?: string };
 export type ContactSchedule = Partial<Record<ContactDay, ContactTimeRange[]>>;
 export interface ContactValues {
   name: string;
