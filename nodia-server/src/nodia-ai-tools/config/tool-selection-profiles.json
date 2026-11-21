@@ -119,6 +119,12 @@
       ]
     },
     {
+      "profile_id": "product_catalog_reads",
+      "revision": 1,
+      "capability_ids": ["nodia_businesses_list", "nodia_products_list"],
+      "required_capability_ids": ["nodia_businesses_list", "nodia_products_list"]
+    },
+    {
       "profile_id": "automatic_discovery",
       "revision": 1,
       "capability_ids": [],

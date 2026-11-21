@@ -60,6 +60,17 @@ del propietario y colaborador. También verifica que los negocios ajenos
 quedan fuera y que la revocación se aplica al recuperar un resultado previo.
 La prueba usa sesiones de laboratorio, sin llamadas a proveedores.
 
+### Lectura de catálogo en Gemini Agentic — 2026-11-21
+
+Una solicitud inequívoca de productos con precios puede usar
+`product_catalog_reads` cuando la selección Gemini Agentic tiene MCP
+observado y el actor está autorizado para ambas lecturas publicadas.
+El perfil incluye `nodia_businesses_list` y `nodia_products_list`: el
+modelo resuelve el negocio por nombre y obtiene sus precios en la misma
+generación. Solicitudes mixtas o que requieren otras capacidades siguen
+el descubrimiento automático. La selección del perfil no sustituye la
+autorización vigente del negocio en cada consulta. [Evidencia de la VM](../evidence/nodia-ai-gemini-products-recovery-20261121.md).
+
 ## Cómo conoce NodiaAI los productos
 
 Cada módulo registra una descripción funcional, recursos, operaciones, esquemas públicos, reglas de ámbito y medidas admitidas. NodiaAI descubre las capacidades relevantes y pide el detalle necesario; no necesita cargar 156 definiciones en cada turno. La publicación real incluye sólo herramientas verificadas y autorizadas para la sesión, el modo y el modelo seleccionados.

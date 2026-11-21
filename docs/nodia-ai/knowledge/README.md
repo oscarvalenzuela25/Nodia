@@ -9,6 +9,11 @@ La consulta utiliza precios del catálogo actual y el ámbito autorizado de
 Negocios. Los resultados paginados incluyen el precio regular, el vigente y
 la unidad. La revisión firmada de Productos sigue vigente.
 
+Gemini Agentic usa el [perfil de consulta de catálogo](../../mvp/40-nodia-ai-tool-catalog-v1.md#lectura-de-catálogo-en-gemini-agentic--2026-11-21)
+para solicitudes inequívocas de productos y precios con ambas lecturas
+autorizadas. La revisión firmada de Productos conserva su contrato de
+lectura y el alcance por negocio.
+
 ## Punto de lectura de Teacher sin conexión — 2026-11-21
 
 La [ficha candidata de avance](studies/features/offline-reading-progress.md)
