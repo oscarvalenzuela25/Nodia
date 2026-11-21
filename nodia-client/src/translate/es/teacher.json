@@ -2,6 +2,7 @@
   "offline_study": {
     "library": "Descargas de Teacher",
     "download": "Descargar para leer sin conexión",
+    "update": "Actualizar copia descargada",
     "cancel": "Cancelar descarga",
     "open": "Abrir copia descargada",
     "saved": "Copia guardada en este dispositivo",

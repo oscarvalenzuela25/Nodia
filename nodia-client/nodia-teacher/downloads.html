@@ -9,10 +9,19 @@
   </head>
   <body>
     <main>
-      <a id="teacher-home" href="/nodia-teacher">Volver a Teacher</a>
-      <h1 id="page-title">Descargas de Teacher</h1>
-      <p id="message" role="status"></p>
-      <p id="failure" role="alert"></p>
+      <header class="reader-header">
+        <div class="reader-nav">
+          <a class="back-link" id="teacher-home" href="/nodia-teacher">Volver a Teacher</a>
+          <span id="network-state" class="network-state" hidden></span>
+        </div>
+        <h1 id="page-title" tabindex="-1">Descargas de Teacher</h1>
+      </header>
+      <div class="reader-notices">
+        <p id="checking" hidden></p>
+        <p id="message" role="status"></p>
+        <p id="failure" role="alert"></p>
+        <button id="retry" type="button" hidden></button>
+      </div>
       <ul id="downloads" aria-labelledby="page-title" hidden></ul>
       <article id="lesson" aria-labelledby="lesson-title" hidden></article>
       <noscript>Activa JavaScript para abrir tus descargas.</noscript>

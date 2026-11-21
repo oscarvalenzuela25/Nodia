@@ -45,8 +45,11 @@ autoridad de Teacher antes de mostrar una lista o copia.
 
 `/nodia-teacher/downloads` usa un lector estático sin datos de la cuenta.
 El service worker prepara bajo demanda sólo el HTML y los recursos públicos
-verificados de ese lector. La biblioteca presenta los bloques como texto y
-muestra su caducidad. La persona puede eliminar la copia desde el lector.
+verificados de ese lector. La biblioteca muestra la caducidad y permite
+eliminar la copia. El lector construye elementos de texto y estructura a partir
+del Markdown. Conserva los rótulos de enlaces e imágenes como texto. El HTML
+de la lección queda excluido del renderizado y la lectura no solicita recursos
+externos.
 
 ## Consecuencias
 

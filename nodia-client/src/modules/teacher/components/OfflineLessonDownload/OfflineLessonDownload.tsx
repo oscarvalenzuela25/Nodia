@@ -1,32 +1,49 @@
 import { useEffect, useRef, useState } from "react";
 import Button from "@mui/material/Button";
 import DownloadOutlined from "@mui/icons-material/DownloadOutlined";
+import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
 import { useConnectionStatus } from "../../../../pwa/useConnectionStatus";
+import useAuthStore from "../../../../store/authStore";
 import { TEACHER_DOWNLOADS_ROUTE } from "../../constants/routes";
 import { downloadLesson, type DownloadLessonInput } from "../../infrastructure/downloadLesson";
 import { OfflineStudyError } from "../../infrastructure/offlineStudy";
+import { offlineStudyScope } from "../../infrastructure/offlineStudyIdentity";
+import { offlineScopeKey, useOfflineLessonCopy } from "./hooks/useOfflineLessonCopy";
+import { offlineLessonActionStyles } from "./styles";
 
-export default function OfflineLessonDownload({ disabled, ...lesson }: DownloadLessonInput & { disabled: boolean }) {
+type Props = DownloadLessonInput & { disabled: boolean };
+
+function DownloadActions({ disabled, scope, ...lesson }: Props & { scope: string | null }) {
   const { t } = useTranslation("teacher");
   const { status } = useConnectionStatus();
   const pending = useRef<AbortController | null>(null);
+  const downloadButton = useRef<HTMLButtonElement>(null);
+  const openButton = useRef<HTMLAnchorElement>(null);
+  const restoreFocus = useRef(false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState<string>();
+  const copyId = `${lesson.studyId}:${lesson.unitId}`.toLowerCase();
+  const { copy, checking } = useOfflineLessonCopy(copyId, scope, lesson);
+  const canOpen = copy === "current" || copy === "legacy";
   useEffect(() => () => pending.current?.abort(), []);
 
+  useEffect(() => {
+    if (saving || checking || !restoreFocus.current) return;
+    restoreFocus.current = false;
+    if (document.activeElement === document.body) (canOpen ? openButton.current : downloadButton.current)?.focus();
+  }, [canOpen, checking, saving]);
+
   async function download() {
-    if (disabled || pending.current || status === "offline") return;
+    if (disabled || !scope || checking || pending.current || status === "offline") return;
+    restoreFocus.current = document.activeElement === downloadButton.current;
     const controller = new AbortController();
     pending.current = controller;
     setSaving(true);
     try {
-      const copy = await downloadLesson(lesson, controller.signal);
-      if (controller.signal.aborted) return;
-      setSaved(copy.id);
-      sileo.success({ title: t("offline_study.saved") });
+      await downloadLesson(lesson, controller.signal);
+      if (!controller.signal.aborted) sileo.success({ title: t("offline_study.saved") });
     } catch (error) {
       if (controller.signal.aborted) return;
       const description = error instanceof OfflineStudyError
@@ -44,15 +61,26 @@ export default function OfflineLessonDownload({ disabled, ...lesson }: DownloadL
   }
 
   return <>
-    <Button variant="outlined" startIcon={<DownloadOutlined />} sx={{ minHeight: 44 }}
-      disabled={disabled || status === "offline"} loading={saving} onClick={() => void download()}>
-      {t("offline_study.download")}
-    </Button>
-    {saving && <Button variant="outlined" onClick={() => {
-      pending.current?.abort(); pending.current = null; setSaving(false);
-    }}>{t("offline_study.cancel")}</Button>}
-    {saved && <Button variant="outlined" href={`${TEACHER_DOWNLOADS_ROUTE}#${encodeURIComponent(saved)}`} sx={{ minHeight: 44 }}>
+    {canOpen && <Button ref={openButton} variant="contained" startIcon={<MenuBookOutlined />}
+      disabled={disabled || checking || saving} href={`${TEACHER_DOWNLOADS_ROUTE}#${encodeURIComponent(copyId)}`} sx={offlineLessonActionStyles}>
       {t("offline_study.open")}
     </Button>}
+    {copy !== "current" && <Button ref={downloadButton} variant="outlined" startIcon={<DownloadOutlined />}
+      disabled={disabled || !scope || status === "offline"} loading={checking || saving} onClick={() => void download()}
+      sx={offlineLessonActionStyles}>
+      {t(copy ? "offline_study.update" : "offline_study.download")}
+    </Button>}
+    {saving && <Button variant="outlined" sx={offlineLessonActionStyles} onClick={(event) => {
+      restoreFocus.current = document.activeElement === event.currentTarget;
+      pending.current?.abort();
+      pending.current = null;
+      setSaving(false);
+    }}>{t("offline_study.cancel")}</Button>}
   </>;
+}
+
+export default function OfflineLessonDownload(props: Props) {
+  const scope = useAuthStore(state => offlineScopeKey(offlineStudyScope(state.token, state.user?.id)));
+  const key = `${scope}:${props.studyId}:${props.unitId}:${props.planRevisionId}:${props.contentVersionId}`;
+  return <DownloadActions key={key} scope={scope} {...props} />;
 }
