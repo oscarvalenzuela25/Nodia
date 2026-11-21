@@ -10,6 +10,7 @@ declare module "axios" {
     skipAuth?: boolean;
     validateSession?: boolean;
     authRetried?: boolean;
+    expectedAuthSessionVersion?: number;
     authSessionVersion?: number;
     authToken?: string | null;
   }
@@ -108,6 +109,12 @@ export function createAuthSession(client: AxiosInstance) {
   const installInterceptors = (instance: AxiosInstance) => {
     instance.interceptors.request.use(async (config) => {
       const initial = useAuthStore.getState();
+      if (
+        config.expectedAuthSessionVersion !== undefined &&
+        config.expectedAuthSessionVersion !== initial.sessionVersion
+      ) {
+        throw new CanceledError("Session changed");
+      }
       if (!config.skipAuth && !config.validateSession) {
         if (!initial.token || initial.sessionStatus !== "authenticated") {
           throw new CanceledError(i18n.t("auth:session_expired"));

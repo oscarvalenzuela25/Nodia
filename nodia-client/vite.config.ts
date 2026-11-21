@@ -2,16 +2,23 @@ import { defineConfig } from 'vitest/config'
 import { loadEnv } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
+import { pwaBuild } from './pwaBuild.ts'
+import { resolve } from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'NODIA_')
   return {
+    input: {
+      main: resolve(import.meta.dirname, 'index.html'),
+      teacherDownloads: resolve(import.meta.dirname, 'nodia-teacher/downloads.html'),
+    },
     // Tests and QA servers must not replace a running dev server's optimized deps.
     cacheDir: `node_modules/.vite/${mode}`,
     plugins: [
       react(),
-      babel({ presets: [reactCompilerPreset()] })
+      babel({ presets: [reactCompilerPreset()] }),
+      pwaBuild(),
     ],
     server: {
       port: 5174,

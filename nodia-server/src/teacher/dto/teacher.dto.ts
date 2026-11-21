@@ -155,6 +155,14 @@ export class CursorDataDto {
 export class PatchCursorDto extends CursorDataDto {
   @IsInt() @Min(1) @Max(2147483646) expected_cursor_revision!: number;
 }
+export class PatchReadingPointDto {
+  @IsInt() @Min(1) @Max(2147483646) expected_cursor_revision!: number;
+  @IsUUID() plan_revision_id!: string;
+  @IsUUID() section_id!: string;
+  @IsUUID() unit_id!: string;
+  @IsUUID() content_version_id!: string;
+  @IsString() @Length(1, 64) block_id!: string;
+}
 export class PauseDto extends SessionStateDto {
   @IsInt() @Min(1) @Max(2147483646) expected_cursor_revision!: number;
   @ValidateNested() @Type(() => CursorDataDto) cursor!: CursorDataDto;

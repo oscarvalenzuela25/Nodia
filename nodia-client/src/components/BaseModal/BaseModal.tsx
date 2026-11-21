@@ -3,6 +3,7 @@ import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import ConnectionNotice from "../../pwa/ConnectionNotice";
 import type { BaseModalProps } from "./types";
 import {
   StyledDialog,
@@ -93,7 +94,10 @@ const BaseModal: FC<BaseModalProps> = ({
         )}
       </ModalHeader>
 
-      <ModalContent>{children}</ModalContent>
+      <ModalContent>
+        {open && <ConnectionNotice inDialog />}
+        {children}
+      </ModalContent>
 
       {actions && <ModalActions>{actions}</ModalActions>}
     </StyledDialog>

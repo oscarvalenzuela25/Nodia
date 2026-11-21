@@ -4,6 +4,7 @@ import { queryClient } from "../config/reactQuery";
 import useGeneralSettingsStore from "./generalSettings/generalSettingsStore";
 import { clearNodiaAiDraftStorage } from "../config/nodiaAiDraftStorage";
 import { clearBusinessSaleRecoveryStorage } from "../config/businessSaleRecoveryStorage";
+import { clearOfflineStudyGrant, offlineStudyScope } from "../modules/teacher/infrastructure/offlineStudyIdentity";
 
 export type AuthUser = {
   id?: string;
@@ -41,6 +42,13 @@ export const hasValidatedSession = (state: AuthState) =>
 export const hasActiveSession = (state: AuthState) =>
   hasValidatedSession(state) && !state.isRefreshing;
 
+function changedOfflineStudySession(previous: AuthState, token: string | null, user: AuthUser | null) {
+  if (previous.user?.id !== user?.id || Boolean(previous.token) !== Boolean(token)) return true;
+  const before = offlineStudyScope(previous.token, previous.user?.id);
+  const after = offlineStudyScope(token, user?.id);
+  return before?.sessionId !== after?.sessionId;
+}
+
 const authStore: StateCreator<AuthState> = (set, get) => ({
   token: null,
   user: null,
@@ -49,6 +57,10 @@ const authStore: StateCreator<AuthState> = (set, get) => ({
   isRefreshing: false,
   sessionStatus: "anonymous",
   login: ({ token, user, expiresAt }) => {
+    const previous = get();
+    if (changedOfflineStudySession(previous, token, user ?? null)) {
+      clearOfflineStudyGrant(offlineStudyScope(previous.token, previous.user?.id) ?? undefined);
+    }
     if (get().user?.id !== user?.id) {
       clearNodiaAiDraftStorage();
       clearBusinessSaleRecoveryStorage();
@@ -67,6 +79,8 @@ const authStore: StateCreator<AuthState> = (set, get) => ({
   setRefreshing: (isRefreshing) => set({ isRefreshing }),
   setSessionStatus: (sessionStatus) => set({ sessionStatus }),
   logout: () => {
+    const previous = get();
+    clearOfflineStudyGrant(offlineStudyScope(previous.token, previous.user?.id) ?? undefined);
     clearNodiaAiDraftStorage();
     clearBusinessSaleRecoveryStorage();
     void queryClient.cancelQueries();
@@ -96,6 +110,9 @@ const useAuthStore = create<AuthState>()(
       const user = saved.user && typeof saved.user.name === "string" ? saved.user : null;
       const changedUser = saved.user?.id !== current.user?.id || Boolean(saved.token) !== Boolean(current.token);
       const unchangedCredentials = !changedUser && token === current.token && expiresAt === current.expiresAt;
+      if (current.token && changedOfflineStudySession(current, token, user)) {
+        clearOfflineStudyGrant(offlineStudyScope(current.token, current.user?.id) ?? undefined);
+      }
       // Initial hydration must preserve the same browser tab's unsent text.
       // A real replacement/removal of a known actor must purge it globally.
       if (current.user?.id && (!token || current.user.id !== user?.id)) { clearNodiaAiDraftStorage(); clearBusinessSaleRecoveryStorage(); }

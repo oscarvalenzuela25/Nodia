@@ -144,6 +144,16 @@ describe("API session renewal", () => {
 });
 
 describe("active session transport gate", () => {
+  it("cancels a queued account-scoped download before authenticating as a replacement user", async () => {
+    const adapter = vi.fn();
+    mainInstance.defaults.adapter = adapter;
+    const { sessionVersion } = useAuthStore.getState();
+    const request = mainInstance.get("/teacher/sessions/test/units/test", { expectedAuthSessionVersion: sessionVersion });
+    useAuthStore.getState().login({ ...session, token: "next-token", user: { id: "43", name: "Next user" } });
+    await expect(request).rejects.toMatchObject({ code: "ERR_CANCELED" });
+    expect(adapter).not.toHaveBeenCalled();
+  });
+
   it("also blocks anonymous requests through additional API clients", async () => {
     useAuthStore.getState().logout();
     const adapter = vi.fn();

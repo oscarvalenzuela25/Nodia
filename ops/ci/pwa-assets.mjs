@@ -1,17 +1,24 @@
-// Validate the already built installation assets; never build or install a service worker.
+// Validate already built PWA assets; never build or install a service worker.
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { Script } from 'node:vm';
 
 const ensure = (value, code) => { if (!value) throw new Error(code); };
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const maxAssetBytes = 2 * 1024 * 1024;
+const workerName = 'service-worker.js';
+const workerPath = '/' + workerName;
+const releasePath = '/pwa-release.json';
+const teacherReaderPath = '/nodia-teacher/downloads';
+const teacherReaderFile = teacherReaderPath.slice(1) + '.html';
+const versionedAssetPath = /^\/assets\/[A-Za-z0-9_-]+-[A-Za-z0-9_-]{8,}\.(?:js|css|woff2)$/;
 const publicFailureCodes = new Set(['pwa_public_asset_request_failed', 'pwa_public_asset_status_invalid',
   'pwa_public_asset_mime_invalid', 'pwa_public_asset_body_missing', 'pwa_public_asset_size_invalid',
   'pwa_public_asset_digest_mismatch']);
 const installationPaths = new Set(['/', '/manifest.webmanifest', '/apple-touch-icon.png', '/favicon-32x32.png',
-  '/favicon.svg', '/favicon.ico', '/icons/icon-192.png', '/icons/icon-512.png',
-  '/icons/icon-maskable-192.png', '/icons/icon-maskable-512.png']);
+  '/favicon.svg', '/favicon.ico', releasePath, teacherReaderPath, '/icons/icon-192.png', '/icons/icon-512.png',
+  '/icons/icon-maskable-192.png', '/icons/icon-maskable-512.png', workerPath]);
 export function pwaVerificationDetails(value) {
   const result = {};
   if (installationPaths.has(value?.pwa_failed_asset_path)) result.pwa_failed_asset_path = value.pwa_failed_asset_path;
@@ -56,12 +63,59 @@ export function pngDimensions(bytes) {
   return { width, height };
 }
 
-export function validatePwaAssets(directory, { required = false } = {}) {
+function validateTeacherReader(directory, reader, allowed) {
+  const bytes = asset(directory, teacherReaderFile);
+  const html = bytes.toString('utf8');
+  ensure(reader && reader.html === html && Array.isArray(reader.assets) &&
+    reader.assets.length > 0 && reader.assets.length <= 32, 'pwa_teacher_reader_invalid');
+  const names = new Set();
+  let size = bytes.length;
+  const assets = reader.assets.map(item => {
+    ensure(item && typeof item.path === 'string' && allowed.has(item.path) && !names.has(item.path), 'pwa_teacher_reader_asset_invalid');
+    const content = asset(directory, item.path.slice(1));
+    const digest = sha(content);
+    ensure(content.length === item.bytes && digest === item.sha256, 'pwa_teacher_reader_asset_mismatch');
+    names.add(item.path);
+    size += content.length;
+    return { path: item.path, bytes: content.length, sha256: digest };
+  });
+  ensure(size <= 512 * 1024 && JSON.stringify({ html, assets }) === JSON.stringify(reader), 'pwa_teacher_reader_invalid');
+  const scripts = [...html.matchAll(/<script\b[^>]*>/gi)].map(([tag]) => attributes(tag).src);
+  const styles = links(html).filter(link => ['modulepreload', 'stylesheet'].includes(link.rel)).map(link => link.href);
+  ensure(scripts.length > 0 && [...scripts, ...styles].every(url => names.has(url)), 'pwa_teacher_reader_entry_mismatch');
+  return bytes;
+}
+
+function validateUpdateRelease(directory, html, version, worker, readerRequired) {
+  const bytes = asset(directory, releasePath.slice(1));
+  ensure(/^[a-f0-9]{24}$/.test(version) && typeof worker === 'string' &&
+    bytes.toString('utf8') === `${JSON.stringify({ version })}\n`, 'pwa_update_version_invalid');
+  const marker = /^const nodiaRelease = (\{[^\r\n]+\});\n/.exec(worker);
+  ensure(marker, 'pwa_update_worker_metadata_missing');
+  let release;
+  try { release = JSON.parse(marker[1]); } catch { throw new Error('pwa_update_worker_metadata_invalid'); }
+  const { entry, assets, teacherReader } = release;
+  ensure(JSON.stringify({ version, entry, assets, teacherReader }) === marker[1] && Array.isArray(entry) && entry.length > 0 &&
+    Array.isArray(assets) && new Set(assets).size === assets.length &&
+    assets.every(url => typeof url === 'string' && versionedAssetPath.test(url)), 'pwa_update_worker_metadata_invalid');
+  const allowed = new Set(assets);
+  const entryTags = html.match(/<script\b[^>]*src="[^"]+"[^>]*>|<link\b[^>]*rel="stylesheet"[^>]*>/g) ?? [];
+  const scripts = [...new Set([...entryTags.join('\n').matchAll(/\b(?:href|src)="(\/assets\/[^"?#]+)"/g)]
+    .map(match => match[1]).filter(url => allowed.has(url)))];
+  ensure(JSON.stringify(entry) === JSON.stringify(scripts), 'pwa_update_entry_mismatch');
+  for (const url of assets) asset(directory, url.slice(1));
+  const reader = readerRequired || teacherReader !== undefined ? validateTeacherReader(directory, teacherReader, allowed) : undefined;
+  return { bytes, reader, workerSourceSha: sha(worker.slice(marker[0].length)) };
+}
+
+export function validatePwaAssets(directory, { required = false, workerRequired = false, updateRequired = false, readerRequired = false } = {}) {
   const html = asset(directory, 'index.html').toString('utf8');
   const htmlLinks = links(html), manifestLinks = htmlLinks.filter(link => link.rel?.toLowerCase() === 'manifest');
   const present = fs.existsSync(path.join(directory, 'manifest.webmanifest'));
+  const workerPresent = fs.existsSync(path.join(directory, workerName));
+  const hasReader = readerRequired || fs.existsSync(path.join(directory, teacherReaderFile));
   // Historical pre-PWA releases can still be reconciled or rolled back without inventing a manifest.
-  if (!required && !present && manifestLinks.length === 0) return null;
+  if (!required && !present && !workerRequired && !workerPresent && !updateRequired && !hasReader && manifestLinks.length === 0) return null;
   ensure(present && manifestLinks.length === 1 && manifestLinks[0].href === '/manifest.webmanifest', 'pwa_manifest_link_invalid');
   const manifestBytes = asset(directory, 'manifest.webmanifest');
   let manifest;
@@ -109,8 +163,25 @@ export function validatePwaAssets(directory, { required = false } = {}) {
   files.push({ path: '/favicon.ico', contentType: 'image/vnd.microsoft.icon', bytes: ico });
   const meta = [...html.matchAll(/<meta\b[^>]*>/gi)].map(([tag]) => attributes(tag));
   ensure(meta.some(item => item.name === 'theme-color' && item.content === manifest.theme_color), 'pwa_theme_color_mismatch');
+  const versions = meta.filter(item => item.name === 'nodia-release');
+  const hasUpdate = updateRequired || hasReader || versions.length > 0 || fs.existsSync(path.join(directory, releasePath.slice(1)));
+  let workerSourceSha;
+  if (workerRequired || workerPresent || hasUpdate) {
+    const bytes = asset(directory, workerName);
+    const worker = bytes.toString('utf8');
+    try { new Script(worker); } catch { throw new Error('pwa_service_worker_script_invalid'); }
+    workerSourceSha = sha(bytes);
+    files.push({ path: workerPath, contentType: 'application/javascript', bytes });
+    if (hasUpdate) {
+      ensure(versions.length === 1, 'pwa_update_version_invalid');
+      const update = validateUpdateRelease(directory, html, versions[0].content, worker, hasReader);
+      workerSourceSha = update.workerSourceSha;
+      files.push({ path: releasePath, contentType: 'application/json', bytes: update.bytes });
+      if (update.reader) files.push({ path: teacherReaderPath, contentType: 'text/html', bytes: update.reader });
+    }
+  }
   files.push({ path: '/', contentType: 'text/html', bytes: Buffer.from(html, 'utf8') });
-  return { files: files.map(file => ({ path: file.path, contentType: file.contentType,
+  return { workerSourceSha, files: files.map(file => ({ path: file.path, contentType: file.contentType,
     bytes: file.bytes.length, sha256: sha(file.bytes) })) };
 }
 
@@ -160,7 +231,8 @@ export async function verifyPublishedPwaAssets(directory, { request = fetch,
           ensure(response.status === 200, 'pwa_public_asset_status_invalid');
           const mime = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
           const allowedMime = file.contentType === 'image/vnd.microsoft.icon'
-            ? ['image/vnd.microsoft.icon', 'image/x-icon'] : [file.contentType];
+            ? ['image/vnd.microsoft.icon', 'image/x-icon'] : file.path === workerPath
+              ? ['application/javascript', 'text/javascript'] : [file.contentType];
           ensure(allowedMime.includes(mime), 'pwa_public_asset_mime_invalid');
           const bytes = await limitedBytes(response, file.bytes);
           ensure(bytes.length === file.bytes && sha(bytes) === file.sha256, 'pwa_public_asset_digest_mismatch');
