@@ -1,6 +1,6 @@
 import AdaptiveWorkspace from "../../components/AdaptiveWorkspace/AdaptiveWorkspace";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Typography } from "@mui/material";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Tab, Tabs, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import SchoolOutlined from "@mui/icons-material/SchoolOutlined";
 import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
@@ -29,6 +29,7 @@ import { JobStatus } from "../../components/JobPanel";
 import { useJobStatus } from "../../components/JobPanel/useJobStatus";
 import TeacherLoading from "../../components/TeacherLoading";
 import StudyJourney from "../../components/StudyJourney";
+import StudyCalendar from "../../components/StudyCalendar";
 import SetupConversation from "../../components/SetupConversation";
 import StudyContinuation from "../../components/StudyContinuation";
 import DiagnosticEntry from "../../components/DiagnosticEntry/DiagnosticEntry";
@@ -52,17 +53,17 @@ const SESSION_STATE_COLORS = {
   archived: "error",
 } as const;
 
-function Plans() {
+function Plans({ active }: { active: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [archived, setArchived] = useState(false);
-  const sessions = useTeacherSessions(page, search, archived);
+  const sessions = useTeacherSessions(page, search, archived, active);
   const command = useTeacherCommand();
   const openResult = (result: CommandResult) => { if (result.session_id) void navigate(`/nodia-teacher/${result.session_id}`); };
   return <Page>
-    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box>
+    <Header><Box><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box>
       <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, width: { xs: "100%", sm: "auto" } }}>
         {supportsPwaRegistration() && <Button variant="outlined" href={TEACHER_DOWNLOADS_ROUTE} sx={{ minHeight: 44 }}>{t("teacher:offline_study.library")}</Button>}
         <Button variant="contained" startIcon={<AddOutlined />} disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button>
@@ -123,6 +124,31 @@ function Plans() {
       )}
     </TeacherLoading>
     {sessions.data && sessions.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page} count={sessions.data.meta.total_pages} disabled={sessions.isFetching || command.isPending} onChange={(_, value) => setPage(value)} />}
+  </Page>;
+}
+
+function TeacherOverview() {
+  const { t } = useTranslation();
+  const id = useId();
+  const [tab, setTab] = useState<"plans" | "calendar">("plans");
+  const [calendarMounted, setCalendarMounted] = useState(false);
+  return <Page>
+    <Stack spacing={1} sx={{ minWidth: 0 }}>
+      <ProductBrand variant="overline" color="primary" sx={{ alignSelf: "flex-start" }}>{t("teacher:product")}</ProductBrand>
+      <Tabs value={tab} variant="fullWidth" aria-label={t("teacher:product")} onChange={(_, value: unknown) => {
+        if (value === "calendar") setCalendarMounted(true);
+        if (value === "calendar" || value === "plans") setTab(value);
+      }} sx={{ maxWidth: 520, "& .MuiTab-root": { minWidth: 0, overflowWrap: "anywhere" } }}>
+        <Tab value="plans" label={t("teacher:my_plans")} id={id + "-plans-tab"} aria-controls={id + "-plans"} />
+        <Tab value="calendar" label={t("teacher:calendar.heading")} id={id + "-calendar-tab"} aria-controls={id + "-calendar"} />
+      </Tabs>
+    </Stack>
+    <Box id={id + "-plans"} role="tabpanel" aria-labelledby={id + "-plans-tab"} hidden={tab !== "plans"}>
+      <Plans active={tab === "plans"} />
+    </Box>
+    <Box id={id + "-calendar"} role="tabpanel" aria-labelledby={id + "-calendar-tab"} hidden={tab !== "calendar"}>
+      {calendarMounted && <StudyCalendar active={tab === "calendar"} />}
+    </Box>
   </Page>;
 }
 
@@ -649,5 +675,5 @@ export default function Teacher() {
   const { user, sessionVersion } = useAuth();
   useOfflineReadingSync();
   const scope = `${user?.id}:${sessionVersion}`;
-  return sessionId ? <TeacherSession key={`${scope}:${sessionId}`} sessionId={sessionId} /> : <Plans key={scope} />;
+  return sessionId ? <TeacherSession key={`${scope}:${sessionId}`} sessionId={sessionId} /> : <TeacherOverview key={scope} />;
 }

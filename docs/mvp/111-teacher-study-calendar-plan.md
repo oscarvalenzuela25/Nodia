@@ -1,9 +1,10 @@
 # Calendario de estudio de Nodia Teacher
 
-Borrador de diseño y planificación del 2026-11-22. Después de revisar los
-mockups se decidirá el primer corte de desarrollo. La referencia funcional
-es **4 semanas de inglés**, con 28 jornadas de 30 minutos, actividades con
-sus fuentes y un recuento de jornadas completadas.
+Borrador de diseño y planificación del 2026-11-22. El usuario aceptó el
+mockup de avance por actividad y solicitó iniciar la implementación en
+`codex/teacher-study-calendar`. La referencia funcional es **4 semanas
+de inglés**, con 28 jornadas de 30 minutos, fuentes por actividad y un
+recuento de jornadas completadas.
 
 ## 1. Alcance solicitado
 
@@ -12,9 +13,9 @@ sus fuentes y un recuento de jornadas completadas.
 - La persona puede crear un calendario propio con título y categorías, elegir
   un rango con inicio y término o indicar una cantidad de días sin fechas.
   El calendario y el recorrido día por día permiten abrir la misma jornada.
-- Las casillas tienen datos editables y una marca de realización. Cada
-  jornada reúne actividades ordenadas. Cada actividad puede tener una
-  fuente propia, según la aclaración del 2026-11-22.
+- Las casillas tienen datos editables y un estado calculado a partir de
+  las marcas de sus actividades. Cada jornada reúne actividades ordenadas
+  y cada actividad puede tener una fuente propia.
   Las categorías personales aparecen como chips y sirven para filtrar.
   La administración de categorías toma como referencia el drawer de
   [Negocios → Caja](109-business-cash-ledger-plan.md#7-criterios-de-ui-y-responsive).
@@ -32,7 +33,7 @@ de diseño. [Plan de Teacher por jornadas](95-studies-adaptive-learning.md#5-pla
 | --- | --- |
 | Calendario de estudio | Ver sus calendarios, filtrar por categoría y seleccionar uno. Reconocer sus categorías, elegir **Cuadrícula** o **Día a día** y consultar avance semanal y total. |
 | Nuevo calendario | Poner título y categorías. Con **Rango de fechas**, elegir inicio y término. Con **Días numerados**, indicar cuántas casillas quiere. Luego puede completar cada jornada cuando la abra. |
-| Jornada | Abrir una casilla desde cualquiera de las vistas. Editar título, notas y minutos estimados. Añadir o editar actividades ordenadas y asignar a cada una su fuente, con nombre y enlace. Marcar o desmarcar **Jornada completada**. |
+| Jornada | Abrir una casilla desde cualquiera de las vistas. Editar título, notas y minutos estimados. Añadir, editar o marcar actividades ordenadas con una fuente opcional. Ver el recuento de actividades y el estado resultante. |
 | Categorías | Abrir el drawer, crear o editar las categorías propias y ver los chips con los que se identifican los calendarios. Mantener la gestión en el mismo drawer y conservar sus campos ante un error. |
 | Pegar un plan | Pegar el formato de §5, revisar los errores y editar la vista previa. Confirmar el resumen de jornadas y categorías que se guardará. |
 
@@ -43,10 +44,13 @@ se adapta al ancho y ofrece **Día a día** como lista en el orden del plan,
 con acceso a la misma edición. Cerrar una edición devuelve el foco a la
 casilla o acción que la abrió.
 
-La propuesta cuenta las jornadas realizadas de cada bloque y del plan. El
-avance es «jornadas realizadas / jornadas del plan». Los minutos declarados
-son estimados. La marca la controla la persona y acredita su seguimiento:
-una casilla abierta o una fuente visitada no produce la marca automáticamente.
+Cada actividad se puede marcar o desmarcar. **Jornada completada** aparece
+automáticamente cuando hay al menos una actividad y todas están marcadas.
+Desmarcar una, añadir una pendiente o quitar la última deja la jornada
+pendiente. Una jornada vacía sigue disponible para editar. El drawer muestra
+el cambio en el borrador y **Guardar jornada** confirma las marcas y
+actualiza los recuentos semanales y del calendario. Abrir una fuente
+conserva la marca existente. Los minutos declarados son estimados.
 
 ## 3. Fechas, orden y avance
 
@@ -64,8 +68,8 @@ a alinear los días de la semana y quedan fuera del denominador.
 
 El rango usa fechas gregorianas civiles ISO 8601 con granularidad de día.
 El cálculo recorre días civiles, incluso al cambiar el horario de verano.
-El timestamp UTC del guardado registra cuándo se realizó una marca; la
-fecha de una jornada mantiene su día civil al cambiar de dispositivo o país.
+La fecha de una jornada mantiene su día civil al cambiar de dispositivo o
+país. La revisión de edición es independiente de la fecha.
 Antes de incorporar **Hoy**, reprogramación o recordatorios hay que definir
 si la referencia usa la zona del calendario o la zona preferida de la persona.
 
@@ -76,16 +80,22 @@ shape HTTP se fijarán al empezar el backend. [ADR de persistencia y pegado](../
 
 | Tabla propuesta | Datos clave |
 | --- | --- |
-| teacher_calendar_plans | ID, propietario, título, modalidad, campos de calendario según modalidad, revisión y timestamps. |
-| teacher_calendar_days | ID, plan, ordinal, título y notas opcionales, minutos estimados opcionales, estado derivado de la marca de realización, revisión y timestamps. |
-| teacher_calendar_activities | ID estable, jornada, posición, texto y una fuente opcional con nombre y URL HTTPS. |
-| teacher_calendar_categories | ID, propietario, nombre visible y clave normalizada, color de catálogo, descripción opcional, actividad y timestamps. |
+| teacher_calendar_plans | ID, propietario, título, modalidad, campos de calendario según modalidad, clave y huella de creación y fecha de alta. |
+| teacher_calendar_days | ID, plan, ordinal, título y notas opcionales, minutos estimados opcionales y revisión. |
+| teacher_calendar_activities | ID estable, jornada, posición, texto, marca de realización y una fuente opcional con nombre y URL HTTPS. |
+| teacher_calendar_categories | ID, propietario, nombre visible y clave normalizada, color de catálogo y actividad. |
 | teacher_calendar_plan_categories | Vínculo único entre plan y categoría dentro del mismo propietario. |
 
 Cada actividad conserva su ID al editarla o cambiar su posición. La fuente
 se guarda en la actividad. Nombre y URL están ambos presentes o ambos
 ausentes. Si en el futuro se necesitan varias fuentes por actividad, se
 evaluará una relación propia.
+
+Server calcula las actividades realizadas y el estado de la jornada desde
+las filas de actividades. El numerador del calendario cuenta las jornadas
+completadas y el denominador es el total de jornadas del plan, incluidas
+las vacías. El guardado actualiza la jornada y sus actividades con una
+revisión esperada dentro de la misma transacción.
 
 La categoría corresponde al plan. La normalización se usa para detectar
 duplicados personales y resolver nombres pegados. Para la primera versión se
@@ -152,7 +162,8 @@ lista de jornadas vacía. La vista previa admite corregir título, categorías,
 modalidad y jornadas antes de confirmar.
 
 Cada actividad contiene **text** y, si corresponde, **source** con **label**
-y **url**. El orden de las actividades sigue el arreglo. La vista previa
+y **url**. El orden de las actividades sigue el arreglo. Las actividades
+creadas por pegado empiezan pendientes. La vista previa
 permite revisar y editar el texto y su fuente juntos. La fuente se toma de
 lo que la persona ingresa o pega de forma explícita.
 
@@ -166,9 +177,9 @@ referencias y cada visita requiere una acción de la persona.
 
 Las categorías pegadas son nombres. La vista previa distingue reutilización,
 alta propuesta y conflicto con una categoría inactiva. La persona decide qué
-nombres conservar. El dueño, los ID internos, la actividad de una categoría
-y la fecha de realización se administran en Server y no forman parte del
-formato pegable.
+nombres conservar. Server administra el dueño, los ID internos, la
+actividad de una categoría y las marcas de realización. El formato
+pegable admite los datos para preparar actividades pendientes.
 
 Al pulsar **Crear calendario** se envía el contenido final revisado. El
 servidor vuelve a validar esquema y autoridad. En una transacción registra
@@ -181,15 +192,17 @@ interpreta el texto de forma determinista.
 
 ## 6. Orden de trabajo y verificación
 
-- [ ] Revisar mockups. Validar la navegación entre pestañas, los dos tipos de
-  calendario, el detalle de jornada con fuente por actividad, el drawer de
-  categorías y las pantallas de pegado y revisión. Acordar qué datos se
-  pueden cambiar después de crear.
-- [ ] Cerrar el contrato de Server y la migración. Cubrir rangos de un día,
+- [x] Revisar el mockup de avance por actividad. El usuario confirmó que
+  una jornada se completa al marcar todas sus actividades y solicitó
+  iniciar el desarrollo.
+- [ ] Acordar alcance de edición posterior del plan. Revisar los flujos de
+  calendario, categorías y pegado sobre la implementación.
+- [x] Cerrar el contrato de Server y la migración. Cubrir rangos de un día,
   cambio de mes y año, bisiesto, transición DST, exactamente 30 jornadas
   numeradas, días vacíos y rechazos por lotes inválidos. Verificar fuentes
   ausentes, datos incompletos, URL inválida y orden de las actividades.
-- [ ] Implementar primero el agregado y sus casos de uso. Verificar
+  Cubrir jornada vacía, progreso parcial, última marca y reapertura.
+- [x] Implementar el agregado y sus casos de uso. Verificar
   aislamiento entre usuarios, revocación de acceso, categorías duplicadas,
   transacción completa, reintento idempotente y guardado concurrente.
 - [ ] Conectar Client. Probar filtrado por chip, navegación y foco,
@@ -233,3 +246,41 @@ importarla. Se revisó el drawer en escritorio y a 320 px en tema oscuro.
 [Experiencia de Teacher](106-nodia-teacher-guided-ux-redesign.md#23-propuesta-de-calendario-de-estudio) ·
 [Ficha candidata para NodiaAI](../nodia-ai/knowledge/studies/features/study-calendar.md) ·
 [Cola de entregas](TODO.md#cola-actual).
+
+## 8. Primer corte de implementación
+
+El API de Teacher incorpora **/api/v1/teacher/calendar** bajo la autoridad
+vigente de **/nodia-teacher**. La migración aditiva conserva separado el
+calendario personal de las evaluaciones y unidades de estudios adaptativos.
+
+| Ruta relativa | Contrato |
+| --- | --- |
+| GET /plans | Lista propia de 20 calendarios por página con recuento total y filtro opcional de categoría. |
+| POST /plans | Recibe el formato v1, un UUID de solicitud y los nombres nuevos confirmados. Una repetición equivalente recupera el calendario creado. |
+| GET /plans/{planId} | Devuelve el calendario propio y el resumen ordenado de sus jornadas, incluido el recuento derivado. |
+| GET, PATCH /plans/{planId}/days/{dayId} | Lee o guarda la jornada. PATCH requiere revisión y la colección ordenada de actividades con su estado explícito. |
+| GET, POST /categories y PATCH /categories/{categoryId} | Gestionan las categorías propias y su actividad. Se preservan sus vínculos al desactivar. |
+
+Se admiten hasta 366 jornadas, 12 categorías asignadas por calendario y
+24 actividades por jornada. El cuerpo de Teacher se limita a 256 KiB.
+Títulos y nombres de categoría usan hasta 120 caracteres, los apuntes
+hasta 4000, el texto de actividad hasta 512, el nombre de fuente hasta 180
+y la URL HTTPS hasta 2048. Los minutos se guardan como entero de 1 a 1440.
+
+El ensayo HTTP ejecutó el Nest compilado sobre PostgreSQL 16.15 aislado,
+con identidad de transporte sintética y validación real de sesión, módulo
+y propiedad en la base. Se comprobaron migración reversible en vacío,
+importación transaccional con reintento concurrente, alcance por usuario,
+jornadas vacías y parciales, última marca, reapertura, conflicto de revisión,
+fechas bisiestas y revocación del módulo. La prueba reproducible está en
+[test:teacher:calendar](../../nodia-server/test/teacher-study-calendar.integration.mjs).
+
+Chromium verificó Client con ese API y una base de prueba separada. La entrada
+abrió en **Mis planes de estudio** y cargó el calendario al elegir su
+pestaña. Se pegaron un plan de 28 jornadas y otro con fechas que incluían
+el 29 de febrero. Se comprobó el filtro por categoría. La jornada cambió
+de pendiente a completada y volvió a pendiente tras recargar, abrir en
+**Día a día** y desmarcar una actividad. Se revisaron escritorio en español
+con tema claro y 320 px en inglés con tema oscuro. La cuenta y los datos del
+ensayo son sintéticos. La comprobación de la cuenta en cada entorno sigue
+pendiente de adopción.

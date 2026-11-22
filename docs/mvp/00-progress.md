@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Calendario de estudio de Teacher — 2026-11-22.** La rama
+`codex/teacher-study-calendar` incorpora la pestaña y el avance derivado
+de las marcas por actividad. Chromium verificó el pegado, la finalización
+y la reapertura tras recargar con Nest y PostgreSQL 16.15 aislados.
+[Plan111 §8](111-teacher-study-calendar-plan.md#8-primer-corte-de-implementación).
+
 **Teacher, piloto de fragmentos interactivos — 2026-11-22.** La comparación
 de **sit** y **seat** y las fichas de **BEE–22** están disponibles en
 desarrollo. El navegador verificó ambos ejercicios en un plan sintético

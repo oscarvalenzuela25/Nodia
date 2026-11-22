@@ -4,11 +4,11 @@
   "document_id": "studies.study-calendar",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
-    "status": "planned",
-    "notes": "Propuesta de calendario personal de Teacher. Los contratos y la implementación del producto están pendientes de definición y comprobación."
+    "status": "implemented",
+    "notes": "Primera implementación nativa del calendario en Client y Server, verificada localmente con PostgreSQL aislado."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -27,9 +27,9 @@
     }
   ],
   "verification": {
-    "checked_on": null,
-    "evidence_paths": [],
-    "notes": "PENDIENTE revisar los mockups, fijar contrato y comprobar implementación, acceso y persistencia."
+    "checked_on": "2026-11-22",
+    "evidence_paths": ["docs/mvp/111-teacher-study-calendar-plan.md"],
+    "notes": "Verificación de laboratorio con Client, Nest compilado y PostgreSQL 16.15. Pendiente adopción por entorno y evaluación de integración con NodiaAI."
   },
   "approval": null
 }
@@ -41,12 +41,14 @@
 
 ## Qué resuelve y qué significa
 
-El calendario de estudio propuesto reúne jornadas que la persona crea y
+El calendario de estudio reúne jornadas que la persona crea y
 organiza desde la entrada de Teacher. Cada calendario tiene un título,
 un rango de fechas o una cantidad de días y categorías personales. Cada
-jornada admite actividades ordenadas. Cada actividad tiene texto y puede
-tener una fuente propia con nombre y enlace. La marca manual significa
-jornada realizada.
+jornada admite actividades ordenadas. Cada actividad tiene texto, una
+marca de realización y una fuente opcional con nombre y enlace. Una
+jornada con al menos una actividad se completa al marcar todas. Si se
+desmarca una, la jornada vuelve a pendiente. Guardar confirma las marcas
+y actualiza los recuentos del calendario.
 
 ## Solicitudes en lenguaje natural
 
@@ -56,15 +58,15 @@ jornada realizada.
 | «Quiero estudiar desde el lunes hasta fin de mes» | Aclarar las dos fechas civiles si el período resulta ambiguo. |
 | «Arma un plan que pueda pegar en Teacher» | Preparar texto para revisión humana con el [formato propuesto](../../../../mvp/111-teacher-study-calendar-plan.md#5-formato-para-pegar-un-plan). |
 | «Pon el video en la actividad de la lección y el enlace de ejercicios en la práctica» | Vincular cada fuente a su actividad. Pedir el enlace que falte si la persona quiere añadirlo. |
-| «Marca todas las jornadas y aprueba las evaluaciones» | Remitir al seguimiento nativo de la jornada y al flujo de evaluación de Teacher. La marca voluntaria acredita seguimiento personal. |
+| «Marca las actividades que terminé» | Remitir al seguimiento nativo de las actividades y al guardado de la jornada. Las pruebas de Teacher se administran en su flujo de evaluación. |
 
 ## Operaciones y contratos
 
 | Operación propuesta | Efecto esperado | Estado del contrato |
 | --- | --- | --- |
-| Listar calendarios y abrir jornada | Leer registros y recuentos propios | Endpoints y DTO pendientes. |
-| Crear, editar y marcar | Persistir el calendario o el cambio revisado por la persona | Flujo nativo propuesto. Herramientas de NodiaAI pendientes de evaluación. |
-| Pegar un plan | Analizar texto y preparar una vista previa local. Confirmar aplica el alta nativa | Esquema de intercambio v1 propuesto. Validación e idempotencia de Server pendientes. |
+| Listar calendarios y abrir jornada | Leer registros y recuentos propios | API nativa verificada en laboratorio. |
+| Crear, editar y marcar | Persistir el calendario o el cambio revisado por la persona | Guardado nativo por revisión. Integración de NodiaAI pendiente de evaluación. |
+| Pegar un plan | Analizar texto y preparar una vista previa local. Confirmar aplica el alta nativa | Esquema v1 con validación e idempotencia de Server verificadas en laboratorio. |
 
 ## Datos mínimos y resolución de dudas
 
@@ -73,7 +75,7 @@ término civiles e inclusivos; por cantidad se requiere un entero positivo.
 Las categorías, minutos estimados, actividades y notas son opcionales.
 Cada actividad incluida requiere texto. Su fuente es opcional y, cuando
 se indica, requiere nombre y URL HTTPS. El propietario se resuelve desde
-la sesión y los recuentos proceden de las jornadas.
+la sesión. Los recuentos de jornadas se derivan de las marcas persistidas.
 
 ## Reglas, acceso y restricciones
 
@@ -85,24 +87,27 @@ explica las fronteras de persistencia.
 
 ## Filtros e informes
 
-La propuesta contempla filtro por categoría propia y recuento de jornadas
-realizadas sobre jornadas totales por calendario y semana mostrada.
+La vista incluye filtro por categoría propia y recuento de jornadas
+completadas sobre jornadas totales por calendario y semana mostrada.
+Las jornadas sin actividades siguen pendientes y cuentan en el total.
 Representar las fechas como días civiles y los calendarios sin fecha
-por su ordinal. Paginación, filtros exactos y API quedan pendientes.
+por su ordinal. El [contrato HTTP](../../../../mvp/111-teacher-study-calendar-plan.md#8-primer-corte-de-implementación)
+recoge paginación y autoridad.
 
 ## Vista previa, confirmación y recuperación
 
 La persona puede corregir el texto y revisar jornadas, categorías
-y actividades con sus fuentes.
-**Crear calendario** confirma el agregado revisado. El contrato propuesto
-usa una transacción y concilia el recibo de la solicitud si se pierde la
-respuesta. Los detalles de recuperación y su evidencia quedan pendientes.
+y actividades con sus fuentes. Las actividades importadas empiezan pendientes.
+**Crear calendario** confirma el agregado revisado. Server registra la
+creación en una transacción y recupera el calendario al repetir la misma
+solicitud.
 
 ## Integración y evidencia
 
-- [ ] Revisar el diseño y fijar contrato y permisos.
-- [ ] Comprobar rangos, ordinales, autoría, filtros y recuentos.
-- [ ] Probar pegado, fuentes opcionales o inválidas, rechazo y reapertura
+- [x] Confirmar en el mockup el estado de jornada calculado por actividad.
+- [x] Fijar contrato y comprobar permisos en PostgreSQL aislado.
+- [x] Comprobar rangos, ordinales, autoría, filtros y recuentos.
+- [x] Probar pegado, fuentes opcionales o inválidas, rechazo y reapertura
   sin efectos duplicados.
 - [ ] Evaluar un alcance de integración de NodiaAI.
 
@@ -112,3 +117,4 @@ respuesta. Los detalles de recuperación y su evidencia quedan pendientes.
 | --- | --- | --- |
 | 1 | Propuesta inicial del [Plan111](../../../../mvp/111-teacher-study-calendar-plan.md). | Capacidad nativa en planificación. Conservar las revisiones, materiales y evaluaciones de Teacher. |
 | 2 | Cada actividad admite una fuente propia. El JSON v1 de diseño agrupa el texto con su fuente en cada actividad. | Diseño del formato de intercambio previo al desarrollo. |
+| 3 | La jornada se completa al marcar todas sus actividades. El guardado confirma sus marcas. | El JSON de alta empieza con actividades pendientes. |

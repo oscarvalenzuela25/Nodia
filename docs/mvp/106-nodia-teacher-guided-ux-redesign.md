@@ -1072,5 +1072,5 @@ pendientes. [Ficha de lecciones y práctica](../nodia-ai/knowledge/studies/featu
 La entrada de Teacher conserva **Mis planes de estudio** como pestaña
 principal y suma **Calendario de estudio** en la propuesta del 2026-11-22.
 El recorrido de revisión visual, la persistencia personal y el pegado se
-documentan en el [Plan111](111-teacher-study-calendar-plan.md). El alcance
-está en diseño, con implementación pendiente.
+documentan en el [Plan111](111-teacher-study-calendar-plan.md). La primera
+implementación se inicia con el avance por actividad validado en el mockup.

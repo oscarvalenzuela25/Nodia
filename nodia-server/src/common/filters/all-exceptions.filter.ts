@@ -51,7 +51,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const retry=record?.retry_after_seconds;
       if(status===429&&typeof retry==='number'&&Number.isSafeInteger(retry)&&retry>0)response.setHeader('Retry-After',String(retry));
       this.logger.warn({event:'teacher_http_error',status,code});
-      response.status(status).json({code,message:`teacher:${code}`});return;
+      const calendarField =
+        request.path.startsWith('/api/v1/teacher/calendar/') &&
+        code === 'calendar_invalid_input' &&
+        typeof record?.field === 'string' &&
+        /^[a-z_][a-z0-9_.]{0,120}$/i.test(record.field)
+          ? { field: record.field }
+          : {};
+      response.status(status).json({code,message:`teacher:${code}`,...calendarField});return;
     }
     if (exception instanceof GeminiUpstreamException && exception.retryAfterSeconds !== null) {
       response.setHeader('Retry-After', String(exception.retryAfterSeconds));

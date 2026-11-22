@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 52,
+  "revision": 53,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -296,9 +296,10 @@ mantiene el seguimiento del piloto. La ficha conserva su estado candidato.
 
 El [Plan111](../../../mvp/111-teacher-study-calendar-plan.md) y la
 [ficha candidata de calendario](features/study-calendar.md) describen
-la ubicación en Teacher, las jornadas con una fuente opcional por
-actividad, las categorías personales y el pegado con revisión humana.
-Los contratos y la implementación del calendario están pendientes.
+la ubicación en Teacher, las jornadas y sus actividades con fuente
+opcional, las categorías personales y el pegado con revisión humana.
+La jornada se completa al guardar todas sus actividades marcadas. Los
+recuentos se derivan de las marcas persistidas.
 
 ## Punto de lectura descargado — 2026-11-21
 

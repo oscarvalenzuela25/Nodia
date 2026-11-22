@@ -6,32 +6,34 @@ import { DataSource } from 'typeorm';
 import { CheckModuleAccessUseCase } from '../../dist/authorization/use-case/check-module-access.use-case.js';
 import { TeacherService } from '../../dist/teacher/teacher.service.js';
 
-/** Disposable PostgreSQL. Never imports application envs, profiles or credentials. */
-export async function teacherUpgradeLab() {
+/** Disposable PostgreSQL. A caller-supplied database must be empty and isolated. */
+export async function teacherUpgradeLab({ database } = {}) {
   const name = `template_teacher_upgrade_${process.pid}_${randomBytes(4).toString('hex')}`;
   const docker = (...args) => execFileSync('docker', args, {
     encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
   }).trim();
   const password = randomBytes(24).toString('hex');
   let started = false;
-  let db;
+  let db = database;
   const close = async () => {
     if (db?.isInitialized) await db.destroy();
     if (started) { docker('rm', '--force', name); started = false; }
   };
   try {
-    docker('run', '--pull=never', '--detach', '--rm', '--name', name,
-      '--publish', '127.0.0.1::5432', '--env', 'POSTGRES_DB=teacher_upgrade',
-      '--env', 'POSTGRES_USER=teacher_upgrade', '--env', `POSTGRES_PASSWORD=${password}`,
-      'postgres:16-alpine');
-    started = true;
-    for (let i = 0; i < 60; i++) {
-      try { docker('exec', name, 'pg_isready', '-h', '127.0.0.1', '-U', 'teacher_upgrade'); break; }
-      catch (error) { if (i === 59) throw error; await delay(200); }
+    if (!db) {
+      docker('run', '--pull=never', '--detach', '--rm', '--name', name,
+        '--publish', '127.0.0.1::5432', '--env', 'POSTGRES_DB=teacher_upgrade',
+        '--env', 'POSTGRES_USER=teacher_upgrade', '--env', `POSTGRES_PASSWORD=${password}`,
+        'postgres:16-alpine');
+      started = true;
+      for (let i = 0; i < 60; i++) {
+        try { docker('exec', name, 'pg_isready', '-h', '127.0.0.1', '-U', 'teacher_upgrade'); break; }
+        catch (error) { if (i === 59) throw error; await delay(200); }
+      }
+      const port = Number(docker('port', name, '5432/tcp').split(':').at(-1));
+      db = new DataSource({ type: 'postgres', host: '127.0.0.1', port,
+        username: 'teacher_upgrade', password, database: 'teacher_upgrade', synchronize: false });
     }
-    const port = Number(docker('port', name, '5432/tcp').split(':').at(-1));
-    db = new DataSource({ type: 'postgres', host: '127.0.0.1', port,
-      username: 'teacher_upgrade', password, database: 'teacher_upgrade', synchronize: false });
     await db.initialize();
     await db.query(`
       CREATE TABLE users(id bigint PRIMARY KEY,is_active boolean NOT NULL DEFAULT true);
@@ -78,6 +80,7 @@ export async function teacherUpgradeLab() {
       async verifySelection() { return { configuration_generation: 'synthetic-generation', session_generation: null }; },
     };
     const backupRestore = async () => {
+      if (!started) throw new Error('backup_restore_requires_docker_lab');
       const tables = (await db.query("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename"))
         .map(row => row.tablename);
       if (tables.some(table => !/^[a-z_][a-z0-9_]*$/.test(table))) throw new Error('unsafe_lab_table');

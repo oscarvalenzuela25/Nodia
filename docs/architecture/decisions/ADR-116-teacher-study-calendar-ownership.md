@@ -44,10 +44,12 @@ modalidad con fechas, la fecha es civil y puede proyectarse desde el
 inicio y el ordinal.
 
 Normalizar el nombre de las categorías por propietario y proteger la
-coherencia de relaciones con FKs de alcance. Calcular avance con el estado
-de las jornadas persistidas y usar revisiones para tratar ediciones
-concurrentes. La marca personal y la evidencia pedagógica conservan sus
-contratos propios.
+coherencia de relaciones con FKs de alcance. Cada actividad guarda su
+marca. La jornada se calcula como completada cuando tiene actividades y
+todas están marcadas. Server proyecta ese cálculo y los recuentos desde las
+filas persistidas. El guardado de una jornada usa una revisión esperada y
+una sola transacción para sus actividades. La evidencia pedagógica
+conserva su contrato propio.
 
 Representar el pegado mediante un contrato de datos versionado. La interfaz
 prepara una vista previa editable. La confirmación usa la misma escritura

@@ -3,7 +3,8 @@
 **Calendario de estudio de Teacher — propuesta del 2026-11-22.**
 [Plan111](111-teacher-study-calendar-plan.md) describe la segunda pestaña de
 Teacher, calendarios propios por fechas o días numerados, jornadas, categorías
-y pegado de planes. El trabajo comienza con revisión de diseño.
+y pegado de planes. El usuario confirmó el avance por actividad e indicó
+comenzar la implementación en la rama del calendario.
 
 **Avance de lectura de Teacher sin conexión — 2026-11-21.** PWA-006 está
 publicado. Guarda el punto de lectura en el dispositivo y lo sincroniza con
