@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
@@ -22,7 +22,7 @@ import {
   createObligationSchema,
   type ObligationForm,
 } from "./schema";
-import { FormContainer, ModalActions } from "./styles";
+import { FinanceFormRow, FormContainer, ModalActions } from "./styles";
 
 export type FinanceObligationModalProps = {
   open: boolean;
@@ -100,13 +100,18 @@ function ObligationFormModal({
       title={t(
         initialData ? "finance:edit_obligation" : "finance:create_obligation",
       )}
+      subtitle={t(
+        initialData
+          ? "finance:principal_update_hint"
+          : "finance:obligation_create_hint",
+      )}
       actions={
         <ModalActions>
           <Button
             disabled={busy}
             onClick={close}
-            color="error"
-            variant="contained"
+            color="inherit"
+            variant="outlined"
           >
             {t("core:cancel")}
           </Button>
@@ -114,6 +119,7 @@ function ObligationFormModal({
             disabled={
               busy || mutation.isUncertain || relationsBlocked || !isValid
             }
+            loading={mutation.isPending || isSubmitting}
             type="submit"
             form={formId}
             variant="contained"
@@ -135,59 +141,67 @@ function ObligationFormModal({
             return submit(data);
         })}
       >
-        <Controller
-          name="is_active"
-          control={control}
-          render={({ field }) => (
-            <FinanceActiveSwitch
-              value={field.value}
-              onChange={field.onChange}
-              disabled={busy}
+        <FinanceFormRow>
+          {(["name", "key"] as const).map((name) => (
+            <Controller
+              key={name}
+              name={name}
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  {...field}
+                  label={t(`finance:${name}`)}
+                  required
+                  disabled={busy}
+                  error={Boolean(errors[name])}
+                  helperText={
+                    errors[name]?.message ? t(errors[name].message) : undefined
+                  }
+                />
+              )}
             />
-          )}
-        />
-        {(["name", "key", "amount"] as const).map((name) => (
+          ))}
+        </FinanceFormRow>
+        <FinanceFormRow>
           <Controller
-            key={name}
-            name={name}
+            name="type"
+            control={control}
+            render={({ field }) => (
+              <SelectSingleInput
+                label={t("finance:type")}
+                value={field.value}
+                options={["loan", "debt"].map((value) => ({
+                  value,
+                  label: t(`finance:${value}`),
+                }))}
+                disabled={busy || Boolean(initialData)}
+                clearable={false}
+                onChange={(value) => {
+                  if (value) field.onChange(value);
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="amount"
             control={control}
             render={({ field }) => (
               <TextInput
                 {...field}
-                label={t(`finance:${name}`)}
+                label={t("finance:principal")}
+                inputMode="numeric"
                 required
                 disabled={busy}
-                error={Boolean(errors[name])}
+                error={Boolean(errors.amount)}
                 helperText={
-                  errors[name]?.message
-                    ? t(errors[name].message)
-                    : name === "amount"
-                      ? t("finance:principal_hint")
-                      : undefined
+                  errors.amount?.message
+                    ? t(errors.amount.message)
+                    : t("finance:amount_hint")
                 }
               />
             )}
           />
-        ))}
-        <Controller
-          name="type"
-          control={control}
-          render={({ field }) => (
-            <SelectSingleInput
-              label={t("finance:type")}
-              value={field.value}
-              options={["loan", "debt"].map((value) => ({
-                value,
-                label: t(`finance:${value}`),
-              }))}
-              disabled={busy || Boolean(initialData)}
-              clearable={false}
-              onChange={(value) => {
-                if (value) field.onChange(value);
-              }}
-            />
-          )}
-        />
+        </FinanceFormRow>
         {!initialData && (
           <Controller
             name="category_id"
@@ -230,13 +244,17 @@ function ObligationFormModal({
             />
           )}
         />
-        <Typography variant="body2" color="text.secondary">
-          {t(
-            initialData
-              ? "finance:principal_update_hint"
-              : "finance:obligation_create_hint",
+        <Controller
+          name="is_active"
+          control={control}
+          render={({ field }) => (
+            <FinanceActiveSwitch
+              value={field.value}
+              onChange={field.onChange}
+              disabled={busy}
+            />
           )}
-        </Typography>
+        />
       </FormContainer>
     </BaseModal>
   );

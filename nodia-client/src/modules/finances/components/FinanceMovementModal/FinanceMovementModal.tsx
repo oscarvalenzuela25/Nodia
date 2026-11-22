@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Button, Typography } from "@mui/material";
+import { Alert, Button, Stack, Typography } from "@mui/material";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,7 @@ import FinanceRemoteSelect, {
 import { useFinanceSubmit } from "../FinanceCatalogModal/hooks/useFinanceSubmit";
 import FinanceWriteReview from "../FinanceWriteReview";
 import { movementSchema, normalizedStatus, type MovementForm } from "./schema";
-import { FormContainer, ModalActions } from "./styles";
+import { FinanceFormRow, FormContainer, ModalActions } from "./styles";
 
 export type FinanceMovementModalProps = {
   open: boolean;
@@ -74,6 +74,7 @@ function MovementFormModal({
   );
   const selectedObligation =
     obligation?.id === obligationId ? obligation : obligationQuery.data;
+  const paymentObligation = initialData ? undefined : obligation;
   const linked = Boolean(obligationId);
   const initialMovement = Boolean(
     initialData && selectedObligation?.initial_movement.id === initialData.id,
@@ -146,15 +147,24 @@ function MovementFormModal({
       open={open}
       onClose={close}
       title={t(
-        initialData ? "finance:edit_movement" : "finance:create_movement",
+        initialData
+          ? "finance:edit_movement"
+          : paymentObligation
+            ? "finance:register_payment"
+            : "finance:create_movement",
       )}
+      subtitle={
+        paymentObligation
+          ? t("finance:payment_for", { name: paymentObligation.name })
+          : undefined
+      }
       actions={
         <ModalActions>
           <Button
             disabled={busy}
             onClick={close}
-            color="error"
-            variant="contained"
+            color="inherit"
+            variant="outlined"
           >
             {t("core:cancel")}
           </Button>
@@ -162,11 +172,12 @@ function MovementFormModal({
             disabled={
               busy || mutation.isUncertain || relationsBlocked || !isValid
             }
+            loading={mutation.isPending || isSubmitting}
             type="submit"
             form={formId}
             variant="contained"
           >
-            {t("finance:save")}
+            {t(paymentObligation ? "finance:register_payment" : "finance:save")}
           </Button>
         </ModalActions>
       }
@@ -183,104 +194,98 @@ function MovementFormModal({
             return submit(data);
         })}
       >
-        <Controller
-          name="is_active"
-          control={control}
-          render={({ field }) => (
-            <FinanceActiveSwitch
-              value={field.value}
-              onChange={field.onChange}
-              disabled={busy}
-            />
-          )}
-        />
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => (
-            <TextInput
-              {...field}
-              label={t("finance:name")}
-              required
-              disabled={busy}
-              error={Boolean(errors.name)}
-              helperText={
-                errors.name?.message ? t(errors.name.message) : undefined
-              }
-            />
-          )}
-        />
-        <Controller
-          name="amount"
-          control={control}
-          render={({ field }) => (
-            <TextInput
-              {...field}
-              label={t("finance:amount")}
-              required
-              disabled={busy || initialMovement}
-              error={Boolean(errors.amount)}
-              helperText={
-                initialMovement
-                  ? t("finance:edit_principal_on_obligation")
-                  : errors.amount?.message
-                    ? t(errors.amount.message)
-                    : t("finance:amount_hint")
-              }
-            />
-          )}
-        />
-        <Controller
-          name="type"
-          control={control}
-          render={({ field }) => (
-            <SelectSingleInput
-              label={t("finance:type")}
-              value={effectiveType}
-              options={["income", "expense"].map((value) => ({
-                value,
-                label: t(`finance:${value}`),
-              }))}
-              disabled={busy || linked}
-              clearable={false}
-              onChange={(type) => {
-                if (type !== "income" && type !== "expense") return;
-                field.onChange(type);
-                setValue(
-                  "status",
-                  normalizedStatus(type, getValues("status")),
-                  { shouldValidate: true },
-                );
-              }}
-            />
-          )}
-        />
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <SelectSingleInput
-              label={t("finance:status")}
-              value={effectiveStatus}
-              options={statuses.map((value) => ({
-                value,
-                label: t(`finance:${value}`),
-              }))}
-              disabled={busy || initialData?.status === "cancelled"}
-              clearable={false}
-              onChange={(value) => {
-                if (!value) return;
-                // Store a valid pair even when the linked obligation changes the displayed direction.
-                field.onChange(
-                  normalizedStatus(
-                    getValues("type"),
-                    value as MovementForm["status"],
-                  ),
-                );
-              }}
-            />
-          )}
-        />
+        <FinanceFormRow>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field }) => (
+              <TextInput
+                {...field}
+                label={t("finance:name")}
+                required
+                disabled={busy}
+                error={Boolean(errors.name)}
+                helperText={
+                  errors.name?.message ? t(errors.name.message) : undefined
+                }
+              />
+            )}
+          />
+          <Controller
+            name="amount"
+            control={control}
+            render={({ field }) => (
+              <TextInput
+                {...field}
+                label={t("finance:amount")}
+                inputMode="numeric"
+                required
+                disabled={busy || initialMovement}
+                error={Boolean(errors.amount)}
+                helperText={
+                  initialMovement
+                    ? t("finance:edit_principal_on_obligation")
+                    : errors.amount?.message
+                      ? t(errors.amount.message)
+                      : t("finance:amount_hint")
+                }
+              />
+            )}
+          />
+        </FinanceFormRow>
+        <FinanceFormRow>
+          <Controller
+            name="type"
+            control={control}
+            render={({ field }) => (
+              <SelectSingleInput
+                label={t("finance:type")}
+                value={effectiveType}
+                options={["income", "expense"].map((value) => ({
+                  value,
+                  label: t(`finance:${value}`),
+                }))}
+                disabled={busy || linked}
+                clearable={false}
+                onChange={(type) => {
+                  if (type !== "income" && type !== "expense") return;
+                  field.onChange(type);
+                  setValue(
+                    "status",
+                    normalizedStatus(type, getValues("status")),
+                    { shouldValidate: true },
+                  );
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <SelectSingleInput
+                label={t("finance:status")}
+                value={effectiveStatus}
+                options={statuses.map((value) => ({
+                  value,
+                  label: t(`finance:${value}`),
+                }))}
+                disabled={busy || initialData?.status === "cancelled"}
+                clearable={false}
+                onChange={(value) => {
+                  if (!value) return;
+                  // Store a valid pair even when the linked obligation changes the displayed direction.
+                  field.onChange(
+                    normalizedStatus(
+                      getValues("type"),
+                      value as MovementForm["status"],
+                    ),
+                  );
+                }}
+              />
+            )}
+          />
+        </FinanceFormRow>
         <Controller
           name="category_id"
           control={control}
@@ -303,32 +308,62 @@ function MovementFormModal({
             />
           )}
         />
+        <Stack spacing={1}>
+          <Controller
+            name="obligation_id"
+            control={control}
+            render={({ field }) => (
+              <FinanceRemoteSelect
+                resource="obligations"
+                label={t("finance:obligation")}
+                value={field.value}
+                onChange={field.onChange}
+                selectedOption={
+                  obligation ?? initialData?.obligation ?? undefined
+                }
+                onSelectionStateChange={setObligationSelection}
+                disabled={busy || Boolean(initialData) || Boolean(obligation)}
+              />
+            )}
+          />
+          {selectedObligation && (
+            <Typography variant="body2" color="text.secondary">
+              {t(
+                initialMovement
+                  ? "finance:initial_movement_hint"
+                  : "finance:repayment_hint",
+              )}
+            </Typography>
+          )}
+          {linked && !selectedObligation && obligationQuery.isError && (
+            <Alert
+              severity="error"
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  disabled={busy}
+                  onClick={() => void obligationQuery.refetch()}
+                >
+                  {t("finance:retry")}
+                </Button>
+              }
+            >
+              {t("finance:obligation_detail_error")}
+            </Alert>
+          )}
+        </Stack>
         <Controller
-          name="obligation_id"
+          name="is_active"
           control={control}
           render={({ field }) => (
-            <FinanceRemoteSelect
-              resource="obligations"
-              label={t("finance:obligation")}
+            <FinanceActiveSwitch
               value={field.value}
               onChange={field.onChange}
-              selectedOption={
-                obligation ?? initialData?.obligation ?? undefined
-              }
-              onSelectionStateChange={setObligationSelection}
-              disabled={busy || Boolean(initialData) || Boolean(obligation)}
+              disabled={busy}
             />
           )}
         />
-        {selectedObligation && (
-          <Typography variant="body2" color="text.secondary">
-            {t(
-              initialMovement
-                ? "finance:initial_movement_hint"
-                : "finance:repayment_hint",
-            )}
-          </Typography>
-        )}
       </FormContainer>
     </BaseModal>
   );

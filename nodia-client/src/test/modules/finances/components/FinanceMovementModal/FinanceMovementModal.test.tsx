@@ -115,6 +115,12 @@ describe("FinanceMovementModal", () => {
     render(
       <FinanceMovementModal open onClose={vi.fn()} obligation={obligation} />,
     );
+    const paymentLabel = i18n.t("finance:register_payment");
+    expect(
+      screen.getByRole("dialog", { name: paymentLabel }),
+    ).toHaveAccessibleDescription(
+      i18n.t("finance:payment_for", { name: obligation.name }),
+    );
     await user.type(
       screen.getByLabelText(new RegExp(i18n.t("finance:name"))),
       "Abono",
@@ -127,9 +133,7 @@ describe("FinanceMovementModal", () => {
       screen.getByRole("button", { name: i18n.t("finance:category") }),
     );
     await user.click(screen.getByText("Comida"));
-    await user.click(
-      screen.getByRole("button", { name: i18n.t("finance:save") }),
-    );
+    await user.click(screen.getByRole("button", { name: paymentLabel }));
     await waitFor(() =>
       expect(financeMock.save).toHaveBeenCalledWith({
         data: {
@@ -145,22 +149,45 @@ describe("FinanceMovementModal", () => {
     );
     expect(financeMock.save).toHaveBeenCalledTimes(1);
   });
-  it("does not enable save when obligation detail cannot be resolved", async () => {
+  it("keeps the draft and blocks writes until the linked obligation loads on retry", async () => {
+    const user = userEvent.setup();
+    const retry = vi.fn();
     financeMock.record.mockReturnValue({
       data: undefined,
       isError: true,
       isFetching: false,
+      refetch: retry,
     });
-    render(
-      <FinanceMovementModal open onClose={vi.fn()} initialData={movement} />,
+    const close = vi.fn();
+    const { rerender } = render(
+      <FinanceMovementModal open onClose={close} initialData={movement} />,
     );
-    await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: i18n.t("finance:save") }),
-      ).toBeDisabled(),
+    const amount = screen.getByLabelText(new RegExp(i18n.t("finance:amount")));
+    await user.clear(amount);
+    await user.type(amount, "30000");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      i18n.t("finance:obligation_detail_error"),
     );
-    expect(
-      screen.getByLabelText(new RegExp(i18n.t("finance:amount"))),
-    ).toHaveValue("20000");
+    const save = screen.getByRole("button", { name: i18n.t("finance:save") });
+    expect(save).toBeDisabled();
+    expect(financeMock.save).not.toHaveBeenCalled();
+    retry.mockImplementation(() => {
+      financeMock.record.mockReturnValue({
+        data: obligation,
+        isError: false,
+        isFetching: false,
+        refetch: retry,
+      });
+    });
+    await user.click(
+      screen.getByRole("button", { name: i18n.t("finance:retry") }),
+    );
+    expect(retry).toHaveBeenCalledTimes(1);
+    rerender(
+      <FinanceMovementModal open onClose={close} initialData={movement} />,
+    );
+    await waitFor(() => expect(save).toBeEnabled());
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(amount).toHaveValue("30000");
   });
 });

@@ -45,6 +45,10 @@ export const ScrollContainer = styled(TableContainer)(({ theme }) => {
   );
   return {
     overflowX: "auto",
+    "&:focus-visible": {
+      outline: `2px solid ${theme.palette.primary.main}`,
+      outlineOffset: -2,
+    },
     scrollbarWidth: "thin",
     scrollbarColor: `${thumb} transparent`,
     "&::-webkit-scrollbar": { width: 6, height: 6 },

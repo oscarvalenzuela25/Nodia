@@ -1,1 +1,1 @@
-export { FormContainer, ModalActions } from "../FinanceCatalogModal/styles";
+export { FinanceFormRow, FormContainer, ModalActions } from "../FinanceCatalogModal/styles";

@@ -242,7 +242,11 @@ export default function RentalTable<T extends { id: string }>({
               )}
             </Box>
           ) : (
-            <ScrollContainer>
+            <ScrollContainer
+              tabIndex={0}
+              role="region"
+              aria-label={title ?? t("rental:records")}
+            >
               <Table
                 sx={{ minWidth: 650 }}
                 aria-label={title ?? t("rental:records")}
@@ -275,6 +279,7 @@ export default function RentalTable<T extends { id: string }>({
                               id: item.id,
                             })}
                             aria-haspopup="menu"
+                            aria-expanded={menu?.id === item.id ? true : undefined}
                             aria-controls={
                               menu?.id === item.id ? menuId : undefined
                             }

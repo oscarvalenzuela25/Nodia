@@ -16,6 +16,12 @@ export function initialCalendarWindow(date: string) {
   return { from, to };
 }
 
+export function calendarWeekWindow(date: string) {
+  const weekday = new Date(date + "T12:00:00Z").getUTCDay();
+  const from = addCivilDays(date, -((weekday + 6) % 7));
+  return { from, to: addCivilDays(from, 7) };
+}
+
 export function calendarEvents(
   data: RentalCalendar,
   timezone: string,
@@ -86,4 +92,39 @@ export function occupiesCivilNight(
   day: string,
 ) {
   return checkIn <= day && day < checkOut;
+}
+
+export function calendarAgenda(data: RentalCalendar, timezone: string) {
+  const arrivals = new Map(
+    data.reservations.map((row) => [row.id, {
+      startsAt: `${row.check_in_on}T${row.check_in_time}`,
+      guestName: row.guest_name,
+    }]),
+  );
+  return [
+    ...data.reservations.map((row) => ({
+      kind: "reservation" as const,
+      row,
+      startsAt: arrivals.get(row.id)?.startsAt,
+    })),
+    ...data.blocks.map((row) => ({
+      kind: "block" as const,
+      row,
+      startsAt: toLocalDateTime(row.starts_at, timezone),
+    })),
+    ...data.turnovers.map((row) => {
+      const incoming = arrivals.get(row.incoming_reservation_id);
+      return {
+        kind: "turnover" as const,
+        row,
+        startsAt: incoming?.startsAt,
+        guestName: incoming?.guestName,
+      };
+    }),
+  ].sort((a, b) => {
+    if (a.startsAt === b.startsAt) return 0;
+    if (!a.startsAt) return 1;
+    if (!b.startsAt) return -1;
+    return a.startsAt.localeCompare(b.startsAt);
+  });
 }

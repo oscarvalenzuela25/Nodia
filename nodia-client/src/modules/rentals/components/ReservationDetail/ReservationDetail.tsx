@@ -1,4 +1,4 @@
-import { Alert, Button, LinearProgress, Typography } from "@mui/material";
+import { Alert, Button, Chip, LinearProgress, Typography } from "@mui/material";
 import { Skeleton } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
 import BaseModal from "../../../../components/BaseModal";
@@ -9,7 +9,16 @@ import {
 } from "../../infrastructure/useServices";
 import { formatRentalAmount } from "../../utils/money";
 import { formatRentalInstant } from "../../utils/dates";
-import { DetailList, ModalActions } from "./styles";
+import {
+  DetailActions,
+  DetailGrid,
+  DetailList,
+  DetailPanel,
+  DetailPanels,
+  DetailSkeleton,
+  SummaryTags,
+} from "./styles";
+
 export type ReservationDetailProps = {
   property: RentalProperty;
   id: string;
@@ -21,6 +30,7 @@ export type ReservationDetailProps = {
   onOpenPayments: (reservationId: string) => void;
   onOpenTurnover: (id: string) => void;
 };
+
 export default function ReservationDetail({
   property,
   id,
@@ -36,6 +46,12 @@ export default function ReservationDetail({
   const query = useRentalRecord("reservations", property.id, id);
   const busy = useRentalBusy(property.id);
   const row = query.data;
+  const actionsDisabled = busy || query.isFetching || query.isError;
+  const formatInstant = (instant: string) =>
+    formatRentalInstant(instant, property.timezone, i18n.language);
+  const formatAmount = (amount: string) =>
+    formatRentalAmount(amount, i18n.language);
+
   return (
     <BaseModal
       open
@@ -43,83 +59,179 @@ export default function ReservationDetail({
         if (!busy) onClose();
       }}
       title={t("rental:reservation_detail")}
+      subtitle={row?.guest_name}
       size="lg"
       disableEscapeKeyDown={busy}
     >
-      {query.isFetching && !query.isLoading && <LinearProgress />}
-      {query.isError && (
-        <Alert
-          severity="error"
-          action={
-            <Button disabled={busy} onClick={() => query.refetch()}>
-              {t("rental:retry")}
-            </Button>
-          }
-        >
-          {t("rental:load_error")}
-        </Alert>
-      )}
-      <Skeleton loading={query.isLoading}>
-        <DetailList>
-          <Typography variant="h6">
-            {row?.guest_name ?? t("rental:reservation_detail")}
-          </Typography>
+      <DetailList>
+        {query.isFetching && !query.isLoading && (
+          <LinearProgress aria-label={t("rental:reservation_detail")} />
+        )}
+        {query.isError && (
+          <Alert
+            severity="error"
+            action={
+              <Button disabled={busy || query.isFetching} onClick={() => void query.refetch()}>
+                {t("rental:retry")}
+              </Button>
+            }
+          >
+            {t("rental:load_error")}
+          </Alert>
+        )}
+        <Skeleton loading={query.isLoading && !row}>
+          {query.isLoading && !row && <DetailSkeleton aria-hidden />}
+          {!row && !query.isLoading && !query.isError && (
+            <Typography color="text.secondary">{t("rental:empty")}</Typography>
+          )}
           {row && (
-            <>
-              <Typography>{row.guest_contact}</Typography>
-              <Typography>
-                {t(`rental:status_${row.status}`)} ·{" "}
-                {t(`rental:channel_${row.channel}`)} ·{" "}
-                {t(row.is_active ? "rental:active" : "rental:inactive")}
+            <DetailPanel>
+              <SummaryTags>
+                <Chip label={t(`rental:status_${row.status}`)} />
+                <Chip variant="outlined" label={t(`rental:channel_${row.channel}`)} />
+                {!row.is_active && <Chip variant="outlined" label={t("rental:inactive")} />}
+              </SummaryTags>
+              <DetailGrid>
+                <div>
+                  <dt>{t("rental:check_in_on")}</dt>
+                  <dd>{formatInstant(row.check_in_at)}</dd>
+                </div>
+                <div>
+                  <dt>{t("rental:check_out_on")}</dt>
+                  <dd>{formatInstant(row.check_out_at)}</dd>
+                </div>
+              </DetailGrid>
+              <Typography variant="body2" color="text.secondary">
+                {t("rental:nights_count", { count: row.nights })} · {property.timezone}
               </Typography>
-              <Typography>
-                {row.check_in_on} {row.check_in_time} → {row.check_out_on}{" "}
-                {row.check_out_time} ·{" "}
-                {t("rental:nights_count", { count: row.nights })} ·{" "}
-                {property.timezone}
-              </Typography>
-              {(
-                [
-                  "total_amount",
-                  "commission_amount",
-                  "expected_amount",
-                  "deposit_amount",
-                  "received_amount",
-                  "refunded_amount",
-                  "balance_due_amount",
-                  "refund_due_amount",
-                ] as const
-              ).map((name) => (
-                <Typography key={name}>
-                  {t(`rental:${name}`)}:{" "}
-                  {formatRentalAmount(row[name], i18n.language)}
-                </Typography>
-              ))}
-              <Typography>
-                {t("rental:external_reference")}:{" "}
-                {row.external_reference ?? t("rental:not_recorded")}
-              </Typography>
-              <Typography>
-                {t("rental:notes")}: {row.notes ?? t("rental:not_recorded")}
-              </Typography>
-              {(
-                ["deposit_due_at", "balance_due_at", "cancelled_at"] as const
-              ).map(
-                (name) =>
-                  row[name] && (
-                    <Typography key={name}>
-                      {t(`rental:${name}`)}:{" "}
-                      {formatRentalInstant(
-                        row[name]!,
-                        property.timezone,
-                        i18n.language,
-                      )}
-                    </Typography>
-                  ),
+            </DetailPanel>
+          )}
+        </Skeleton>
+        {row && (
+          <>
+            <DetailActions>
+              {row.status === "draft" && (
+                <Button
+                  variant="contained"
+                  disabled={actionsDisabled || !row.is_active || !property.is_active}
+                  onClick={() => onConfirm(row)}
+                >
+                  {t("rental:confirm_reservation")}
+                </Button>
               )}
+              {row.status === "confirmed" && (
+                <Button
+                  variant="contained"
+                  disabled={actionsDisabled}
+                  onClick={() => onStay(row, "start")}
+                >
+                  {t("rental:start_stay")}
+                </Button>
+              )}
+              {row.status === "in_progress" && (
+                <Button
+                  variant="contained"
+                  disabled={actionsDisabled}
+                  onClick={() => onStay(row, "complete")}
+                >
+                  {t("rental:complete_stay")}
+                </Button>
+              )}
+              <Button variant="outlined" disabled={actionsDisabled} onClick={() => onEdit(row)}>
+                {t("rental:edit")}
+              </Button>
+              <Button
+                variant="outlined"
+                disabled={actionsDisabled}
+                onClick={() => onOpenPayments(row.id)}
+              >
+                {t("rental:payments_and_refunds")}
+              </Button>
+              {row.turnover_id && (
+                <Button
+                  variant="outlined"
+                  disabled={actionsDisabled}
+                  onClick={() => onOpenTurnover(row.turnover_id!)}
+                >
+                  {t("rental:review_preparation")}
+                </Button>
+              )}
+              {(row.status === "draft" || row.status === "confirmed") && (
+                <Button
+                  variant="outlined"
+                  color="error"
+                  disabled={actionsDisabled}
+                  onClick={() => onCancel(row)}
+                >
+                  {t("rental:cancel_reservation")}
+                </Button>
+              )}
+            </DetailActions>
+            <DetailPanels>
+              <DetailPanel>
+                <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {t("rental:payments_and_refunds")}
+                </Typography>
+                <DetailGrid>
+                  {(["balance_due_amount", "refund_due_amount", "received_amount", "refunded_amount"] as const)
+                    .map((name) => (
+                      <div key={name}>
+                        <dt>{t(`rental:${name}`)}</dt>
+                        <dd>{formatAmount(row[name])}</dd>
+                      </div>
+                    ))}
+                </DetailGrid>
+              </DetailPanel>
+              <DetailPanel>
+                <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {t("rental:wizard_agreement")}
+                </Typography>
+                <DetailGrid>
+                  {(["total_amount", "expected_amount", "deposit_amount", "commission_amount"] as const)
+                    .map((name) => (
+                      <div key={name}>
+                        <dt>{t(`rental:${name}`)}</dt>
+                        <dd>{formatAmount(row[name])}</dd>
+                      </div>
+                    ))}
+                  {(["deposit_due_at", "balance_due_at", "cancelled_at"] as const)
+                    .map((name) => {
+                      const instant = row[name];
+                      return instant && (
+                        <div key={name}>
+                          <dt>{t(`rental:${name}`)}</dt>
+                          <dd>{formatInstant(instant)}</dd>
+                        </div>
+                      );
+                    })}
+                </DetailGrid>
+              </DetailPanel>
+              <DetailPanel>
+                <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {t("rental:wizard_guest")}
+                </Typography>
+                <DetailGrid>
+                  <div>
+                    <dt>{t("rental:guest_contact")}</dt>
+                    <dd>{row.guest_contact || t("rental:not_recorded")}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("rental:guests_count")}</dt>
+                    <dd>{row.guests_count}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("rental:external_reference")}</dt>
+                    <dd>{row.external_reference ?? t("rental:not_recorded")}</dd>
+                  </div>
+                  <div>
+                    <dt>{t("rental:notes")}</dt>
+                    <dd>{row.notes ?? t("rental:not_recorded")}</dd>
+                  </div>
+                </DetailGrid>
+              </DetailPanel>
               {row.policy_snapshot && (
-                <>
-                  <Typography variant="subtitle1">
+                <DetailPanel>
+                  <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700 }}>
                     {t("rental:frozen_policy")}
                   </Typography>
                   {row.policy_snapshot.kind === "direct" ? (
@@ -136,79 +248,29 @@ export default function ReservationDetail({
                     </>
                   ) : (
                     <>
-                      <Typography>
-                        {row.policy_snapshot.platform_reference}
-                      </Typography>
-                      <Typography>
-                        {row.policy_snapshot.platform_description}
-                      </Typography>
+                      <Typography>{row.policy_snapshot.platform_reference}</Typography>
+                      <Typography>{row.policy_snapshot.platform_description}</Typography>
                     </>
                   )}
-                </>
+                </DetailPanel>
               )}
-              {row.cancellation_snapshot && (
-                <Alert severity="info">
-                  {t("rental:cancellation_record_summary", {
-                    days: row.cancellation_snapshot.days_before,
-                    refund:
-                      row.cancellation_snapshot.refund_amount === null
-                        ? t("rental:not_recorded")
-                        : formatRentalAmount(
-                            row.cancellation_snapshot.refund_amount,
-                            i18n.language,
-                          ),
-                  })}
-                </Alert>
-              )}
+            </DetailPanels>
+            {row.cancellation_snapshot && (
               <Alert severity="info">
-                {t("rental:archive_occupancy_explanation")}
+                {t("rental:cancellation_record_summary", {
+                  days: row.cancellation_snapshot.days_before,
+                  refund: row.cancellation_snapshot.refund_amount === null
+                    ? t("rental:not_recorded")
+                    : formatAmount(row.cancellation_snapshot.refund_amount),
+                })}
               </Alert>
-              <ModalActions>
-                <Button disabled={busy} onClick={() => onEdit(row)}>
-                  {t("rental:edit")}
-                </Button>
-                <Button disabled={busy} onClick={() => onOpenPayments(row.id)}>
-                  {t("rental:payments_and_refunds")}
-                </Button>
-                {row.turnover_id && (
-                  <Button
-                    disabled={busy}
-                    onClick={() => onOpenTurnover(row.turnover_id!)}
-                  >
-                    {t("rental:review_preparation")}
-                  </Button>
-                )}
-                {row.status === "draft" && (
-                  <Button
-                    disabled={busy || !row.is_active || !property.is_active}
-                    onClick={() => onConfirm(row)}
-                  >
-                    {t("rental:confirm_reservation")}
-                  </Button>
-                )}
-                {["draft", "confirmed"].includes(row.status) && (
-                  <Button disabled={busy} onClick={() => onCancel(row)}>
-                    {t("rental:cancel_reservation")}
-                  </Button>
-                )}
-                {row.status === "confirmed" && (
-                  <Button disabled={busy} onClick={() => onStay(row, "start")}>
-                    {t("rental:start_stay")}
-                  </Button>
-                )}
-                {row.status === "in_progress" && (
-                  <Button
-                    disabled={busy}
-                    onClick={() => onStay(row, "complete")}
-                  >
-                    {t("rental:complete_stay")}
-                  </Button>
-                )}
-              </ModalActions>
-            </>
-          )}
-        </DetailList>
-      </Skeleton>
+            )}
+            <Typography variant="body2" color="text.secondary">
+              {t("rental:archive_occupancy_explanation")}
+            </Typography>
+          </>
+        )}
+      </DetailList>
     </BaseModal>
   );
 }

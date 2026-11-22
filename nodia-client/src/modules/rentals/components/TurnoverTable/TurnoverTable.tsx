@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button, Chip } from "@mui/material";
 import RentalFilters from "../RentalFilters";
-import type { RentalProperty, RentalQuery } from "../../types";
+import type { RentalProperty, RentalQuery, RentalTurnover } from "../../types";
 import { useRentalList, useRentalBusy } from "../../infrastructure/useServices";
 import { formatRentalInstant } from "../../utils/dates";
 import RentalTable from "../RentalTable";
@@ -12,12 +13,20 @@ export type TurnoverTableProps = {
   onOpenTurnover: (id: string) => void;
   onOpenReservation: (id: string) => void;
 };
+
+const cleaningColor = {
+  pending: "warning",
+  in_progress: "info",
+  completed: "success",
+} as const;
+
 export default function TurnoverTable({
   property,
   onOpenTurnover,
   onOpenReservation,
 }: TurnoverTableProps) {
   const { t, i18n } = useTranslation();
+  const reservationLabel = useId();
   const [params, setParams] = useState<RentalQuery>({ page: 1, limit: 10 });
   const page = params.page ?? 1,
     limit = params.limit ?? 10;
@@ -25,6 +34,35 @@ export default function TurnoverTable({
     setParams((previous) => ({ ...previous, ...changes }));
   const query = useRentalList("turnovers", property.id, params);
   const busy = useRentalBusy(property.id);
+  const controlsDisabled = busy || query.isFetching || query.isLoading;
+  const linenStatus = (row: RentalTurnover) =>
+    t(
+      row.linen_ready === null
+        ? "rental:unknown"
+        : row.linen_ready
+          ? "rental:yes"
+          : "rental:no",
+    );
+  const cleaningStatus = (row: RentalTurnover) => (
+    <Chip
+      component="span"
+      size="small"
+      variant="outlined"
+      color={cleaningColor[row.cleaning_status]}
+      label={t(`rental:cleaning_${row.cleaning_status}`)}
+    />
+  );
+  const timeOrNotRecorded = (value: string | null) =>
+    value
+      ? formatRentalInstant(value, property.timezone, i18n.language)
+      : t("rental:not_recorded");
+  const reviewAction = (row: RentalTurnover) => ({
+    key: "edit",
+    label: t("rental:review_preparation"),
+    onClick: () => onOpenTurnover(row.id),
+    disabled: controlsDisabled,
+  });
+
   return (
     <Wrapper>
       <RentalFilters
@@ -32,7 +70,7 @@ export default function TurnoverTable({
         property={property}
         query={params}
         onApply={setParams}
-        disabled={busy}
+        disabled={controlsDisabled}
       />
       <RentalTable
         renderMobileRow={(r, cardBusy, actions) => (
@@ -42,46 +80,28 @@ export default function TurnoverTable({
             })}
             disabled={cardBusy}
             actions={actions}
-            primaryAction={actions.find((a) => a.key === "edit")}
+            primaryAction={reviewAction(r)}
             fields={[
               {
                 key: "linen",
                 label: t("rental:linen_ready"),
-                value: t(
-                  r.linen_ready === null
-                    ? "rental:unknown"
-                    : r.linen_ready
-                      ? "rental:yes"
-                      : "rental:no",
-                ),
+                value: linenStatus(r),
               },
               {
                 key: "cleaning",
                 label: t("rental:cleaning_status"),
-                value: t("rental:cleaning_" + r.cleaning_status),
+                value: cleaningStatus(r),
               },
               {
                 key: "planned",
                 label: t("rental:planned_ready_at"),
-                value: r.planned_ready_at
-                  ? formatRentalInstant(
-                      r.planned_ready_at,
-                      property.timezone,
-                      i18n.language,
-                    )
-                  : t("rental:not_recorded"),
+                value: timeOrNotRecorded(r.planned_ready_at),
                 fullWidth: true,
               },
               {
                 key: "actual",
                 label: t("rental:ready_at"),
-                value: r.ready_at
-                  ? formatRentalInstant(
-                      r.ready_at,
-                      property.timezone,
-                      i18n.language,
-                    )
-                  : t("rental:not_recorded"),
+                value: timeOrNotRecorded(r.ready_at),
                 fullWidth: true,
               },
             ]}
@@ -100,56 +120,54 @@ export default function TurnoverTable({
           {
             key: "reservation",
             label: t("rental:incoming_reservation_id"),
-            render: (r) => r.incoming_reservation_id,
+            render: (row) => (
+              <span id={`${reservationLabel}-${row.id}`}>
+                {t("rental:incoming_transition", {
+                  id: row.incoming_reservation_id,
+                })}
+              </span>
+            ),
           },
           {
             key: "linen",
             label: t("rental:linen_ready"),
-            render: (r) =>
-              t(
-                r.linen_ready === null
-                  ? "rental:unknown"
-                  : r.linen_ready
-                    ? "rental:yes"
-                    : "rental:no",
-              ),
+            render: linenStatus,
           },
           {
             key: "cleaning",
             label: t("rental:cleaning_status"),
-            render: (r) => t(`rental:cleaning_${r.cleaning_status}`),
+            render: cleaningStatus,
           },
           {
             key: "planned",
             label: t("rental:planned_ready_at"),
-            render: (r) =>
-              r.planned_ready_at
-                ? formatRentalInstant(
-                    r.planned_ready_at,
-                    property.timezone,
-                    i18n.language,
-                  )
-                : t("rental:not_recorded"),
+            render: (r) => timeOrNotRecorded(r.planned_ready_at),
           },
           {
             key: "actual",
             label: t("rental:ready_at"),
-            render: (r) =>
-              r.ready_at
-                ? formatRentalInstant(
-                    r.ready_at,
-                    property.timezone,
-                    i18n.language,
-                  )
-                : t("rental:not_recorded"),
+            render: (r) => timeOrNotRecorded(r.ready_at),
+          },
+          {
+            key: "review",
+            label: t("rental:preparation"),
+            render: (row) => {
+              const action = reviewAction(row);
+              return (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  aria-describedby={`${reservationLabel}-${row.id}`}
+                  disabled={action.disabled}
+                  onClick={action.onClick}
+                >
+                  {action.label}
+                </Button>
+              );
+            },
           },
         ]}
         actions={(r) => [
-          {
-            key: "edit",
-            label: t("rental:review_preparation"),
-            onClick: () => onOpenTurnover(r.id),
-          },
           {
             key: "reservation",
             label: t("rental:open_reservation"),

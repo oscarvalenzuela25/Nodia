@@ -7,7 +7,7 @@ import {
   normalizedPhone,
   phoneContactParts,
 } from "../../../../utils/phoneNumbers";
-import { useId, useState } from "react";
+import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -33,7 +33,8 @@ import { countNights, addCivilDays } from "../../utils/dates";
 import {
   estimateRentalTotal,
   formatRentalAmount,
-  percentBasisPoints,
+  isRentalMoney,
+  suggestedDeposit,
 } from "../../utils/money";
 import RentalActiveSwitch from "../RentalActiveSwitch";
 import RentalRemoteSelect from "../RentalRemoteSelect";
@@ -45,7 +46,44 @@ import {
   reservationSchema,
   type ReservationForm,
 } from "./schema";
-import { FormContainer, ModalActions, FieldGrid, QuoteSummary } from "./styles";
+import ReservationReview from "./ReservationReview";
+import {
+  FieldGrid,
+  FormContainer,
+  QuoteSummary,
+  WizardActions,
+  WizardProgress,
+} from "./styles";
+
+const steps = ["stay", "guest", "agreement"] as const;
+const stayFields = [
+  "check_in_on",
+  "check_out_on",
+  "check_in_time",
+  "check_out_time",
+  "guests_count",
+] as const;
+const guestFields = [
+  "guest_name",
+  "guest_contact",
+  "channel",
+  "external_reference",
+] as const;
+const numericFields: ReadonlyArray<keyof ReservationForm> = [
+  "guests_count",
+  "nightly_rate",
+  "cleaning_fee",
+  "discount_amount",
+  "commission_amount",
+  "deposit_amount",
+];
+
+function fieldStep(name: keyof ReservationForm) {
+  if (stayFields.some((field) => field === name)) return 0;
+  if (guestFields.some((field) => field === name)) return 1;
+  return 2;
+}
+
 export type ReservationModalProps = {
   property: RentalProperty;
   open: boolean;
@@ -68,7 +106,16 @@ export default function ReservationModal({
 }: ReservationModalProps) {
   const { t, i18n } = useTranslation();
   const formId = useId();
+  const formRef = useRef<HTMLFormElement>(null);
+  const activeStepRef = useRef<HTMLLIElement>(null);
   const [step, setStep] = useState(0);
+  const [focusRequest, setFocusRequest] = useState<{
+    field?: keyof ReservationForm;
+  } | null>(null);
+  const lastFocusRequest = useRef<typeof focusRequest>(null);
+  const focusRecovery = useCallback((target: HTMLDivElement | null) => {
+    target?.focus();
+  }, []);
   const initialContact = phoneContactParts(initialData?.guest_contact ?? "");
   const [contactCountry, setContactCountry] = useState(initialContact.country);
   const [contactEdited, setContactEdited] = useState(false);
@@ -103,10 +150,11 @@ export default function ReservationModal({
     handleSubmit,
     setValue,
     trigger,
+    getFieldState,
     formState: { errors, isSubmitting },
   } = useForm<ReservationForm>({
     resolver: zodResolver(formSchema),
-    shouldFocusError: Boolean(initialData),
+    shouldFocusError: false,
     defaultValues: {
       guest_name: initialData?.guest_name ?? "",
       guest_contact: initialContact.number,
@@ -138,6 +186,33 @@ export default function ReservationModal({
     isSubmitting ||
     history.isFetching;
   const disabled = busy || readError;
+  const submitDisabled = disabled || (!initialData && !property.is_active);
+  const creating = !initialData;
+  const agreementStep = step === steps.length - 1;
+  const agreementVisible = !creating || agreementStep;
+  const direct = values.channel !== "airbnb";
+  const hasSuggestions =
+    property.default_nightly_rate !== null ||
+    (direct &&
+      (property.default_cancellation_policy_id !== null ||
+        property.default_deposit_percent !== null));
+  const moveToStep = (next: number, field?: keyof ReservationForm) => {
+    setFocusRequest({ field });
+    setStep(next);
+  };
+  useLayoutEffect(() => {
+    if (!focusRequest || busy || lastFocusRequest.current === focusRequest)
+      return;
+    lastFocusRequest.current = focusRequest;
+    const invalid = focusRequest.field
+      ? formRef.current?.elements.namedItem(focusRequest.field)
+      : undefined;
+    if (invalid instanceof HTMLElement && !invalid.matches(":disabled")) {
+      invalid.focus();
+    } else {
+      activeStepRef.current?.focus();
+    }
+  }, [busy, focusRequest]);
   const submit = useBookingSubmit(
     async (form: ReservationForm) => {
       const value = {
@@ -187,19 +262,20 @@ export default function ReservationModal({
   const fields: Array<{
     name: Exclude<
       keyof ReservationForm,
-      "channel" | "cancellation_policy_id" | "is_active"
+      "cancellation_policy_id" | "is_active"
     >;
     type?: string;
     personal?: boolean;
   }> = [
-    { name: "guest_name", personal: true },
-    { name: "guest_contact", personal: true },
-    { name: "external_reference" },
     { name: "check_in_on", type: "date" },
     { name: "check_out_on", type: "date" },
     { name: "check_in_time", type: "time" },
     { name: "check_out_time", type: "time" },
     { name: "guests_count" },
+    { name: "guest_name", personal: true },
+    { name: "guest_contact", personal: true },
+    { name: "channel" },
+    { name: "external_reference" },
     { name: "nightly_rate" },
     { name: "cleaning_fee" },
     { name: "discount_amount" },
@@ -209,34 +285,50 @@ export default function ReservationModal({
     { name: "balance_due_at" },
     { name: "notes", personal: true },
   ];
-  const stayFields = [
-    "check_in_on",
-    "check_out_on",
-    "check_in_time",
-    "check_out_time",
-    "guests_count",
-  ] as const;
-  const guestFields = [
-    "guest_name",
-    "guest_contact",
-    "channel",
-    "external_reference",
-  ] as const;
-  const fieldStep = (name: keyof ReservationForm) =>
-    (stayFields as readonly string[]).includes(name)
-      ? 0
-      : (guestFields as readonly string[]).includes(name)
-        ? 1
-        : 2;
   const advance = async () => {
-    if (
-      !disabled &&
-      (await trigger(step === 0 ? [...stayFields] : [...guestFields], {
-        shouldFocus: true,
-      }))
-    )
-      setStep(step + 1);
+    const currentFields = step === 0 ? [...stayFields] : [...guestFields];
+    if (await trigger(currentFields)) {
+      moveToStep(step + 1);
+    } else {
+      setFocusRequest({
+        field: currentFields.find((name) => getFieldState(name).invalid),
+      });
+    }
   };
+  const applyHouseSuggestions = () => {
+    const {
+      default_nightly_rate: rate,
+      default_cancellation_policy_id: policy,
+      default_deposit_percent: deposit,
+    } = property;
+    if (rate !== null) setValue("nightly_rate", rate, { shouldValidate: true });
+    if (!direct) return;
+    if (policy !== null) setValue("cancellation_policy_id", policy);
+    if (deposit === null || nights === undefined) return;
+    try {
+      const proposedTotal = estimateRentalTotal(
+        rate ?? values.nightly_rate ?? "",
+        nights,
+        values.cleaning_fee ?? "0",
+        values.discount_amount ?? "0",
+      );
+      setValue("deposit_amount", suggestedDeposit(proposedTotal, deposit), {
+        shouldValidate: true,
+      });
+    } catch {
+      /* An incomplete quote cannot suggest a deposit. */
+    }
+  };
+  const savedAgreement = editable ? undefined : initialData;
+  const displayTotal = savedAgreement?.total_amount ?? total;
+  const commission = values.commission_amount;
+  const expectedTotal =
+    displayTotal &&
+    isRentalMoney(commission, true) &&
+    BigInt(commission) < BigInt(displayTotal)
+      ? (savedAgreement?.expected_amount ??
+        (BigInt(displayTotal) - BigInt(commission)).toString())
+      : undefined;
   let minCheckout: string | undefined;
   let maxCheckout: string | undefined;
   try {
@@ -257,40 +349,40 @@ export default function ReservationModal({
       size="lg"
       disableEscapeKeyDown={busy}
       actions={
-        <ModalActions>
-          <Button disabled={busy} onClick={onClose}>
-            {t("rental:close")}
-          </Button>
-          {!initialData && step > 0 && (
-            <Button disabled={busy} onClick={() => setStep(step - 1)}>
-              {t("rental:wizard_back")}
-            </Button>
-          )}
+        <WizardActions>
           <Button
-            onClick={
-              !initialData && step < 2 ? () => void advance() : undefined
-            }
-            type={!initialData && step < 2 ? "button" : "submit"}
+            disabled={busy}
+            onClick={creating && step > 0 ? () => moveToStep(step - 1) : onClose}
+            variant="outlined"
+            color="inherit"
+          >
+            {t(creating && step > 0 ? "rental:wizard_back" : "rental:close")}
+          </Button>
+          <Button
+            type="submit"
             form={formId}
             variant="contained"
-            disabled={disabled || (!initialData && !property.is_active)}
+            disabled={submitDisabled}
+            loading={mutation.isPending || isSubmitting}
           >
             {t(
-              initialData
-                ? "rental:save"
-                : step < 2
-                  ? "rental:wizard_continue"
-                  : "rental:wizard_draft",
+              creating
+                ? agreementStep
+                  ? "rental:wizard_draft"
+                  : "rental:wizard_continue"
+                : "rental:save",
             )}
           </Button>
-        </ModalActions>
+        </WizardActions>
       }
     >
       <FormContainer
         id={formId}
+        ref={formRef}
         onSubmit={(event) => {
-          if (!initialData && step < 2) {
-            event.preventDefault();
+          event.preventDefault();
+          if (submitDisabled) return;
+          if (creating && !agreementStep) {
             void advance();
             return;
           }
@@ -299,19 +391,29 @@ export default function ReservationModal({
               if (!disabled) return submit(value);
             },
             (issues) => {
-              if (!initialData) {
-                const first = Object.keys(issues)[0] as keyof ReservationForm;
-                setStep(fieldStep(first));
-              }
+              const first = Object.keys(issues)[0] as keyof ReservationForm;
+              if (first) moveToStep(creating ? fieldStep(first) : step, first);
             },
           )(event);
         }}
       >
-        {!initialData && (
-          <Stepper activeStep={step} alternativeLabel>
-            {["stay", "guest", "agreement"].map((key) => (
-              <Step key={key}>
-                <StepLabel>{t("rental:wizard_" + key)}</StepLabel>
+        {creating && (
+          <Stepper
+            component={WizardProgress}
+            role="list"
+            aria-label={t("rental:wizard_progress")}
+            activeStep={step}
+            alternativeLabel
+          >
+            {steps.map((key, index) => (
+              <Step
+                component="li"
+                key={key}
+                aria-current={index === step ? "step" : undefined}
+                tabIndex={index === step ? -1 : undefined}
+                ref={index === step ? activeStepRef : undefined}
+              >
+                <StepLabel>{t(`rental:wizard_${key}`)}</StepLabel>
               </Step>
             ))}
           </Stepper>
@@ -328,9 +430,22 @@ export default function ReservationModal({
             {t("rental:load_error")}
           </Alert>
         )}
-        <Alert severity="info">
-          {t("rental:quote_explanation", { timezone: property.timezone })}
-        </Alert>
+        {mutation.isUncertain && (
+          <Box ref={focusRecovery} tabIndex={-1}>
+            <RentalIntentReview
+              mutation={mutation}
+              onResolved={(ack) => {
+                onSaved?.(ack.resource_id);
+                onClose();
+              }}
+            />
+          </Box>
+        )}
+        {creating && step === 0 && (
+          <Typography variant="body2" color="text.secondary">
+            {t("rental:quote_explanation", { timezone: property.timezone })}
+          </Typography>
+        )}
         {initialData && !editable && (
           <Alert severity={history.isError ? "error" : "info"}>
             {t(
@@ -345,68 +460,23 @@ export default function ReservationModal({
             )}
           </Alert>
         )}
-        {!initialData && step === 2 && (
+        {creating && agreementStep && (
+          <ReservationReview
+            values={values}
+            nights={nights}
+            disabled={disabled}
+            onEditStay={() => moveToStep(0)}
+            onEditGuest={() => moveToStep(1)}
+          />
+        )}
+        {creating && agreementStep && hasSuggestions && (
           <Button
-            disabled={disabled || !property.is_active}
-            onClick={() => {
-              if (property.default_nightly_rate !== null)
-                setValue("nightly_rate", property.default_nightly_rate);
-              setValue(
-                "cancellation_policy_id",
-                property.default_cancellation_policy_id,
-              );
-              if (property.default_deposit_percent !== null) {
-                try {
-                  const proposedTotal = estimateRentalTotal(
-                    property.default_nightly_rate ?? values.nightly_rate ?? "",
-                    countNights(
-                      values.check_in_on ?? "",
-                      values.check_out_on ?? "",
-                    ),
-                    values.cleaning_fee ?? "0",
-                    values.discount_amount ?? "0",
-                  );
-                  const basis = percentBasisPoints(
-                    property.default_deposit_percent,
-                  );
-                  setValue(
-                    "deposit_amount",
-                    ((BigInt(proposedTotal) * basis) / 10000n).toString(),
-                  );
-                } catch {
-                  /* An incomplete quote cannot suggest a deposit. */
-                }
-              }
-            }}
+            disabled={submitDisabled}
+            onClick={applyHouseSuggestions}
+            variant="outlined"
           >
             {t("rental:apply_house_suggestions")}
           </Button>
-        )}
-        {(initialData || step === 1) && (
-          <Controller
-            name="channel"
-            control={control}
-            render={({ field }) => (
-              <SelectSingleInput
-                label={t("rental:channel")}
-                value={field.value}
-                options={["whatsapp", "airbnb", "facebook", "other"].map(
-                  (value) => ({ value, label: t(`rental:channel_${value}`) }),
-                )}
-                disabled={disabled || !editable}
-                clearable={false}
-                onChange={(value) => {
-                  if (value) {
-                    field.onChange(value);
-                    if (value === "airbnb") {
-                      setValue("deposit_amount", "0");
-                      setValue("cancellation_policy_id", null);
-                    }
-                  }
-                }}
-              />
-            )}
-          />
         )}
         <FieldGrid>
           {fields
@@ -417,31 +487,60 @@ export default function ReservationModal({
                 name={name}
                 control={control}
                 render={({ field }) => {
+                  if (name === "channel")
+                    return (
+                      <Box sx={{ minWidth: 0, gridColumn: "1 / -1" }}>
+                        <SelectSingleInput
+                          label={t("rental:channel")}
+                          value={field.value}
+                          options={["whatsapp", "airbnb", "facebook", "other"].map(
+                            (value) => ({
+                              value,
+                              label: t(`rental:channel_${value}`),
+                            }),
+                          )}
+                          disabled={disabled || !editable}
+                          clearable={false}
+                          onChange={(value) => {
+                            if (value) {
+                              field.onChange(value);
+                              if (value === "airbnb") {
+                                setValue("deposit_amount", "0");
+                                setValue("cancellation_policy_id", null);
+                              }
+                            }
+                          }}
+                        />
+                      </Box>
+                    );
                   if (name === "guest_contact")
                     return (
-                      <PhoneInput
-                        {...field}
-                        label={t("rental:guest_contact")}
-                        country={contactCountry}
-                        disabled={disabled}
-                        error={!!errors.guest_contact}
-                        helperText={
-                          errors.guest_contact?.message
-                            ? t(errors.guest_contact.message)
-                            : t("rental:guest_phone_help")
-                        }
-                        onCountryChange={(country) => {
-                          setContactCountry(country);
-                          setContactEdited(true);
-                        }}
-                        onChange={(event) => {
-                          setContactEdited(true);
-                          const parts = phoneContactParts(event.target.value);
-                          if (parts.number !== event.target.value)
-                            setContactCountry(parts.country);
-                          field.onChange(parts.number);
-                        }}
-                      />
+                      <Box sx={{ minWidth: 0, gridColumn: "1 / -1" }}>
+                        <PhoneInput
+                          {...field}
+                          label={t("rental:guest_contact")}
+                          required
+                          country={contactCountry}
+                          disabled={disabled}
+                          error={!!errors.guest_contact}
+                          helperText={
+                            errors.guest_contact?.message
+                              ? t(errors.guest_contact.message)
+                              : t("rental:guest_phone_help")
+                          }
+                          onCountryChange={(country) => {
+                            setContactCountry(country);
+                            setContactEdited(true);
+                          }}
+                          onChange={(event) => {
+                            setContactEdited(true);
+                            const parts = phoneContactParts(event.target.value);
+                            if (parts.number !== event.target.value)
+                              setContactCountry(parts.country);
+                            field.onChange(parts.number);
+                          }}
+                        />
+                      </Box>
                     );
                   const Input =
                     type === "date"
@@ -451,6 +550,7 @@ export default function ReservationModal({
                         : name.endsWith("_at")
                           ? DateTimeInput
                           : TextInput;
+                  const label = t(`rental:${name}`);
                   return (
                     <Box
                       sx={{
@@ -469,8 +569,13 @@ export default function ReservationModal({
                     >
                       <Input
                         {...field}
-                        label={t(`rental:${name}`)}
+                        label={label}
+                        displayLabel={type ? label : undefined}
+                        required={Boolean(type && editable)}
                         value={field.value}
+                        inputMode={
+                          numericFields.includes(name) ? "numeric" : undefined
+                        }
                         timezone={property.timezone}
                         minDate={
                           name === "check_out_on" ? minCheckout : undefined
@@ -498,7 +603,7 @@ export default function ReservationModal({
               />
             ))}
         </FieldGrid>
-        {(initialData || step === 2) && (
+        {agreementVisible && (
           <Controller
             name="cancellation_policy_id"
             control={control}
@@ -515,15 +620,29 @@ export default function ReservationModal({
             )}
           />
         )}
-        <QuoteSummary>
-          <Typography>
-            {t("rental:quote_total", {
-              nights: nights ?? "—",
-              amount: total ? formatRentalAmount(total, i18n.language) : "—",
-            })}
-          </Typography>
-        </QuoteSummary>
-        {(initialData || step === 2) && (
+        {agreementVisible && (
+          <QuoteSummary>
+            <Typography variant="body2" color="text.secondary">
+              {t(savedAgreement ? "rental:total_amount" : "rental:wizard_total")}
+            </Typography>
+            {displayTotal !== undefined ? (
+              <Typography variant="h6" component="p" sx={{ fontWeight: 700 }}>
+                {formatRentalAmount(displayTotal, i18n.language)}
+              </Typography>
+            ) : (
+              <Typography variant="body2">
+                {t("rental:wizard_estimate_unavailable")}
+              </Typography>
+            )}
+            {expectedTotal !== undefined && (
+              <Typography variant="body2">
+                {t("rental:expected_amount")} ·{" "}
+                {formatRentalAmount(expectedTotal, i18n.language)}
+              </Typography>
+            )}
+          </QuoteSummary>
+        )}
+        {agreementVisible && (
           <Controller
             name="is_active"
             control={control}
@@ -538,18 +657,16 @@ export default function ReservationModal({
             )}
           />
         )}
-        {(initialData || step === 2) && (
-          <Alert severity="info">
+        {initialData && (
+          <Typography variant="body2" color="text.secondary">
             {t("rental:archive_occupancy_explanation")}
-          </Alert>
+          </Typography>
         )}
-        <RentalIntentReview
-          mutation={mutation}
-          onResolved={(ack) => {
-            onSaved?.(ack.resource_id);
-            onClose();
-          }}
-        />
+        {creating && agreementStep && (
+          <Typography variant="body2" color="text.secondary">
+            {t("rental:wizard_draft_hint")}
+          </Typography>
+        )}
       </FormContainer>
     </BaseModal>
   );

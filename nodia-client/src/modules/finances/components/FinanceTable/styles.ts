@@ -2,6 +2,20 @@ import { Box, Button, TableContainer, TablePagination } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 import { TABLE_PANEL_RADIUS } from "../../../../theme/tablePanel";
 
+export const TableHeading = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  gap: theme.spacing(1, 2),
+  marginBlockEnd: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    alignItems: "stretch",
+    flexDirection: "column",
+    "& > button": { minHeight: 44 },
+  },
+}));
+
 export const TableTopBar = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
@@ -45,6 +59,10 @@ export const ScrollContainer = styled(TableContainer)(({ theme }) => {
   );
   return {
     overflowX: "auto",
+    "&:focus-visible": {
+      outline: `2px solid ${theme.palette.primary.main}`,
+      outlineOffset: -2,
+    },
     scrollbarWidth: "thin",
     scrollbarColor: `${thumb} transparent`,
     "&::-webkit-scrollbar": { width: 6, height: 6 },

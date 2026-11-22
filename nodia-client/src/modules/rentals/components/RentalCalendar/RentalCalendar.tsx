@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useId, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Box,
@@ -36,7 +36,12 @@ import {
   todayInZone,
   formatRentalInstant,
 } from "../../utils/dates";
-import { calendarEvents, initialCalendarWindow } from "./calendar";
+import {
+  calendarAgenda,
+  calendarEvents,
+  calendarWeekWindow,
+  initialCalendarWindow,
+} from "./calendar";
 import ReservationPreview from "../ReservationPreview";
 import {
   CalendarLayout,
@@ -47,6 +52,8 @@ import {
   AgendaCard,
   ContextPanel,
   Legend,
+  CalendarViewControls,
+  PeriodNavigation,
 } from "./styles";
 
 export type RentalCalendarProps = {
@@ -75,6 +82,7 @@ export default function RentalCalendar({
   onSelectReservation,
 }: RentalCalendarProps) {
   const { t, i18n } = useTranslation();
+  const agendaId = useId();
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const today = todayInZone(property.timezone);
@@ -124,12 +132,12 @@ export default function RentalCalendar({
           ? new Date(Date.UTC(year, month - 1 + offset, 1))
               .toISOString()
               .slice(0, 10)
-          : addCivilDays(date, offset * 7);
+          : addCivilDays(range.from, offset * 7);
       setDate(next);
       setRange(
         mode === "month"
           ? initialCalendarWindow(next)
-          : { from: next, to: addCivilDays(next, 7) },
+          : calendarWeekWindow(next),
       );
     } else {
       if (offset < 0) controller.prev();
@@ -139,19 +147,38 @@ export default function RentalCalendar({
     }
   };
   const changeMode = (next: typeof mode) => {
+    if (next === mode) return;
     setMode(next);
-    if (next === "agenda" || (mobile && next === "week"))
-      setRange({ from: date, to: addCivilDays(date, 7) });
+    setRange(
+      next === "month" ? initialCalendarWindow(date) : calendarWeekWindow(date),
+    );
   };
-  const title = new Intl.DateTimeFormat(i18n.language, {
+  const monthTitle = new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(date + "T12:00:00Z"));
+  const dateFormatter = new Intl.DateTimeFormat(i18n.language, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+  const visibleDates = dateFormatter.formatRange(
+    new Date(range.from + "T12:00:00Z"),
+    new Date(addCivilDays(range.to, -1) + "T12:00:00Z"),
+  );
+  const displayDate = (day: string) =>
+    dateFormatter.format(new Date(day + "T12:00:00Z"));
   const events = useMemo(
-    () =>
-      data ? calendarEvents(data, property.timezone, t, theme.palette) : [],
-    [data, property.timezone, t, theme.palette],
+    () => data && !list
+      ? calendarEvents(data, property.timezone, t, theme.palette)
+      : [],
+    [data, list, property.timezone, t, theme.palette],
+  );
+  const agenda = useMemo(
+    () => (data && list ? calendarAgenda(data, property.timezone) : []),
+    [data, list, property.timezone],
   );
   return (
     <Wrapper>
@@ -159,7 +186,7 @@ export default function RentalCalendar({
         {(!mobile || !selected) && (
           <CalendarPanel>
             <Toolbar>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <PeriodNavigation>
                 <IconButton
                   sx={{ minWidth: 44, minHeight: 44 }}
                   aria-label={t("rental:previous_window")}
@@ -168,8 +195,8 @@ export default function RentalCalendar({
                 >
                   <ChevronLeft />
                 </IconButton>
-                <Typography component="h2" variant="h5">
-                  {title}
+                <Typography component="h2" variant="h6" aria-live="polite">
+                  {mode === "month" ? monthTitle : visibleDates}
                 </Typography>
                 <IconButton
                   sx={{ minWidth: 44, minHeight: 44 }}
@@ -179,9 +206,10 @@ export default function RentalCalendar({
                 >
                   <ChevronRight />
                 </IconButton>
-              </Box>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              </PeriodNavigation>
+              <CalendarViewControls>
                 <Button
+                  variant="outlined"
                   disabled={busy}
                   onClick={() => {
                     setDate(today);
@@ -189,42 +217,46 @@ export default function RentalCalendar({
                       setRange(
                         mode === "month"
                           ? initialCalendarWindow(today)
-                          : { from: today, to: addCivilDays(today, 7) },
+                          : calendarWeekWindow(today),
                       );
                     else controller.gotoDate(today);
                   }}
                 >
                   {t("rental:calendar_today")}
                 </Button>
-                {!mobile && (
-                  <ToggleButtonGroup
-                    exclusive
-                    value={mode}
-                    size="small"
-                    aria-label={t("rental:calendar_view")}
-                    onChange={(_, next: typeof mode | null) => {
-                      if (next) changeMode(next);
-                    }}
-                  >
-                    <ToggleButton value="month" disabled={busy}>
-                      {t("rental:calendar_month")}
-                    </ToggleButton>
-                    <ToggleButton value="week" disabled={busy}>
-                      {t("rental:calendar_week")}
-                    </ToggleButton>
+                <ToggleButtonGroup
+                  exclusive
+                  value={mobile && mode === "agenda" ? "week" : mode}
+                  size="small"
+                  aria-label={t("rental:calendar_view")}
+                  onChange={(_, next: typeof mode | null) => {
+                    if (next) changeMode(next);
+                  }}
+                >
+                  <ToggleButton value="month" disabled={busy}>
+                    {t("rental:calendar_month")}
+                  </ToggleButton>
+                  <ToggleButton value="week" disabled={busy}>
+                    {t("rental:calendar_week")}
+                  </ToggleButton>
+                  {!mobile && (
                     <ToggleButton value="agenda" disabled={busy}>
                       {t("rental:show_agenda")}
                     </ToggleButton>
-                  </ToggleButtonGroup>
-                )}
-              </Box>
+                  )}
+                </ToggleButtonGroup>
+              </CalendarViewControls>
             </Toolbar>
-            <Typography variant="body2" color="text.secondary">
-              {t("rental:calendar_window", { from: range.from, to: range.to })}{" "}
-              · {property.timezone}
-            </Typography>
+            {mode === "month" && (
+              <Typography variant="body2" color="text.secondary">
+                {visibleDates}
+              </Typography>
+            )}
             {query.isFetching && !query.isLoading && (
-              <LinearProgress sx={{ height: 2 }} />
+              <LinearProgress
+                aria-label={t("rental:calendar_refreshing")}
+                sx={{ height: 2 }}
+              />
             )}
             {query.isError && (
               <Alert
@@ -238,22 +270,25 @@ export default function RentalCalendar({
                   </Button>
                 }
               >
-                {t("rental:calendar_window_error")}{" "}
-                <Button
-                  disabled={query.isFetching}
-                  onClick={() => changeMode("week")}
-                >
-                  {t("rental:reduce_window")}
-                </Button>
+                {t(mode === "month" ? "rental:calendar_window_error" : "rental:load_error")}
+                {mode === "month" && (
+                  <Button
+                    disabled={query.isFetching}
+                    onClick={() => changeMode("week")}
+                  >
+                    {t("rental:reduce_window")}
+                  </Button>
+                )}
               </Alert>
             )}
             <Skeleton loading={query.isLoading}>
               <Box sx={{ minWidth: 0 }}>
-                {data && !events.length && (
-                  <Alert severity="info" sx={{ mb: 2 }}>
-                    {t("rental:empty_calendar")}
-                  </Alert>
-                )}
+                {data && !query.isError &&
+                  (list ? agenda.length === 0 : events.length === 0) && (
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                      {t("rental:empty_calendar")}
+                    </Alert>
+                  )}
                 {!list && (
                   <EventCalendarViews
                     key={mode}
@@ -309,81 +344,107 @@ export default function RentalCalendar({
                 )}
                 {list && (
                   <Agenda>
-                    {data?.reservations.map((row) => (
-                      <AgendaCard
-                        key={row.id}
-                        disabled={busy}
-                        autoFocus={mobile && row.id === lastSelection}
-                        onClick={() => selectReservation(row.id)}
-                        aria-label={
-                          row.guest_name +
-                          " · " +
-                          t("rental:status_" + row.status)
-                        }
-                      >
-                        <Box>
-                          <Typography
-                            component="span"
-                            variant="subtitle1"
-                            sx={{ fontWeight: 700 }}
+                    {query.isLoading && <Box sx={{ minHeight: 160 }} />}
+                    {agenda.map((entry) => {
+                      if (entry.kind === "reservation") {
+                        const row = entry.row;
+                        const datesId = `${agendaId}-${row.id}`;
+                        return (
+                          <AgendaCard
+                            key={row.id}
+                            disabled={busy}
+                            autoFocus={mobile && row.id === lastSelection}
+                            onClick={() => selectReservation(row.id)}
+                            aria-describedby={datesId}
+                            aria-label={
+                              row.guest_name +
+                              " · " +
+                              t("rental:status_" + row.status)
+                            }
                           >
-                            {row.guest_name}
-                          </Typography>
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            sx={{ display: "block", color: "text.secondary" }}
+                            <Box>
+                              <Typography
+                                component="span"
+                                variant="subtitle1"
+                                sx={{ fontWeight: 700 }}
+                              >
+                                {row.guest_name}
+                              </Typography>
+                              <Typography
+                                id={datesId}
+                                component="span"
+                                variant="body2"
+                                sx={{ display: "block", color: "text.secondary" }}
+                              >
+                                <Box
+                                  component="time"
+                                  dateTime={`${row.check_in_on}T${row.check_in_time}`}
+                                  sx={{ display: "inline-block" }}
+                                >
+                                  {displayDate(row.check_in_on)} {row.check_in_time}
+                                </Box>
+                                {" → "}
+                                <Box
+                                  component="time"
+                                  dateTime={`${row.check_out_on}T${row.check_out_time}`}
+                                  sx={{ display: "inline-block" }}
+                                >
+                                  {displayDate(row.check_out_on)} {row.check_out_time}
+                                </Box>
+                              </Typography>
+                            </Box>
+                            <Chip
+                              component="span"
+                              size="small"
+                              label={
+                                t("rental:status_" + row.status) +
+                                (!row.is_active ? " · " + t("rental:inactive") : "")
+                              }
+                            />
+                          </AgendaCard>
+                        );
+                      }
+                      if (entry.kind === "block") {
+                        const block = entry.row;
+                        return (
+                          <AgendaCard
+                            key={"b" + block.id}
+                            disabled={busy}
+                            onClick={onManageBlocks}
                           >
-                            {row.check_in_on} {row.check_in_time} →{" "}
-                            {row.check_out_on} {row.check_out_time}
-                          </Typography>
-                        </Box>
-                        <Chip
-                          component="span"
-                          size="small"
-                          label={
-                            t("rental:status_" + row.status) +
-                            (!row.is_active ? " · " + t("rental:inactive") : "")
-                          }
-                        />
-                      </AgendaCard>
-                    ))}
-                    {data?.blocks.map((block) => (
-                      <AgendaCard
-                        key={"b" + block.id}
-                        disabled={busy}
-                        onClick={onManageBlocks}
-                      >
-                        <Box>
-                          <Typography>
-                            {t("rental:block")}: {block.reason}
-                          </Typography>
-                          <Typography variant="body2">
-                            {formatRentalInstant(
-                              block.starts_at,
-                              property.timezone,
-                              i18n.language,
-                            )}{" "}
-                            →{" "}
-                            {formatRentalInstant(
-                              block.ends_at,
-                              property.timezone,
-                              i18n.language,
-                            )}
-                          </Typography>
-                        </Box>
-                      </AgendaCard>
-                    ))}
-                    {data?.turnovers.map((row) => (
-                      <Button
-                        key={"t" + row.id}
-                        disabled={busy}
-                        onClick={() => onOpenTurnover(row.id)}
-                      >
-                        {t("rental:preparation")} #{row.id} ·{" "}
-                        {t("rental:cleaning_" + row.cleaning_status)}
-                      </Button>
-                    ))}
+                            <Box>
+                              <Typography component="span" sx={{ display: "block" }}>
+                                {t("rental:block")}: {block.reason}
+                              </Typography>
+                              <Typography component="span" variant="body2">
+                                {formatRentalInstant(
+                                  block.starts_at,
+                                  property.timezone,
+                                  i18n.language,
+                                )}{" "}
+                                →{" "}
+                                {formatRentalInstant(
+                                  block.ends_at,
+                                  property.timezone,
+                                  i18n.language,
+                                )}
+                              </Typography>
+                            </Box>
+                          </AgendaCard>
+                        );
+                      }
+                      const row = entry.row;
+                      return (
+                        <AgendaCard
+                          key={"t" + row.id}
+                          disabled={busy}
+                          onClick={() => onOpenTurnover(row.id)}
+                        >
+                          {t("rental:preparation")} · {entry.guestName ?? `#${row.id}`} ·{" "}
+                          {t("rental:cleaning_" + row.cleaning_status)}
+                        </AgendaCard>
+                      );
+                    })}
                   </Agenda>
                 )}
               </Box>
@@ -482,7 +543,7 @@ export default function RentalCalendar({
                     })
                   }
                 >
-                  {t("rental:new_reservation")}
+                  {t("rental:new_reservation_today")}
                 </Button>
               )}
             </>
