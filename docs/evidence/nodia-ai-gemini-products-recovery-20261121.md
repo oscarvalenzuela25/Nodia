@@ -76,3 +76,49 @@ advertencia previa en una fixture ajena. La comprobación real cubre esta
 ruta de consulta con la selección exacta en la VM.
 
 SHA-256 del registro sanitizado del turno: `d7512f73a4f01b992a7e90e86c9ab6f588fb4407ed72b3d419d21aca88734b35`.
+
+
+## Relecturas del catálogo completo
+
+En el turno anterior, el primer `nodia_products_list` devolvió los once
+productos en una página. Los seis pedidos siguientes cambiaron de límite
+o página y por eso produjeron recibos distintos. El puente entregó el JSON
+completo como texto y contenido estructurado. La instrucción de ejecución
+del perfil dejaba implícita la condición de parada. La motivación interna
+de Gemini para pedir esas páginas sigue indeterminada.
+
+Un primer candidato agregó la condición `meta.page < meta.total_pages`
+para continuar, con el mismo límite y filtros y páginas consecutivas.
+El CLI recibió una única página de productos con once filas y un solo
+resultado de búsqueda de negocio. Tras ambas lecturas agotó 119 segundos
+en `awaiting_cli_terminal`. Quedó reconciliado y acusado, sin respuesta
+visible ni reenvío de esa ejecución.
+
+El candidato final conserva esa instrucción y entrega a Gemini los nombres,
+unidades, precios vigentes y regulares, el origen del precio y los metadatos
+de cada página. El gateway verifica el alcance en cada lectura, valida el
+resultado y registra el recibo íntegro antes de formar esa vista.
+
+
+La siguiente ejecución con la conexión 2, `gemini-3.8-flash-high` y
+esfuerzo `high`, completó y acusó una generación. El prompt inicial
+identificó Sra Ines por nombre y no incluyó su ID. Se registró una llamada
+a `nodia_businesses_list` y una a `nodia_products_list`, en ese orden.
+La única página de Productos incluyó las once filas y `total_pages: 1`.
+La vista enviada al servicio Gemini ocupó 1.522 bytes JSON. El
+recibo completo en PostgreSQL ocupó 5.056 bytes JSON. La vista conservó
+las once filas y todos sus metadatos de paginación.
+
+La respuesta persistida coincidió con PostgreSQL en los once precios
+vigentes en CLP. También coincidió el precio regular del producto en
+oferta, Barra protein chocolate, a $1.250 vigente y $1.390 regular. Se
+retiró el PostgreSQL desechable con cero trabajos pendientes, acuses
+pendientes o propuestas. La ejecución usó el candidato aislado en la
+VM y el proveedor Gemini real del laboratorio.
+
+Pasaron 222 pruebas focalizadas, el build de Server, la auditoría de
+catálogo y la integración de lecturas con PostgreSQL. Oxlint presentó
+una advertencia previa en una fixture ajena al cambio.
+
+SHA-256 del registro sanitizado del turno exitoso:
+`8e41ad911bbe0a318cf06529cc55f16413c6039a510ee786928aca855a801b5a`.

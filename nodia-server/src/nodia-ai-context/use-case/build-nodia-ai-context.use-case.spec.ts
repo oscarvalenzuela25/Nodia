@@ -333,6 +333,48 @@ describe('BuildNodiaAiContextUseCase', () => {
     expect(instructions([businessesList])).not.toContain(productsList);
     expect(instructions([productsList, businessesList], 'execution')).not.toContain(productsList);
   });
+  it('guides when to finish reading prices only in the catalog execution profile', () => {
+    const useCase = new BuildNodiaAiContextUseCase(
+      knowledge() as unknown as LoadNodiaAiKnowledgeUseCase,
+      policy,
+    );
+    const instructions = (
+      phase: 'discovery' | 'execution',
+      toolSelectionProfileId?: string,
+    ): string =>
+      JSON.parse(
+        useCase.execute({
+          moduleRoutes: ['/nodia-ai', '/business'],
+          throughSeq: '1',
+          history: [],
+          mode: 'agentic',
+          toolSelection: {
+            schema_version: 1,
+            phase,
+            catalog_hash: 'a'.repeat(64),
+          },
+          toolSelectionProfileId,
+        }).prompt,
+      ).instructions;
+
+    const execution = instructions('execution', 'product_catalog_reads');
+    expect(execution).toContain('nodia_businesses_list');
+    expect(execution).toContain('q.business_id_eq');
+    expect(execution).toContain('nodia_products_list');
+    expect(execution).toContain('page: 1');
+    expect(execution).toContain('meta.page < meta.total_pages');
+    expect(execution).toContain('una sola lectura de productos');
+    expect(execution).toContain('effective_price');
+    expect(execution).toContain('sale_price');
+    expect(execution).toContain('finish');
+    expect(instructions('discovery', 'product_catalog_reads')).not.toContain(
+      'meta.total_pages',
+    );
+    expect(instructions('execution', 'published_reads')).not.toContain(
+      'meta.total_pages',
+    );
+    expect(instructions('execution')).not.toContain('meta.total_pages');
+  });
   const snapshot = (): NodiaAiCompactionSnapshot => ({
     id: 'f32a0ebe-9865-4e5d-9b38-25a886a6c694',
     revision: 2,

@@ -67,8 +67,15 @@ Una solicitud inequívoca de productos con precios puede usar
 observado y el actor está autorizado para ambas lecturas publicadas.
 El perfil incluye `nodia_businesses_list` y `nodia_products_list`: el
 modelo resuelve el negocio por nombre y obtiene sus precios en la misma
-generación. Solicitudes mixtas o que requieren otras capacidades siguen
-el descubrimiento automático. La selección del perfil no sustituye la
+generación. Empieza en la página 1 con el límite predeterminado. Si
+`meta.page < meta.total_pages`, conserva los filtros y el límite al
+avanzar a la siguiente página. Con la última página en memoria, responde
+con los precios vigentes y muestra los regulares cuando hay oferta.
+En este perfil, Gemini recibe todas las filas con su nombre, unidad,
+precios y origen del precio, además de los metadatos de la página.
+El gateway valida y registra el resultado completo antes de preparar
+esa vista. Solicitudes mixtas o que requieren otras capacidades siguen el
+descubrimiento automático. La selección del perfil no sustituye la
 autorización vigente del negocio en cada consulta. [Evidencia de la VM](../evidence/nodia-ai-gemini-products-recovery-20261121.md).
 
 ## Cómo conoce NodiaAI los productos

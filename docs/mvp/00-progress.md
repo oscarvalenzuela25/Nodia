@@ -12,8 +12,10 @@ Codex Agentic resolvió el negocio por nombre y respondió con los once
 precios. Gemini Agentic completó el `tools/list` de descubrimiento y agotó
 el tiempo antes de consultar. [Evidencia de Agentic](../evidence/nodia-ai-products-agentic-20261121.md).
 Gemini Agentic ya verificó la misma consulta sin ID con un perfil de
-lectura acotado. Resolvió el negocio por nombre y devolvió los once
-precios en una generación real. [Diagnóstico y verificación](../evidence/nodia-ai-gemini-products-recovery-20261121.md).
+lectura acotado. El candidato aislado en la VM resolvió el negocio por
+nombre y devolvió los once precios con una sola lectura de Productos.
+El perfil avanza de página sólo cuando quedan registros y entrega al
+modelo una vista acotada a los precios. [Diagnóstico y verificación](../evidence/nodia-ai-gemini-products-recovery-20261121.md#relecturas-del-catálogo-completo).
 [Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
 y [catálogo40](40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21).
 

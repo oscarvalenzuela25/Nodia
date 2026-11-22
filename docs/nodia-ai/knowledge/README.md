@@ -11,7 +11,11 @@ la unidad. La revisión firmada de Productos sigue vigente.
 
 Gemini Agentic usa el [perfil de consulta de catálogo](../../mvp/40-nodia-ai-tool-catalog-v1.md#lectura-de-catálogo-en-gemini-agentic--2026-11-21)
 para solicitudes inequívocas de productos y precios con ambas lecturas
-autorizadas. La revisión firmada de Productos conserva su contrato de
+autorizadas. El perfil indica que, si la primera página trae todo el
+catálogo, el modelo debe responder con esa lectura. Para un catálogo de
+varias páginas, conserva el filtro de negocio y el límite. Gemini recibe
+todas las filas con nombre, unidad, precios y origen del precio, junto con
+la paginación. La revisión firmada de Productos conserva su contrato de
 lectura y el alcance por negocio.
 
 ## Punto de lectura de Teacher sin conexión — 2026-11-21

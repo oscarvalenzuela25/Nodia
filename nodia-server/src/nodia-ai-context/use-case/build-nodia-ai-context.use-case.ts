@@ -143,6 +143,7 @@ export class BuildNodiaAiContextUseCase {
     snapshot?: NodiaAiCompactionSnapshot;
     recoveryRefs?: NodiaAiJsonObject;
     toolSelection?: unknown;
+    toolSelectionProfileId?: NodiaAiJsonValue;
     capabilityIndex?: NodiaAiJsonObject;
     invoiceOcrReferenceIds?: readonly string[];
   }) {
@@ -259,6 +260,10 @@ export class BuildNodiaAiContextUseCase {
       'No afirmes haber consultado o cambiado información sin un resultado de una herramienta autorizada.',
       'Solicita aclaraciones cuando falten datos obligatorios o exista ambigüedad.',
       productCatalogDiscoveryInstruction(capabilityIndex),
+      toolSelection?.phase === 'execution' &&
+      input.toolSelectionProfileId === 'product_catalog_reads'
+        ? 'Para listar los precios, identifica primero el negocio con nodia_businesses_list si falta su ID. Si el nombre es ambiguo, pide aclaración. Llama a nodia_products_list con q.business_id_eq, page: 1 y el límite predeterminado. Cada respuesta contiene las filas en data y el número de páginas en meta.total_pages. Consulta otra página sólo si meta.page < meta.total_pages, con el mismo negocio, filtros y límite, avanzando de una en una. Al llegar a la última página, usa los datos recibidos y responde con finish. Si la primera página contiene todo el catálogo, responde con una sola lectura de productos. No vuelvas a leer la misma página ni cambies el límite para verificar sus datos. Muestra effective_price como precio vigente y sale_price como precio regular cuando esté en oferta.'
+        : '',
       invoiceDiscoveryHint
         ? 'invoice_ocr_discovery_hint señala candidatos del índice autorizado para planificar el OCR, la elección explícita de negocio/proveedor o la consulta de un resultado existente; usa su catalog_version al solicitar la selección. Es metadato orientativo, no una selección, permiso ni ejecución. No elige una referencia o negocio; si hay varias compatibles, pide aclaración. El capability_index completo sigue disponible; conserva las demás capacidades necesarias.'
         : '',
