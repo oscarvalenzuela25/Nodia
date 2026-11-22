@@ -52,7 +52,7 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
   async observe(
     identity: NodiaAiActorReference,
     chat: Readonly<NodiaAiConversationSummary>,
-    options?: { toolProfileId?: string },
+    options?: { toolProfileId?: string; productCatalogRead?: boolean },
   ) {
     if (!chat.selection)
       throw new ServiceUnavailableException('nodia_ai:mode_unavailable');
@@ -63,6 +63,7 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       revision: chat.revision,
       selection: structuredClone(chat.selection),
       toolProfileId: options?.toolProfileId,
+      productCatalogRead: options?.productCatalogRead === true,
       eligibility: structuredClone(await this.adapter.observe(chat.selection)),
     };
     if (observation.selection.mode === 'api_key')
@@ -135,10 +136,24 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
     const modules = actor.modules.map((item) => item.route).sort();
     const knowledge = this.knowledge.manifest;
     const visible = await this.tools.visible(manager, actor, modules);
+    // The intent can choose a profile only after native support and both
+    // published read capabilities have been checked in the current authority.
+    const useCatalogReadProfile =
+      observation.productCatalogRead &&
+      selection.mode === 'agentic' &&
+      observation.eligibility.adapterIdentity === undefined &&
+      /^gemini-profile:[a-f0-9]{64}$/.test(observation.eligibility.resourceKey) &&
+      supportsNodiaAiTools(observation.eligibility) &&
+      ['nodia_businesses_list', 'nodia_products_list'].every((id) =>
+        visible.some((tool) => tool.capabilityId === id && tool.kind === 'read'),
+      );
+    const toolProfileId =
+      observation.toolProfileId ??
+      (useCatalogReadProfile ? 'product_catalog_reads' : undefined);
     let selected: ReturnType<SelectNodiaAiTurnToolsUseCase['execute']>;
     try {
       selected = this.selector.execute({
-        profileId: observation.toolProfileId,
+        profileId: toolProfileId,
         registeredTools: this.tools.registeredCatalog(),
         publishedCapabilityIds: knowledge.capability_contracts.map(
           (item) => item.capability_id,

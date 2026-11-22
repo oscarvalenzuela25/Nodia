@@ -1515,3 +1515,21 @@ si falla. El endpoint administrativo de modelos sigue reservado a su módulo.
 El cambio cubre el descubrimiento en el selector. La
 [confirmación transaccional de Caja](109-business-cash-ledger-plan.md#63-confirmación-de-productos-desde-ocr)
 sigue en CASH-04.
+
+## 45. Cerrar el aviso de venta guardada — 2026-11-21
+
+El aviso superior de la última venta incorpora una X a la derecha de las
+acciones de impresión. Tiene un área activa de 44 × 44 px y el nombre
+accesible Cerrar o Close. En móvil, los dos botones de impresión se apilan
+junto a la X. Desde 600 px se muestran en una fila.
+
+Cerrar retira el aviso local y devuelve el foco al área de ventas. No
+realiza una petición HTTP. La siguiente venta confirmada muestra su propio
+aviso y el historial conserva el acceso a los comprobantes. La
+[ficha de impresión](../nodia-ai/knowledge/businesses/features/manual-sale-ticket-printing.md#cierre-del-aviso-de-última-venta--2026-11-21)
+registra el alcance del cambio.
+
+Chromium verificó el orden de foco, el cierre por teclado y por clic y la
+posición del botón sin desbordamiento a 320, 599, 600 y 1280 px en español
+oscuro e inglés claro. El ensayo usó ventas sintéticas. La regresión
+automatizada verificó que otro guardado vuelve a mostrar el aviso.

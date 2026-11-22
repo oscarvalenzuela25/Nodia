@@ -36,6 +36,7 @@ import type { NodiaAiConversation } from '../entities/nodia-ai-conversation.enti
 import { appendNodiaAiEvent } from '../../nodia-ai-run/event-journal.js';
 import { ManageNodiaAiAttachmentUseCase } from '../../nodia-ai-attachment/use-case/manage-nodia-ai-attachment.use-case.js';
 import { isInvoiceOcrReference } from '../../nodia-ai-invoice-ocr/invoice-ocr-delivery.js';
+import { isProductCatalogReadIntent } from '../types/product-catalog-read-intent.js';
 import { isNodiaAiNativeFormatVerified } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 
 @Injectable()
@@ -111,7 +112,16 @@ export class AdmitNodiaAiMessageUseCase {
       return { chat: this.project.execute(chat), attachments } as const;
     });
     if ('duplicate' in preflight) return preflight.duplicate;
-    const observation = await this.preparer.observe(identity, preflight.chat);
+    const text =
+      dto.parts.length === 1 && dto.parts[0].kind === 'text'
+        ? dto.parts[0].text
+        : null;
+    const observation =
+      text !== null && isProductCatalogReadIntent(text)
+        ? await this.preparer.observe(identity, preflight.chat, {
+            productCatalogRead: true,
+          })
+        : await this.preparer.observe(identity, preflight.chat);
     return this.conversations.transaction(async (manager) => {
       await lockAuthority(manager);
       await lockNodiaAiQueue(manager);

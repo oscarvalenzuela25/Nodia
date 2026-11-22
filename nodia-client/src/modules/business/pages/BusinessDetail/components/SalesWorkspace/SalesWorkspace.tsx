@@ -1,7 +1,8 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Alert, Box, Button, Chip, Divider, LinearProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, Box, Button, Chip, Divider, IconButton, LinearProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import PrintOutlined from "@mui/icons-material/PrintOutlined";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
@@ -61,6 +62,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   const [closingSaleId, setClosingSaleId] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [announcement, setAnnouncement] = useState("");
+  const workspace = useRef<HTMLDivElement>(null);
   const inputContainer = useRef<HTMLFormElement>(null);
   const restoreScanFocus = useRef(true);
   const [focusEpoch, setFocusEpoch] = useState(0);
@@ -296,12 +298,37 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
     return { id: entry.id, number: entry.number, amount, pending: Boolean(entry.pending), busy: entry.busy };
   });
   const currency = (value: string | number) => formatClp(value, i18n.language);
-  return <Workspace>
-    {ticketPrinting.receipt && ticketPrinting.receipt.id !== draft.sale?.id && <Alert severity="success" sx={{ overflowWrap: "anywhere", flexWrap: "wrap", "& .MuiAlert-message": { minWidth: 0, flex: "1 1 0" }, "& .MuiAlert-action": { alignItems: "center", width: { xs: "100%", sm: "auto" }, m: 0, pl: { xs: 0, sm: 2 } } }} action={<Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))" }, gap: 1, width: "100%" }}>
-      <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice || Boolean(unknownBarcode)} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, false); }}>{t("business:ticket.print_summary")}</Button>
-      <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice || Boolean(unknownBarcode)} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, true); }}>{t("business:ticket.print")}</Button>
-    </Box>}>
-      {t("business:ticket.last_saved", { total: currency(ticketPrinting.receipt.total_amount) })}<Typography component="p" variant="caption">{ticketPrinting.receipt.id}</Typography>
+  const receipt = ticketPrinting.receipt;
+  return <Workspace ref={workspace} tabIndex={-1}>
+    {receipt && receipt.id !== draft.sale?.id && <Alert
+      severity="success"
+      sx={{
+        overflowWrap: "anywhere",
+        flexWrap: "wrap",
+        "& .MuiAlert-message": { minWidth: 0, flex: "1 1 0" },
+        "& .MuiAlert-action": { alignItems: "center", width: { xs: "100%", sm: "auto" }, m: 0, pl: { xs: 0, sm: 2 } },
+      }}
+      action={<Box sx={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", alignItems: "center", gap: 1, width: "100%" }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))" }, gap: 1, minWidth: 0 }}>
+          <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice || Boolean(unknownBarcode)} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, false); }}>{t("business:ticket.print_summary")}</Button>
+          <Button variant="contained" fullWidth sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || editingPrice || Boolean(unknownBarcode)} onClick={() => { if (!priceEditor.blocksChange()) void ticketPrinting.print(undefined, true); }}>{t("business:ticket.print")}</Button>
+        </Box>
+        <IconButton
+          aria-label={t("core:close")}
+          color="inherit"
+          disabled={ticketPrinting.printing}
+          sx={{ width: 44, height: 44 }}
+          onClick={() => {
+            ticketPrinting.forget(receipt.id);
+            workspace.current?.focus({ preventScroll: true });
+          }}
+        >
+          <CloseOutlined fontSize="small" />
+        </IconButton>
+      </Box>}
+    >
+      {t("business:ticket.last_saved", { total: currency(receipt.total_amount) })}
+      <Typography component="p" variant="caption">{receipt.id}</Typography>
     </Alert>}
     {draft.pending && <Alert severity="warning" action={<Actions><Button disabled={busy} onClick={() => { restoreScanFocus.current = true; void draft.reconcile(); }}>{t("business:pos.reconcile")}</Button><Button disabled={busy} onClick={() => { restoreScanFocus.current = true; void draft.retry(); }}>{t("business:pos.retry_same")}</Button></Actions>}>{t("business:pos.pending")}</Alert>}
     {draft.storageError && <Alert severity="error" action={<Button disabled={busy} onClick={() => { if (draft.retryStorage()) sileo.success({ title: t("business:pos.storage_restored") }); else sileo.error({ title: t("business:pos.workspace_storage_error") }); }}>{t("business:pos.storage_retry")}</Button>}>{t("business:pos.workspace_storage_error")}</Alert>}
