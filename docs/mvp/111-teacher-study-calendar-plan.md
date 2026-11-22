@@ -346,3 +346,9 @@ base aislados se verificó que un fallo temporal conserva el formulario,
 que actualizar y desactivar mantienen el avance y que eliminar conserva
 las categorías y bloquea el reintento del alta. La migración conservó el
 calendario existente en la instancia local de Teacher.
+
+La tarjeta completa selecciona el calendario. El botón de tres puntos
+abre su menú como control aparte. Chromium comprobó el clic en el
+espacio libre de la tarjeta, la selección con teclado y el retorno del
+foco al cerrar el menú a 1573 px y 320 px. El ajuste corresponde a la
+interacción de Client y conserva el contrato y el contexto de NodiaAI.

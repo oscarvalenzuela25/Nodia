@@ -6,9 +6,10 @@ import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import PowerSettingsNewOutlined from "@mui/icons-material/PowerSettingsNewOutlined";
 import { useTranslation } from "react-i18next";
 import type { CalendarSummary } from "../../infrastructure/studyCalendar";
-import { calendarChipColors, CalendarPanel } from "./styles";
+import { calendarChipColors } from "./styles";
 
 export type CalendarPlanAction = "edit" | "toggle" | "delete";
+const menuTargetSize = 44;
 
 type Props = {
   plan: CalendarSummary;
@@ -33,46 +34,45 @@ export default function CalendarPlanCard({ plan, selected, disabled, onSelect, o
   const open = Boolean(anchor);
 
   return (
-    <Box component="li">
-      <CalendarPanel variant="outlined" sx={{
-        p: 0.5, display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", alignItems: "start",
-        borderColor: selected ? "primary.main" : "divider",
-        bgcolor: selected ? "action.selected" : "background.paper",
-      }}>
-        <Button type="button" variant="outlined" color="inherit" onClick={onSelect} aria-pressed={selected} disabled={disabled}
-          sx={{
-            minWidth: 0, minHeight: 44, borderColor: "transparent", justifyContent: "flex-start", textAlign: "start",
-            p: 1, textTransform: "none", "&.Mui-focusVisible": { outline: "2px solid", outlineOffset: -2, outlineColor: "primary.main" },
-          }}>
-          <Stack component="span" spacing={0.5} sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
-            <Typography component="span" variant="subtitle2">{plan.title}</Typography>
-            <Typography component="span" variant="body2" color="text.secondary">
-              {t("teacher:calendar.week_progress", { done: plan.completed_count, total: plan.day_count })}
-            </Typography>
-            {(!plan.active || plan.categories.length > 0) && (
-              <Stack component="span" direction="row" sx={{ gap: 0.5, flexWrap: "wrap" }}>
-                {!plan.active && <Chip component="span" label={t("teacher:calendar.plan_inactive")} size="small" variant="outlined" />}
-                {plan.categories.map(item => <Chip component="span" key={item.id} label={item.name} size="small"
-                  variant="outlined" color={calendarChipColors[item.color]}
-                  sx={{ maxWidth: "100%", height: "auto", "& .MuiChip-label": { overflowWrap: "anywhere", whiteSpace: "normal" } }} />)}
-              </Stack>
-            )}
-          </Stack>
-        </Button>
-        <Tooltip title={actionLabel}>
-          <span>
-            <IconButton type="button" id={triggerId} aria-label={actionLabel} aria-haspopup="menu" aria-expanded={open}
-              aria-controls={open ? menuId : undefined} disabled={disabled} sx={{ width: 44, height: 44 }}
-              onClick={event => setAnchor(event.currentTarget)} onKeyDown={event => {
-                if (event.key !== "ArrowDown") return;
-                event.preventDefault();
-                setAnchor(event.currentTarget);
-              }}>
-              <MoreVertOutlined />
-            </IconButton>
-          </span>
-        </Tooltip>
-      </CalendarPanel>
+    <Box component="li" sx={{ display: "grid", gridTemplateAreas: '"card"', gridTemplateColumns: "minmax(0, 1fr)" }}>
+      <Button type="button" variant="outlined" color="inherit" onClick={onSelect} aria-pressed={selected} disabled={disabled}
+        sx={{
+          gridArea: "card", minWidth: 0, minHeight: 44, justifyContent: "flex-start", textAlign: "start",
+          p: 1.5, paddingInlineEnd: theme => `calc(${menuTargetSize}px + ${theme.spacing(1.5)})`,
+          borderRadius: theme => theme.spacing(2), borderColor: selected ? "primary.main" : "divider",
+          bgcolor: selected ? "action.selected" : "background.paper", textTransform: "none",
+          "&:hover": { borderColor: "primary.main" },
+          "&.Mui-disabled": { borderColor: selected ? "primary.main" : "divider" },
+          "&.Mui-focusVisible": { outline: "2px solid", outlineOffset: -2, outlineColor: "primary.main" },
+        }}>
+        <Stack component="span" spacing={0.5} sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
+          <Typography component="span" variant="subtitle2">{plan.title}</Typography>
+          <Typography component="span" variant="body2" color="text.secondary">
+            {t("teacher:calendar.week_progress", { done: plan.completed_count, total: plan.day_count })}
+          </Typography>
+          {(!plan.active || plan.categories.length > 0) && (
+            <Stack component="span" direction="row" sx={{ gap: 0.5, flexWrap: "wrap" }}>
+              {!plan.active && <Chip component="span" label={t("teacher:calendar.plan_inactive")} size="small" variant="outlined" />}
+              {plan.categories.map(item => <Chip component="span" key={item.id} label={item.name} size="small"
+                variant="outlined" color={calendarChipColors[item.color]}
+                sx={{ maxWidth: "100%", height: "auto", "& .MuiChip-label": { overflowWrap: "anywhere", whiteSpace: "normal" } }} />)}
+            </Stack>
+          )}
+        </Stack>
+      </Button>
+      <Tooltip title={actionLabel}>
+        <Box component="span" sx={{ gridArea: "card", alignSelf: "start", justifySelf: "end", m: 0.5, zIndex: 1, display: "flex" }}>
+          <IconButton type="button" id={triggerId} aria-label={actionLabel} aria-haspopup="menu" aria-expanded={open}
+            aria-controls={open ? menuId : undefined} disabled={disabled} sx={{ width: menuTargetSize, height: menuTargetSize }}
+            onClick={event => setAnchor(event.currentTarget)} onKeyDown={event => {
+              if (event.key !== "ArrowDown") return;
+              event.preventDefault();
+              setAnchor(event.currentTarget);
+            }}>
+            <MoreVertOutlined />
+          </IconButton>
+        </Box>
+      </Tooltip>
       <Menu anchorEl={anchor} open={open}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }} transformOrigin={{ vertical: "top", horizontal: "right" }}
         onClose={() => {

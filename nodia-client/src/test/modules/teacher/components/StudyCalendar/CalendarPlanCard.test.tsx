@@ -9,7 +9,7 @@ const plan: CalendarSummary = {
   schedule: { kind: "numbered", days: 1 }, day_count: 1, completed_count: 0,
 };
 
-it("opens the inactive calendar's actions with the keyboard and restores focus on Escape", async () => {
+it("keeps calendar selection and the actions menu as separate controls", async () => {
   const user = userEvent.setup();
   const select = vi.fn();
   const action = vi.fn();
@@ -17,7 +17,12 @@ it("opens the inactive calendar's actions with the keyboard and restores focus o
   const selection = screen.getByRole("button", { name: /Inglés.*Inactivo/ });
   const trigger = screen.getByRole("button", { name: "Acciones para Inglés" });
   expect(selection).not.toContainElement(trigger);
-  trigger.focus();
+  await user.tab();
+  expect(selection).toHaveFocus();
+  await user.keyboard("{Enter}");
+  expect(select).toHaveBeenCalledOnce();
+  await user.tab();
+  expect(trigger).toHaveFocus();
   await user.keyboard("{ArrowDown}");
   const menu = await screen.findByRole("menu", { name: "Acciones para Inglés" });
   expect(within(menu).getByRole("menuitem", { name: "Actualizar" })).toHaveFocus();
@@ -25,9 +30,9 @@ it("opens the inactive calendar's actions with the keyboard and restores focus o
   await user.keyboard("{Escape}");
   await waitFor(() => expect(trigger).toHaveFocus());
   expect(action).not.toHaveBeenCalled();
-  expect(select).not.toHaveBeenCalled();
-  await user.keyboard("{Enter}");
+  expect(select).toHaveBeenCalledOnce();
+  await user.click(trigger);
   await user.click(await screen.findByRole("menuitem", { name: "Eliminar" }));
   await waitFor(() => expect(action).toHaveBeenCalledWith("delete"));
-  expect(select).not.toHaveBeenCalled();
+  expect(select).toHaveBeenCalledOnce();
 });
