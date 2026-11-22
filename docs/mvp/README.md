@@ -442,6 +442,11 @@ Los únicos modos operativos son Agentic y API key. Las referencias a Web, `toke
 
 ## Teacher
 
+[Piloto de fragmentos interactivos](106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22)
+en una lección existente de inglés. La comparación de *sit* y *seat* y
+el deletreo de **BEE–22** se acotan a ese piloto. El [TODO](TODO.md#cola-actual)
+registra la continuación antes de considerar otras lecciones.
+
 [Rediseño UX/UI106](106-nodia-teacher-guided-ux-redesign.md), solicitado el2026-11-15
 con alta guiada3pasos, paneles, cabecera/drawer y revisión legible del plan
 entregados por106§10–13. TUX-001 cerrado por aceptación humana2026-11-16;

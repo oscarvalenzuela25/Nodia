@@ -4,7 +4,7 @@
   "document_id": "studies.lessons-practice-and-review",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 26,
+  "revision": 27,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -169,6 +169,22 @@
 ---
 
 > Continuidad VM del2026-11-11: ServerR14/ClientR41 adoptados en la VM de development, con autenticación Google normal y recorrido SQL desde la UI comprobados para la selección OpenAI Agentic configurada. Diagnóstico, evidencia por objetivo, propuesta/material, ayuda anclada, práctica y final quedaron registrados; el respaldo final posterior al QA pasó restauración de DB/configuración; la comprobación operativa y recarga de UI tras reanudar servicios pasaron. [Recibo VM](../../../../evidence/teacher-upgrade-development-vm-20261111-r01.json). El cierre55/55 R02 conserva su alcance Windows/API key; este recorrido no representa55pruebas nuevas en VM ni eficacia educativa humana. Sin promoción a master, aprobación documental o publicación. Los cortes inferiores conservan sus fechas.
+
+## Piloto de fragmentos interactivos — 2026-11-22
+
+La vista previa de desarrollo se acota a dos tópicos de una misma lección
+existente. La verificación local usó un plan sintético ya aceptado. La
+comparación de **sit** /sɪt/ y **seat** /siːt/ permite contestar una pregunta
+y consultar su explicación. Seis fichas permiten revelar cada carácter
+de **BEE–22** y una pregunta repasa qué carácter sigue a la segunda E.
+Las respuestas y revelaciones se mantienen en la vista de estudio.
+
+La devolución es una comprobación textual para repasar. Las interacciones
+carecen de efecto sobre el puntaje, el progreso de sección, la evidencia
+de aprendizaje y el consumo de IA. El material y las anclas de
+aclaración usan su versión existente. Esta ampliación documenta la
+experiencia de Client, con los contratos y la autoridad del catálogo
+vigentes. [Plan106 §22](../../../../mvp/106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22).
 
 ## Corrección y continuidad del quiz — 2026-11-20
 
