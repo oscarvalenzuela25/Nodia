@@ -1066,3 +1066,11 @@ El impacto se limita a la presentación y el repaso local del material.
 La ficha candidata documenta cómo interpretar su feedback. La revisión
 del piloto y su posible incorporación a otras lecciones son decisiones
 pendientes. [Ficha de lecciones y práctica](../nodia-ai/knowledge/studies/features/lessons-practice-and-review.md#piloto-de-fragmentos-interactivos--2026-11-22).
+
+## 23. Propuesta de Calendario de estudio
+
+La entrada de Teacher conserva **Mis planes de estudio** como pestaña
+principal y suma **Calendario de estudio** en la propuesta del 2026-11-22.
+El recorrido de revisión visual, la persistencia personal y el pegado se
+documentan en el [Plan111](111-teacher-study-calendar-plan.md). El alcance
+está en diseño, con implementación pendiente.

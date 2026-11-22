@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 50,
+  "revision": 51,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/mvp/111-teacher-study-calendar-plan.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/106-nodia-teacher-guided-ux-redesign.md",
       "kind": "specification"
@@ -287,6 +291,14 @@ La [ficha de lecciones y práctica](features/lessons-practice-and-review.md#pilo
 describe los dos ejercicios del piloto de desarrollo y su feedback local.
 El [Plan106 §22](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22)
 mantiene el seguimiento del piloto. La ficha conserva su estado candidato.
+
+## Calendario personal de estudio — propuesta del 2026-11-22
+
+El [Plan111](../../../mvp/111-teacher-study-calendar-plan.md) y la
+[ficha candidata de calendario](features/study-calendar.md) describen
+la ubicación en Teacher, las jornadas, categorías personales y el
+pegado con revisión humana. Los contratos y la implementación del
+calendario están pendientes.
 
 ## Punto de lectura descargado — 2026-11-21
 

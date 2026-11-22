@@ -1,5 +1,10 @@
 # Especificación del MVP — Nodia
 
+**Calendario de estudio de Teacher — propuesta del 2026-11-22.**
+[Plan111](111-teacher-study-calendar-plan.md) describe la segunda pestaña de
+Teacher, calendarios propios por fechas o días numerados, jornadas, categorías
+y pegado de planes. El trabajo comienza con revisión de diseño.
+
 **Avance de lectura de Teacher sin conexión — 2026-11-21.** PWA-006 está
 publicado. Guarda el punto de lectura en el dispositivo y lo sincroniza con
 la sesión vigente al volver la red. Si otro dispositivo guardó un punto

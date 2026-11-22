@@ -1,5 +1,11 @@
 # Contexto funcional de productos para NodiaAI
 
+## Calendario de estudio de Teacher — propuesta del 2026-11-22
+
+La [ficha candidata](studies/features/study-calendar.md) y el
+[Plan111](../../mvp/111-teacher-study-calendar-plan.md) recorren diseño, datos
+y pegado para el calendario personal. Documentación draft y unregistered.
+
 ## Catálogo de Productos y precios — 2026-11-21
 
 El [catálogo40](../../mvp/40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21)

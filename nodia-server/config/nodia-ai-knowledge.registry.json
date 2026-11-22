@@ -102,7 +102,8 @@
     "docs/nodia-ai/knowledge/studies/features/offline-reading-progress.md",
     "docs/nodia-ai/knowledge/studies/features/offline-study-material.md",
     "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
-    "docs/nodia-ai/knowledge/studies/features/spaced-repetition.md"
+    "docs/nodia-ai/knowledge/studies/features/spaced-repetition.md",
+    "docs/nodia-ai/knowledge/studies/features/study-calendar.md"
   ],
   "capabilities": [
     {
