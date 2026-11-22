@@ -769,6 +769,23 @@
   "job_proposal_review_help": "La propuesta está lista para revisar. No se usará como plan hasta que la aceptes.",
   "diagnostic_optional_notice": "El diagnóstico es opcional. Si no hay un banco revisado disponible, puedes continuar con tu base declarada y crear la propuesta.",
   "resume_diagnostic": "Retomar diagnóstico",
+  "fragment_pilot": {
+    "vowels": {
+      "title": "Compara los sonidos",
+      "question": "¿En cuál de estas palabras aparece la vocal /iː/?",
+      "correct": "¡Correcto! Seat lleva /iː/ y sit lleva /ɪ/.",
+      "retry": "En sit la vocal es /ɪ/. Mira los dos sonidos y prueba otra vez."
+    },
+    "spelling": {
+      "title": "Deletrea {{code}} paso a paso",
+      "instruction": "Pulsa cada ficha para ver cómo se dice ese carácter en inglés.",
+      "tile": "Ficha {{position}}, {{character}}",
+      "separator": "guion",
+      "question": "¿Qué dirías justo después de la segunda E?",
+      "correct": "¡Correcto! Hyphen es el guion. Después se dice two dos veces.",
+      "retry": "Revisa la ficha que sigue a la segunda E y vuelve a elegir."
+    }
+  },
   "topic": {
     "clarify": "Aclarar fragmento",
     "select_fragment": "Selecciona una frase exacta de este tópico y pulsa Aclarar fragmento para preguntar sobre ella.",

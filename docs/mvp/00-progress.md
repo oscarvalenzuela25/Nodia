@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Teacher, piloto de fragmentos interactivos — 2026-11-22.** La comparación
+de **sit** y **seat** y las fichas de **BEE–22** están disponibles en
+desarrollo. El navegador verificó ambos ejercicios en un plan sintético
+ya aceptado, con teclado, escritorio y móvil. Queda pendiente probar la
+lección original con la cuenta autorizada del usuario.
+[Plan106 §22](106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22).
+
 **Aviso de venta y consulta de precios en NodiaAI — 2026-11-21.** La rama
 `codex/fixes-pos-nodia-ai` incorpora el cierre local del aviso de venta y
 corrige el descubrimiento en español del listado de productos y sus precios.

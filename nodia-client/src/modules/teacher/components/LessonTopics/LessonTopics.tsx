@@ -4,8 +4,10 @@ import BookmarkBorderOutlined from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkAddedOutlined from "@mui/icons-material/BookmarkAddedOutlined";
 import ChatBubbleOutlineOutlined from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router";
 import BlockLearningTools from "../AdaptiveWorkspace/BlockLearningTools";
 import LessonMarkdown from "../LessonMarkdown";
+import { findStudyFragments, SpellingSequence, VowelComparison } from "../StudyFragmentPilot";
 import type { AdaptivePanelProps } from "../AdaptiveWorkspace/types";
 import type { LessonInteraction } from "../../infrastructure/learningSchemas";
 import { parseStudyPractice } from "../../infrastructure/studyPractice";
@@ -26,6 +28,7 @@ type Selected = NonNullable<ReturnType<typeof readTopicSelection>> & { scope: st
 
 export default function LessonTopics({ blocks, ...props }: Props) {
   const { t } = useTranslation();
+  const { search } = useLocation();
   const lesson = useRef<HTMLDivElement>(null);
   const triggers = useRef(new Map<string, HTMLButtonElement>());
   const pressedSelection = useRef<Selected | null>(null);
@@ -37,6 +40,8 @@ export default function LessonTopics({ blocks, ...props }: Props) {
   const [loading, setLoading] = useState<OpenPanel | null>(null);
   const [failed, setFailed] = useState<OpenPanel | null>(null);
   const topics = useMemo(() => blocks.map(block => ({ block, practice: parseStudyPractice(block.body_markdown, block.kind) })), [blocks]);
+  const studyFragments = useMemo(() => import.meta.env.DEV && new URLSearchParams(search).get("studyFragments") === "1"
+    ? findStudyFragments(blocks) : null, [blocks, search]);
   const scope = JSON.stringify([props.session.id, props.contentVersionId]);
   const open = activePanel?.scope === scope ? activePanel : null;
   const finalActive = props.session.active_attempts.some(attempt => attempt.scope === "section_final" && attempt.state === "in_progress");
@@ -103,6 +108,8 @@ export default function LessonTopics({ blocks, ...props }: Props) {
         onSave={() => props.onSaveReadingPoint(block.id)}>
         <TopicColumns data-clarification-open={current && Loaded && retained ? true : undefined}>
           <Stack sx={{ gap: 1.5, minWidth: 0 }}>
+            {import.meta.env.DEV && studyFragments?.vowels === block.id && <VowelComparison key={scope} />}
+            {import.meta.env.DEV && studyFragments?.spelling === block.id && <SpellingSequence key={scope} />}
             {practice.mainMarkdown && <TopicText data-lesson-topic-text={block.id}><LessonMarkdown text={practice.mainMarkdown} /></TopicText>}
             <BlockLearningTools session={props.session} busy={props.busy} command={props.command} onResult={props.onResult}
               history={props.history} contentVersionId={props.contentVersionId} block={block} practice={practice} />

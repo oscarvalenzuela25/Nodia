@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 49,
+  "revision": 50,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -280,6 +280,13 @@
   "approval": null
 }
 ---
+
+## Piloto de fragmentos interactivos — 2026-11-22
+
+La [ficha de lecciones y práctica](features/lessons-practice-and-review.md#piloto-de-fragmentos-interactivos--2026-11-22)
+describe los dos ejercicios del piloto de desarrollo y su feedback local.
+El [Plan106 §22](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22)
+mantiene el seguimiento del piloto. La ficha conserva su estado candidato.
 
 ## Punto de lectura descargado — 2026-11-21
 

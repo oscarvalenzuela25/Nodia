@@ -12,6 +12,19 @@ Query parameters: `scenario=new|list|empty|draft|review|plan|lesson|final|practi
 committed command with a lost response recovered only through its original receipt.
 Synthetic model names and illustrative scores exist only in this fixture.
 
+For the study fragment pilot, open this scenario in the local QA server:
+
+`/src/test/manual/teacher/index.html?scenario=lesson&topic=english-sounds&studyFragments=1&lang=es&theme=dark`
+
+It opens an already accepted synthetic English plan with the two screenshot
+topics, «Letras, sonidos y palabras» and «Deletrear sin omitir caracteres».
+The remaining topic exercises the regular Markdown path. Try both comparison
+answers, reveal each spelling card, and verify the recall checkpoint.
+The pilot interactions should leave `window.teacherQA.calls` without any new
+write requests. Remove `studyFragments=1` to see the same material in its
+regular presentation. Use `lang=en` or `theme=light` to check controls in
+the other language or theme. The lesson itself is in Spanish in both cases.
+
 `scenario=new` renders the production creation form. Additional synthetic cases:
 
 - `agentic=1&legacyEfforts=1`: OpenAI Agentic has a saved `medium` preference
