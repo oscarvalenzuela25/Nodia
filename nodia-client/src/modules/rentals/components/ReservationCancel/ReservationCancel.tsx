@@ -1,10 +1,11 @@
 import DateTimeInput from "../../../../components/inputs/DateTimeInput";
-import { useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import {
   Alert,
   Button,
   Checkbox,
   FormControlLabel,
+  LinearProgress,
   Typography,
 } from "@mui/material";
 import { Controller, useForm, useWatch } from "react-hook-form";
@@ -32,7 +33,13 @@ import {
   cancellationPayload,
   type CancellationForm,
 } from "./schema";
-import { FormContainer, ModalActions } from "./styles";
+import {
+  FormContainer,
+  ModalActions,
+  PreviewAction,
+  PreviewAmounts,
+  PreviewPanel,
+} from "./styles";
 export type ReservationCancelProps = {
   property: RentalProperty;
   reservation: RentalReservation;
@@ -47,6 +54,10 @@ export default function ReservationCancel({
 }: ReservationCancelProps) {
   const { t, i18n } = useTranslation();
   const formId = useId();
+  const previewId = useId();
+  const focusPreview = useCallback((heading: HTMLHeadingElement | null) => {
+    heading?.focus();
+  }, []);
   const mutation = useRentalMutation(property.id);
   const commonBusy = useRentalBusy(property.id);
   const platform = reservation.channel === "airbnb";
@@ -74,6 +85,8 @@ export default function ReservationCancel({
     reservation.id,
     open,
   );
+  const status = latest.data?.status;
+  const canCancel = status === "draft" || status === "confirmed";
   const ledger = latest.data
     ? `${latest.data.received_amount}:${latest.data.refunded_amount}:${latest.data.status}`
     : undefined;
@@ -84,6 +97,7 @@ export default function ReservationCancel({
     /* Incomplete manual resolution cannot be previewed. */
   }
   const fresh =
+    canCancel &&
     !latest.isError &&
     !!input &&
     !!current &&
@@ -93,11 +107,13 @@ export default function ReservationCancel({
     !preview.error &&
     ledgerAtPreview === ledger;
   const reviewed = fresh && accepted === calculation?.as_of;
+  const canPreview = !!current && canCancel && !latest.isError;
   const busy =
     commonBusy ||
     mutation.isPending ||
     mutation.isUncertain ||
     isSubmitting ||
+    latest.isFetching ||
     preview.isPending;
   const calculate = useBookingSubmit(async (value: RentalPreviewInput) => {
     setAccepted(undefined);
@@ -109,7 +125,15 @@ export default function ReservationCancel({
   }, setCalculation);
   const submit = useBookingSubmit(
     async (value: CancellationForm) => {
-      if (!reviewed || !calculation || calculation.refund_amount === null)
+      if (
+        commonBusy ||
+        mutation.isPending ||
+        mutation.isUncertain ||
+        latest.isFetching ||
+        !reviewed ||
+        !calculation ||
+        calculation.refund_amount === null
+      )
         return undefined;
       const ack = await mutation.execute({
         operation: "reservation.cancel",
@@ -135,16 +159,27 @@ export default function ReservationCancel({
       }}
       disableEscapeKeyDown={busy}
       title={t("rental:cancel_reservation")}
+      subtitle={t("rental:reservation_action_context", {
+        guest: reservation.guest_name,
+        property: property.name,
+      })}
       actions={
         <ModalActions>
-          <Button disabled={busy} onClick={onClose}>
-            {t("rental:close")}
+          <Button
+            autoFocus
+            variant="outlined"
+            color="inherit"
+            disabled={busy}
+            onClick={onClose}
+          >
+            {t("rental:keep_reservation")}
           </Button>
           <Button
             type="submit"
             form={formId}
             variant="contained"
-            color="warning"
+            color="error"
+            loading={mutation.isPending || isSubmitting}
             disabled={busy || !reviewed}
           >
             {t("rental:cancel_reservation")}
@@ -153,7 +188,27 @@ export default function ReservationCancel({
       }
     >
       <FormContainer id={formId} onSubmit={handleSubmit(submit)}>
-        <Alert severity="info">{t("rental:cancel_explanation")}</Alert>
+        <Typography variant="body2" color="text.secondary">
+          {t("rental:cancel_explanation")}
+        </Typography>
+        {latest.isFetching && (
+          <LinearProgress aria-label={t("rental:reservation_detail")} />
+        )}
+        {latest.isError && (
+          <Alert
+            severity="error"
+            action={
+              <Button disabled={latest.isFetching} onClick={() => void latest.refetch()}>
+                {t("rental:retry")}
+              </Button>
+            }
+          >
+            {t("rental:cancellation_read_error")}
+          </Alert>
+        )}
+        {status && !canCancel && !latest.isError && (
+          <Alert severity="warning">{t("rental:invalid_transition")}</Alert>
+        )}
         <Controller
           name="cancelled_at"
           control={control}
@@ -181,8 +236,11 @@ export default function ReservationCancel({
                 <TextInput
                   {...field}
                   label={t("rental:refund_amount")}
+                  required
+                  inputMode="numeric"
                   disabled={busy}
                   error={!!errors.refund_amount}
+                  helperText={errors.refund_amount && t("rental:invalid_refund")}
                 />
               )}
             />
@@ -193,44 +251,67 @@ export default function ReservationCancel({
                 <TextInput
                   {...field}
                   label={t("rental:resolution_note")}
+                  required
                   disabled={busy}
+                  error={!!errors.resolution_note}
+                  helperText={errors.resolution_note && t("rental:invalid_refund")}
                   multiline
                 />
               )}
             />
           </>
         )}
-        <Button
-          disabled={busy || !current || latest.isError}
+        <PreviewAction
+          type="button"
+          variant={fresh ? "outlined" : "contained"}
+          disabled={busy || !canPreview}
+          loading={preview.isPending}
           onClick={() => {
-            if (current) void calculate(current);
+            if (canPreview && current && !busy) void calculate(current);
           }}
         >
-          {t("rental:preview_cancellation")}
-        </Button>
+          {t(preview.isPending ? "rental:cancellation_preview_checking" : "rental:preview_cancellation")}
+        </PreviewAction>
         {!!preview.error && (
           <Alert severity="error">{t("rental:load_error")}</Alert>
         )}
         {fresh && calculation && (
-          <>
-            <Typography>
-              {t("rental:approved_refund")}:{" "}
-              {calculation.refund_amount === null
-                ? t("rental:not_recorded")
-                : formatRentalAmount(calculation.refund_amount, i18n.language)}
+          <PreviewPanel>
+            <Typography
+              component="h3"
+              variant="subtitle1"
+              sx={{ fontWeight: 700 }}
+              ref={focusPreview}
+              tabIndex={-1}
+              aria-describedby={previewId}
+            >
+              {t("rental:cancellation_preview_heading")}
             </Typography>
-            <Typography>
-              {t("rental:days_before")}:{" "}
-              {calculation.cancellation_snapshot.days_before}
-            </Typography>
-            <Typography>
-              {t("rental:refund_due_after_cancellation")}:{" "}
-              {formatRentalAmount(
-                calculation.refund_due_after_cancellation,
-                i18n.language,
-              )}
-            </Typography>
+            <PreviewAmounts id={previewId}>
+              <div>
+                <dt>{t("rental:calculated_refund")}</dt>
+                <dd>
+                  {calculation.refund_amount === null
+                    ? t("rental:not_recorded")
+                    : formatRentalAmount(calculation.refund_amount, i18n.language)}
+                </dd>
+              </div>
+              <div>
+                <dt>{t("rental:refund_due_after_cancellation")}</dt>
+                <dd>
+                  {formatRentalAmount(
+                    calculation.refund_due_after_cancellation,
+                    i18n.language,
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>{t("rental:days_before")}</dt>
+                <dd>{calculation.cancellation_snapshot.days_before}</dd>
+              </div>
+            </PreviewAmounts>
             <FormControlLabel
+              sx={{ minHeight: 44 }}
               label={t("rental:review_cancel_amount")}
               control={
                 <Checkbox
@@ -242,9 +323,9 @@ export default function ReservationCancel({
                 />
               }
             />
-          </>
+          </PreviewPanel>
         )}
-        {input && !fresh && !preview.isPending && (
+        {input && !fresh && !preview.isPending && !preview.error && !latest.isError && canCancel && (
           <Alert severity="warning">{t("rental:preview_needs_refresh")}</Alert>
         )}
         <RentalIntentReview mutation={mutation} onResolved={onClose} />

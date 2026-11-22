@@ -10,7 +10,22 @@ export const Filters = styled("div")(({ theme }) => ({
 }));
 export const FormContainer = styled("form")(({ theme }) => ({
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
   gap: theme.spacing(2),
+}));
+export const PreparationSection = styled("fieldset")(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  minWidth: 0,
+  margin: 0,
+  padding: theme.spacing(2),
+  gap: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  "& > legend": {
+    ...theme.typography.subtitle2,
+    paddingInline: theme.spacing(0.5),
+  },
 }));
 export const ModalActions = styled("div")(({ theme }) => ({
   display: "flex",

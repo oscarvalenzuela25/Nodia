@@ -29,6 +29,8 @@ it("requires a new review after the ledger changes, retaining edited cancellatio
     screen.getByRole("button", { name: i18n.t("rental:preview_cancellation") }),
   );
   await waitFor(() => expect(screen.getByRole("checkbox")).toBeInTheDocument());
+  expect(screen.getByRole("heading", { name: i18n.t("rental:cancellation_preview_heading") })).toHaveFocus();
+  expect(screen.getByText(i18n.t("rental:calculated_refund"))).toBeInTheDocument();
   await userEvent.click(screen.getByRole("checkbox"));
   const submit = within(screen.getByRole("dialog")).getByRole("button", {
     name: i18n.t("rental:cancel_reservation"),
@@ -41,4 +43,21 @@ it("requires a new review after the ledger changes, retaining edited cancellatio
   expect(time).toHaveValue("15:00");
   expect(ui.preview).toHaveBeenCalledWith(expect.objectContaining({ cancelled_at: "2026-10-04T18:00:00.000Z" }));
   expect(ui.execute).not.toHaveBeenCalled();
+});
+
+it("offers a read retry before calculating with a failed status lookup", async () => {
+  const current = { ...reservation, status: "confirmed" as const };
+  const refetch = vi.fn();
+  ui.record.mockReturnValue({ ...result(current), isError: true, refetch });
+  const props = { property, reservation: current, open: true, onClose: vi.fn() };
+  const view = render(<ReservationCancel {...props} />);
+  const preview = screen.getByRole("button", { name: i18n.t("rental:preview_cancellation") });
+  expect(preview).toBeDisabled();
+  expect(screen.getByRole("button", { name: i18n.t("rental:keep_reservation") })).toHaveFocus();
+  await userEvent.click(screen.getByRole("button", { name: i18n.t("rental:retry") }));
+  expect(refetch).toHaveBeenCalledOnce();
+  expect(ui.preview).not.toHaveBeenCalled();
+  ui.record.mockReturnValue(result(current));
+  view.rerender(<ReservationCancel {...props} />);
+  expect(preview).toBeEnabled();
 });

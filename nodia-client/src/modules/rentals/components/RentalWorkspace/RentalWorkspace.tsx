@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import {
   Alert,
@@ -26,6 +26,7 @@ import {
 import BaseModal from "../../../../components/BaseModal";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import RentalOverview from "../RentalOverview";
+import type { RentalCashPeriod } from "../RentalOverview";
 import RentalCalendar from "../RentalCalendar";
 import ReservationTable from "../ReservationTable";
 import ReservationModal from "../ReservationModal";
@@ -44,7 +45,13 @@ import CollaboratorTable from "../CollaboratorTable";
 import ConfigurationPanel from "../ConfigurationPanel";
 import RentalAudit from "../RentalAudit";
 import { RentalAccessContext } from "../../infrastructure/scope";
-import { WorkspaceStack, WorkspaceAction, WorkspaceHeader, WorkspaceTabs } from "./styles";
+import {
+  WorkspaceStack,
+  WorkspaceAction,
+  WorkspaceHeader,
+  WorkspaceTabs,
+  WorkspacePanelHeader,
+} from "./styles";
 
 const PRIMARY_TABS = [
   "calendar",
@@ -56,7 +63,7 @@ const PRIMARY_TABS = [
 ] as const;
 const TABS = [...PRIMARY_TABS, "general", "expenses"] as const;
 type RentalTab = (typeof TABS)[number];
-type Modal =
+type Modal = (
   | { kind: "payment_new"; reservationId: string }
   | { kind: "payments"; reservationId?: string }
   | { kind: "audit" }
@@ -68,7 +75,8 @@ type Modal =
   | {
       kind: "confirm" | "cancel" | "start" | "complete";
       row: RentalReservation;
-    };
+    }
+) & { returnToReservationId?: string };
 export default function RentalWorkspace({
   property,
   accessible = true,
@@ -92,6 +100,14 @@ function Workspace({ property }: { property: RentalProperty }) {
   const [modal, setModal] = useState<Modal>();
   const [secondaryTurnover, setSecondaryTurnover] = useState<string>();
   const [blocks, setBlocks] = useState(false);
+  const [cashPeriod, setCashPeriod] = useState<RentalCashPeriod>();
+  const blocksHeadingRef = useRef<HTMLHeadingElement>(null);
+  const adminButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const focusPanelOnNavigation = useRef(false);
+  const adminButtonId = useId();
+  const adminMenuId = useId();
+  const blocksHeadingId = useId();
   const [selectedReservationId, setSelectedReservationId] = useState<string>();
   const busy = useRentalBusy(property.id);
   const editing = useRentalRecord(
@@ -104,14 +120,24 @@ function Workspace({ property }: { property: RentalProperty }) {
     property.id,
     modal?.kind === "block_edit" ? modal.id : undefined,
   );
+  useEffect(() => {
+    if (blocks && tab === "calendar") blocksHeadingRef.current?.focus();
+  }, [blocks, tab]);
+  useEffect(() => {
+    if (focusPanelOnNavigation.current) {
+      focusPanelOnNavigation.current = false;
+      panelRef.current?.focus();
+    }
+  }, [tab]);
   // Capture the validated detail once when opening the edit intent. Cache eviction
   // must not destroy its form or the hook that can recover an uncertain write.
   if (modal?.kind === "edit" && !modal.initialData && editing.data)
     setModal({ ...modal, initialData: editing.data });
   if (modal?.kind === "block_edit" && !modal.initialData && block.data)
     setModal({ ...modal, initialData: block.data });
-  const changeTab = (next: RentalTab) => {
+  const changeTab = (next: RentalTab, focusPanel = false) => {
     if (busy) return;
+    focusPanelOnNavigation.current = focusPanel && next !== tab;
     setModal(undefined);
     setBlocks(false);
     setSelectedReservationId(undefined);
@@ -123,6 +149,22 @@ function Workspace({ property }: { property: RentalProperty }) {
     });
   };
   const detail = (id: string) => setModal({ kind: "detail", id });
+  const openFromDetail = (next: Modal) =>
+    setModal((current) =>
+      current?.kind === "detail"
+        ? { ...next, returnToReservationId: current.id }
+        : current,
+    );
+  const closeModal = () =>
+    setModal((current) =>
+      current?.returnToReservationId
+        ? { kind: "detail", id: current.returnToReservationId }
+        : undefined,
+    );
+  const closeBlocks = () => {
+    setBlocks(false);
+    adminButtonRef.current?.focus();
+  };
   const turnover = (id: string) => {
     if (modal?.kind === "confirm") setSecondaryTurnover(id);
     else setModal({ kind: "turnover", id });
@@ -162,10 +204,13 @@ function Workspace({ property }: { property: RentalProperty }) {
             {t("rental:new_reservation")}
           </WorkspaceAction>
           <WorkspaceAction
+            ref={adminButtonRef}
+            id={adminButtonId}
             variant="outlined"
             endIcon={<ExpandMoreOutlined />}
             disabled={busy || Boolean(modal)}
             aria-haspopup="menu"
+            aria-controls={menuAnchor ? adminMenuId : undefined}
             aria-expanded={Boolean(menuAnchor)}
             onClick={(event) => setMenuAnchor(event.currentTarget)}
           >
@@ -174,6 +219,7 @@ function Workspace({ property }: { property: RentalProperty }) {
         </Box>
       </WorkspaceHeader>
       <Menu
+        slotProps={{ list: { id: adminMenuId, "aria-labelledby": adminButtonId } }}
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
         onClose={() => setMenuAnchor(null)}
@@ -190,7 +236,7 @@ function Workspace({ property }: { property: RentalProperty }) {
         <MenuItem
           onClick={() => {
             setMenuAnchor(null);
-            changeTab("expenses");
+            changeTab("expenses", true);
           }}
         >
           {t("rental:tabs.expenses")}
@@ -238,6 +284,15 @@ function Workspace({ property }: { property: RentalProperty }) {
         </WorkspaceTabs>
       )}
       <Box
+        ref={panelRef}
+        tabIndex={-1}
+        sx={(theme) => ({
+          minWidth: 0,
+          "&:focus-visible": {
+            outline: `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: 3,
+          },
+        })}
         role={mobile ? "region" : "tabpanel"}
         id={`rental-panel-${primaryTab}`}
         aria-labelledby={mobile ? undefined : `rental-tab-${primaryTab}`}
@@ -247,13 +302,15 @@ function Workspace({ property }: { property: RentalProperty }) {
           <RentalOverview
             cashOnly={tab === "cash"}
             property={property}
+            period={cashPeriod}
+            onPeriodChange={setCashPeriod}
             onOpenReservation={detail}
             onOpenTurnover={turnover}
             onViewPayments={() => setModal({ kind: "payments" })}
-            onViewExpenses={() => changeTab("expenses")}
-            onViewReservations={() => changeTab("reservations")}
+            onViewExpenses={() => changeTab("expenses", true)}
+            onViewReservations={() => changeTab("reservations", true)}
             onViewTurnovers={() => {
-              changeTab("turnovers");
+              changeTab("turnovers", true);
               setBlocks(false);
             }}
           />
@@ -273,11 +330,34 @@ function Workspace({ property }: { property: RentalProperty }) {
               }
             />
             {blocks && (
-              <BlockTable
-                property={property}
-                onCreate={() => setModal({ kind: "block_new" })}
-                onEdit={(row) => setModal({ kind: "block_edit", id: row.id })}
-              />
+              <WorkspaceStack
+                role="region"
+                aria-labelledby={blocksHeadingId}
+              >
+                <WorkspacePanelHeader>
+                  <Typography
+                    ref={blocksHeadingRef}
+                    id={blocksHeadingId}
+                    component="h2"
+                    variant="h6"
+                    tabIndex={-1}
+                  >
+                    {t("rental:blocks_heading")}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    onClick={closeBlocks}
+                    disabled={busy}
+                  >
+                    {t("rental:return_to_agenda")}
+                  </Button>
+                </WorkspacePanelHeader>
+                <BlockTable
+                  property={property}
+                  onCreate={() => setModal({ kind: "block_new" })}
+                  onEdit={(row) => setModal({ kind: "block_edit", id: row.id })}
+                />
+              </WorkspaceStack>
             )}
           </WorkspaceStack>
         )}
@@ -297,7 +377,21 @@ function Workspace({ property }: { property: RentalProperty }) {
           />
         )}
         {tab === "expenses" && (
-          <ExpenseTable property={property} onOpenReservation={detail} />
+          <WorkspaceStack>
+            <WorkspacePanelHeader>
+              <Typography component="h2" variant="h6">
+                {t("rental:tabs.expenses")}
+              </Typography>
+              <Button
+                variant="outlined"
+                disabled={busy}
+                onClick={() => changeTab("cash", true)}
+              >
+                {t("rental:return_to_cash")}
+              </Button>
+            </WorkspacePanelHeader>
+            <ExpenseTable property={property} onOpenReservation={detail} />
+          </WorkspaceStack>
         )}
         {tab === "collaborators" && <CollaboratorTable property={property} />}
         {tab === "configuration" && (
@@ -312,14 +406,16 @@ function Workspace({ property }: { property: RentalProperty }) {
           size="lg"
           title={t("rental:payments_and_refunds")}
           onClose={() => {
-            if (!busy) setModal(undefined);
+            if (!busy) closeModal();
           }}
           disableEscapeKeyDown={busy}
         >
           {modal.reservationId && (
             <Button
               disabled={busy}
-              onClick={() => setModal({ kind: "payments" })}
+              onClick={() =>
+                setModal({ ...modal, reservationId: undefined })
+              }
             >
               {t("rental:clear_reservation_filter")}
             </Button>
@@ -349,14 +445,14 @@ function Workspace({ property }: { property: RentalProperty }) {
           property={property}
           id={modal.id}
           onClose={() => setModal(undefined)}
-          onEdit={(row) => setModal({ kind: "edit", id: row.id })}
-          onConfirm={(row) => setModal({ kind: "confirm", row })}
-          onCancel={(row) => setModal({ kind: "cancel", row })}
-          onStay={(row, kind) => setModal({ kind, row })}
+          onEdit={(row) => openFromDetail({ kind: "edit", id: row.id })}
+          onConfirm={(row) => openFromDetail({ kind: "confirm", row })}
+          onCancel={(row) => openFromDetail({ kind: "cancel", row })}
+          onStay={(row, kind) => openFromDetail({ kind, row })}
           onOpenPayments={(id) =>
-            setModal({ kind: "payments", reservationId: id })
+            openFromDetail({ kind: "payments", reservationId: id })
           }
-          onOpenTurnover={turnover}
+          onOpenTurnover={(id) => openFromDetail({ kind: "turnover", id })}
         />
       )}
       {modal?.kind === "payment_new" && (
@@ -372,8 +468,13 @@ function Workspace({ property }: { property: RentalProperty }) {
           open
           property={property}
           initialStay={modal.stay}
-          onSaved={setSelectedReservationId}
-          onClose={() => setModal(undefined)}
+          onSaved={(id) => {
+            setSelectedReservationId(id);
+            detail(id);
+          }}
+          onClose={() => setModal((current) =>
+            current?.kind === "new" ? undefined : current,
+          )}
         />
       )}
       {modal?.kind === "edit" && modal.initialData && (
@@ -384,7 +485,7 @@ function Workspace({ property }: { property: RentalProperty }) {
           initialData={editing.data ?? modal.initialData}
           readError={editing.isError || (!editing.data && !editing.isLoading)}
           onRetryRead={() => void editing.refetch()}
-          onClose={() => setModal(undefined)}
+          onClose={closeModal}
         />
       )}
       {((modal?.kind === "edit" && !modal.initialData && editing.isError) ||
@@ -407,7 +508,7 @@ function Workspace({ property }: { property: RentalProperty }) {
           }
         >
           {t("rental:load_error")}
-          <Button disabled={busy} onClick={() => setModal(undefined)}>
+          <Button disabled={busy} onClick={closeModal}>
             {t("rental:close")}
           </Button>
         </Alert>
@@ -417,7 +518,7 @@ function Workspace({ property }: { property: RentalProperty }) {
           open
           property={property}
           reservation={modal.row}
-          onClose={() => setModal(undefined)}
+          onClose={closeModal}
           onOpenTurnover={turnover}
         />
       )}
@@ -426,7 +527,7 @@ function Workspace({ property }: { property: RentalProperty }) {
           open
           property={property}
           reservation={modal.row}
-          onClose={() => setModal(undefined)}
+          onClose={closeModal}
         />
       )}
       {(modal?.kind === "start" || modal?.kind === "complete") && (
@@ -435,7 +536,7 @@ function Workspace({ property }: { property: RentalProperty }) {
           property={property}
           reservation={modal.row}
           command={modal.kind}
-          onClose={() => setModal(undefined)}
+          onClose={closeModal}
         />
       )}
       {modal?.kind === "block_new" && (
@@ -461,7 +562,7 @@ function Workspace({ property }: { property: RentalProperty }) {
           open
           property={property}
           id={modal.id}
-          onClose={() => setModal(undefined)}
+          onClose={closeModal}
         />
       )}
       {secondaryTurnover && (

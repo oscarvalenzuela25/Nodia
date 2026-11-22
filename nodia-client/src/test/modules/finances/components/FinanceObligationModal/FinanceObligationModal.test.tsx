@@ -15,6 +15,9 @@ describe("FinanceObligationModal", () => {
     const user = userEvent.setup();
     const closed = vi.fn();
     render(<FinanceObligationModal open onClose={closed} />);
+    expect(
+      screen.getByRole("dialog", { name: i18n.t("finance:create_obligation") }),
+    ).toHaveAccessibleDescription(i18n.t("finance:obligation_create_hint"));
     await user.type(
       screen.getByLabelText(new RegExp(i18n.t("finance:name"))),
       "Amigo",
@@ -24,7 +27,7 @@ describe("FinanceObligationModal", () => {
       "friend",
     );
     await user.type(
-      screen.getByLabelText(new RegExp(i18n.t("finance:amount"))),
+      screen.getByLabelText(new RegExp(i18n.t("finance:principal"))),
       "100000",
     );
     await user.click(
@@ -59,7 +62,7 @@ describe("FinanceObligationModal", () => {
         initialData={obligation}
       />,
     );
-    const amount = screen.getByLabelText(new RegExp(i18n.t("finance:amount")));
+    const amount = screen.getByLabelText(new RegExp(i18n.t("finance:principal")));
     await user.clear(amount);
     await user.type(amount, "120000");
     expect(
@@ -95,7 +98,7 @@ describe("FinanceObligationModal", () => {
     render(
       <FinanceObligationModal open onClose={closed} initialData={obligation} />,
     );
-    const amount = screen.getByLabelText(new RegExp(i18n.t("finance:amount")));
+    const amount = screen.getByLabelText(new RegExp(i18n.t("finance:principal")));
     await user.clear(amount);
     await user.type(amount, "20000");
     const description = screen.getByLabelText(

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBlocker, useSearchParams } from "react-router";
-import { Alert, Button, LinearProgress, Typography } from "@mui/material";
+import { Alert, Button, LinearProgress } from "@mui/material";
 import HolidayVillageOutlined from "@mui/icons-material/HolidayVillageOutlined";
 import { Skeleton } from "boneyard-js/react";
 import { useTranslation } from "react-i18next";
@@ -17,7 +17,7 @@ import { idSchema } from "../../infrastructure/schemas";
 import PropertyModal from "../../components/PropertyModal";
 import RentalPropertySelect from "../../components/RentalPropertySelect";
 import RentalWorkspace from "../../components/RentalWorkspace";
-import { PageHeader, PageStack, PageTitle } from "./styles";
+import { PageHeader, PagePropertyTools, PageStack, PageTitle } from "./styles";
 
 export default function RentalReservations() {
   const actor = useAuthStore(
@@ -74,15 +74,16 @@ function RentalPage() {
           <HolidayVillageOutlined color="primary" />
           {t("rental:title")}
         </PageTitle>
-        <Typography color="text.secondary">{t("rental:subtitle")}</Typography>
+        <PagePropertyTools>
+          <RentalPropertySelect
+            value={propertyId ?? null}
+            label={property.data?.name}
+            onChange={select}
+            onCreate={() => setCreating(true)}
+            disabled={busy || creating}
+          />
+        </PagePropertyTools>
       </PageHeader>
-      <RentalPropertySelect
-        value={propertyId ?? null}
-        label={property.data?.name}
-        onChange={select}
-        onCreate={() => setCreating(true)}
-        disabled={busy || creating}
-      />
       {pending > 0 && (
         <Alert severity="warning">{t("rental:pending_navigation")}</Alert>
       )}

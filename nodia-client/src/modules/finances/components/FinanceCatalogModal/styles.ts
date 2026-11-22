@@ -6,6 +6,16 @@ export const FormContainer = styled("form")(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(2.5),
 }));
+
+export const FinanceFormRow = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gap: theme.spacing(2, 2),
+  gridTemplateColumns: "minmax(0, 1fr)",
+  [theme.breakpoints.up("sm")]: {
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  },
+}));
+
 export const ModalActions = styled(Box)(({ theme }) => ({
   display: "flex",
   width: "100%",

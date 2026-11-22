@@ -39,3 +39,36 @@ it("provides the agenda as a keyboard-accessible alternative with stable reserva
       screen.getByText(i18n.t("rental:empty_calendar")),
     ).toBeInTheDocument();
 });
+
+it("lets mobile users switch back to the month after opening the seven-day view", async () => {
+  const matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+    matches: media.includes("max-width"),
+    media,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+  try {
+    const user = userEvent.setup();
+    render(
+      <RentalCalendar
+        property={property}
+        onOpenReservation={vi.fn()}
+        onOpenTurnover={vi.fn()}
+        onManageBlocks={vi.fn()}
+      />,
+    );
+    const month = screen.getByRole("button", { name: i18n.t("rental:calendar_month") });
+    const week = screen.getByRole("button", { name: i18n.t("rental:calendar_week") });
+    expect(month).toHaveAttribute("aria-pressed", "true");
+    await user.click(week);
+    expect(week).toHaveAttribute("aria-pressed", "true");
+    await user.click(month);
+    expect(month).toHaveAttribute("aria-pressed", "true");
+  } finally {
+    matchMedia.mockRestore();
+  }
+});

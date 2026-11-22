@@ -2,7 +2,14 @@ import { FinanceOwnerContext } from "../../infrastructure/FinanceOwnerContext";
 import UserScopeSelect from "../../../../components/UserScopeSelect";
 import useAuthStore from "../../../../store/authStore";
 import useGeneralSettingsStore from "../../../../store/generalSettings/generalSettingsStore";
-import { useState, useCallback, useMemo, type ReactNode } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { Box, Tab, useMediaQuery } from "@mui/material";
@@ -17,7 +24,7 @@ import {
   FinanceTabs,
   PageHeader,
   PageTitle,
-  PageSubtitle,
+  OwnerControl,
   PageTitleContainer,
   PageStack,
 } from "./styles";
@@ -51,6 +58,14 @@ const FinancePageContent = ({
   const requestedTab = searchParams.get("tab");
   const tab: FinanceTab =
     TABS.find((value) => value === requestedTab) ?? "general";
+  const panelRef = useRef<HTMLDivElement>(null);
+  const focusMovementsOnOpen = useRef(false);
+  useEffect(() => {
+    if (tab === "movements" && focusMovementsOnOpen.current) {
+      focusMovementsOnOpen.current = false;
+      panelRef.current?.focus();
+    }
+  }, [tab]);
   const busy = useFinanceBusy();
   const [queries, setQueries] = useState<Record<FinanceTab, FinanceQuery>>({
     general: { active: "active" },
@@ -79,9 +94,8 @@ const FinancePageContent = ({
           <AccountBalanceWalletOutlinedIcon color="primary" fontSize="large" />
           <PageTitle variant="h1">{t("finance:title")}</PageTitle>
         </PageTitleContainer>
-        <PageSubtitle>{t("finance:subtitle")}</PageSubtitle>
+        {ownerControl && <OwnerControl>{ownerControl}</OwnerControl>}
       </PageHeader>
-      {ownerControl}
       {mobile ? (
         <SelectSingleInput
           label={t("finance:section")}
@@ -121,7 +135,15 @@ const FinancePageContent = ({
         </FinanceTabs>
       )}
       <Box
-        sx={{ minWidth: 0 }}
+        ref={panelRef}
+        tabIndex={-1}
+        sx={(theme) => ({
+          minWidth: 0,
+          "&:focus-visible": {
+            outline: `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: 3,
+          },
+        })}
         role="tabpanel"
         id={`finance-panel-${tab}`}
         aria-labelledby={mobile ? undefined : `finance-tab-${tab}`}
@@ -133,6 +155,7 @@ const FinancePageContent = ({
             onQueryChange={updateQuery}
             onViewMovements={(query) => {
               if (busy) return;
+              focusMovementsOnOpen.current = true;
               setQueries((previous) => ({
                 ...previous,
                 movements: { ...query, page: 1, limit: 10 },
@@ -177,13 +200,11 @@ function ScopedPersonalFinance({ mobile }: { mobile: boolean }) {
         ownerControl={
           isSuperAdmin &&
           actorId && (
-            <Box sx={{ maxWidth: "48rem", width: "100%" }}>
-              <UserScopeSelect
-                value={effectiveOwner ?? actorId}
-                onChange={(id) => setOwnerId(id === actorId ? undefined : id)}
-                disabled={busy || locks > 0}
-              />
-            </Box>
+            <UserScopeSelect
+              value={effectiveOwner ?? actorId}
+              onChange={(id) => setOwnerId(id === actorId ? undefined : id)}
+              disabled={busy || locks > 0}
+            />
           )
         }
         key={effectiveOwner ?? actorId ?? "own"}
