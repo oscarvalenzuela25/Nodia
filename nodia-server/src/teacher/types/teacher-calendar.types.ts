@@ -1,5 +1,7 @@
 export const calendarColors = ['violet', 'green', 'blue', 'amber'] as const;
 export type CalendarColor = (typeof calendarColors)[number];
+export const calendarPlanStatuses = ['all', 'active', 'inactive'] as const;
+export type CalendarPlanStatus = (typeof calendarPlanStatuses)[number];
 
 export type CalendarSchedule =
   | { kind: 'numbered'; days: number }
@@ -44,6 +46,7 @@ export interface CalendarDayDetail extends CalendarDaySummary {
 export interface CalendarPlanSummary {
   id: string;
   title: string;
+  active: boolean;
   schedule: CalendarSchedule;
   categories: CalendarCategory[];
   day_count: number;
@@ -92,3 +95,7 @@ export interface CalendarPlanWrite {
   days: CalendarImportedDay[];
   newCategories: CalendarCategoryName[];
 }
+
+export type CalendarPlanPatch = Partial<
+  Pick<CalendarPlanSummary, 'title' | 'active'>
+> & { category_ids?: string[] };

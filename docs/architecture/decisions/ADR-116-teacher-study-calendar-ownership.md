@@ -58,12 +58,20 @@ Cada fuente está asociada a la actividad que la usa. Se guarda con nombre
 y URL HTTPS en el registro de la actividad. Una futura ampliación para
 varias fuentes por actividad se puede resolver con una relación.
 
+El estado activo de un calendario controla su inclusión en la lista
+predeterminada. Cambiarlo conserva el agregado completo. La eliminación
+confirmada retira el calendario y sus dependencias, y conserva un recibo
+acotado al propietario, la identidad del calendario y su clave de alta.
+El recibo permite recuperar una eliminación confirmada y rechazar el
+reintento de creación original. Las categorías son reutilizables y
+permanecen en el catálogo del propietario.
+
 ## Consecuencias
 
 - La migración puede ser aditiva. La autoridad existente y los contratos de
   estudios adaptativos conservan sus identidades.
-- Definir el alcance de FKs, borrado, recibos, revisiones y consulta de
-  recuentos antes de implementar el contrato físico.
+- Mantener la comprobación de propiedad, la integridad de las FKs y la
+  confirmación idempotente de altas y eliminaciones.
 - Revisar política de reprogramación, límites y objetivo de una vinculación
   futura después de validar los flujos visuales.
 

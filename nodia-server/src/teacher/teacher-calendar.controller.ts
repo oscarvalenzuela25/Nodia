@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Header,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -19,6 +21,7 @@ import {
   CreateCalendarPlanDto,
   PatchCalendarCategoryDto,
   PatchCalendarDayDto,
+  PatchCalendarPlanDto,
 } from './dto/teacher-calendar.dto.js';
 import { TeacherCalendarUseCase } from './use-case/teacher-calendar.use-case.js';
 
@@ -37,6 +40,7 @@ export class TeacherCalendarController {
       actorReference(request.auth),
       query.page,
       query.category_id,
+      query.status,
     );
   }
 
@@ -53,6 +57,26 @@ export class TeacherCalendarController {
     @Param('planId', ParseUUIDPipe) planId: string,
   ) {
     return this.calendar.plan(actorReference(request.auth), planId);
+  }
+
+  @Patch('plans/:planId')
+  @Header('Cache-Control', 'no-store')
+  patchPlan(
+    @Req() request: AuthRequest,
+    @Param('planId', ParseUUIDPipe) planId: string,
+    @Body() body: PatchCalendarPlanDto,
+  ) {
+    return this.calendar.patchPlan(actorReference(request.auth), planId, body);
+  }
+
+  @Delete('plans/:planId')
+  @HttpCode(204)
+  @Header('Cache-Control', 'no-store')
+  deletePlan(
+    @Req() request: AuthRequest,
+    @Param('planId', ParseUUIDPipe) planId: string,
+  ) {
+    return this.calendar.deletePlan(actorReference(request.auth), planId);
   }
 
   @Get('plans/:planId/days/:dayId')

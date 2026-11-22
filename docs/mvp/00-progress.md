@@ -5,6 +5,9 @@
 de las marcas por actividad. Chromium verificó el pegado, la finalización
 y la reapertura tras recargar con Nest y PostgreSQL 16.15 aislados.
 [Plan111 §8](111-teacher-study-calendar-plan.md#8-primer-corte-de-implementación).
+La instancia local incluye gestión desde el menú de cada calendario y
+filtros combinables de estado y categoría.
+[Plan111 §10](111-teacher-study-calendar-plan.md#10-gestión-del-calendario-y-filtro-de-actividad).
 
 **Teacher, piloto de fragmentos interactivos — 2026-11-22.** La comparación
 de **sit** y **seat** y las fichas de **BEE–22** están disponibles en

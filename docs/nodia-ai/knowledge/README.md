@@ -3,8 +3,9 @@
 ## Calendario de estudio de Teacher — propuesta del 2026-11-22
 
 La [ficha candidata](studies/features/study-calendar.md) y el
-[Plan111](../../mvp/111-teacher-study-calendar-plan.md) recorren diseño, datos
-y pegado para el calendario personal. Documentación draft y unregistered.
+[Plan111](../../mvp/111-teacher-study-calendar-plan.md) recorren diseño, datos,
+pegado y gestión del estado del calendario personal. Documentación draft y
+unregistered.
 
 ## Catálogo de Productos y precios — 2026-11-21
 

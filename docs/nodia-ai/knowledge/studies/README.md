@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 53,
+  "revision": 54,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -300,6 +300,11 @@ la ubicación en Teacher, las jornadas y sus actividades con fuente
 opcional, las categorías personales y el pegado con revisión humana.
 La jornada se completa al guardar todas sus actividades marcadas. Los
 recuentos se derivan de las marcas persistidas.
+
+La [gestión nativa del calendario](../../../mvp/111-teacher-study-calendar-plan.md#10-gestión-del-calendario-y-filtro-de-actividad)
+permite actualizar título y categorías, alternar su actividad y confirmar
+una eliminación. La lista abre en **Activos** y puede combinar estado con
+categoría. La ficha conserva el estado candidato.
 
 ## Punto de lectura descargado — 2026-11-21
 

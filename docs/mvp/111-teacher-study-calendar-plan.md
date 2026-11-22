@@ -195,8 +195,9 @@ interpreta el texto de forma determinista.
 - [x] Revisar el mockup de avance por actividad. El usuario confirmó que
   una jornada se completa al marcar todas sus actividades y solicitó
   iniciar el desarrollo.
-- [ ] Acordar alcance de edición posterior del plan. Revisar los flujos de
-  calendario, categorías y pegado sobre la implementación.
+- [x] Acordar el menú de gestión tras crear un calendario y el filtro de
+  actividad predeterminado en Activos.
+- [ ] Definir las reglas de reprogramación de calendarios con avance.
 - [x] Cerrar el contrato de Server y la migración. Cubrir rangos de un día,
   cambio de mes y año, bisiesto, transición DST, exactamente 30 jornadas
   numeradas, días vacíos y rechazos por lotes inválidos. Verificar fuentes
@@ -212,10 +213,9 @@ interpreta el texto de forma determinista.
   Confirmar la misma jornada y recuento después de recargar, y comprobar que
   los accesos existentes de Mis planes y sus evaluaciones siguen operativos.
 
-Quedan por precisar los límites de tamaño, las reglas de edición y
-reprogramación con marcas existentes y la semántica de una futura
-vinculación al plan adaptativo. El primer pendiente es la revisión del
-diseño y de estos límites antes de fijar el contrato.
+Quedan por precisar las reglas de reprogramación con marcas existentes
+y el objetivo de una futura vinculación al plan adaptativo. La edición
+de título y categorías está descrita en §10.
 
 ## 7. Primer mockup interactivo
 
@@ -310,3 +310,39 @@ comprobaron el foco tras editar una categoría, la desactivación y
 reactivación con filtro, el rechazo del JSON inválido y la revisión hasta
 la jornada 28. Se volvió al editor con el mismo texto y se confirmó el
 calendario en PostgreSQL.
+
+## 10. Gestión del calendario y filtro de actividad
+
+El menú de tres puntos de cada calendario ofrece **Actualizar**,
+**Desactivar** o **Activar**, y **Eliminar**. Actualizar permite editar el
+título y las categorías, conservando el rango, las jornadas y su avance.
+Una categoría inactiva ya vinculada puede mantenerse o quitarse. Para
+añadirla se requiere que vuelva a estar activa.
+
+Los calendarios existentes y los nuevos empiezan activos. **Activos** es
+la vista inicial. **Todos** e **Inactivos** incluyen los calendarios
+desactivados, que siguen disponibles para consulta y edición. El filtro
+de estado se combina con el de categoría y cambiar uno devuelve a la
+primera página. Desactivar o reactivar requiere confirmación y conserva
+todo el contenido y avance. Eliminar requiere otra confirmación y retira
+el calendario, las jornadas, las actividades y sus asignaciones de
+categoría. Las categorías personales siguen disponibles.
+
+| Ruta relativa | Contrato de gestión |
+| --- | --- |
+| GET /plans | `status=active\|inactive\|all` filtra antes de paginar y contar. Si se omite se aplica `active`. La respuesta incluye `active`. |
+| PATCH /plans/{planId} | Actualiza `title`, `category_ids` o `active` y devuelve el detalle propio. Se requieren identificadores de categorías del propietario. |
+| DELETE /plans/{planId} | Devuelve 204 al eliminar el calendario propio o recuperar esa confirmación. Un identificador ajeno o inexistente devuelve 404. Una creación repetida con la clave de un calendario eliminado devuelve 410. |
+
+El recibo de eliminación guarda los identificadores de propietario,
+calendario y solicitud de alta para distinguir reintentos de nuevas
+operaciones y evitar que un reintento vuelva a crear un calendario
+eliminado. La autorización se comprueba contra el destino de Teacher.
+El formato de pegado permanece en v1.
+
+Chromium verificó a 1573 px en español y a 320 px en inglés el menú,
+los filtros y el titular de Inicio de esta entrega. Con el API y la
+base aislados se verificó que un fallo temporal conserva el formulario,
+que actualizar y desactivar mantienen el avance y que eliminar conserva
+las categorías y bloquea el reintento del alta. La migración conservó el
+calendario existente en la instancia local de Teacher.

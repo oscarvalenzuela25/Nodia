@@ -4,11 +4,11 @@
   "document_id": "studies.study-calendar",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Primera implementación nativa del calendario en Client y Server, verificada localmente con PostgreSQL aislado."
+    "notes": "Calendario nativo en Client y Server, con edición de título y categorías, filtro de actividad, reactivación y eliminación confirmadas."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -59,13 +59,16 @@ y actualiza los recuentos del calendario.
 | «Arma un plan que pueda pegar en Teacher» | Preparar texto para revisión humana con el [formato propuesto](../../../../mvp/111-teacher-study-calendar-plan.md#5-formato-para-pegar-un-plan). |
 | «Pon el video en la actividad de la lección y el enlace de ejercicios en la práctica» | Vincular cada fuente a su actividad. Pedir el enlace que falte si la persona quiere añadirlo. |
 | «Marca las actividades que terminé» | Remitir al seguimiento nativo de las actividades y al guardado de la jornada. Las pruebas de Teacher se administran en su flujo de evaluación. |
+| «Quiero pausar este calendario» | Remitir a **Desactivar** en el menú de tres puntos. La persona puede recuperarlo desde **Inactivos**. |
+| «Quiero borrar un calendario» | Remitir a **Eliminar** en el menú de tres puntos. La persona confirma la eliminación del calendario y su progreso. |
 
 ## Operaciones y contratos
 
 | Operación propuesta | Efecto esperado | Estado del contrato |
 | --- | --- | --- |
-| Listar calendarios y abrir jornada | Leer registros y recuentos propios | API nativa verificada en laboratorio. |
+| Listar calendarios y abrir jornada | Leer registros y recuentos propios. Filtrar por estado y categoría | API nativa con Activos como vista inicial. |
 | Crear, editar y marcar | Persistir el calendario o el cambio revisado por la persona | Guardado nativo por revisión. Integración de NodiaAI pendiente de evaluación. |
+| Actualizar, activar, desactivar o eliminar un calendario | Editar título y categorías, alternar su actividad o eliminar calendario, jornadas y avance | Gestión en Teacher. El estado y el título conservan jornadas y avance. |
 | Pegar un plan | Analizar texto y preparar una vista previa local. Confirmar aplica el alta nativa | Esquema v1 con validación e idempotencia de Server verificadas en laboratorio. |
 
 ## Datos mínimos y resolución de dudas
@@ -87,8 +90,9 @@ explica las fronteras de persistencia.
 
 ## Filtros e informes
 
-La vista incluye filtro por categoría propia y recuento de jornadas
-completadas sobre jornadas totales por calendario y semana mostrada.
+La vista incluye filtros combinables por categoría propia y por estado
+del calendario, con **Activos** como opción inicial. Muestra el recuento
+de jornadas completadas sobre el total por calendario y semana.
 Las jornadas sin actividades siguen pendientes y cuentan en el total.
 Representar las fechas como días civiles y los calendarios sin fecha
 por su ordinal. El [contrato HTTP](../../../../mvp/111-teacher-study-calendar-plan.md#8-primer-corte-de-implementación)
@@ -100,7 +104,8 @@ La persona puede corregir el texto y revisar jornadas, categorías
 y actividades con sus fuentes. Las actividades importadas empiezan pendientes.
 **Crear calendario** confirma el agregado revisado. Server registra la
 creación en una transacción y recupera el calendario al repetir la misma
-solicitud.
+solicitud vigente. Si se eliminó, ese reintento devuelve un error terminal.
+Para crear otra copia se requiere una confirmación nueva.
 
 ## Integración y evidencia
 
@@ -118,3 +123,4 @@ solicitud.
 | 1 | Propuesta inicial del [Plan111](../../../../mvp/111-teacher-study-calendar-plan.md). | Capacidad nativa en planificación. Conservar las revisiones, materiales y evaluaciones de Teacher. |
 | 2 | Cada actividad admite una fuente propia. El JSON v1 de diseño agrupa el texto con su fuente en cada actividad. | Diseño del formato de intercambio previo al desarrollo. |
 | 3 | La jornada se completa al marcar todas sus actividades. El guardado confirma sus marcas. | El JSON de alta empieza con actividades pendientes. |
+| 4 | Gestión nativa por calendario y filtro de actividad combinado con categoría. | El pegado conserva el formato v1. La integración de NodiaAI permanece pendiente de evaluación. |

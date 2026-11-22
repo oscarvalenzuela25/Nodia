@@ -1,12 +1,39 @@
 import { HttpException } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
-import { readCalendarDayPatch, readCalendarPlan } from './teacher-calendar.js';
+import {
+  readCalendarDayPatch,
+  readCalendarPlan,
+  readCalendarPlanPatch,
+} from './teacher-calendar.js';
 
 const numberedPlan = {
   version: 1,
   title: 'Aprender inglés',
   schedule: { kind: 'numbered', days: 30 },
 };
+
+describe('study calendar plan patch policy', () => {
+  it('keeps omitted fields separate from explicit removal and deactivation', () => {
+    expect(readCalendarPlanPatch({ title: ' Nombre nuevo ' })).toEqual({
+      title: 'Nombre nuevo',
+    });
+    expect(readCalendarPlanPatch({ category_ids: [], active: false })).toEqual({
+      category_ids: [],
+      active: false,
+    });
+  });
+
+  it('rejects unsupported fields, nulls, and UUID duplicates in alternate casing', () => {
+    const id = 'a25d845f-a3ad-4b71-bb67-e17e2bb0d12e';
+    expectInvalid(() => readCalendarPlanPatch(numberedPlan), 'plan');
+    expectInvalid(() => readCalendarPlanPatch({ title: null }), 'title');
+    expectInvalid(() => readCalendarPlanPatch({ active: null }), 'active');
+    expectInvalid(
+      () => readCalendarPlanPatch({ category_ids: [id, id.toUpperCase()] }),
+      'category_ids',
+    );
+  });
+});
 
 function expectInvalid(read: () => unknown, field: string) {
   try {

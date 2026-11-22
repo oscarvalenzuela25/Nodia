@@ -18,7 +18,9 @@ import {
 } from '../policies/teacher-calendar.js';
 import {
   calendarColors,
+  calendarPlanStatuses,
   type CalendarColor,
+  type CalendarPlanStatus,
 } from '../types/teacher-calendar.types.js';
 
 export class CalendarPlansQueryDto {
@@ -35,6 +37,9 @@ export class CalendarPlansQueryDto {
   @ValidateIf((_object, value) => value !== undefined)
   @IsUUID()
   category_id?: string;
+
+  @IsIn(calendarPlanStatuses)
+  status: CalendarPlanStatus = 'active';
 }
 
 export class CreateCalendarPlanDto {
@@ -49,6 +54,22 @@ export class CreateCalendarPlanDto {
   @ArrayMaxSize(CALENDAR_CATEGORY_LIMIT)
   @IsString({ each: true })
   new_categories?: string[];
+}
+
+export class PatchCalendarPlanDto {
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsString()
+  title?: string;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsArray()
+  @ArrayMaxSize(CALENDAR_CATEGORY_LIMIT)
+  @IsUUID(undefined, { each: true })
+  category_ids?: string[];
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsBoolean()
+  active?: boolean;
 }
 
 export class PatchCalendarDayDto {

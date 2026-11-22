@@ -25,6 +25,7 @@ function disposableDatabase(raw) {
 
 const lab = await teacherUpgradeLab({ database: disposableDatabase(process.env.TEACHER_CALENDAR_TEST_URL) });
 const migration = '1793880000000-CreateTeacherStudyCalendar';
+const managementMigration = '1793890000000-ManageTeacherStudyCalendars';
 const checks = [];
 async function check(name, run) {
   await run();
@@ -39,6 +40,20 @@ try {
     await lab.migrate(migration);
     const [existing] = await lab.db.query("SELECT to_regclass('teacher_sessions')::text AS name");
     assert.equal(existing.name, 'teacher_sessions');
+  });
+
+  await check('management migration treats old calendars as active and safely reverts on a compatible state', async () => {
+    const [legacy] = await lab.db.query(
+      `INSERT INTO teacher_calendar_plans (owner_user_id, request_key, request_hash, title, schedule_kind, day_count)
+       VALUES ($1, $2, $3, 'Anterior', 'numbered', 1) RETURNING id`,
+      [lab.actor.userId, randomUUID(), '0'.repeat(64)],
+    );
+    await lab.migrate(managementMigration);
+    assert.deepEqual(await lab.db.query('SELECT active FROM teacher_calendar_plans WHERE id=$1', [legacy.id]), [{ active: true }]);
+    await lab.migrate(managementMigration, 'down');
+    assert.deepEqual(await lab.db.query('SELECT title FROM teacher_calendar_plans WHERE id=$1', [legacy.id]), [{ title: 'Anterior' }]);
+    await lab.migrate(managementMigration);
+    await lab.db.query('DELETE FROM teacher_calendar_plans WHERE id=$1', [legacy.id]);
   });
 
   class CalendarLabModule {}
@@ -77,7 +92,7 @@ try {
       },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
-    return { status: response.status, body: await response.json(), cache: response.headers.get('cache-control') };
+    return { status: response.status, body: response.status === 204 ? null : await response.json(), cache: response.headers.get('cache-control') };
   }
 
   function expectStatus(result, status) {
@@ -122,6 +137,7 @@ try {
     const [first, retry] = await Promise.all([create(), create()]);
     created = expectStatus(first, 201);
     assert.equal(expectStatus(retry, 201).id, created.id);
+    assert.equal(created.active, true);
     assert.equal(created.days.length, 30);
     assert.equal(created.completed_count, 0);
     assert.deepEqual(created.days.slice(0, 2).map((day) => [day.activity_count, day.completed]), [[3, false], [0, false]]);
@@ -206,10 +222,98 @@ try {
     expectStatus(await create({ ...payload, request_key: randomUUID(), new_categories: [] }), 409);
   });
 
+  await check('plan editing preserves jornadas and permits retaining but not adding inactive categories', async () => {
+    const before = expectStatus(await request(planPath), 200);
+    const day = expectStatus(await request(days[0]), 200);
+    const inactive = expectStatus(await request('categories', {
+      method: 'POST', body: { name: 'Inactiva sin vínculo', color: 'blue' },
+    }), 201);
+    expectStatus(await request('categories/' + inactive.id, {
+      method: 'PATCH', body: { active: false },
+    }), 200);
+    const edit = (body, actor) => request(planPath, { method: 'PATCH', body, actor });
+    expectStatus(await edit({}), 400);
+    expectStatus(await edit({ schedule: before.schedule }), 400);
+    expectStatus(await edit({ category_ids: [category.id, category.id.toUpperCase()] }), 400);
+    expectStatus(await edit({ category_ids: [foreign.id], title: 'Nombre inválido' }), 404);
+    assert.equal(expectStatus(await edit({ category_ids: [inactive.id] }), 409).code, 'calendar_category_inactive');
+    expectStatus(await edit({ title: 'Ajeno' }, 'other'), 404);
+    expectStatus(await edit({ title: 'Sin módulo' }, 'no-module'), 403);
+    assert.deepEqual(expectStatus(await request(planPath), 200), before);
+    const edited = expectStatus(await edit({ title: ' Inglés revisado ', category_ids: [category.id] }), 200);
+    assert.equal(edited.title, 'Inglés revisado');
+    assert.deepEqual(edited.schedule, before.schedule);
+    assert.deepEqual(edited.days, before.days);
+    assert.equal(edited.completed_count, before.completed_count);
+    assert.deepEqual(edited.categories.map(({ id, active }) => ({ id, active })), [{ id: category.id, active: false }]);
+    assert.deepEqual(expectStatus(await request(days[0]), 200), day);
+  });
+
+  await check('activity filters compose with categories and changing status retains the editable calendar', async () => {
+    const before = expectStatus(await request(planPath), 200);
+    const inactive = expectStatus(await request(planPath, {
+      method: 'PATCH', body: { active: false },
+    }), 200);
+    assert.deepEqual(inactive, { ...before, active: false });
+    assert.equal(expectStatus(await request('plans?category_id=' + category.id), 200).meta.total, 0);
+    const inactiveFilter = 'plans?status=inactive&category_id=' + category.id;
+    const allFilter = 'plans?status=all&category_id=' + category.id;
+    assert.deepEqual(expectStatus(await request(inactiveFilter), 200).data.map(({ id, active }) => [id, active]), [[before.id, false]]);
+    assert.equal(expectStatus(await request(allFilter), 200).meta.total, 1);
+    assert.equal(expectStatus(await request('plans?status=inactive&category_id=' + foreign.id), 200).meta.total, 0);
+    expectStatus(await request('plans?status=unknown'), 400);
+    assert.equal(expectStatus(await request(planPath), 200).active, false);
+    assert.equal(expectStatus(await request(days[0]), 200).id, before.days[0].id);
+    const editedWhileInactive = expectStatus(await request(planPath, {
+      method: 'PATCH', body: { title: 'Revisado mientras está inactivo' },
+    }), 200);
+    assert.equal(editedWhileInactive.title, 'Revisado mientras está inactivo');
+    assert.equal(editedWhileInactive.active, false);
+    await assert.rejects(lab.migrate(managementMigration, 'down'), /Preserve calendar states/);
+    const reinstated = expectStatus(await request(planPath, {
+      method: 'PATCH', body: { title: before.title, active: true },
+    }), 200);
+    assert.deepEqual(reinstated, before);
+    assert.equal(expectStatus(await request(inactiveFilter), 200).meta.total, 0);
+  });
+
+  await check('deletion and create retry serialize, cascade, and remain recoverable only by their owner', async () => {
+    const planId = created.id;
+    const knownDayId = created.days[0].id;
+    const remove = (path = planPath, actor) => request(path, { method: 'DELETE', actor });
+    expectStatus(await remove(planPath, 'other'), 404);
+    expectStatus(await remove(planPath, 'no-module'), 403);
+    expectStatus(await remove('plans/' + randomUUID()), 404);
+    assert.ok(expectStatus(await request(days[0]), 200).activities.length > 0);
+    const [removed, replay, repeated] = await Promise.all([remove(), create(), remove()]);
+    expectStatus(removed, 204);
+    expectStatus(repeated, 204);
+    if (replay.status === 201) assert.equal(expectStatus(replay, 201).id, planId);
+    else assert.equal(expectStatus(replay, 410).code, 'calendar_plan_deleted');
+    const deleted = expectStatus(await create(), 410);
+    assert.equal(deleted.code, 'calendar_plan_deleted');
+    assert.equal(expectStatus(await create({ ...payload, plan: { ...payload.plan, title: 'Otra intención' } }), 410).code, deleted.code);
+    expectStatus(await remove(), 204);
+    expectStatus(await remove(planPath, 'other'), 404);
+    expectStatus(await request(planPath), 404);
+    expectStatus(await request(days[0]), 404);
+    expectStatus(await request(planPath, { method: 'PATCH', body: { active: true } }), 404);
+    const [counts] = await lab.db.query(`SELECT
+      (SELECT count(*)::int FROM teacher_calendar_days WHERE plan_id=$1) AS days,
+      (SELECT count(*)::int FROM teacher_calendar_activities WHERE day_id=$2) AS activities,
+      (SELECT count(*)::int FROM teacher_calendar_plan_categories WHERE plan_id=$1) AS categories`,
+    [planId, knownDayId]);
+    assert.deepEqual(counts, { days: 0, activities: 0, categories: 0 });
+    assert.ok(expectStatus(await request('categories'), 200).some(({ id }) => id === category.id));
+    assert.equal(expectStatus(await request('plans?status=all&category_id=' + category.id), 200).meta.total, 0);
+    await assert.rejects(lab.migrate(managementMigration, 'down'), /Preserve calendar states/);
+  });
+
   await check('module revocation blocks even a known creation receipt', async () => {
     await lab.db.query('UPDATE user_modules SET is_active=false WHERE user_id=$1', [lab.actor.userId]);
     expectStatus(await request(planPath), 403);
     expectStatus(await create(), 403);
+    expectStatus(await request(planPath, { method: 'DELETE' }), 403);
   });
   console.log(JSON.stringify({ suite: 'teacher-study-calendar', checks }, null, 2));
 } finally {

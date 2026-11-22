@@ -7,17 +7,23 @@ import type {
   CreateCalendarPlanDto,
   PatchCalendarCategoryDto,
   PatchCalendarDayDto,
+  PatchCalendarPlanDto,
 } from '../dto/teacher-calendar.dto.js';
 import {
   readCalendarCategoryName,
   readCalendarColor,
   readCalendarDayPatch,
   readCalendarPlan,
+  readCalendarPlanPatch,
+  readCalendarPlanStatus,
 } from '../policies/teacher-calendar.js';
 import { requireUuid, teacherError } from '../policies/teacher-validation.js';
 import { TeacherCalendarStore } from '../teacher-calendar.store.js';
 import { TeacherService } from '../teacher.service.js';
-import type { CalendarPlanWrite } from '../types/teacher-calendar.types.js';
+import type {
+  CalendarPlanStatus,
+  CalendarPlanWrite,
+} from '../types/teacher-calendar.types.js';
 
 type CalendarScope = { manager: EntityManager; owner: string };
 
@@ -37,13 +43,24 @@ export class TeacherCalendarUseCase {
     );
   }
 
-  listPlans(actor: ActorReference, page: number, categoryId?: string) {
+  listPlans(
+    actor: ActorReference,
+    page: number,
+    categoryId?: string,
+    status: CalendarPlanStatus = 'active',
+  ) {
     if (!Number.isInteger(page) || page < 1 || page > 999999999)
       teacherError('invalid_input', 400);
     const category =
       categoryId === undefined ? undefined : requireUuid(categoryId);
+    const selected = readCalendarPlanStatus(status);
     return this.scope(actor, (scope) =>
-      this.store.listPlans(scope, page, category),
+      this.store.listPlans(
+        scope,
+        page,
+        category,
+        selected === 'all' ? null : selected === 'active',
+      ),
     );
   }
 
@@ -68,6 +85,8 @@ export class TeacherCalendarUseCase {
       await this.store.lockCreationRequest(scope, requestKey);
       const existing = await this.store.findCreation(scope, requestKey);
       if (existing) {
+        if (existing.request_hash === null)
+          teacherError('calendar_plan_deleted', 410);
         if (existing.request_hash !== digest)
           teacherError('idempotency_conflict');
         return this.requirePlan(scope, existing.id);
@@ -81,6 +100,57 @@ export class TeacherCalendarUseCase {
         categoryIds,
       );
       return this.requirePlan(scope, id);
+    });
+  }
+
+  patchPlan(
+    actor: ActorReference,
+    planId: string,
+    input: PatchCalendarPlanDto,
+  ) {
+    requireUuid(planId);
+    const patch = readCalendarPlanPatch(input);
+    return this.scope(actor, async (scope) => {
+      if (!(await this.store.lockPlan(scope, planId)))
+        teacherError('not_found', 404);
+      if (patch.category_ids && patch.category_ids.length > 0) {
+        await this.store.lockCategories(scope);
+        const categories = await this.store.categoriesForPlanUpdate(
+          scope,
+          planId,
+          patch.category_ids,
+        );
+        if (categories.length !== patch.category_ids.length)
+          teacherError('not_found', 404);
+        if (
+          categories.some((category) => !category.active && !category.assigned)
+        )
+          teacherError('calendar_category_inactive');
+      }
+      if (patch.title !== undefined || patch.active !== undefined)
+        await this.store.updatePlan(scope, planId, patch);
+      if (patch.category_ids !== undefined)
+        await this.store.replacePlanCategories(
+          scope,
+          planId,
+          patch.category_ids,
+        );
+      return this.requirePlan(scope, planId);
+    });
+  }
+
+  deletePlan(actor: ActorReference, planId: string) {
+    requireUuid(planId);
+    return this.scope(actor, async (scope) => {
+      // Read the immutable key before taking any plan row lock so create/delete
+      // both serialize on the request identity before changing the plan.
+      const requestKey = await this.store.planCreationKey(scope, planId);
+      if (requestKey) {
+        await this.store.lockCreationRequest(scope, requestKey);
+        if (await this.store.deletePlan(scope, planId)) return;
+      }
+      if (!(await this.store.deletionRecorded(scope, planId)))
+        teacherError('not_found', 404);
     });
   }
 

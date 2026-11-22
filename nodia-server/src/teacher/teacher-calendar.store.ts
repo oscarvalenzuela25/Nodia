@@ -10,6 +10,7 @@ import type {
   CalendarDayFields,
   CalendarPlanDetail,
   CalendarPlanPage,
+  CalendarPlanPatch,
   CalendarPlanSummary,
   CalendarPlanWrite,
 } from './types/teacher-calendar.types.js';
@@ -20,7 +21,7 @@ type CategoryRow = CalendarCategory &
   Pick<CalendarCategoryName, 'normalized_name'>;
 type FetchScope = { manager: EntityManager; owner: string };
 
-const planColumns = `p.id, p.title, p.day_count,
+const planColumns = `p.id, p.title, p.active, p.day_count,
   CASE WHEN p.schedule_kind = 'dated' THEN jsonb_build_object(
     'kind', 'dated', 'start', to_char(p.start_date, 'YYYY-MM-DD'),
     'end', to_char(p.end_date, 'YYYY-MM-DD')
@@ -53,14 +54,15 @@ export class TeacherCalendarStore {
   async listPlans(
     { manager, owner }: FetchScope,
     page: number,
-    categoryId?: string,
+    categoryId: string | undefined,
+    active: boolean | null,
   ): Promise<CalendarPlanPage> {
     const [result]: { data: CalendarPlanSummary[]; total: number }[] =
       await manager.query(
         `WITH filtered AS MATERIALIZED (
           SELECT p.*
           FROM teacher_calendar_plans p
-          WHERE p.owner_user_id = $1 AND (
+          WHERE p.owner_user_id = $1 AND ($3::boolean IS NULL OR p.active = $3) AND (
             $2::uuid IS NULL OR EXISTS (
               SELECT 1 FROM teacher_calendar_plan_categories pc
               WHERE pc.owner_user_id = p.owner_user_id
@@ -68,7 +70,7 @@ export class TeacherCalendarStore {
             )
           )
         ), page AS MATERIALIZED (
-          SELECT * FROM filtered ORDER BY created_at DESC, id DESC LIMIT $3 OFFSET $4
+          SELECT * FROM filtered ORDER BY created_at DESC, id DESC LIMIT $4 OFFSET $5
         ), completed_days AS (
           SELECT d.plan_id
           FROM page p
@@ -90,6 +92,7 @@ export class TeacherCalendarStore {
         [
           owner,
           categoryId ?? null,
+          active,
           CALENDAR_PAGE_SIZE,
           (page - 1) * CALENDAR_PAGE_SIZE,
         ],
@@ -145,13 +148,105 @@ export class TeacherCalendarStore {
   }
 
   async findCreation({ manager, owner }: FetchScope, requestKey: string) {
-    const [receipt]: { id: string; request_hash: string }[] =
+    const [receipt]: { id: string; request_hash: string | null }[] =
       await manager.query(
         `SELECT id, request_hash FROM teacher_calendar_plans
+         WHERE owner_user_id = $1 AND request_key = $2
+         UNION ALL
+         SELECT plan_id AS id, NULL AS request_hash FROM teacher_calendar_deleted_plans
          WHERE owner_user_id = $1 AND request_key = $2`,
         [owner, requestKey],
       );
     return receipt;
+  }
+
+  async planCreationKey({ manager, owner }: FetchScope, planId: string) {
+    const [plan]: { request_key: string }[] = await manager.query(
+      `SELECT request_key FROM teacher_calendar_plans
+       WHERE owner_user_id = $1 AND id = $2`,
+      [owner, planId],
+    );
+    return plan?.request_key;
+  }
+
+  async deletionRecorded({ manager, owner }: FetchScope, planId: string) {
+    const [result]: { deleted: boolean }[] = await manager.query(
+      `SELECT EXISTS (
+        SELECT 1 FROM teacher_calendar_deleted_plans
+        WHERE owner_user_id = $1 AND plan_id = $2
+      ) AS deleted`,
+      [owner, planId],
+    );
+    return result.deleted;
+  }
+
+  async deletePlan({ manager, owner }: FetchScope, planId: string) {
+    const [result]: { plan_id: string }[] = await manager.query(
+      `WITH deleted AS (
+        DELETE FROM teacher_calendar_plans
+        WHERE owner_user_id = $1 AND id = $2
+        RETURNING owner_user_id, request_key, id
+      ), recorded AS (
+        INSERT INTO teacher_calendar_deleted_plans (owner_user_id, request_key, plan_id)
+        SELECT owner_user_id, request_key, id FROM deleted
+        RETURNING plan_id
+      ) SELECT plan_id FROM recorded`,
+      [owner, planId],
+    );
+    return Boolean(result);
+  }
+
+  async lockPlan({ manager, owner }: FetchScope, planId: string) {
+    const [result]: { id: string }[] = await manager.query(
+      `SELECT id FROM teacher_calendar_plans
+       WHERE owner_user_id = $1 AND id = $2 FOR NO KEY UPDATE`,
+      [owner, planId],
+    );
+    return Boolean(result);
+  }
+
+  updatePlan(
+    { manager, owner }: FetchScope,
+    planId: string,
+    { title, active }: CalendarPlanPatch,
+  ) {
+    return manager.query(
+      `UPDATE teacher_calendar_plans SET
+         title = COALESCE($3, title), active = COALESCE($4, active)
+       WHERE owner_user_id = $1 AND id = $2`,
+      [owner, planId, title ?? null, active ?? null],
+    );
+  }
+
+  categoriesForPlanUpdate(
+    { manager, owner }: FetchScope,
+    planId: string,
+    categoryIds: string[],
+  ): Promise<{ id: string; active: boolean; assigned: boolean }[]> {
+    return manager.query(
+      `SELECT c.id, c.active, EXISTS (
+        SELECT 1 FROM teacher_calendar_plan_categories pc
+        WHERE pc.owner_user_id = c.owner_user_id AND pc.plan_id = $2
+          AND pc.category_id = c.id
+      ) AS assigned
+      FROM teacher_calendar_categories c
+      WHERE c.owner_user_id = $1 AND c.id = ANY($3::uuid[])`,
+      [owner, planId, categoryIds],
+    );
+  }
+
+  async replacePlanCategories(
+    scope: FetchScope,
+    planId: string,
+    categoryIds: string[],
+  ) {
+    await scope.manager.query(
+      `DELETE FROM teacher_calendar_plan_categories
+       WHERE owner_user_id = $1 AND plan_id = $2
+         AND NOT (category_id = ANY($3::uuid[]))`,
+      [scope.owner, planId, categoryIds],
+    );
+    await this.addPlanCategories(scope, planId, categoryIds);
   }
 
   async createPlan(
@@ -211,13 +306,22 @@ export class TeacherCalendarStore {
         FROM jsonb_to_recordset($1) AS body(day_id uuid, position int, text text, source_label text, source_url text)`,
         [JSON.stringify(activities)],
       );
-    if (categoryIds.length > 0)
-      await manager.query(
-        `INSERT INTO teacher_calendar_plan_categories (owner_user_id, plan_id, category_id)
-        SELECT $1, $2, category_id FROM unnest($3::uuid[]) AS category_id`,
-        [owner, created.id, categoryIds],
-      );
+    await this.addPlanCategories({ manager, owner }, created.id, categoryIds);
     return created.id;
+  }
+
+  private async addPlanCategories(
+    { manager, owner }: FetchScope,
+    planId: string,
+    categoryIds: string[],
+  ) {
+    if (categoryIds.length === 0) return;
+    await manager.query(
+      `INSERT INTO teacher_calendar_plan_categories (owner_user_id, plan_id, category_id)
+      SELECT $1, $2, category_id FROM unnest($3::uuid[]) AS category_id
+      ON CONFLICT (owner_user_id, plan_id, category_id) DO NOTHING`,
+      [owner, planId, categoryIds],
+    );
   }
 
   async lockDay({ manager, owner }: FetchScope, planId: string, dayId: string) {

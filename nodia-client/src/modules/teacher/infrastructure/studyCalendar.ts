@@ -47,9 +47,10 @@ export const calendarCategorySchema = z.object({
 });
 export const calendarCategoriesSchema = z.array(calendarCategorySchema);
 
-const calendarSummarySchema = z.object({
+export const calendarSummarySchema = z.object({
   id: z.uuid(),
   title: z.string().min(1),
+  active: z.boolean(),
   schedule: calendarScheduleSchema,
   categories: calendarCategoriesSchema,
   day_count: z.number().int().min(1).max(calendarMaxDays),
@@ -99,12 +100,14 @@ export const calendarPlansSchema = z.object({
 
 export type CalendarCategory = z.infer<typeof calendarCategorySchema>;
 export type CalendarColor = typeof calendarColors[number];
+export type CalendarPlanStatus = "active" | "inactive" | "all";
 export type CalendarSchedule = z.infer<typeof calendarScheduleSchema>;
 export type CalendarPlan = z.infer<typeof calendarPlanSchema>;
 export type CalendarSummary = z.infer<typeof calendarSummarySchema>;
 export type CalendarDay = z.infer<typeof calendarDaySchema>;
 export type CalendarDaySummary = z.infer<typeof calendarDaySummarySchema>;
 export type CalendarSource = z.infer<typeof sourceSchema>;
+export type CalendarPlanUpdate = Partial<Pick<CalendarPlan, "title" | "active">> & { category_ids?: string[] };
 export type DayUpdate = Pick<CalendarDay, "title" | "notes" | "minutes" | "revision"> & {
   activities: { id?: string; text: string; source?: CalendarSource; completed: boolean }[];
 };

@@ -1,6 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import {
   calendarColors,
+  calendarPlanStatuses,
   type CalendarCategoryName,
   type CalendarColor,
   type CalendarDayFields,
@@ -8,6 +9,8 @@ import {
   type CalendarImportedActivity,
   type CalendarImportedDay,
   type CalendarPlanWrite,
+  type CalendarPlanPatch,
+  type CalendarPlanStatus,
   type CalendarSchedule,
   type CalendarSource,
 } from '../types/teacher-calendar.types.js';
@@ -106,6 +109,36 @@ export function readCalendarCategoryName(
 export function readCalendarColor(value: unknown): CalendarColor {
   const color = calendarColors.find((entry) => entry === value);
   return color ?? invalid('color');
+}
+
+export function readCalendarPlanStatus(value: unknown): CalendarPlanStatus {
+  return (
+    calendarPlanStatuses.find((entry) => entry === value) ?? invalid('status')
+  );
+}
+
+export function readCalendarPlanPatch(value: unknown): CalendarPlanPatch {
+  const input = readObject(value, ['title', 'category_ids', 'active'], 'plan');
+  const update: CalendarPlanPatch = {};
+  if (input.title !== undefined)
+    update.title = readText(input.title, 120, 'title');
+  if (input.active !== undefined)
+    update.active = readBoolean(input.active, 'active');
+  if (input.category_ids !== undefined) {
+    const ids = readArray(
+      input.category_ids,
+      CALENDAR_CATEGORY_LIMIT,
+      'category_ids',
+    ).map((id, index) => {
+      if (typeof id !== 'string' || !uuidPattern.test(id))
+        invalid(`category_ids.${index}`);
+      return id.toLowerCase();
+    });
+    if (new Set(ids).size !== ids.length) invalid('category_ids');
+    update.category_ids = ids;
+  }
+  if (Object.keys(update).length === 0) invalid('plan');
+  return update;
 }
 
 function categoryNames(value: unknown, path: string): CalendarCategoryName[] {
