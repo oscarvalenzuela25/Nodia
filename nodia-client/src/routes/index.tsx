@@ -73,7 +73,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <SessionRouteLayout />,
-    errorElement: <RouteError />,
+    errorElement: <PublicLayout standalone><RouteError /></PublicLayout>,
     children: [
       {
         path: NOTIFICATIONS_ROUTE,

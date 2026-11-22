@@ -62,12 +62,14 @@ describe("AuthSessionProvider", () => {
     localStorage.setItem("authStore", JSON.stringify({ version: 1, state: { token: "jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Synthetic actor" } } }));
     await useAuthStore.persist.rehydrate();
     vi.mocked(restoreSession).mockReturnValue(new Promise(() => {}));
-    render(<AuthSessionProvider><div>Application</div></AuthSessionProvider>);
+    render(<AuthSessionProvider recoveryNotice={<div>Connection recovery</div>}><div>Application</div></AuthSessionProvider>);
     expect(screen.queryByText("Application")).not.toBeInTheDocument();
+    expect(screen.getByText("Connection recovery")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Validando tu sesión");
     expect(restoreSession).toHaveBeenCalledOnce();
     act(() => useAuthStore.getState().login({ token: "jwt", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Synthetic actor" } }));
     expect(screen.getByText("Application")).toBeInTheDocument();
+    expect(screen.queryByText("Connection recovery")).not.toBeInTheDocument();
     expect(sileo.success).not.toHaveBeenCalled();
   });
 
@@ -128,13 +130,14 @@ describe("AuthSessionProvider", () => {
     const session = { token: "fixture", expiresAt: Date.now() + 900_000, user: { id: "42", name: "Synthetic actor" } };
     useAuthStore.getState().login(session);
     vi.mocked(restoreSession).mockReturnValue(new Promise(() => {}));
-    render(<AuthSessionProvider><input aria-label="Retained draft" defaultValue="" /></AuthSessionProvider>);
+    render(<AuthSessionProvider recoveryNotice={<div>Connection recovery</div>}><input aria-label="Retained draft" defaultValue="" /></AuthSessionProvider>);
     const input = screen.getByRole("textbox", { name: "Retained draft" });
     fireEvent.change(input, { target: { value: "Unsent synthetic text" } });
     act(() => useAuthStore.getState().setSessionStatus(status));
     expect(screen.getByRole("textbox", { name: "Retained draft", hidden: true })).toBe(input);
     expect(input).toHaveValue("Unsent synthetic text");
     expect(input.closest("[inert]")).not.toBeNull();
+    expect(screen.queryByText("Connection recovery")).not.toBeInTheDocument();
     act(() => useAuthStore.getState().login(session));
     expect(screen.getByRole("textbox", { name: "Retained draft" })).toBe(input);
     expect(input.closest("[inert]")).toBeNull();

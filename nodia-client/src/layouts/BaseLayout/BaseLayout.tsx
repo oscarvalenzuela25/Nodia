@@ -7,6 +7,7 @@ import { LayoutWrapper, MainContainer, PageContent } from "./styles";
 import MobileBottomNav from "../components/MobileBottomNav";
 import useAuth from "../../hooks/useAuth";
 import PwaUpdateNotice from "../../pwa/PwaUpdateNotice";
+import ConnectionNotice from "../../pwa/ConnectionNotice";
 
 type Props = PropsWithChildren;
 
@@ -17,7 +18,7 @@ const BaseLayout: FC<Props> = ({ children }) => {
   const theme = useTheme();
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { isSessionValid } = useAuth();
+  const { isDemo, isSessionActive, isSessionValid } = useAuth();
   const hasMobileNav = isMobile && isSessionValid;
 
   // Sidenav is only collapsed on Desktop when toggled. On mobile, it's a full-width drawer.
@@ -44,6 +45,7 @@ const BaseLayout: FC<Props> = ({ children }) => {
           desktopCollapsed={desktopCollapsed}
           onCollapseToggle={handleCollapseToggle}
         />
+        <ConnectionNotice allowRetry={isDemo || isSessionActive} />
         <PwaUpdateNotice />
         <PageContent mobileNavigation={hasMobileNav}>
           <Suspense fallback={<RouteLoader variant="page" />}>
