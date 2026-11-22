@@ -38,8 +38,16 @@ export interface FinanceResourceTabProps {
   onQueryChange?: (query: FinanceQuery) => void;
   showFilters?: boolean;
   titleKey?: string;
+  headingAction?: ReactNode;
   limit?: number;
 }
+
+const CREATE_LABELS: Record<FinanceResource, string> = {
+  movements: "finance:create_movement",
+  obligations: "finance:create_obligation",
+  categories: "finance:create_category",
+  "category-groups": "finance:create_group",
+};
 
 type ModalProps<T> = {
   open: boolean;
@@ -64,6 +72,7 @@ function ResourceView<R extends FinanceResource>({
   onQueryChange,
   showFilters = true,
   titleKey,
+  headingAction,
   limit = 10,
   columns,
   mobileFields,
@@ -209,6 +218,7 @@ function ResourceView<R extends FinanceResource>({
           change({ ...currentQuery, q, page: 1 });
         }}
         onCreate={() => setModal({})}
+        createLabelKey={CREATE_LABELS[resource]}
         onEdit={(record) => setModal({ id: record.id })}
         onToggle={setToToggle}
         onDelete={setToDelete}
@@ -241,6 +251,7 @@ function ResourceView<R extends FinanceResource>({
         onRetry={() => void listing.refetch()}
         disabled={busy}
         titleKey={titleKey}
+        headingAction={headingAction}
       />
       {modal &&
         (!modal.id || selected.data) &&

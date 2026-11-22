@@ -4,7 +4,7 @@
   "document_id": "reservations",
   "product_id": "reservations",
   "kind": "product",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -15,6 +15,10 @@
   "sources": [
     {
       "path": "docs/mvp/28-rental-reservations-contracts.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/30-rental-reservations-client-plan.md",
       "kind": "specification"
     },
     {
@@ -184,3 +188,12 @@ La ampliación no modifica los cuerpos de las nueve fichas de lectura aprobadas 
 AI-26 incorpora [dinero confirmado](features/confirmed-money.md) y [bloqueos/preparación](features/confirmed-occupancy-preparation.md), conforme [72](../../../mvp/72-nodia-ai-ai26-rental-money-occupancy-preparation.md). Diez preparadores internos implementados y verificados en laboratorio privado; los nueve cuerpos de lectura aprobados se mantienen intactos. Publicación MCP y aceptación Gemini pendientes.
 
 Revisión8 de este resumen: añade las dos fichas AI-26 y reconcilia corpus50/23, sin cambiar la aprobación ni habilitar publicación. La paridad44 distingue21 lecturas,22 escrituras internas y1 coordinación nativa de journal restringida al actor original; la observación administrativa del chat no permite confirmar/reanudar como otro dueño.
+
+## Evaluación del retoque de Reservas — 2026-11-21
+
+La [entrega de Client](../../../mvp/30-rental-reservations-client-plan.md#continuidad-del-recorrido-de-reservas--2026-11-21)
+mejora la agenda, el asistente, la ficha, Caja y Preparación. La separación
+entre cotización y ocupación, las restricciones de Airbnb y el alcance de
+los agregados aplican las reglas ya documentadas. El retoque afecta a la
+presentación y a la recuperación local del recorrido manual. Los contratos
+y fichas funcionales siguen siendo la referencia del contexto de NodiaAI.

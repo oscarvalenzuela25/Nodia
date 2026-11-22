@@ -9,9 +9,18 @@ export const PageStack = styled(Box)(({ theme }) => ({
 export const PageHeader = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(1),
+  gap: theme.spacing(2),
   paddingBlockEnd: theme.spacing(2),
   borderBlockEnd: `1px solid ${theme.palette.divider}`,
+  [theme.breakpoints.up("lg")]: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+}));
+export const PagePropertyTools = styled("div")(({ theme }) => ({
+  minWidth: 0,
+  [theme.breakpoints.up("lg")]: { flex: "1 1 25rem" },
 }));
 export const PageTitle = styled(Typography)(({ theme }) => ({
   ...theme.typography.h4,

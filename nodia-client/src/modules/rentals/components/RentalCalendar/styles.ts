@@ -51,6 +51,31 @@ export const Toolbar = styled(Box)(({ theme }) => ({
   flexWrap: "wrap",
   [theme.breakpoints.down("sm")]: { "& > button": { width: "100%" } },
 }));
+export const PeriodNavigation = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "44px minmax(0, 1fr) 44px",
+  alignItems: "center",
+  gap: theme.spacing(0.5),
+  minWidth: 0,
+  "& > h2": {
+    textAlign: "center",
+    overflowWrap: "anywhere",
+    fontWeight: 700,
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    "& > h2": { fontSize: "1.125rem" },
+  },
+}));
+export const CalendarViewControls = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(1),
+  flexWrap: "wrap",
+  "& .MuiToggleButton-root": { minHeight: 44 },
+  [theme.breakpoints.down("sm")]: { width: "100%" },
+}));
 export const Agenda = styled(Box)(({ theme }) => ({
   display: "grid",
   gap: theme.spacing(1.5),

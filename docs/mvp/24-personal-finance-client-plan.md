@@ -336,3 +336,38 @@ Eliminar disponible en listados/resúmenes con trash/error.main y FinanceDeleteD
 QA aislado en src/test/manual/finances-mobile: transporte sintético que rechaza HTTP no previsto; no toca Nest/BD real. Matriz35 combinaciones (5 secciones x320/390/599/600/768/900/1280px) sin overflow horizontal; EN claro a320px, importes/IDs grandes exactos, tres opciones de actividad/activo inicial, búsqueda conservada al redimensionar, dos filas de paginado por encima de barra inferior, última página corregida tras eliminar, error de DELETE con reintento, categoría/préstamo protegidos, formulario con borrador tras error y scroll interno a320px. Capturas y medidas fuera del repositorio en finances-mobile-qa del directorio de evidencia registrado en00. La evidencia sintética no acredita sesión/BD objetivo ni aceptación en teléfono físico; FC-24 sigue pendiente.
 
 Suite completa Client1108 pruebas/173 archivos correcta con cuatro workers; build (incluye tipado) y lint correctos. Primera ejecución paralela tuvo timeout de carga lazy en Contactos de Negocios; sus13 pruebas aisladas y repetición completa pasaron, sin modificar sus assertions. Regresiones financieras cubren DELETE204 por recurso, principal/caché, respuesta incierta sin replay, confirmación/error/reintento, cards/actions/busy y cambio de breakpoint conservando sección/filtros.
+
+## Retoque UX de Finanzas personales — 2026-11-21
+
+En la ruta canónica `/finances-personal`, General prioriza el neto junto a
+ingresos, gastos y conteos del filtro activo. Los saldos por cobrar y pagar
+se agrupan aparte con su alcance histórico explícito. Ambos paneles se
+adaptan al ancho asignado por el layout. Los importes siguen viniendo de los
+agregados completos del servidor.
+
+«Ver todos los movimientos» aparece junto a «Últimos movimientos» y lleva
+los filtros aplicados al listado completo, con foco en el panel de destino.
+Las tablas de Finanzas se desplazan con teclado cuando exceden el ancho y
+las tarjetas siguen disponibles en móvil. Las acciones de alta identifican
+el recurso y el selector de propietario se integra en el encabezado.
+
+Los formularios manuales presentan primero sus campos principales y
+solicitan teclado numérico para importes enteros. «Registrar pago»
+identifica el préstamo o deuda de origen antes de guardar. Si no se puede
+verificar el detalle de una obligación vinculada, el formulario bloquea el
+envío y permite reintentar la lectura con el borrador intacto. La revisión
+de escrituras de resultado incierto sigue el contrato 22.
+
+La [evaluación para NodiaAI](../nodia-ai/knowledge/personal-finance/README.md#evaluación-del-retoque-ux--2026-11-21)
+registra el alcance de presentación y recuperación local.
+
+Validación local con Chromium y transporte sintético en español/inglés y
+tema claro/oscuro. Medidas a 320, 599, 600, 900 y 1440 px, con scroll
+horizontal limitado a la tabla al pasar de tarjetas a 600 px. Se verificó
+el traslado de filtro y foco con Enter, el scroll de tabla con flechas,
+el vacío frente al error de lectura y la conservación de nombre y monto
+ante un 503 de guardado. Escape devuelve el foco a las acciones de la
+obligación. El recorrido no acredita escritura ni despliegue en producción.
+
+Client pasó 3424 pruebas en 421 archivos, más tipado, lint y build.
+También pasó la compilación y la comprobación del corpus de conocimiento.

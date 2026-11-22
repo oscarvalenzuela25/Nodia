@@ -24,6 +24,21 @@ export const WorkspaceHeader = styled(Box)(({ theme }) => ({
   backgroundImage: `linear-gradient(110deg, ${alpha(theme.palette.primary.main, 0.07)}, transparent 65%)`,
 }));
 
+export const WorkspacePanelHeader = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  gap: theme.spacing(1, 2),
+  "& > h2:focus-visible": {
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: 4,
+  },
+  [theme.breakpoints.down("sm")]: {
+    "& > button": { width: "100%", minHeight: 44 },
+  },
+}));
+
 export const WorkspaceTabs = styled(Tabs)(({ theme }) => ({
   minWidth: 0,
   backgroundColor: theme.palette.background.paper,

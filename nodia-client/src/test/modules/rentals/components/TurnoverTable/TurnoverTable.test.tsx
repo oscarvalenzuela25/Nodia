@@ -55,3 +55,30 @@ it("distinguishes unknown linen from false and true without requesting detail fo
     expect(screen.getByText(i18n.t(`rental:${key}`))).toBeInTheDocument();
   expect(ui.record).not.toHaveBeenCalled();
 });
+
+it("opens preparation directly from its table row and disables the action while unavailable", async () => {
+  const listing = page([turnover]);
+  ui.list.mockReturnValue(listing);
+  const open = vi.fn();
+  const view = render(
+    <TurnoverTable
+      property={property}
+      onOpenReservation={vi.fn()}
+      onOpenTurnover={open}
+    />,
+  );
+  const name = i18n.t("rental:review_preparation");
+  expect(screen.getByRole("table")).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name }));
+  expect(open).toHaveBeenCalledWith(turnover.id);
+
+  ui.list.mockReturnValue({ ...listing, isFetching: true });
+  view.rerender(
+    <TurnoverTable
+      property={property}
+      onOpenReservation={vi.fn()}
+      onOpenTurnover={open}
+    />,
+  );
+  expect(screen.getByRole("button", { name })).toBeDisabled();
+});

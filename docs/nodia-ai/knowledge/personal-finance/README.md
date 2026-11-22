@@ -4,7 +4,7 @@
   "document_id": "personal-finance",
   "product_id": "personal-finance",
   "kind": "product",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -15,6 +15,10 @@
   "sources": [
     {
       "path": "docs/mvp/22-personal-finance-contracts.md",
+      "kind": "specification"
+    },
+    {
+      "path": "docs/mvp/24-personal-finance-client-plan.md",
       "kind": "specification"
     },
     {
@@ -155,3 +159,11 @@ El corpus completo tiene44 fichas:27 funcionalidades approved/published ligadas 
 La preview muestra efectos compuestos y pertenencias retiradas, también archivadas; más de128 asociaciones supera la política actual y se rechaza sin truncar. Un recibo de eliminación acredita el efecto histórico, sin exigir presencia actual del recurso ni recrearlo. Se conserva identidad/contrato de creación v2 y se reutiliza recuperación/cancelación/reanudación de AI-20. Sin tablas ni columnas nuevas.
 
 Esta ampliación sustituye las menciones anteriores de puertos de escritura pendientes únicamente en el alcance interno descrito. Las once lecturas publicadas continúan; las cuatro fichas aprobadas de lectura no se modifican. La [ficha de efectos](features/confirmed-movement-effect.md), este resumen y las fichas propias de NodiaAI siguen draft/unregistered. Publicación MCP prepare, preparación con Gemini, evidencia final AI-21 e informes combinables mantienen sus gates independientes.
+
+## Evaluación del retoque UX — 2026-11-21
+
+El [Plan Client 24](../../../mvp/24-personal-finance-client-plan.md#retoque-ux-de-finanzas-personales--2026-11-21)
+registra la nueva jerarquía visual, la navegación del resumen al listado y
+la recuperación local de formularios. El ajuste emplea los agregados y reglas
+financieras existentes. El contexto funcional de NodiaAI sigue siendo
+el definido por los contratos y las fichas publicadas.

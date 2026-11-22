@@ -15,8 +15,19 @@ vi.mock("../../../../../modules/finances/infrastructure/useServices", () => ({
   useFinanceBusy: mocks.busy,
 }));
 vi.mock("../../../../../modules/finances/components/FinanceOverview", () => ({
-  default: ({ query }: { query: FinanceQuery }) => (
-    <div data-testid="general-panel">{query.active}</div>
+  default: ({
+    query,
+    onViewMovements,
+  }: {
+    query: FinanceQuery;
+    onViewMovements: (query: FinanceQuery) => void;
+  }) => (
+    <div data-testid="general-panel">
+      {query.active}
+      <button onClick={() => onViewMovements({ active: "inactive" })}>
+        Open filtered movements
+      </button>
+    </div>
   ),
 }));
 vi.mock(
@@ -110,6 +121,21 @@ describe("PersonalFinance", () => {
     mocks.busy.mockReturnValue(true);
     renderPage();
     screen.getAllByRole("tab").forEach((tab) => expect(tab).toBeDisabled());
+  });
+
+  it("moves keyboard focus into the full list and carries the applied scope", async () => {
+    renderPage("/finances-personal?other=keep");
+    const user = userEvent.setup();
+    screen.getByRole("button", { name: "Open filtered movements" }).focus();
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByRole("tabpanel", { name: "Movimientos" })).toHaveFocus();
+    expect(screen.getByTestId("resource-panel")).toHaveTextContent(
+      "movements:inactive",
+    );
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "other=keep&tab=movements",
+    );
   });
 });
 

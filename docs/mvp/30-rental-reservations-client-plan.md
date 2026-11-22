@@ -575,3 +575,58 @@ Por política explícita del usuario, todos los inputs de filtros de Reservas oc
 Variante primera del mockup elegida explícitamente por el usuario e integrada: datos, sugerencias y políticas en paneles/tarjetas, archivo al final y editores por grupo. Selección predeterminada por ID desde tarjeta o selector, errores/borradores y permisos conservados; revalidación de la propiedad no desmonta editores ni reinicia filtros. Consulta de políticas paginada/buscable, sin N+1 ni descarga completa.
 
 MobileRecordCard incorporado en xs a Preparación, Colaboradores, Bloqueos, Pagos, Gastos e Historial; comparte acciones/query/paginado con tablas desde sm. Agenda/Reservas/Caja existentes comprobadas; controles principales44px y contención del detalle. QA y alcance sintético en36 y00-progress; fixture manual reproducible. Sin cambios de contrato, API/BD reales ni aceptación física; RC-38 conserva lo pendiente.
+
+## Continuidad del recorrido de Reservas — 2026-11-21
+
+La ruta canónica `/reservations` conserva «Calendario primero». El selector
+de casa se integra en la cabecera. La agenda permite alternar Mes y Semana
+en móvil, ordena reservas, bloqueos y preparaciones por fecha local y
+conserva la semana al cambiar de ancho. La interfaz muestra el último día
+cubierto y el contrato conserva el límite final exclusivo. Abrir Bloqueos
+lleva el foco a su encabezado. Las tablas con excedente horizontal se
+desplazan con teclado dentro de su contenedor.
+
+El asistente conserva Estadía, Huésped y Acuerdo, señala el contacto y
+los horarios obligatorios y lleva el foco al primer campo inválido.
+Acuerdo resume la estadía y el huésped y permite volver a editarlos
+con el borrador intacto. Las
+sugerencias de una casa aplican solo la tarifa en Airbnb, conforme a sus
+condiciones de abono y política. El detalle se abre con el ID devuelto en
+el recibo de guardado del borrador. Editar, revisar la confirmación, cancelar, registrar
+entrada/salida y consultar cobros o preparación vuelven a la ficha cuando
+se iniciaron desde ella.
+
+La ficha destaca la acción que corresponde al estado. Confirmación
+distingue fallo de lectura de disponibilidad sin cruces. Cancelación
+recupera la lectura conservando fecha/hora, prioriza «Conservar reserva»
+y sitúa el foco en el cálculo antes de la aceptación. Se conservan
+las revisiones y los recibos de resultado incierto del contrato 28.
+
+Caja usa el alcance devuelto por el servidor para rotular sus importes y
+distingue el efectivo del período de los pendientes de toda la casa. Las
+fechas se aplican juntas y el período aplicado permanece al visitar
+Gastos. Preparación ofrece acceso directo por fila y separa el plan de
+la ejecución. Si el plan tiene cambios pendientes, aprobar exige guardarlos
+primero.
+
+La [evaluación para NodiaAI](../nodia-ai/knowledge/reservations/README.md#evaluación-del-retoque-de-reservas--2026-11-21)
+registra los límites de esta entrega de Client.
+
+La fixture de Reservas verificó 16 recorridos en Edge Chromium, en perfiles
+de 320, 390, 599, 600, 900 y 1440 px con ES/EN y claro/oscuro. Incluyó
+cambio de ancho en Semana, revisión de disponibilidad, retorno a ficha,
+rechazo de guardado con borrador intacto, reapertura de la ficha tras el
+recibo de creación, foco en Bloqueos, período de Caja al volver de Gastos,
+revisión directa de Preparación, scroll con teclado, calendario vacío,
+caída del servicio y respuesta inválida. Se midió el ancho de la página
+en todos los recorridos. La evidencia usa transporte sintético y deja
+separada la aceptación operativa de RC-38.
+
+El aviso de desarrollo `ResizeObserver loop completed with undelivered
+notifications` se reprodujo tanto en `development` (`74374058`) como
+en el candidato. La secuencia de apertura a 1440 px, cambios a 600/390/1440 px
+y apertura del asistente registró dos avisos en cada caso.
+
+Client pasó 3438 pruebas en 421 archivos, más tipado, lint y build.
+La ruta compilada pesa 498,72 kB minificados y 142,37 kB gzip en este
+corte. La compilación y la comprobación del corpus de conocimiento pasaron.

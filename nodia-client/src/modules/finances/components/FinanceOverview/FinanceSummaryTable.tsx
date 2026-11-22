@@ -190,6 +190,9 @@ const FinanceSummaryTable = ({ kind, query }: Props) => {
           setPage(1);
         }}
         onCreate={openCreate}
+        createLabelKey={
+          kind === "categories" ? "finance:create_category" : "finance:create_group"
+        }
         onEdit={openEdit}
         onToggle={setToggleRow}
         onDelete={setDeleteRow}

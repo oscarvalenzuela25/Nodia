@@ -8,7 +8,7 @@ import {
   page,
 } from "../fixtures";
 import { beforeEach, expect, it } from "vitest";
-import { screen, fireEvent, act } from "@testing-library/react";
+import { screen, fireEvent, act, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RentalWorkspace from "../../../../../modules/rentals/components/RentalWorkspace";
 import i18n from "../../../../../translate";
@@ -152,3 +152,25 @@ it.each(["reservations", "blocks"] as const)(
     );
   },
 );
+
+it("returns to the same reservation detail after leaving an editor opened from it", async () => {
+  const user = userEvent.setup();
+  ui.list.mockImplementation((resource: string) =>
+    resource === "reservations" ? page([reservation]) : page([]),
+  );
+  renderRoute(
+    <RentalWorkspace property={property} />,
+    "/reservations?property=1&tab=reservations",
+  );
+  await user.click(screen.getByRole("button", {
+    name: i18n.t("rental:row_actions", { id: reservation.id }),
+  }));
+  await user.click(screen.getByRole("menuitem", { name: i18n.t("rental:open_detail") }));
+  const detail = await screen.findByRole("dialog", { name: i18n.t("rental:reservation_detail") });
+  await user.click(within(detail).getByRole("button", { name: i18n.t("rental:edit") }));
+  expect(await screen.findByLabelText(i18n.t("rental:notes"))).toBeInTheDocument();
+  await user.keyboard("{Escape}");
+  const restored = await screen.findByRole("dialog", { name: i18n.t("rental:reservation_detail") });
+  expect(within(restored).getByText(reservation.guest_name)).toBeInTheDocument();
+  expect(ui.record).toHaveBeenCalledWith("reservations", property.id, reservation.id);
+});

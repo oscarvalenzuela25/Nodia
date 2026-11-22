@@ -32,3 +32,32 @@ it("keeps edited inputs open when the write is rejected", async () => {
   expect(input).toHaveValue("Edited after initial data");
   expect(screen.getByRole("dialog")).toBeInTheDocument();
 });
+
+it("requires saving form edits before approval and sends approval only for the saved plan", async () => {
+  const row = {
+    ...turnover,
+    same_day_required: true,
+    needs_approval: true,
+    plan_valid: true,
+  };
+  ui.record.mockReturnValue(result(row));
+  render(
+    <TurnoverModal property={property} open id={row.id} onClose={vi.fn()} />,
+  );
+  const approve = screen.getByRole("button", {
+    name: i18n.t("rental:approve_saved_plan"),
+  });
+  expect(approve).toBeEnabled();
+  const notes = screen.getByLabelText(i18n.t("rental:notes"));
+  fireEvent.change(notes, { target: { value: "Pendiente de guardar" } });
+  await waitFor(() => expect(approve).toBeDisabled());
+  expect(ui.execute).not.toHaveBeenCalled();
+  fireEvent.change(notes, { target: { value: row.notes ?? "" } });
+  await waitFor(() => expect(approve).toBeEnabled());
+  await userEvent.click(approve);
+  expect(ui.execute).toHaveBeenCalledWith({
+    operation: "turnover.approve_same_day",
+    id: row.id,
+    data: {},
+  });
+});

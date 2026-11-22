@@ -40,12 +40,15 @@ vi.mock(
     default: ({
       query,
       resource,
+      headingAction,
     }: {
       query: FinanceQuery;
       resource: string;
+      headingAction?: ReactNode;
     }) => (
       <div data-testid="overview-movements">
         {resource}:{query.active}
+        {headingAction}
       </div>
     ),
   }),
