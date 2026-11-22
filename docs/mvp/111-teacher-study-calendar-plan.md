@@ -284,3 +284,29 @@ de pendiente a completada y volvió a pendiente tras recargar, abrir en
 con tema claro y 320 px en inglés con tema oscuro. La cuenta y los datos del
 ensayo son sintéticos. La comprobación de la cuenta en cada entorno sigue
 pendiente de adopción.
+
+## 9. Revisión de las categorías y el pegado
+
+Las categorías se muestran como chips de color que se acomodan al ancho
+del drawer. Cada chip tiene un botón de lápiz para editar y otro de
+encendido para cambiar su estado con confirmación. El filtro de actividad
+permite ver y reactivar las categorías inactivas.
+
+El drawer de pegado separa la edición del JSON y la revisión del plan.
+El título y las instrucciones tienen espacio propio. El editor ocupa
+el área principal y las acciones de plantilla quedan debajo. El pie
+prescinde del divisor. La revisión muestra el resumen,
+las categorías y las jornadas con sus actividades y fuentes. **Editar
+JSON** devuelve el foco al editor y conserva el texto pegado.
+
+La evaluación de impacto corresponde a la presentación y la navegación
+del drawer en Client. El formato v1, la confirmación de categorías,
+la autoridad de Teacher y el alcance de la ficha candidata para NodiaAI
+conservan sus contratos.
+
+Chromium verificó ambos drawers a 1243 px en español con tema oscuro
+y a 320 px en inglés con tema claro. En una base de prueba aislada se
+comprobaron el foco tras editar una categoría, la desactivación y
+reactivación con filtro, el rechazo del JSON inválido y la revisión hasta
+la jornada 28. Se volvió al editor con el mismo texto y se confirmó el
+calendario en PostgreSQL.

@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import ContentCopyOutlined from "@mui/icons-material/ContentCopyOutlined";
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Button, Chip, IconButton, Pagination, Stack, Typography } from "@mui/material";
+import { AccordionDetails, AccordionSummary, Alert, Button, Chip, IconButton, Pagination, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
 import TextInput from "../../../../components/inputs/TextInput";
@@ -13,8 +13,7 @@ import {
   type StudyCalendarImportPlan,
   type StudyCalendarImportResult,
 } from "../../infrastructure/studyCalendarImport";
-import { AdaptiveDrawer, DrawerHeader } from "../AdaptiveWorkspace/styles";
-import { Actions, ActivityList, CopyFallback, ReviewContent, Tools } from "./styles";
+import { Actions, ActivityList, Body, CopyFallback, Heading, ImportDrawer, PasteField, PreviewDay, ReviewContent, Summary, Tools } from "./styles";
 
 type Props = {
   open: boolean;
@@ -40,14 +39,14 @@ export function StudyCalendarImportDrawer({ open, onClose, ...props }: Props) {
   const titleId = useId();
   const close = () => { if (!props.isBusy) onClose(); };
 
-  return <AdaptiveDrawer anchor="right" open={open} onClose={close}
+  return <ImportDrawer anchor="right" open={open} onClose={close}
     slotProps={{ paper: { role: "dialog", "aria-modal": true, "aria-labelledby": titleId } }}>
-    <DrawerHeader>
+    <Heading>
       <Typography id={titleId} variant="h6" component="h2">{t("title")}</Typography>
       <IconButton aria-label={t("core:close")} onClick={close} disabled={props.isBusy}><CloseOutlined /></IconButton>
-    </DrawerHeader>
+    </Heading>
     <ImportEditor {...props} onClose={close} />
-  </AdaptiveDrawer>;
+  </ImportDrawer>;
 }
 
 function ImportEditor({
@@ -59,6 +58,7 @@ function ImportEditor({
   const helpId = useId();
   const reviewTitleId = useId();
   const reviewTitle = useRef<HTMLHeadingElement>(null);
+  const returnToInput = useRef(false);
   const copying = useRef(false);
   const [input, setInput] = useState("");
   const [review, setReview] = useState<ImportReview | null>(null);
@@ -67,8 +67,13 @@ function ImportEditor({
   const [copyFallback, setCopyFallback] = useState<string | null>(null);
 
   useEffect(() => {
-    if (review) reviewTitle.current?.focus();
-  }, [review]);
+    if (review) {
+      reviewTitle.current?.focus();
+    } else if (returnToInput.current) {
+      returnToInput.current = false;
+      document.getElementById(inputId)?.focus();
+    }
+  }, [inputId, review]);
 
   const example = JSON.stringify({
     version: 1,
@@ -93,6 +98,7 @@ function ImportEditor({
   const tooLarge = review && !fitsStudyCalendarImportRequest(review.plan, review.categories.newCategories);
   const writeLocked = isBusy || uncertain;
   const canConfirm = review && categoriesReady && !writeLocked && !categoriesChanged && !tooLarge && review.categories.inactive.length === 0;
+  const preparedDayCount = review?.plan.days?.length ?? 0;
 
   function changeInput(value: string) {
     setInput(value);
@@ -110,6 +116,11 @@ function ImportEditor({
     }
     setIssue(null);
     setReview({ ...parsed, categories: classifyStudyCalendarImportCategories(parsed.plan.categories ?? [], categories) });
+  }
+
+  function editJson() {
+    returnToInput.current = true;
+    setReview(null);
   }
 
   async function copyTemplate() {
@@ -139,49 +150,64 @@ function ImportEditor({
     ? t("day_problem", { index: issue.dayIndex, message: activityMessage })
     : activityMessage;
 
-  return <Stack spacing={2}>
-    <Typography id={helpId} variant="body2" color="text.secondary">{t("instructions")}</Typography>
-    {uncertain && <Alert severity="warning" action={onRetry && (
-      <Button variant="outlined" color="inherit" disabled={isBusy} onClick={onRetry}>{t("retry_creation")}</Button>
-    )}>{t("uncertain")}</Alert>}
-    <Tools>
-      <Button variant="outlined" startIcon={<ContentCopyOutlined />} loading={copyBusy} disabled={isBusy}
-        onClick={() => void copyTemplate()}>{t("copy_template")}</Button>
-      <Button variant="outlined" disabled={writeLocked} onClick={() => changeInput(example)}>{t("load_example")}</Button>
-    </Tools>
-    {copyFallback && <Stack spacing={1}>
-      <Typography variant="body2">{t("copy_manual")}</Typography>
-      <CopyFallback tabIndex={0} aria-label={t("copy_template")}>{copyFallback}</CopyFallback>
-    </Stack>}
-    <TextInput id={inputId} label={t("input_label")} value={input} multiline minRows={7} maxRows={14}
-      disabled={writeLocked} error={Boolean(issue)} aria-describedby={issue ? errorId : helpId}
-      onChange={(event) => changeInput(event.target.value)} />
-    {errorMessage && <Alert id={errorId} severity="error">{errorMessage}</Alert>}
-    {review && <ReviewContent aria-labelledby={reviewTitleId}>
-      <Typography id={reviewTitleId} ref={reviewTitle} variant="subtitle1" component="h3" tabIndex={-1}>
-        {t("review_title")}
-      </Typography>
-      <Typography variant="body2" role="status">
-        {t("review_summary", { title: review.plan.title, count: review.dayCount, prepared: review.plan.days?.length ?? 0 })}
-      </Typography>
-      <CategoryGroup label={t("existing_categories")} names={review.categories.reused} />
-      <CategoryGroup label={t("new_categories")} names={review.categories.newCategories} />
-      {review.categories.inactive.length > 0 && <Alert severity="warning">
-        {t("inactive_categories", { names: review.categories.inactive.join(", ") })}
-      </Alert>}
-      {categoriesChanged && <Alert severity="warning">{t("categories_changed")}</Alert>}
-      {tooLarge && <Alert severity="error">{t("errors.payload_size")}</Alert>}
-      <DayPreviews days={review.plan.days ?? []} disabled={isBusy} />
-    </ReviewContent>}
+  return <>
+    <Body>
+      {uncertain && <Alert severity="warning" action={onRetry && (
+        <Button variant="outlined" color="inherit" disabled={isBusy} onClick={onRetry}>{t("retry_creation")}</Button>
+      )}>{t("uncertain")}</Alert>}
+      {review ? <ReviewContent aria-labelledby={reviewTitleId}>
+        <Summary>
+          <Typography id={reviewTitleId} ref={reviewTitle} variant="h6" component="h3" tabIndex={-1}>
+            {review.plan.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t(preparedDayCount === review.dayCount ? "review_day_count" : "review_summary",
+              { count: review.dayCount, prepared: preparedDayCount })}
+          </Typography>
+        </Summary>
+        <CategoryGroup label={t("existing_categories")} names={review.categories.reused} />
+        <CategoryGroup label={t("new_categories")} names={review.categories.newCategories} />
+        {review.categories.inactive.length > 0 && <Alert severity="warning">
+          {t("inactive_categories", { names: review.categories.inactive.join(", ") })}
+        </Alert>}
+        {categoriesChanged && <Alert severity="warning" action={(
+          <Button variant="outlined" color="inherit" disabled={writeLocked || !categoriesReady}
+            onClick={reviewPlan}>{t("review")}</Button>
+        )}>{t("categories_changed")}</Alert>}
+        {tooLarge && <Alert severity="error">{t("errors.payload_size")}</Alert>}
+        <DayPreviews days={review.plan.days ?? []} disabled={isBusy} />
+      </ReviewContent> : <>
+        <Typography id={helpId} variant="body2" color="text.secondary">{t("instructions")}</Typography>
+        <PasteField>
+          <TextInput id={inputId} label={t("input_label")} placeholder={t("placeholder")}
+            value={input} multiline minRows={10} maxRows={16} disabled={writeLocked} error={Boolean(issue)}
+            aria-describedby={issue ? errorId : helpId} onChange={(event) => changeInput(event.target.value)} />
+        </PasteField>
+        {errorMessage && <Alert id={errorId} severity="error">{errorMessage}</Alert>}
+        <Tools>
+          <Button variant="outlined" size="small" disabled={writeLocked} onClick={() => changeInput(example)}>{t("load_example")}</Button>
+          <Button variant="outlined" size="small" startIcon={<ContentCopyOutlined />} loading={copyBusy} disabled={isBusy}
+            onClick={() => void copyTemplate()}>{t("copy_template")}</Button>
+        </Tools>
+        {copyFallback && <Stack spacing={1}>
+          <Typography variant="body2">{t("copy_manual")}</Typography>
+          <CopyFallback tabIndex={0} aria-label={t("copy_template")}>{copyFallback}</CopyFallback>
+        </Stack>}
+      </>}
+    </Body>
     <Actions>
-      <Button variant="outlined" disabled={isBusy} onClick={onClose}>{t("core:cancel")}</Button>
-      <Button variant={review ? "outlined" : "contained"} disabled={writeLocked || !categoriesReady} onClick={reviewPlan}>{t("review")}</Button>
-      {review && <Button variant="contained" loading={isBusy} disabled={!canConfirm}
-        onClick={() => { if (canConfirm) onConfirm(review.plan, review.categories.newCategories); }}>
-        {t("confirm")}
-      </Button>}
+      {review ? <>
+        <Button variant="outlined" disabled={writeLocked} onClick={editJson}>{t("edit_json")}</Button>
+        <Button variant="contained" loading={isBusy} disabled={!canConfirm}
+          onClick={() => { if (canConfirm) onConfirm(review.plan, review.categories.newCategories); }}>
+          {t("confirm")}
+        </Button>
+      </> : <>
+        <Button variant="outlined" disabled={isBusy} onClick={onClose}>{t("core:cancel")}</Button>
+        <Button variant="contained" disabled={writeLocked || !categoriesReady} onClick={reviewPlan}>{t("review")}</Button>
+      </>}
     </Actions>
-  </Stack>;
+  </>;
 }
 
 function CategoryGroup({ label, names }: { label: string; names: string[] }) {
@@ -196,6 +222,7 @@ function CategoryGroup({ label, names }: { label: string; names: string[] }) {
 
 function DayPreviews({ days, disabled }: { days: NonNullable<StudyCalendarImportPlan["days"]>; disabled: boolean }) {
   const { t } = useTranslation(namespace);
+  const dayId = useId();
   const [page, setPage] = useState(1);
   const pageCount = Math.ceil(days.length / pageSize);
   const orderedDays = [...days].sort((first, second) => (
@@ -205,35 +232,41 @@ function DayPreviews({ days, disabled }: { days: NonNullable<StudyCalendarImport
   ));
   if (!days.length) return null;
 
-  return <Box>
-    {orderedDays.slice((page - 1) * pageSize, page * pageSize).map((day) => {
+  return <Stack spacing={1}>
+    <Typography component="h4" variant="subtitle2">{t("review_days")}</Typography>
+    {orderedDays.slice((page - 1) * pageSize, page * pageSize).map((day, index) => {
       const key = "day" in day ? day.day : day.date;
       const label = "day" in day ? t("numbered_day", { index: day.day }) : t("dated_day", { date: day.date });
-      const title = day.title ? t("day_with_title", { label, title: day.title }) : label;
-      return <Accordion key={key} disabled={disabled} disableGutters
+      const id = dayId + "-" + key;
+      return <PreviewDay key={key} disabled={disabled} defaultExpanded={index === 0} disableGutters elevation={0}
         slotProps={{ transition: { unmountOnExit: true } }}>
-        <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
-          <Typography variant="body2" sx={{ overflowWrap: "anywhere" }}>{title}</Typography>
+        <AccordionSummary id={id} aria-controls={id + "-details"} expandIcon={<ExpandMoreOutlined />}>
+          <Stack spacing={0.25} sx={{ minWidth: 0 }}>
+            <Typography variant="caption" color="text.secondary">
+              {day.minutes === undefined ? label : t("day_with_minutes", { label, minutes: t("minutes", { count: day.minutes }) })}
+            </Typography>
+            {day.title && <Typography variant="body2" sx={{ fontWeight: 600 }}>{day.title}</Typography>}
+          </Stack>
         </AccordionSummary>
         <AccordionDetails>
           <Stack spacing={1}>
-            {day.minutes !== undefined && <Typography variant="body2">{t("minutes", { count: day.minutes })}</Typography>}
             {day.notes && <Typography variant="body2" sx={{ overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{day.notes}</Typography>}
             {day.activities?.length ? <ActivityList>
               {day.activities.map((activity, index) => <li key={index}>
                 <Typography variant="body2">{activity.text}</Typography>
-                {activity.source && <Typography variant="caption" component="div" color="text.secondary">
-                  {t("source", { label: activity.source.label, url: activity.source.url })}
-                </Typography>}
+                {activity.source && <>
+                  <Typography variant="caption" component="div" sx={{ fontWeight: 600 }}>{activity.source.label}</Typography>
+                  <Typography variant="caption" component="div" color="text.secondary">{activity.source.url}</Typography>
+                </>}
               </li>)}
             </ActivityList> : <Typography variant="body2" color="text.secondary">{t("no_activities")}</Typography>}
           </Stack>
         </AccordionDetails>
-      </Accordion>;
+      </PreviewDay>;
     })}
     {pageCount > 1 && <Pagination count={pageCount} page={page} disabled={disabled}
       size="small" siblingCount={0} boundaryCount={1} onChange={(_event, next) => setPage(next)}
       aria-label={t("pagination")} getItemAriaLabel={(type, value) => t("pagination_" + type, { page: value })}
       sx={{ mt: 1, "& .MuiPaginationItem-root": { minWidth: 44, minHeight: 44 } }} />}
-  </Box>;
+  </Stack>;
 }
