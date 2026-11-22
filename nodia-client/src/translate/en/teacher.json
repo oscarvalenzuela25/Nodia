@@ -769,6 +769,23 @@
   "job_proposal_review_help": "The proposal is ready to review. It will not become your plan until you accept it.",
   "diagnostic_optional_notice": "The diagnostic is optional. If no reviewed bank is available, you can continue with your declared background and create the proposal.",
   "resume_diagnostic": "Resume diagnostic",
+  "fragment_pilot": {
+    "vowels": {
+      "title": "Compare the sounds",
+      "question": "Which word has the /iː/ vowel?",
+      "correct": "Correct! Seat has /iː/ and sit has /ɪ/.",
+      "retry": "The vowel in sit is /ɪ/. Compare the two sounds and try again."
+    },
+    "spelling": {
+      "title": "Spell {{code}} one character at a time",
+      "instruction": "Select each tile to reveal how to say that character in English.",
+      "tile": "Tile {{position}}, {{character}}",
+      "separator": "hyphen",
+      "question": "What would you say right after the second E?",
+      "correct": "Correct! Say hyphen, then say two twice.",
+      "retry": "Look at the tile after the second E and choose again."
+    }
+  },
   "topic": {
     "clarify": "Clarify excerpt",
     "select_fragment": "Select an exact phrase from this topic and choose Clarify excerpt to ask about it.",
