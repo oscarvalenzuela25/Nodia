@@ -156,6 +156,29 @@ function fixture() {
 }
 
 describe('Prepare NodiaAI admission', () => {
+  it.each([
+    { label: 'authorized Gemini MCP', supportsMcp: true, hasBothReads: true, expected: 'product_catalog_reads' },
+    { label: 'unverified Gemini MCP', supportsMcp: false, hasBothReads: true, expected: undefined },
+    { label: 'missing current product authority', supportsMcp: true, hasBothReads: false, expected: undefined },
+  ])('chooses the product read profile for $label only when allowed', async ({ supportsMcp, hasBothReads, expected }) => {
+    const f = fixture();
+    f.eligibility.supportsMcp = supportsMcp;
+    f.tools.visible.mockResolvedValue([
+      { capabilityId: 'nodia_businesses_list', toolName: 'nodia_businesses_list', kind: 'read' },
+      ...(hasBothReads
+        ? [{ capabilityId: 'nodia_products_list', toolName: 'nodia_products_list', kind: 'read' }]
+        : []),
+    ]);
+    const observation = await f.subject.observe(identity, f.summary, {
+      productCatalogRead: true,
+    });
+
+    await f.subject.prepare(f.manager, f.actor, f.chat, now, observation);
+
+    expect(f.selector.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ profileId: expected }),
+    );
+  });
   it('freezes a private Codex identity independently from mutable adapter objects', async () => {
     const f = fixture();
     f.summary.selection!.mode = 'agentic';
@@ -173,7 +196,9 @@ describe('Prepare NodiaAI admission', () => {
       verifiedModalities: ['image'],
       verifiedAttachmentMediaTypes: ['image/png'],
     });
-    const observation = await f.subject.observe(identity, f.summary);
+    const observation = await f.subject.observe(identity, f.summary, {
+      productCatalogRead: true,
+    });
     identityValue.connectionId = '4';
     const prepared = await f.subject.prepare(
       f.manager,
@@ -188,6 +213,9 @@ describe('Prepare NodiaAI admission', () => {
       connection_id: '2',
     });
     expect(Object.isFrozen(observation.eligibility.adapterIdentity)).toBe(true);
+    expect(f.selector.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ profileId: undefined }),
+    );
     expect(prepared.contextManifest.verified_modalities).toEqual(['image']);
     expect(prepared.contextManifest.verified_attachment_media_types).toEqual([
       'image/png',
