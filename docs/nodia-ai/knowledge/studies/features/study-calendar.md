@@ -4,7 +4,7 @@
   "document_id": "studies.study-calendar",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 1,
+  "revision": 2,
   "document_status": "draft",
   "implementation": {
     "status": "planned",
@@ -44,9 +44,9 @@
 El calendario de estudio propuesto reúne jornadas que la persona crea y
 organiza desde la entrada de Teacher. Cada calendario tiene un título,
 un rango de fechas o una cantidad de días y categorías personales. Cada
-jornada admite material escrito por la persona y enlaces. La marca manual
-significa jornada realizada. La evaluación pedagógica conserva su propio
-flujo.
+jornada admite actividades ordenadas. Cada actividad tiene texto y puede
+tener una fuente propia con nombre y enlace. La marca manual significa
+jornada realizada.
 
 ## Solicitudes en lenguaje natural
 
@@ -55,6 +55,7 @@ flujo.
 | «Organiza un calendario de inglés de 30 días» | Preparar contenido para 30 casillas numeradas. Preguntar por fechas sólo si la persona quiere usar un calendario fechado. |
 | «Quiero estudiar desde el lunes hasta fin de mes» | Aclarar las dos fechas civiles si el período resulta ambiguo. |
 | «Arma un plan que pueda pegar en Teacher» | Preparar texto para revisión humana con el [formato propuesto](../../../../mvp/111-teacher-study-calendar-plan.md#5-formato-para-pegar-un-plan). |
+| «Pon el video en la actividad de la lección y el enlace de ejercicios en la práctica» | Vincular cada fuente a su actividad. Pedir el enlace que falte si la persona quiere añadirlo. |
 | «Marca todas las jornadas y aprueba las evaluaciones» | Remitir al seguimiento nativo de la jornada y al flujo de evaluación de Teacher. La marca voluntaria acredita seguimiento personal. |
 
 ## Operaciones y contratos
@@ -69,15 +70,16 @@ flujo.
 
 Se requiere un título y una modalidad. Por fechas se requieren inicio y
 término civiles e inclusivos; por cantidad se requiere un entero positivo.
-Las categorías, minutos estimados, actividades, notas y fuentes son
-opcionales. Un enlace se expresa con nombre y URL HTTPS. El propietario
-se resuelve desde la sesión y los recuentos proceden de las jornadas.
+Las categorías, minutos estimados, actividades y notas son opcionales.
+Cada actividad incluida requiere texto. Su fuente es opcional y, cuando
+se indica, requiere nombre y URL HTTPS. El propietario se resuelve desde
+la sesión y los recuentos proceden de las jornadas.
 
 ## Reglas, acceso y restricciones
 
-Validar acceso vigente a Teacher y propiedad de calendarios, jornadas y
-categorías. Abrir una fuente es una acción voluntaria. El pegado usa datos
-estructurados y su efecto se confirma en la interfaz nativa. El
+Validar acceso vigente a Teacher y propiedad de calendarios, jornadas,
+actividades y categorías. Abrir una fuente es una acción voluntaria. El
+pegado usa datos estructurados y su efecto se confirma en la interfaz nativa. El
 [ADR propuesto](../../../../architecture/decisions/ADR-116-teacher-study-calendar-ownership.md)
 explica las fronteras de persistencia.
 
@@ -90,7 +92,8 @@ por su ordinal. Paginación, filtros exactos y API quedan pendientes.
 
 ## Vista previa, confirmación y recuperación
 
-La persona puede corregir el texto y revisar jornadas y categorías.
+La persona puede corregir el texto y revisar jornadas, categorías
+y actividades con sus fuentes.
 **Crear calendario** confirma el agregado revisado. El contrato propuesto
 usa una transacción y concilia el recibo de la solicitud si se pierde la
 respuesta. Los detalles de recuperación y su evidencia quedan pendientes.
@@ -99,7 +102,8 @@ respuesta. Los detalles de recuperación y su evidencia quedan pendientes.
 
 - [ ] Revisar el diseño y fijar contrato y permisos.
 - [ ] Comprobar rangos, ordinales, autoría, filtros y recuentos.
-- [ ] Probar pegado, rechazo y reapertura sin efectos duplicados.
+- [ ] Probar pegado, fuentes opcionales o inválidas, rechazo y reapertura
+  sin efectos duplicados.
 - [ ] Evaluar un alcance de integración de NodiaAI.
 
 ## Evolución y compatibilidad
@@ -107,3 +111,4 @@ respuesta. Los detalles de recuperación y su evidencia quedan pendientes.
 | Revisión | Cambio | Herramientas y compatibilidad |
 | --- | --- | --- |
 | 1 | Propuesta inicial del [Plan111](../../../../mvp/111-teacher-study-calendar-plan.md). | Capacidad nativa en planificación. Conservar las revisiones, materiales y evaluaciones de Teacher. |
+| 2 | Cada actividad admite una fuente propia. El JSON v1 de diseño agrupa el texto con su fuente en cada actividad. | Diseño del formato de intercambio previo al desarrollo. |

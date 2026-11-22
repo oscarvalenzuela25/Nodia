@@ -6,9 +6,10 @@
 
 El calendario de estudio requiere casillas editables por fecha o por orden
 relativo, categorías personales y creación en bloque a partir de texto
-pegado. Teacher ya persiste unidades, revisiones aceptadas y progreso
-evaluado. El calendario debe poder organizar recursos externos aunque la
-persona aún no tenga una sesión adaptativa.
+pegado. Cada actividad de una jornada puede tener su propia fuente.
+Teacher ya persiste unidades, revisiones aceptadas y progreso evaluado.
+El calendario permite organizar recursos externos incluso antes de crear
+una sesión adaptativa.
 
 ## Opciones consideradas
 
@@ -36,10 +37,11 @@ persona aún no tenga una sesión adaptativa.
 
 Elegir la opción B para el primer corte. Conservar **/nodia-teacher** como
 destino de autoridad y validar el propietario en cada acceso. Crear
-calendarios, jornadas, categorías personales, relaciones y fuentes en
-tablas del dominio Teacher. La identidad de cada jornada se mantiene entre
-las dos presentaciones. El ordinal es estable. En la modalidad con fechas,
-la fecha es civil y puede proyectarse desde el inicio y el ordinal.
+calendarios, jornadas, actividades ordenadas, categorías personales y sus
+relaciones en tablas del dominio Teacher. La identidad de cada jornada se
+mantiene entre las dos presentaciones. El ordinal es estable. En la
+modalidad con fechas, la fecha es civil y puede proyectarse desde el
+inicio y el ordinal.
 
 Normalizar el nombre de las categorías por propietario y proteger la
 coherencia de relaciones con FKs de alcance. Calcular avance con el estado
@@ -49,8 +51,10 @@ contratos propios.
 
 Representar el pegado mediante un contrato de datos versionado. La interfaz
 prepara una vista previa editable. La confirmación usa la misma escritura
-atómica del alta manual, con validación de Server y recibo idempotente. Las
-fuentes se almacenan como referencias que la persona puede abrir.
+atómica del alta manual, con validación de Server y recibo idempotente.
+Cada fuente está asociada a la actividad que la usa. Se guarda con nombre
+y URL HTTPS en el registro de la actividad. Una futura ampliación para
+varias fuentes por actividad se puede resolver con una relación.
 
 ## Consecuencias
 
