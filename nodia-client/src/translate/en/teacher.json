@@ -139,6 +139,7 @@
     "deck_example": "A deck",
     "copy_format": "Copy format for AI",
     "load_example": "Load example",
+    "example_loaded": "Example loaded",
     "copy_manual": "Select and copy this format manually.",
     "copied": "Format copied",
     "copy_failed": "Could not copy the format",

@@ -5,6 +5,7 @@ import {
 } from "@mui/material";
 import ContentCopyOutlined from "@mui/icons-material/ContentCopyOutlined";
 import ExpandMoreOutlined from "@mui/icons-material/ExpandMoreOutlined";
+import { visuallyHidden } from "@mui/utils";
 import { isAxiosError } from "axios";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
@@ -56,6 +57,7 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
   const [page, setPage] = useState(1);
   const [exampleMode, setExampleMode] = useState<"one" | "deck">("deck");
   const [clipboardFallback, setClipboardFallback] = useState<string>();
+  const [announcement, setAnnouncement] = useState<{ id: string; title: string }>();
   const [copying, setCopying] = useState(false);
   const [pending, setPending] = useState(false);
   const [uncertain, setUncertain] = useState(false);
@@ -84,6 +86,11 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
     setInput(value);
     setIssue(undefined);
     setReview(undefined);
+  };
+
+  const confirm = (label: "copied" | "example_loaded") => {
+    const title = t("flashcard_import." + label);
+    setAnnouncement({ id: sileo.success({ title }), title });
   };
 
   const showPreview = () => {
@@ -115,7 +122,7 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
     try {
       await navigator.clipboard.writeText(prompt);
       setClipboardFallback(undefined);
-      sileo.success({ title: t("flashcard_import.copied") });
+      confirm("copied");
     } catch {
       setClipboardFallback(prompt);
       sileo.error({ title: t("flashcard_import.copy_failed"), description: t("flashcard_import.copy_manual") });
@@ -261,10 +268,16 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
         <FlashcardActions>
           <Button variant="outlined" startIcon={<ContentCopyOutlined />} disabled={requestInProgress} loading={copying}
             onClick={() => void copyFormat()}>{t("flashcard_import.copy_format")}</Button>
-          <Button variant="outlined" disabled={requestInProgress} onClick={() => changeInput(example)}>
+          <Button variant="outlined" disabled={requestInProgress} onClick={() => {
+            changeInput(example);
+            confirm("example_loaded");
+          }}>
             {t("flashcard_import.load_example")}
           </Button>
         </FlashcardActions>
+        <Box component="span" role="status" sx={visuallyHidden}>
+          {announcement && <span key={announcement.id}>{announcement.title}</span>}
+        </Box>
         {clipboardFallback && <Box>
           <Typography variant="body2">{t("flashcard_import.copy_manual")}</Typography>
           <Box component="pre" tabIndex={0} aria-label={t("flashcard_import.copy_format")}

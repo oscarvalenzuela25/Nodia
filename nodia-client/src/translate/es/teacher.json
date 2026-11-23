@@ -139,6 +139,7 @@
     "deck_example": "Un mazo",
     "copy_format": "Copiar formato para IA",
     "load_example": "Cargar ejemplo",
+    "example_loaded": "Ejemplo cargado",
     "copy_manual": "Selecciona y copia este formato manualmente.",
     "copied": "Formato copiado",
     "copy_failed": "No se pudo copiar el formato",

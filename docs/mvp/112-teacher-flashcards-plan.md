@@ -211,6 +211,10 @@ opcional del mazo personal y se puede usar para filtrar los mazos.
 El importador admite hasta 30 tarjetas y
 el guardado tiene un límite de 200 KiB de JSON serializado en UTF-8.
 
+El panel confirma la copia del formato y la carga del ejemplo con
+avisos encima del panel abierto. El cambio se limita a la confirmación
+visual y el anuncio de ambas acciones dentro del panel.
+
 ```json
 {
   "version": 1,

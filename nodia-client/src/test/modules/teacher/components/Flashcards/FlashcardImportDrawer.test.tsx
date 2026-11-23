@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { AxiosError } from "axios";
+import { sileo } from "sileo";
 import { expect, it, vi } from "vitest";
 import FlashcardImportDrawer from "../../../../../modules/teacher/components/Flashcards/FlashcardImportDrawer";
 import type { FlashcardImportBatch, FlashcardImportReceipt } from "../../../../../modules/teacher/infrastructure/flashcardImport";
@@ -56,6 +57,22 @@ it("shows the new deck and its category, and requires a fresh preview after edit
   expect(save).not.toHaveBeenCalled();
 });
 
+it("confirms when the selected example is loaded into the JSON input", async () => {
+  const user = userEvent.setup();
+  const success = vi.spyOn(sileo, "success").mockReturnValue("example");
+  const save = vi.fn();
+  try {
+    render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "Cargar ejemplo" }));
+    expect(screen.getByRole("textbox", { name: "Tarjetas en JSON" })).toHaveProperty("value", expect.stringContaining('"cards"'));
+    expect(success).toHaveBeenCalledExactlyOnceWith({ title: "Ejemplo cargado" });
+    expect(screen.getByRole("status")).toHaveTextContent("Ejemplo cargado");
+    expect(save).not.toHaveBeenCalled();
+  } finally {
+    success.mockRestore();
+  }
+});
+
 it("retains selection when navigating to another page of a batch", async () => {
   const user = userEvent.setup();
   const save = vi.fn().mockResolvedValue({ deck: { ...general, card_count: 10 }, imported_count: 6 });
@@ -77,6 +94,7 @@ it("retains selection when navigating to another page of a batch", async () => {
 it("copies distinct prompts for a deck and a single card", async () => {
   const user = userEvent.setup();
   const write = vi.spyOn(navigator.clipboard, "writeText");
+  const success = vi.spyOn(sileo, "success").mockReturnValueOnce("deck").mockReturnValueOnce("card");
   render(<FlashcardImportDrawer decks={[general]} busy={false} save={vi.fn()} onClose={vi.fn()} onImported={vi.fn()} />);
   const copy = screen.getByRole("button", { name: "Copiar formato para IA" });
   await user.click(copy);
@@ -88,5 +106,8 @@ it("copies distinct prompts for a deck and a single card", async () => {
   await waitFor(() => expect(write).toHaveBeenCalledTimes(2));
   expect(write.mock.calls[1][0]).toContain('"cards":');
   expect(write.mock.calls[1][0]).not.toContain('"deck":');
+  expect(success.mock.calls).toEqual([[{ title: "Formato copiado" }], [{ title: "Formato copiado" }]]);
+  expect(screen.getByRole("status")).toHaveTextContent("Formato copiado");
   write.mockRestore();
+  success.mockRestore();
 });

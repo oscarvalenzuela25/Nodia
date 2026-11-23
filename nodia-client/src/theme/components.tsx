@@ -14,6 +14,7 @@ const components: Components = {
 
       return {
         html: { colorScheme: theme.palette.mode },
+        "[data-sileo-viewport]": { zIndex: theme.zIndex.snackbar },
         // Sileo calculates the animated SVG and title geometry on a 350px canvas.
         "@media (max-width: 365px)": {
           "[data-sileo-toast]": { zoom: 0.85 },
