@@ -60,6 +60,10 @@ import { CreateNodiaAiConfirmationChallengeUseCase } from './use-case/create-nod
 import { ConfirmNodiaAiProposalUseCase } from './use-case/confirm-nodia-ai-proposal.use-case.js';
 import { GetNodiaAiExecutionUseCase } from './use-case/get-nodia-ai-execution.use-case.js';
 import { ControlNodiaAiExecutionUseCase } from './use-case/control-nodia-ai-execution.use-case.js';
+import {
+  NODIA_AI_TEACHER_OPERATIONS,
+  type NodiaAiTeacherOperation,
+} from '../nodia-ai-teacher-operations/types.js';
 /** Native admission metadata only. No model invocation or MCP publication side effect. */
 @Module({
   imports: [
@@ -94,6 +98,7 @@ import { ControlNodiaAiExecutionUseCase } from './use-case/control-nodia-ai-exec
         NODIA_AI_PROVIDER_OPERATIONS,
         NODIA_AI_SECURE_OPERATIONS,
         NODIA_AI_PREFERENCE_OPERATIONS,
+        NODIA_AI_TEACHER_OPERATIONS,
       ],
       useFactory: (
         finance: PrepareNodiaAiFinanceMovementUseCase,
@@ -107,6 +112,7 @@ import { ControlNodiaAiExecutionUseCase } from './use-case/control-nodia-ai-exec
         providers: readonly NodiaAiProviderOperation[],
         secure: readonly NodiaAiSecureOperation[],
         preferences: readonly NodiaAiPreferenceOperation[],
+        teacher: readonly NodiaAiTeacherOperation[],
       ) =>
         Object.freeze(
           [
@@ -121,6 +127,7 @@ import { ControlNodiaAiExecutionUseCase } from './use-case/control-nodia-ai-exec
             ...providers,
             ...secure,
             ...preferences,
+            ...teacher,
           ].map((port) =>
             Object.freeze({
               toolName: port.toolName,

@@ -29,7 +29,7 @@
     },
     "ModuleRoute": {
       "type": "string",
-      "pattern": "^/(?:settings|tools)/[a-z][a-z0-9_-]*$",
+      "pattern": "^/(?:[a-z][a-z0-9_-]*|(?:settings|tools)/[a-z][a-z0-9_-]*)$",
       "maxLength": 128
     },
     "CapabilityId": {

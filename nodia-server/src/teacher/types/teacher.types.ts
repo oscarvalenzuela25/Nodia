@@ -12,7 +12,8 @@ export type TeacherPurpose =
   | 'learning_packet'
   | 'assessment_only'
   | 'written_feedback'
-  | 'contextual_reply';
+  | 'contextual_reply'
+  | 'flashcard_text';
 export interface TeacherSelection {
   connection_id: string;
   mode: 'agentic' | 'api_key';

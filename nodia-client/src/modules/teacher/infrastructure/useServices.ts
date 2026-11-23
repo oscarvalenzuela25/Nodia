@@ -23,7 +23,7 @@ export function useTeacherQuery<T>(path: string, schema: z.ZodType<T>, params?: 
   useEffect(() => { if (query.error) notifyHttpError(query.error); }, [query.error]);
   return query;
 }
-export function useTeacherSessions(page: number, q: string, archived: boolean) {
+export function useTeacherSessions(page: number, q: string, archived: boolean, enabled = true) {
   const [visible, setVisible] = useState(() => document.visibilityState !== "hidden");
   useEffect(() => {
     const listener = () => setVisible(document.visibilityState !== "hidden");
@@ -36,7 +36,7 @@ export function useTeacherSessions(page: number, q: string, archived: boolean) {
   const params = { page, limit: 10, q, archived };
   const query = useQuery({ queryKey: ["teacher", userId, sessionVersion, "sessions", params],
     queryFn: ({ signal }) => readTeacherData("sessions", signal, params), select: data => sessionsSchema.parse(data),
-    enabled: Boolean(userId && authenticated), retry: false, refetchIntervalInBackground: false,
+    enabled: Boolean(userId && authenticated && enabled), retry: false, refetchIntervalInBackground: false,
     refetchInterval: query => query.state.error ? false : sessionListPollInterval(query.state.data, visible),
   });
   useEffect(() => { if (query.error) notifyHttpError(query.error); }, [query.error]);

@@ -9,7 +9,7 @@ export async function latestSessionJobs(manager: EntityManager, sessionIds: read
   if (ids.length > 50) throw new Error('teacher_session_page_exceeds_limit');
   if (!ids.length) return new Map();
   const rows: (SessionListJob & { session_id: string })[] = await manager.query(
-    "SELECT DISTINCT ON (session_id) session_id,id AS job_id,state,purpose FROM teacher_generation_jobs WHERE session_id=ANY($1::uuid[]) ORDER BY session_id,(state IN ('queued','running')) DESC,created_at DESC,id DESC",
+    "SELECT DISTINCT ON (session_id) session_id,id AS job_id,state,purpose FROM teacher_generation_jobs WHERE session_id=ANY($1::uuid[]) AND purpose<>'flashcard_text' ORDER BY session_id,(state IN ('queued','running')) DESC,created_at DESC,id DESC",
     [ids],
   );
   const allowed = new Set(ids);

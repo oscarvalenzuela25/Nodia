@@ -22,6 +22,36 @@ Las siete escrituras masivas/importación quedan fuera de v1 por decisión expre
 
 El [JSON de 156 candidatos](nodia-ai-v1-tool-catalog.json), sus conteos y sus evidencias conservan el corte histórico. Las operaciones semánticas posteriores se declaran en [extensiones del catálogo](nodia-ai-v1-tool-catalog.extensions.json). La auditoría actual fusiona una copia sólo en memoria: rechaza nombres duplicados, handlers desconocidos o excluidos y cobertura no recíproca; no reescribe el baseline ni sus cifras. Los totales actuales de la auditoría se calculan desde la unión, separados de los conteos históricos conservados.
 
+### Calendarios y tarjetas de Teacher
+
+El catálogo `nodia-ai-teacher-study/1` activa en la rama
+`codex/teacher-study-calendar` siete consultas y trece preparaciones de
+cambios. El [contrato de publicación de Teacher](../../nodia-server/config/nodia-ai-teacher-publication.json)
+las vincula al destino
+canónico `/nodia-teacher`. Las lecturas se limitan al propietario y
+exponen páginas de calendarios, categorías, jornadas, actividades,
+mazos y tarjetas. Las fuentes de calendario se entregan como texto y
+enlace HTTPS. La biblioteca entrega la etiqueta de la fuente y el
+lado de la imagen, cuando corresponde.
+
+Los cambios propuestos pasan por la confirmación humana común de
+NodiaAI. Teacher revalida destino y datos pertinentes y aplica el
+efecto local con su comprobante en la misma transacción. El contrato
+de alta de un calendario admite el plan v1. Las jornadas conservan
+su cálculo de avance desde las actividades. El catálogo permite
+alta de mazos e importación de tarjetas en lote y registro de repaso.
+La generación, el almacenamiento de imágenes y las citas estructuradas
+utilizan los flujos propios de Teacher.
+
+La aprobación del 2026-11-23 cubre la revisión 5 de Calendario de estudio
+y la revisión 6 de Tarjetas de repaso. El compilador publica las secciones
+vinculadas en el registro, sujetas al acceso a Teacher.
+[Ficha de Calendario](../nodia-ai/knowledge/studies/features/study-calendar.md#operaciones-desde-nodiaai) ·
+[Ficha de Tarjetas](../nodia-ai/knowledge/studies/features/flashcards.md#operaciones-desde-nodiaai) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md) ·
+[Contrato AI-06](52-nodia-ai-ai06-knowledge-publication-contract.md) ·
+[Verificación local](../evidence/nodia-ai-teacher-catalog-20261123.md).
+
 El catálogo `nodia-ai-business-pos/5` incorpora seis consultas de solo
 lectura para [Listas de Market](110-market-shopping-lists-plan.md#11-consultas-de-listas-de-market-en-nodiaai--2026-11-19)
 y [Caja](109-business-cash-ledger-plan.md#19-consultas-de-caja-en-nodiaai--2026-11-19).

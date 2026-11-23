@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "published",
+  "authoring_only": true,
+  "registry_path": "nodia-server/config/nodia-ai-knowledge.registry.json",
+  "metadata_path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.json",
+  "schema_path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+  "preparation_result_schema_path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+  "required_module_routes": ["/nodia-teacher"],
+  "contract_revision": 1,
+  "document_reviews": [
+    {
+      "document_id": "studies.study-calendar",
+      "path": "docs/nodia-ai/knowledge/studies/features/study-calendar.md",
+      "fragment_id": "study-calendar-crud-v1",
+      "purpose": "feature_explanation",
+      "sections": ["Operaciones desde NodiaAI"],
+      "capability_ids": [
+        "nodia_teacher_calendars_list",
+        "nodia_teacher_calendars_get",
+        "nodia_teacher_calendar_days_get",
+        "nodia_teacher_calendar_categories_list",
+        "nodia_teacher_calendars_prepare_create",
+        "nodia_teacher_calendars_prepare_update",
+        "nodia_teacher_calendars_prepare_delete",
+        "nodia_teacher_calendar_days_prepare_update",
+        "nodia_teacher_calendar_activities_prepare_set_completion",
+        "nodia_teacher_calendar_categories_prepare_create",
+        "nodia_teacher_calendar_categories_prepare_update"
+      ],
+      "approved_revision": 5,
+      "approval_reference": "docs/evidence/nodia-ai-teacher-catalog-approval-20261123.md"
+    },
+    {
+      "document_id": "studies.flashcards",
+      "path": "docs/nodia-ai/knowledge/studies/features/flashcards.md",
+      "fragment_id": "flashcards-crud-v1",
+      "purpose": "feature_explanation",
+      "sections": ["Operaciones desde NodiaAI"],
+      "capability_ids": [
+        "nodia_teacher_flashcard_decks_list",
+        "nodia_teacher_flashcards_list",
+        "nodia_teacher_flashcards_get",
+        "nodia_teacher_flashcard_decks_prepare_create",
+        "nodia_teacher_flashcards_prepare_create",
+        "nodia_teacher_flashcards_prepare_update",
+        "nodia_teacher_flashcards_prepare_delete",
+        "nodia_teacher_flashcard_imports_prepare_create",
+        "nodia_teacher_flashcard_reviews_prepare_create"
+      ],
+      "approved_revision": 6,
+      "approval_reference": "docs/evidence/nodia-ai-teacher-catalog-approval-20261123.md"
+    }
+  ],
+  "catalog_extension_path": "docs/mvp/nodia-ai-v1-tool-catalog.extensions.json",
+  "catalog_release": "nodia-ai-teacher-study/1"
+}

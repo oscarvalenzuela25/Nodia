@@ -20,6 +20,7 @@ import providerContactsEs from "./es/provider_contacts.json";
 import nodiaAiEs from "./es/nodiaAi.json";
 import nodiaAiErrorsEs from "./es/nodia_ai.json";
 import teacherEs from "./es/teacher.json";
+import teacherStudyCalendarImportEs from "./es/teacher_study_calendar_import.json";
 import newsEs from "./es/news.json";
 import notificationsEs from "./es/notifications.json";
 
@@ -42,6 +43,7 @@ import providerContactsEn from "./en/provider_contacts.json";
 import nodiaAiEn from "./en/nodiaAi.json";
 import nodiaAiErrorsEn from "./en/nodia_ai.json";
 import teacherEn from "./en/teacher.json";
+import teacherStudyCalendarImportEn from "./en/teacher_study_calendar_import.json";
 import newsEn from "./en/news.json";
 import notificationsEn from "./en/notifications.json";
 
@@ -98,6 +100,7 @@ const resources = {
     nodiaAi: nodiaAiEs,
     nodia_ai: nodiaAiErrorsEs,
     teacher: teacherEs,
+    teacher_study_calendar_import: teacherStudyCalendarImportEs,
     news: newsEs,
     notifications: notificationsEs,
   },
@@ -120,6 +123,7 @@ const resources = {
     nodiaAi: nodiaAiEn,
     nodia_ai: nodiaAiErrorsEn,
     teacher: teacherEn,
+    teacher_study_calendar_import: teacherStudyCalendarImportEn,
     news: newsEn,
     notifications: notificationsEn,
   },
@@ -151,6 +155,7 @@ i18n
       "nodiaAi",
       "nodia_ai",
       "teacher",
+      "teacher_study_calendar_import",
       "news",
       "notifications",
     ],

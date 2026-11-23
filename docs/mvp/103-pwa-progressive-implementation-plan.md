@@ -255,6 +255,26 @@ errores, concurrencia del reintento, guardado sin red, guardias de sesión y
 el worker de push y navegación. El ensayo utilizó un API sintético y se
 cerró el origen de prueba al terminar.
 
+### Alineación del aviso con la navegación — 2026-11-22
+
+El aviso de conexión de la navegación principal se coloca bajo la barra
+superior, dentro de la columna de contenido. El ancho se ajusta con el
+menú lateral abierto o contraído y conserva el margen de la página. En
+móvil el texto y el botón pueden ocupar líneas propias. Los layouts
+públicos y el flujo de recuperación de sesión presentan el aviso en el
+espacio correspondiente a sus controles.
+
+El cambio corresponde a la presentación de Client. La comprobación de
+disponibilidad, la recuperación de las lecturas y el alcance de contexto
+de NodiaAI conservan sus contratos.
+
+Chromium comprobó el fallo HTTP 503 con el menú lateral expandido y
+contraído a 1573 px, y la vista móvil de 320 px con tema claro. Se
+verificaron la recuperación de la solicitud GET, el rechazo de un HTML
+inesperado como respuesta de disponibilidad y el aviso de desconexión
+en la vista pública. Las pruebas focalizadas cubrieron también el aviso
+durante la restauración de sesión.
+
 ## 6. PWA-004 — notificaciones push
 
 **Alcance inicial planificado el 2026-11-20.** Enviar un recordatorio por cada

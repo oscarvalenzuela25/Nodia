@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { Alert, Box, Button, LinearProgress, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
@@ -7,16 +7,20 @@ import { useSignOut } from "../modules/auth/infrastructure/useServices";
 import useSessionLifecycle from "./hooks/useSessionLifecycle";
 import useRetainedSessionView from "./hooks/useRetainedSessionView";
 
-export default function AuthSessionProvider({ children }: PropsWithChildren) {
+type Props = PropsWithChildren<{ recoveryNotice?: ReactNode }>;
+
+export default function AuthSessionProvider({ children, recoveryNotice }: Props) {
   useSessionLifecycle();
   const { sessionStatus, isDemo, isSessionActive, isSessionValid, canMount, actorScope } = useRetainedSessionView();
   const { t } = useTranslation("auth");
   const signOut = useSignOut();
 
   const needsRecovery = !isDemo && (!isSessionValid || !actorScope);
+  const showOutlet = isDemo || canMount;
   return <>
     {needsRecovery && (
       <Box sx={{ maxWidth: 480, mx: "auto", p: 3, mt: 8 }}>
+        {!showOutlet && recoveryNotice}
         {sessionStatus !== "unavailable" ? (
           <Stack spacing={2} role="status">
             <Typography>{t("auth:session_restoring")}</Typography>
@@ -40,6 +44,6 @@ export default function AuthSessionProvider({ children }: PropsWithChildren) {
         )}
       </Box>
     )}
-    {(isDemo || canMount) && <Box key={actorScope ?? "public"} inert={!isDemo && !isSessionActive} sx={{ display: "contents" }}>{children}</Box>}
+    {showOutlet && <Box key={actorScope ?? "public"} inert={!isDemo && !isSessionActive} sx={{ display: "contents" }}>{children}</Box>}
   </>;
 }

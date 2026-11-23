@@ -7,6 +7,7 @@ import Home from "../../../../../modules/home/pages/Home";
 import MUIProvider from "../../../../../providers/MUIProvider";
 import useGeneralSettingsStore from "../../../../../store/generalSettings/generalSettingsStore";
 import * as authService from "../../../../../services/authorizationService";
+import i18n from "../../../../../translate";
 
 vi.mock("../../../../../services/authorizationService", () => ({
   useAuthorizationContext: vi.fn(),
@@ -33,7 +34,7 @@ describe("Home", () => {
     } as unknown as ReturnType<typeof authService.useAuthorizationContext>));
   });
 
-  it("renders the welcome message and dynamic module groups from the current authorization context", () => {
+  it("renders the localized headline and module groups from the current authorization context", () => {
     act(() => {
       useGeneralSettingsStore.getState().setContext({
         roles: ["admin"],
@@ -70,7 +71,7 @@ describe("Home", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: /bienvenido a nodia|welcome to nodia|home:welcome/i })
+      screen.getByRole("heading", { level: 1, name: i18n.t("home:welcome") })
     ).toBeInTheDocument();
 
     expect(
