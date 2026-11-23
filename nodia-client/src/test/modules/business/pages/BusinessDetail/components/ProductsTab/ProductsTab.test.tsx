@@ -162,8 +162,13 @@ describe("ProductsTab Component", () => {
     renderWithClient(<ProductsTab businessId="biz-123" />);
     await screen.findByText("Café de Especialidad 250g");
     await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
-    await user.click(screen.getByRole("button", { name: "Código de factura/proveedor" }));
+    expect(screen.queryByRole("button", { name: "Código del producto" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Disponibilidad" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Buscar código de factura" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Buscar código de barras" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Código de factura" }));
     await user.click(screen.getByRole("option", { name: "Sin código" }));
+    expect(screen.queryByRole("button", { name: "Buscar código de factura" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Código de barras" }));
     await user.click(screen.getByRole("option", { name: "Con código" }));
     await user.click(screen.getByRole("button", { name: /^Filtrar$/i }));
@@ -171,13 +176,73 @@ describe("ProductsTab Component", () => {
       page: 1, limit: 25, q: expect.objectContaining({ code_presence: "missing", barcode_presence: "present", is_active_eq: true }),
     })));
     await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
-    expect(screen.getByRole("button", { name: "Código de factura/proveedor" })).toHaveTextContent("Sin código");
+    expect(screen.getByRole("button", { name: "Código de factura" })).toHaveTextContent("Sin código");
     expect(screen.getByRole("button", { name: "Código de barras" })).toHaveTextContent("Con código");
     await user.click(screen.getByRole("button", { name: /Limpiar filtros/i }));
     await waitFor(() => expect(businessServices.getProducts).toHaveBeenLastCalledWith(expect.objectContaining({
       page: 1, limit: 25, q: expect.objectContaining({ code_presence: undefined, barcode_presence: undefined, is_active_eq: true }),
     })));
     expect(screen.queryByText("Código de barras: Con código")).not.toBeInTheDocument();
+  });
+
+  it("searches both code fields on demand, applies exact values and discards canceled changes", async () => {
+    const invoiceCode = "0007,A";
+    const barcode = "0012345";
+    const product = { ...mockProducts[0], code: invoiceCode, barcode };
+    vi.mocked(businessServices.getProducts).mockResolvedValue({
+      data: [product],
+      meta: { total_items: 1, page: 1, limit: 25, total_pages: 1 },
+    });
+    const lookupCalls = () => vi.mocked(businessServices.getProducts).mock.calls
+      .map(([params]) => params).filter((params) => params?.includes === false);
+    renderWithClient(<ProductsTab businessId="biz-123" />);
+    await screen.findByText(product.name);
+    await user.click(screen.getByRole("button", { name: "Abrir filtros" }));
+
+    const invoiceSearch = screen.getByRole("button", { name: "Buscar código de factura" });
+    await user.click(invoiceSearch);
+    expect(screen.getByText("Escribe parte del código para buscar.")).toBeInTheDocument();
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
+    expect(lookupCalls()).toEqual([]);
+    await user.type(screen.getByRole("textbox", { name: "Buscar código de factura" }), "7,A");
+    const invoiceOption = await screen.findByRole("option", { name: invoiceCode });
+    await user.keyboard("{ArrowDown}");
+    expect(invoiceOption).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(invoiceSearch).toHaveFocus();
+
+    await user.click(screen.getByRole("button", { name: "Código de barras" }));
+    await user.click(screen.getByRole("option", { name: "Con código" }));
+    await user.click(screen.getByRole("button", { name: "Buscar código de barras" }));
+    await user.type(screen.getByRole("textbox", { name: "Buscar código de barras" }), "0012");
+    await user.click(await screen.findByRole("option", { name: barcode }));
+    expect(lookupCalls().map((params) => params?.q)).toEqual([
+      expect.objectContaining({ business_id_eq: "biz-123", code_cont: "7,A" }),
+      expect.objectContaining({ business_id_eq: "biz-123", barcode_cont: "0012" }),
+    ]);
+    await user.click(screen.getByRole("button", { name: /^Filtrar$/i }));
+    await waitFor(() => expect(businessServices.getProducts).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, q: expect.objectContaining({
+        code_eq: invoiceCode, barcode_eq: barcode, barcode_presence: "present", is_active_eq: true,
+      }) }),
+    ));
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    await user.click(screen.getByRole("button", { name: "Código de barras" }));
+    await user.click(screen.getByRole("option", { name: "Sin código" }));
+    expect(screen.queryByRole("button", { name: "Buscar código de barras" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+    await user.click(await screen.findByRole("button", { name: "Abrir filtros" }));
+    expect(screen.getByRole("button", { name: "Buscar código de factura" })).toHaveTextContent(invoiceCode);
+    expect(screen.getByRole("button", { name: "Buscar código de barras" })).toHaveTextContent(barcode);
+
+    await user.click(screen.getByRole("button", { name: "Código de barras" }));
+    await user.click(screen.getByRole("option", { name: "Sin código" }));
+    await user.click(screen.getByRole("button", { name: /^Filtrar$/i }));
+    await waitFor(() => expect(businessServices.getProducts).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 1, q: expect.objectContaining({
+        code_eq: invoiceCode, barcode_eq: undefined, barcode_presence: "missing",
+      }) }),
+    ));
   });
   it("opens the image column viewer for the selected product and keeps the name cell free of thumbnails", async () => {
     renderWithClient(<ProductsTab businessId="biz-123" />);
@@ -279,7 +344,7 @@ describe("ProductsTab Component", () => {
     expect(screen.getByText(/1–2 de 2|1–2 of 2/i)).toBeInTheDocument();
   });
 
-  it("toggles the three additional columns for current and expanded historical rows without refetching or replacing actions", async () => {
+  it("toggles the two additional columns for current and expanded historical rows without refetching or replacing actions", async () => {
     mockProducts[0].previous_price_snapshot = mockProductLogs[1];
     renderWithClient(<ProductsTab businessId="biz-123" />);
     const row = await screen.findByRole("row", { name: /Café de Especialidad 250g/ });
@@ -292,18 +357,18 @@ describe("ProductsTab Component", () => {
     expect(within(historical).getAllByRole("cell")).toHaveLength(10);
     const reads = vi.mocked(businessServices.getProducts).mock.calls.length;
     const historyReads = vi.mocked(businessServices.getProductLogs).mock.calls.length;
-    const toggle = screen.getByRole("button", { name: "Mostrar disponibilidad, estado y última actualización" });
+    const toggle = screen.getByRole("button", { name: "Mostrar última actualización y estado" });
     expect(toggle).toHaveAttribute("aria-expanded", "false");
     toggle.focus();
     await user.keyboard("{Enter}");
     expect(toggle).toHaveAttribute("aria-expanded", "true");
-    expect(toggle).toHaveAccessibleName("Ocultar disponibilidad, estado y última actualización");
+    expect(toggle).toHaveAccessibleName("Ocultar última actualización y estado");
     expect(toggle).toHaveFocus();
-    for (const name of ["Disponibilidad", "Estado", "Última actualización"]) expect(screen.getByRole("columnheader", { name })).toBeInTheDocument();
-    expect(within(row).getAllByRole("cell")).toHaveLength(13);
-    expect(within(historical).getAllByRole("cell")).toHaveLength(13);
-    expect(within(row).getByText("Por confirmar")).toBeInTheDocument();
-    expect(within(historical).getByText("Por confirmar")).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Disponibilidad" })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Última actualización" }).nextElementSibling)
+      .toBe(screen.getByRole("columnheader", { name: "Estado" }));
+    expect(within(row).getAllByRole("cell")).toHaveLength(12);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(12);
     expect(within(row).getByText(mockProducts[0].name).closest("td")).toBe(nameCell);
     expect(within(row).getByTestId("product-actions-btn-prod-1")).toBe(actions);
     await user.keyboard(" ");
@@ -337,13 +402,13 @@ describe("ProductsTab Component", () => {
   it("keeps the empty row spanning the visible table columns when additional headers toggle", async () => {
     vi.mocked(businessServices.getProducts).mockResolvedValue({ data: [], meta: { total_items: 0, page: 1, limit: 25, total_pages: 0 } });
     renderWithClient(<ProductsTab businessId="biz-123" />);
-    const toggle = await screen.findByRole("button", { name: "Mostrar disponibilidad, estado y última actualización" });
+    const toggle = await screen.findByRole("button", { name: "Mostrar última actualización y estado" });
     const empty = screen.getByRole("cell");
     expect(empty).toHaveAttribute("colspan", "10");
     expect(screen.getAllByRole("columnheader")).toHaveLength(10);
     await user.click(toggle);
-    expect(empty).toHaveAttribute("colspan", "13");
-    expect(screen.getAllByRole("columnheader")).toHaveLength(13);
+    expect(empty).toHaveAttribute("colspan", "12");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(12);
     await user.click(toggle);
     expect(empty).toHaveAttribute("colspan", "10");
     expect(screen.getAllByRole("columnheader")).toHaveLength(10);

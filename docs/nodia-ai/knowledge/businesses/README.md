@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 73,
+  "revision": 74,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -312,6 +312,9 @@
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
+
+El ajuste de [búsqueda de códigos en Productos](features/product-alias-and-code-completeness.md#búsqueda-de-códigos-en-productos--2026-11-23)
+documenta los filtros de Client y el resaltado de precio de venta cero.
 
 ## Horarios y recordatorios de visitas — 2026-11-20
 

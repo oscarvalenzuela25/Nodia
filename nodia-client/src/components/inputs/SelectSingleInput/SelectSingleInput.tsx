@@ -43,6 +43,8 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   autoFocusSearch = true,
   disabled = false,
   onSearchChange, onLoadMore, hasMore = false, loadingOptions = false,
+  searchWhileLoading = false,
+  emptyOptionsContent,
   required = false,
   error = false,
   helperText,
@@ -60,6 +62,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const optionsRef = useRef<HTMLUListElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLabel, setSelectedLabel] = useState<SelectSingleOption | null>(null);
 
@@ -130,6 +133,18 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
       handleClose();
     }
   };
+
+  const focusFirstOption = (event: KeyboardEvent) => {
+    if (event.key !== "ArrowDown" || event.nativeEvent.isComposing || loadingOptions) return;
+    const firstOption = optionsRef.current?.querySelector<HTMLElement>(
+      '[role="option"]:not([aria-disabled="true"])',
+    );
+    if (!firstOption) return;
+    event.preventDefault();
+    firstOption.focus();
+  };
+
+  const searchLabel = searchPlaceholder ?? t("search", "Buscar...");
 
   return (
     <SelectContainer fullWidth={fullWidth} data-testid={testId}>
@@ -225,10 +240,12 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
             fullWidth
             size="small"
             value={searchTerm}
-            disabled={loadingOptions}
+            disabled={searchWhileLoading ? disabled : loadingOptions}
             onChange={(e) => { setSearchTerm(e.target.value); onSearchChange?.(e.target.value); }}
-            placeholder={searchPlaceholder ?? t("search", "Buscar...")}
+            placeholder={searchLabel}
+            onKeyDown={focusFirstOption}
             slotProps={{
+              htmlInput: { "aria-label": searchLabel },
               input: {
                 startAdornment: (
                   <InputAdornment position="start">
@@ -254,9 +271,9 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
         </SearchContainer>
 
         {loadingOptions && <LinearProgress sx={{ height: 2 }} />}
-        <OptionsList role="listbox" aria-multiselectable="false" autoFocusItem={!autoFocusSearch && isOpen}>
+        <OptionsList ref={optionsRef} role="listbox" aria-multiselectable="false" autoFocusItem={!autoFocusSearch && isOpen}>
           {filteredOptions.length === 0 ? (
-            <Box sx={{ py: 2, px: 2, textAlign: "center" }}>
+            emptyOptionsContent == null && <Box sx={{ py: 2, px: 2, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">
                 {t("no_options_found", "No se encontraron resultados")}
               </Typography>
@@ -293,6 +310,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
             })
           )}
         </OptionsList>
+        {filteredOptions.length === 0 && emptyOptionsContent}
         {hasMore && <Button fullWidth disabled={loadingOptions || disabled} onClick={onLoadMore}>{t("load_more")}</Button>}
       </StyledPopover>
 

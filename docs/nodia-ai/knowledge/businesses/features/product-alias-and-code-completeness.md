@@ -4,7 +4,7 @@
   "document_id": "businesses.product-alias-and-code-completeness",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 2,
+  "revision": 3,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -54,6 +54,10 @@
       "kind": "implementation"
     },
     {
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductCodeFilter.tsx",
+      "kind": "implementation"
+    },
+    {
       "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/helpers.ts",
       "kind": "implementation"
     }
@@ -95,7 +99,7 @@ estar sin asignar, y eso no crea una nueva identidad.
 |---|---|
 | Crear/editar producto nativo | CreateProductDto/UpdateProductDto, alias nullable max255; omitir conserva, null/blancos limpia. Update con alias exige expected_version. |
 | Revisar alias OCR | Nuevo: copia local automática del nombre al alias, editable con lápiz. Existente: conserva alias de catálogo; sólo si falta requiere revisión breve. Editor local sin HTTP al guardar fila. |
-| Buscar/filtrar | GET products con q.search o code_presence/barcode_presence present/missing; Todos omite. |
+| Buscar/filtrar | GET products con q.search o code_presence/barcode_presence present/missing. Todos omite el criterio de presencia. La búsqueda de opciones usa code_cont o barcode_cont y aplica code_eq o barcode_eq al seleccionar. |
 | Historial/CSV | Nuevos snapshots guardan alias de esa revisión; históricos null desconocidos. CSV añade columna y conserva valor si import antiguo la omite. |
 
 Herramientas NodiaAI publicadas conservan sus contratos cerrados. Esta ficha
@@ -159,3 +163,16 @@ del alias nuevo por copia local automática del nombre. Implementación local y
 QA Chromium sintética verificadas; tipos/lint/build y pins locales correctos según
 [evidencia](../../../../evidence/invoice-ocr-review-defaults-20261116.md).
 Revisión1 conserva su recibo de2026-11-14.
+
+## Búsqueda de códigos en Productos — 2026-11-23
+
+En Productos, Código de factura y Código de barras muestran un buscador
+en Todos o Con código. Client consulta coincidencias parciales sólo cuando
+se escribe y aplica el valor seleccionado de forma exacta. Sin código
+limpia ese valor y busca por ausencia. Estado de actividad cierra el filtro.
+
+La tabla, las tarjetas y el historial del listado dejan de mostrar
+disponibilidad. El fondo rojizo señala que el precio normal actual vale $0
+y conserva el importe visible. Esta presentación no cambia el significado
+de disponibilidad o precio, el contrato del POS ni las herramientas de
+NodiaAI. [Plan94 §46](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#46-búsqueda-de-códigos-en-productos--2026-11-23).
