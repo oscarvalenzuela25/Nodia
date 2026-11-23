@@ -1,5 +1,10 @@
 # Progreso del MVP — Nodia
 
+**Sets de mazos de Teacher — 2026-11-23.** Implementación local en
+`codex/teacher-calendar-activity-layout` del árbol de Sets con filtros,
+10 mazos por página, lista/cuadrícula y bajas confirmadas.
+[Plan112](112-teacher-flashcards-plan.md#sets-de-mazos--propuesta-de-interfaz).
+
 **CRUD de Teacher en NodiaAI — 2026-11-23.** La rama
 `codex/teacher-study-calendar` activa siete lecturas y trece preparaciones
 de cambios en `nodia-ai-teacher-study/1` con la aprobación de Calendario

@@ -27,6 +27,7 @@ describe("ProductMobileCard image access with the real MobileRecordCard", () => 
     const card = screen.getByRole("article", { name: product.name });
     expect(within(card).getByRole("heading", { name: product.name })).toBeInTheDocument();
     expect(within(card).getByText(product.code!)).toBeInTheDocument();
+    expect(within(card).getByRole("img", { name: i18n.t("business:product_barcode_present") })).toBeInTheDocument();
     expect(within(card).queryByText(product.barcode!)).not.toBeInTheDocument();
     expect(within(card).queryByText("0")).not.toBeInTheDocument();
     expect(within(card).queryByText(/oferta|alternativo/i)).not.toBeInTheDocument();
@@ -80,8 +81,9 @@ describe("ProductMobileCard image access with the real MobileRecordCard", () => 
     expect(screen.queryByText(i18n.t("business:pos.alternate_price"))).not.toBeInTheDocument();
   });
   it("keeps a product without supplier code identifiable by its name and displays its measurement", () => {
-    render(<ProductMobileCard product={{ ...product, code: null, measurement_unit: "bundle" }} expanded={false} disabled={false} formatDate={formatDate} {...callbacks()} />);
+    render(<ProductMobileCard product={{ ...product, code: null, barcode: null, measurement_unit: "bundle" }} expanded={false} disabled={false} formatDate={formatDate} {...callbacks()} />);
     expect(screen.getByRole("heading", { name: product.name })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: i18n.t("business:product_barcode_missing") })).toBeInTheDocument();
     expect(screen.getByText("$1.547 x atado")).toBeInTheDocument();
     expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
@@ -108,6 +110,6 @@ describe("Supplier OCR and optional invoice folio on mobile", () => {
   it("keeps an invoice without a folio identifiable and editable", () => {
     render(<InvoiceMobileCard invoice={{ id: "invoice", business_id: "business", code: null, total_amount: 0, path_storage: "", created_at: "", is_active: true }}
       disabled={false} formatDate={formatDate} onPreview={vi.fn()} onCopy={vi.fn()} onEdit={vi.fn()} />);
-    expect(screen.getByRole("heading", { name: i18n.t("business:invoice_without_code") })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: i18n.t("business:invoice_without_code") })).toHaveTextContent(/^-$/);
   });
 });

@@ -1,8 +1,10 @@
 import { imageSize } from 'image-size';
 import type {
+  FlashcardCollectionTitle,
   FlashcardAnchor,
   FlashcardCreate,
   FlashcardDeckDefinition,
+  FlashcardDeckPatch,
   FlashcardImage,
   FlashcardImageSide,
   FlashcardPatch,
@@ -23,7 +25,7 @@ export function flashcardDeckId(value: unknown): string | null {
   return value === 'general' ? null : requireUuid(value).toLowerCase();
 }
 
-function normalizeDeckText(value: unknown, limit: number) {
+function normalizeCollectionText(value: unknown, limit: number) {
   const result = text(value, 1, limit)
     .normalize('NFKC')
     .replace(/[\p{White_Space}\uFEFF]+/gu, ' ')
@@ -31,12 +33,20 @@ function normalizeDeckText(value: unknown, limit: number) {
   return text(result, 1, limit);
 }
 
-export function flashcardDeckTitle(value: unknown) {
-  const title = normalizeDeckText(value, 120);
+export function flashcardCollectionTitle(
+  value: unknown,
+): FlashcardCollectionTitle {
+  const title = normalizeCollectionText(value, 120);
   const normalizedTitle = title.toLocaleLowerCase('es').normalize('NFKC');
   text(normalizedTitle, 1, 160);
-  if (normalizedTitle === 'general') teacherError('flashcard_deck_duplicate');
   return { title, normalizedTitle };
+}
+
+export function flashcardDeckTitle(value: unknown) {
+  const definition = flashcardCollectionTitle(value);
+  if (definition.normalizedTitle === 'general')
+    teacherError('flashcard_deck_duplicate');
+  return definition;
 }
 
 export function flashcardDeckDefinition(
@@ -45,7 +55,30 @@ export function flashcardDeckDefinition(
 ): FlashcardDeckDefinition {
   return {
     ...flashcardDeckTitle(title),
-    category: category === undefined ? null : normalizeDeckText(category, 80),
+    category:
+      category === undefined ? null : normalizeCollectionText(category, 80),
+  };
+}
+
+export function flashcardSetId(value: unknown) {
+  return value === null ? null : requireUuid(value).toLowerCase();
+}
+
+export function readFlashcardDeckPatch(input: unknown): FlashcardDeckPatch {
+  const { title, category, set_id } = object(input, [
+    'title',
+    'category',
+    'set_id',
+  ]);
+  if (title === undefined && category === undefined && set_id === undefined)
+    teacherError('invalid_input', 400);
+  return {
+    ...(title !== undefined && flashcardDeckTitle(title)),
+    ...(category !== undefined && {
+      category:
+        category === null ? null : normalizeCollectionText(category, 80),
+    }),
+    ...(set_id !== undefined && { setId: flashcardSetId(set_id) }),
   };
 }
 

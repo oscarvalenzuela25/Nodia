@@ -1,5 +1,9 @@
 # Especificación del MVP — Nodia
 
+**Sets de mazos de Teacher — 2026-11-23.** La biblioteca agrupa mazos propios
+en Sets y ofrece la vista de lista o cuadrícula en mazos y tarjetas.
+[Plan112](112-teacher-flashcards-plan.md#sets-de-mazos--propuesta-de-interfaz).
+
 **Calendarios y tarjetas en NodiaAI — 2026-11-23.** La rama de Teacher
 activa siete consultas y trece preparaciones de cambios con confirmación
 humana. La aprobación cubre Calendario de estudio revisión 5 y Tarjetas de

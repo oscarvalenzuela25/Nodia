@@ -2,18 +2,37 @@ import { mainInstance } from "../../../config/api";
 import { fileToBase64 } from "./enrichmentSchemas";
 import { flashcardImportReceiptSchema, type FlashcardImportBatch } from "./flashcardImport";
 import {
-  flashcardDeckSchema, flashcardImageByteLimit, flashcardSchema,
-  type FlashcardDraft, type FlashcardUpdate,
+  flashcardDeckSchema, flashcardImageByteLimit, flashcardSchema, flashcardSetSchema,
+  type FlashcardDeckFields, type FlashcardDraft, type FlashcardUpdate,
 } from "./flashcards";
 
 const api = "/teacher/flashcards";
 export const flashcardDecksPath = "flashcards/decks";
+export const flashcardSetsPath = "flashcards/sets";
 export const flashcardsPath = "flashcards/cards";
 const cardPath = (id: string) => api + "/cards/" + encodeURIComponent(id);
+const collectionPath = (kind: "decks" | "sets", id: string) => api + "/" + kind + "/" + encodeURIComponent(id);
 
-export async function createFlashcardDeck(title: string, category?: string) {
-  const response = await mainInstance.post<unknown>(api + "/decks", { title, category });
+export async function createFlashcardDeck(fields: FlashcardDeckFields) {
+  const response = await mainInstance.post<unknown>(api + "/decks", fields);
   return flashcardDeckSchema.parse(response.data);
+}
+
+export async function updateFlashcardDeck(id: string, fields: FlashcardDeckFields) {
+  const response = await mainInstance.patch<unknown>(collectionPath("decks", id), fields);
+  const deck = flashcardDeckSchema.parse(response.data);
+  if (deck.id.toLowerCase() !== id.toLowerCase()) throw new Error("flashcard_deck_identity_mismatch");
+  return deck;
+}
+
+export async function createFlashcardSet(title: string) {
+  const response = await mainInstance.post<unknown>(api + "/sets", { title });
+  return flashcardSetSchema.parse(response.data);
+}
+
+export async function deleteFlashcardCollection(kind: "decks" | "sets", id: string) {
+  const { status } = await mainInstance.delete(collectionPath(kind, id));
+  if (status !== 204) throw new Error("flashcard_collection_delete_unconfirmed");
 }
 
 export async function importFlashcards(batch: FlashcardImportBatch, requestKey: string) {

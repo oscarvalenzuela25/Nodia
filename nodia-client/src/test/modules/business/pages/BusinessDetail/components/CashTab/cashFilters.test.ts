@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   cashFilterCriteria,
   defaultCashFilters,
@@ -7,10 +7,27 @@ import {
 } from "../../../../../../../modules/business/pages/BusinessDetail/components/CashTab/cashFilters";
 
 describe("Cash list filters", () => {
-  it("starts from today's inclusive civil range and active entries", () => {
-    expect(cashFilterCriteria(defaultCashFilters("2024-02-29"))).toEqual({
-      from: "2024-02-29", to: "2024-02-29", active: true, categoryId: undefined,
+  it.each([
+    ["2024-02-29", "2024-02-01", "2024-02-29"],
+    ["2025-02-14", "2025-02-01", "2025-02-28"],
+    ["2026-04-04", "2026-04-01", "2026-04-30"],
+    ["2026-12-31", "2026-12-01", "2026-12-31"],
+  ])("defaults to the inclusive civil month and active entries on %s", (today, from, to) => {
+    expect(cashFilterCriteria(defaultCashFilters(today))).toEqual({
+      from, to, active: true, categoryId: undefined,
     });
+  });
+
+  it("changes the default month at midnight in Santiago", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime(new Date("2026-07-01T03:59:59Z"));
+      expect(defaultCashFilters()).toMatchObject({ from: "2026-06-01", to: "2026-06-30" });
+      vi.setSystemTime(new Date("2026-07-01T04:00:00Z"));
+      expect(defaultCashFilters()).toMatchObject({ from: "2026-07-01", to: "2026-07-31" });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("keeps inactive as false and all as omitted without dropping category or another bound", () => {

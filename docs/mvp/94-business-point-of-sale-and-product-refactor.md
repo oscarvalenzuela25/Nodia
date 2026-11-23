@@ -1418,8 +1418,8 @@ y [selector paginado](../../nodia-client/src/modules/business/infrastructure/use
 
 - Código/folio es opcional y nullable: blanco/espacios se normalizan a null.
   En actualización, omitir conserva; enviar null limpia. No inventar folio,
-  identidad ni consecutivo. La UI muestra «Sin folio» cuando falta; un ID real
-  sigue identificando la factura y sus archivos.
+  identidad ni consecutivo. Listado, tarjetas y vista previa muestran `-`
+  si falta. Un ID real sigue identificando la factura y sus archivos.
 - Fecha de emisión inicia en hoy como fecha civil local del navegador sólo al
   crear. Editar conserva `data.issue_date`, incluso si no existe; revalidar o
   redimensionar no sustituye una fecha editada. No cambia el campo de creación
@@ -1430,6 +1430,10 @@ y [selector paginado](../../nodia-client/src/modules/business/infrastructure/use
 - En Overview/Catálogo se muestran los chips Disponible y No disponible. Se
   retira sólo Por confirmar; `has_stock:null` no se convierte en false/true ni
   altera datos, agregados o la disponibilidad del producto.
+- En la tabla de Productos, **Código de barras** antecede a **Código de factura**.
+  Un indicador verde señala que el producto tiene código de barras y uno
+  rojo señala que falta. Las tarjetas móviles usan el mismo indicador con
+  etiqueta accesible. La columna **Código de factura** sigue mostrando `code`.
 
 [CreateInvoiceDto](../../nodia-server/src/invoice/dto/create-invoice.dto.ts),
 [UpdateInvoiceDto](../../nodia-server/src/invoice/dto/update-invoice.dto.ts),

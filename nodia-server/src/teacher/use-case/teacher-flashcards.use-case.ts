@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { createHash } from 'node:crypto';
-import type { EntityManager } from 'typeorm';
+import { QueryFailedError, type EntityManager } from 'typeorm';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import type {
   CreateFlashcardDeckDto,
   CreateFlashcardDto,
   CreateFlashcardReviewDto,
+  CreateFlashcardSetDto,
   ImportFlashcardsDto,
   PatchFlashcardDto,
+  PatchFlashcardDeckDto,
 } from '../dto/teacher-flashcards.dto.js';
 import { readFlashcardImport } from '../policies/teacher-flashcard-import.js';
 import {
+  flashcardCollectionTitle,
   flashcardDeckDefinition,
   flashcardDeckId,
+  flashcardSetId,
   readFlashcardCreate,
+  readFlashcardDeckPatch,
   readFlashcardPatch,
 } from '../policies/teacher-flashcards.js';
 import {
@@ -80,11 +85,73 @@ export class TeacherFlashcardsUseCase {
     manager?: EntityManager,
   ) {
     const spec = flashcardDeckDefinition(input.title, input.category);
+    const setId = flashcardSetId(input.set_id ?? null);
     return this.scope(
       actor,
-      (scope) => this.createNamedDeck(scope, spec),
+      async (scope) => {
+        await this.requireSet(scope, setId);
+        return this.createNamedDeck(scope, spec, setId);
+      },
       manager,
     );
+  }
+
+  async patchDeck(
+    actor: ActorReference,
+    id: string,
+    input: PatchFlashcardDeckDto,
+  ) {
+    const deckId = requireUuid(id).toLowerCase();
+    const patch = readFlashcardDeckPatch(input);
+    try {
+      return await this.scope(actor, async (scope) => {
+        await this.requireSet(scope, patch.setId ?? null);
+        const deck = await this.store.patchDeck(scope, deckId, patch);
+        if (!deck) teacherError('not_found', 404);
+        return deck;
+      });
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        error.driverError.code === '23505' &&
+        error.driverError.constraint ===
+          'teacher_flashcard_decks_owner_user_id_normalized_title_key'
+      ) {
+        teacherError('flashcard_deck_duplicate');
+      }
+      throw error;
+    }
+  }
+
+  deleteDeck(actor: ActorReference, id: string) {
+    const deckId = requireUuid(id).toLowerCase();
+    return this.scope(actor, async (scope) => {
+      // Serialize deletion with card creation, import, and moves into this deck.
+      if (!(await this.store.lockDeck(scope, deckId, 'update')))
+        teacherError('not_found', 404);
+      await this.store.deleteDeck(scope, deckId);
+    });
+  }
+
+  sets(actor: ActorReference) {
+    return this.scope(actor, (scope) => this.store.sets(scope));
+  }
+
+  createSet(actor: ActorReference, input: CreateFlashcardSetDto) {
+    const spec = flashcardCollectionTitle(input.title);
+    return this.scope(actor, async (scope) => {
+      const set = await this.store.createSet(scope, spec);
+      if (!set) teacherError('flashcard_set_duplicate');
+      return set;
+    });
+  }
+
+  deleteSet(actor: ActorReference, id: string) {
+    const setId = requireUuid(id).toLowerCase();
+    return this.scope(actor, async (scope) => {
+      if (!(await this.store.deleteSet(scope, setId)))
+        teacherError('not_found', 404);
+    });
   }
 
   importCards(
@@ -100,10 +167,21 @@ export class TeacherFlashcardsUseCase {
         await this.store.lockCreation(scope, requestKey, 'import');
         const previous = await this.store.importReceipt(scope, requestKey);
         if (previous) {
+          if (previous.request_hash === null)
+            teacherError('flashcard_deck_deleted', 410);
           if (previous.request_hash !== digest)
             teacherError('idempotency_conflict');
+          // A replay confirms the original JSON destination even if the deck was edited.
+          const deck =
+            destination.kind === 'new'
+              ? {
+                  ...previous.deck,
+                  title: destination.deck.title,
+                  category: destination.deck.category,
+                }
+              : previous.deck;
           return {
-            deck: previous.deck,
+            deck,
             imported_count: previous.imported_count,
           };
         }
@@ -111,8 +189,12 @@ export class TeacherFlashcardsUseCase {
           destination.kind === 'new'
             ? (await this.createNamedDeck(scope, destination.deck)).id
             : destination.deckId;
-        if (destination.kind === 'existing')
-          await this.requireDeck(scope, deckId);
+        if (
+          destination.kind === 'existing' &&
+          deckId &&
+          !(await this.store.lockDeck(scope, deckId, 'key-share'))
+        )
+          teacherError('not_found', 404);
         await this.store.importCards(
           scope,
           deckId,
@@ -189,9 +271,15 @@ export class TeacherFlashcardsUseCase {
             teacherError('flashcard_deleted', 410);
           if (previous.request_hash !== digest)
             teacherError('idempotency_conflict');
-          return this.requireCard(scope, previous.card_id);
+          const card = await this.store.card(scope, previous.card_id);
+          if (!card) teacherError('flashcard_deleted', 410);
+          return card;
         }
-        await this.requireDeck(scope, data.deckId);
+        if (
+          data.deckId &&
+          !(await this.store.lockDeck(scope, data.deckId, 'key-share'))
+        )
+          teacherError('not_found', 404);
         if (data.source?.anchor)
           await this.requireAnchor(scope, data.source.anchor);
         const id = await this.store.createCard(scope, data, key, digest);
@@ -212,14 +300,17 @@ export class TeacherFlashcardsUseCase {
     return this.scope(
       actor,
       async (scope) => {
+        // Take the destination deck lock before the card lock, matching deleteDeck.
+        const targetReady =
+          !data.deckId ||
+          (await this.store.lockDeck(scope, data.deckId, 'key-share'));
         const card = await this.store.lockCard(scope, id);
         if (!card) teacherError('not_found', 404);
         if (card.revision !== data.revision || data.revision === 2147483647)
           teacherError('revision_conflict');
         if (data.imageSide !== undefined && card.image_side === null)
           teacherError('invalid_input', 400);
-        if (data.deckId !== undefined)
-          await this.requireDeck(scope, data.deckId);
+        if (!targetReady) teacherError('not_found', 404);
         if (data.source?.anchor)
           await this.requireAnchor(scope, data.source.anchor);
         if (!(await this.store.patchCard(scope, id, data)))
@@ -317,10 +408,16 @@ export class TeacherFlashcardsUseCase {
   private async createNamedDeck(
     scope: FlashcardScope,
     spec: FlashcardDeckDefinition,
+    setId: string | null = null,
   ) {
-    const deck = await this.store.createDeck(scope, spec);
+    const deck = await this.store.createDeck(scope, spec, setId);
     if (!deck) teacherError('flashcard_deck_duplicate');
     return deck;
+  }
+
+  private async requireSet(scope: FlashcardScope, setId: string | null) {
+    if (setId && !(await this.store.lockSet(scope, setId)))
+      teacherError('not_found', 404);
   }
 
   private async requireCard(scope: FlashcardScope, id: string) {

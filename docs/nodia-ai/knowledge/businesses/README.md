@@ -829,3 +829,13 @@ separa esta ampliación del corte previo que no añadía al carrito.
 El frontmatter mantiene el límite contractual de32evidencias. Se conserva el
 recibo anterior en [nodia-ai-ai36-c03-publication-authorization-r01.json](../../../evidence/nodia-ai-ai36-c03-publication-authorization-r01.json),
 sin modificar su alcance ni el archivo original.
+
+## Presentación de Caja, Productos y Facturas — 2026-11-23
+
+La interfaz de Caja abre con [el mes civil de Santiago](../../../mvp/109-business-cash-ledger-plan.md#5-contrato-http-v1-de-caja).
+Productos indica la presencia de código de barras y Facturas usa un guion
+para el [folio ausente](../../../mvp/94-business-point-of-sale-and-product-refactor.md#factura-manual-y-panel-de-catálogo).
+El selector individual mantiene su altura al limpiar el valor. La evaluación
+de impacto se limita al Client. Las consultas de NodiaAI conservan el
+significado de sus rangos explícitos, códigos y folios opcionales. La ficha
+firmada de Caja registra el valor inicial histórico del día.

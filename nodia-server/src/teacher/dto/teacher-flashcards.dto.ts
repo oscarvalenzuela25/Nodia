@@ -41,6 +41,29 @@ export class CreateFlashcardDeckDto {
   @ValidateIf((_object, value) => value !== undefined)
   @IsString()
   category?: string;
+
+  @ValidateIf((_object, value) => value !== undefined && value !== null)
+  @IsUUID()
+  set_id?: string | null;
+}
+
+export class CreateFlashcardSetDto {
+  @IsString()
+  title!: string;
+}
+
+export class PatchFlashcardDeckDto {
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsString()
+  title?: string;
+
+  @ValidateIf((_object, value) => value !== undefined && value !== null)
+  @IsString()
+  category?: string | null;
+
+  @ValidateIf((_object, value) => value !== undefined && value !== null)
+  @IsUUID()
+  set_id?: string | null;
 }
 
 export class ImportFlashcardsDto {

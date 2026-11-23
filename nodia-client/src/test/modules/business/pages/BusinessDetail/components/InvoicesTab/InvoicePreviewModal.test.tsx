@@ -123,6 +123,13 @@ describe("InvoicePreviewModal Component", () => {
     });
   });
 
+  it("shows a hyphen after Código / Folio when the code is missing", () => {
+    renderWithClient(<InvoicePreviewModal open onClose={mockOnClose}
+      invoice={{ ...mockInvoiceImage, code: null, path_storage: "" }} />);
+
+    expect(screen.getByText("Código / Folio: -")).toBeInTheDocument();
+  });
+
   it("shows error alert and allows retrying when fetch fails", async () => {
     vi.mocked(businessServices.getInvoiceViewUrl).mockRejectedValueOnce(
       new Error("Failed to load")

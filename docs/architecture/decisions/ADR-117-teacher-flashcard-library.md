@@ -62,6 +62,19 @@ El [ADR-118](ADR-118-teacher-flashcard-proposal-execution.md) describe
 el propietario de ejecución de biblioteca, la retención, el presupuesto
 y el cierre para apuntes y propuestas con imagen.
 
+## Agrupación de mazos
+
+El Set tiene identidad y alcance propios por cuenta. Una referencia
+opcional compuesta por propietario e ID garantiza que el mazo y su Set
+pertenezcan a la misma cuenta. El Set se puede eliminar conservando los
+mazos mediante la desvinculación en la misma transacción. Esta relación
+permite importar y editar mazos independientes, incluidos los históricos.
+
+La baja explícita de un mazo retira las tarjetas y sus datos de repaso.
+Los recibos mínimos impiden que una solicitud de creación o importación
+repetida vuelva a crear el material eliminado. Esta extensión conserva
+la proyección del catálogo aprobado de NodiaAI.
+
 ## Consecuencias
 
 - La sesión conserva sus tarjetas, marcas y política de repaso. Se

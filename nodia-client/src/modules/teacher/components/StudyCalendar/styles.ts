@@ -1,4 +1,4 @@
-import { Box, Button, Card, Drawer, Stack } from "@mui/material";
+import { Box, Button, Card, Drawer, FormControlLabel, Link, Stack } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 
 export const calendarChipColors = {
@@ -108,7 +108,9 @@ export const CalendarDrawerHeader = styled(Box)(({ theme }) => ({
   overflowWrap: "anywhere",
 }));
 
-export const CalendarActivityCard = styled(Box)(({ theme }) => ({
+const activityControlSize = 44;
+
+export const CalendarActivityCard = styled("li")(({ theme }) => ({
   minWidth: 0,
   border: "1px solid " + theme.palette.divider,
   borderRadius: theme.spacing(1.25),
@@ -116,4 +118,57 @@ export const CalendarActivityCard = styled(Box)(({ theme }) => ({
   "&[data-done='true']": {
     backgroundColor: alpha(theme.palette.success.main, theme.palette.mode === "dark" ? 0.11 : 0.055),
   },
+}));
+
+export const CalendarActivitySummary = styled("div")(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: `${activityControlSize}px minmax(0, 1fr) auto`,
+  gridTemplateAreas: '"activity activity edit" ". source source"',
+  columnGap: theme.spacing(1),
+  alignItems: "start",
+}));
+
+export const CalendarActivityToggle = styled(FormControlLabel)(({ theme }) => ({
+  gridArea: "activity",
+  display: "grid",
+  gridTemplateColumns: `${activityControlSize}px minmax(0, 1fr)`,
+  columnGap: theme.spacing(1),
+  alignItems: "start",
+  margin: 0,
+  minWidth: 0,
+  "& .MuiCheckbox-root": {
+    width: activityControlSize,
+    minHeight: activityControlSize,
+    padding: 0,
+  },
+  "& .MuiFormControlLabel-label": {
+    // Center the first line against the checkbox even when the title wraps.
+    paddingBlock: `max(0px, calc((${activityControlSize}px - 1lh) / 2))`,
+    fontWeight: theme.typography.fontWeightMedium,
+    overflowWrap: "anywhere",
+  },
+}));
+
+export const CalendarActivitySource = styled(Link)(({ theme }) => ({
+  gridArea: "source",
+  display: "inline-flex",
+  alignItems: "flex-start",
+  gap: theme.spacing(0.5),
+  justifySelf: "start",
+  maxWidth: "100%",
+  minHeight: activityControlSize,
+  paddingBlock: `max(0px, calc((${activityControlSize}px - 1lh) / 2))`,
+  overflowWrap: "anywhere",
+  "& > span": { minWidth: 0 },
+  "& .MuiSvgIcon-root": {
+    fontSize: "1em",
+    flexShrink: 0,
+    marginBlockStart: "max(0px, calc((1lh - 1em) / 2))",
+  },
+}));
+
+export const CalendarActivityFields = styled(Stack)(({ theme }) => ({
+  marginBlockStart: theme.spacing(1),
+  paddingBlockStart: theme.spacing(1.5),
+  borderBlockStart: "1px solid " + theme.palette.divider,
 }));

@@ -17,6 +17,7 @@ import type {
 } from "../../infrastructure/types";
 import { calculatePriceDiff, priceMeasurementsComparable } from "../../pages/BusinessDetail/components/ProductsTab/helpers";
 import ProductImageThumbnail from "../../pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail";
+import ProductBarcodeIndicator from "../../pages/BusinessDetail/components/ProductsTab/components/ProductBarcodeIndicator";
 import ProductSalePrice from "../../pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice";
 
 function Status({ active }: { active: boolean }) {
@@ -181,7 +182,8 @@ export function InvoiceMobileCard({
     });
   return (
     <MobileRecordCard
-      title={invoice.code || t("invoice_without_code")}
+      title={invoice.code || "-"}
+      accessibleTitle={invoice.code ? undefined : t("invoice_without_code")}
       status={<Status active={invoice.is_active} />}
       disabled={disabled}
       fields={[
@@ -246,8 +248,9 @@ export function ProductMobileCard({
   const comparable = !historical || priceMeasurementsComparable(product, historical);
   const diff = comparable ? calculatePriceDiff(product.sale_price, historical?.sale_price) : null;
   const fields = (item: ProductEntity | ProductLogEntity, current = false) => [
+    { key: "barcode", label: t("pos.barcode"), value: !current && item.barcode === undefined ? "—" : <ProductBarcodeIndicator barcode={item.barcode} /> },
+    { key: "code", label: t("product_invoice_code"), value: item.code ?? "—" },
     { key: "alias", label: t("product_alias"), value: item.alias?.trim() || "—", fullWidth: true },
-    { key: "code", label: t("product_code"), value: item.code ?? "—", fullWidth: true },
     {
       key: "cost",
       label: t("product_cost_tax"),
@@ -275,7 +278,7 @@ export function ProductMobileCard({
         status={<Status active={product.is_active} />}
         disabled={disabled}
         fields={[
-          ...(onImage ? [{ key: "image", label: t("pos.image_column"), value: <ProductImageThumbnail name={product.name} image={product.image} disabled={disabled} onOpen={() => onImage(product)} /> }] : []),
+          ...(onImage ? [{ key: "image", label: t("pos.image_column"), value: <ProductImageThumbnail name={product.name} image={product.image} disabled={disabled} onOpen={() => onImage(product)} />, fullWidth: true }] : []),
           ...fields(product, true),
           {
             key: "provider",

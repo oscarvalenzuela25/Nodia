@@ -1,3 +1,4 @@
+import { Temporal } from "temporal-polyfill";
 import type { ActiveFilterStatus } from "../../../../../../components/Filter/components/ActiveStatusSelect";
 import { cashToday, isCashCivilDate, trimCashText } from "../../../../infrastructure/cashValues";
 
@@ -9,7 +10,13 @@ export interface CashFilters {
 }
 
 export function defaultCashFilters(today = cashToday()): CashFilters {
-  return { from: today, to: today, activity: "active", category: null };
+  const date = Temporal.PlainDate.from(today);
+  return {
+    from: date.with({ day: 1 }).toString(),
+    to: date.with({ day: date.daysInMonth }).toString(),
+    activity: "active",
+    category: null,
+  };
 }
 
 export function validCashFilterPeriod({ from, to }: Pick<CashFilters, "from" | "to">): boolean {

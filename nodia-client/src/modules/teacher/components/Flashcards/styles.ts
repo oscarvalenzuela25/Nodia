@@ -8,7 +8,7 @@ export const FlashcardWorkspace = styled("div")(({ theme }) => ({
   gap: theme.spacing(3, 2),
   minWidth: 0,
   [theme.breakpoints.up("md")]: {
-    gridTemplateColumns: "minmax(196px, 252px) minmax(0, 1fr)",
+    gridTemplateColumns: "minmax(236px, 280px) minmax(0, 1fr)",
   },
 }));
 
@@ -19,6 +19,23 @@ export const FlashcardPanel = styled("section")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   border: "1px solid " + theme.palette.divider,
   overflowWrap: "anywhere",
+}));
+
+export const FlashcardDetailPanel = styled(FlashcardPanel)({
+  container: "flashcard-detail / inline-size",
+});
+
+export const FlashcardDetailHeader = styled("div")(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr) auto",
+  gridTemplateAreas: '"summary trash" "actions actions"',
+  alignItems: "center",
+  gap: theme.spacing(1.5),
+  "@container flashcard-detail (min-width: 34rem)": {
+    gridTemplateColumns: "minmax(0, 1fr) auto auto",
+    gridTemplateAreas: '"summary actions trash"',
+  },
+  "&:not(:has([data-flashcard-detail-trash]))": { columnGap: theme.spacing(0.75) },
 }));
 
 export const FlashcardHeader = styled(Stack)(({ theme }) => ({
@@ -40,23 +57,6 @@ export const FlashcardActions = styled(Stack)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     width: "100%",
     "& > .MuiButton-root": { width: "100%" },
-  },
-}));
-
-export const FlashcardList = styled("ul")(({ theme }) => ({
-  minWidth: 0,
-  display: "grid",
-  gap: theme.spacing(1),
-  listStyle: "none",
-  margin: 0,
-  padding: 0,
-}));
-
-export const FlashcardGrid = styled(FlashcardList)(({ theme }) => ({
-  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 120px), 1fr))",
-  [theme.breakpoints.up("sm")]: {
-    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 166px), 1fr))",
-    gap: theme.spacing(1.5),
   },
 }));
 
@@ -90,60 +90,6 @@ export const DeckCount = styled("span")(({ theme }) => ({
   fontVariantNumeric: "tabular-nums",
   fontSize: theme.typography.body2.fontSize,
 }));
-
-export const FlashcardRowLayout = styled("li")({
-  position: "relative",
-  minWidth: 0,
-  display: "grid",
-  gridTemplateColumns: "minmax(0, 1fr)",
-});
-
-export const FlashcardMenuTrigger = styled("span")(({ theme }) => ({
-  position: "absolute",
-  insetBlockStart: theme.spacing(0.5),
-  insetInlineEnd: theme.spacing(0.5),
-}));
-
-export const FlashcardRowButton = styled(Button)(({ theme }) => ({
-  display: "grid",
-  gridTemplateColumns: "minmax(0, 1fr)",
-  gridTemplateRows: "92px 1fr",
-  alignItems: "stretch",
-  gap: 0,
-  minWidth: 0,
-  width: "100%",
-  textAlign: "start",
-  textTransform: "none",
-  padding: 0,
-  overflow: "hidden",
-  borderColor: theme.palette.divider,
-  borderRadius: theme.spacing(1.5),
-  color: theme.palette.text.primary,
-  [theme.breakpoints.up("sm")]: { gridTemplateRows: "106px 1fr" },
-  "&:hover": { backgroundColor: theme.palette.action.hover, borderColor: theme.palette.primary.main },
-  "&.Mui-focusVisible": { outline: "2px solid", outlineOffset: -2, outlineColor: theme.palette.primary.main },
-}));
-
-export const FlashcardRowMedia = styled("span")(({ theme }) => ({
-  display: "grid",
-  placeItems: "center",
-  overflow: "hidden",
-  position: "relative",
-  minWidth: 0,
-  minHeight: 0,
-  backgroundColor: alpha(theme.palette.primary.main, 0.09),
-  color: theme.palette.text.secondary,
-  "& > img": { position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" },
-}));
-
-export const FlashcardSnippet = styled("span")({
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  overflow: "hidden",
-  display: "-webkit-box",
-  WebkitBoxOrient: "vertical",
-  WebkitLineClamp: 2,
-});
 
 export const FlashcardMediaFields = styled("div")(({ theme }) => ({
   display: "grid",

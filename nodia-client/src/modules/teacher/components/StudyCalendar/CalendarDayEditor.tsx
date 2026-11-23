@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
 import { z } from "zod";
-import { Alert, Box, Button, Checkbox, Chip, FormControlLabel, Link, Stack, Typography } from "@mui/material";
+import { Alert, Button, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import OpenInNewOutlined from "@mui/icons-material/OpenInNewOutlined";
 import { useTranslation } from "react-i18next";
@@ -13,7 +13,10 @@ import {
   calendarMaxSourceLabel, calendarMaxSourceUrl, calendarMaxTitle, validSourceUrl,
   type CalendarDay, type DayUpdate,
 } from "../../infrastructure/studyCalendar";
-import { CalendarActions, CalendarActivityCard } from "./styles";
+import {
+  CalendarActions, CalendarActivityCard, CalendarActivityFields,
+  CalendarActivitySource, CalendarActivitySummary, CalendarActivityToggle,
+} from "./styles";
 
 const activityFields = z.object({
   localKey: z.string(),
@@ -65,6 +68,7 @@ type Props = {
 
 export default function CalendarDayEditor({ day, busy, onCancel, onSave, onReload }: Props) {
   const { t } = useTranslation();
+  const activitiesTitleId = useId();
   const [revision, setRevision] = useState(day.revision);
   const [editing, setEditing] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
@@ -105,9 +109,9 @@ export default function CalendarDayEditor({ day, busy, onCancel, onSave, onReloa
         <TextInput {...field} label={t("teacher:calendar.minutes")} disabled={disabled} inputMode="numeric" type="number"
           error={Boolean(errors.minutes)} helperText={errors.minutes?.message && t(errors.minutes.message)} />
       )} />
-      <Stack component="section" spacing={1} aria-label={t("teacher:calendar.activities")}>
+      <Stack component="section" useFlexGap spacing={1.5} aria-labelledby={activitiesTitleId}>
         <Stack direction={{ xs: "column", sm: "row" }} sx={{ alignItems: { xs: "stretch", sm: "center" }, gap: 1, justifyContent: "space-between" }}>
-          <Typography component="h3" variant="subtitle2">{t("teacher:calendar.activities")}</Typography>
+          <Typography component="h3" variant="subtitle2" id={activitiesTitleId}>{t("teacher:calendar.activities")}</Typography>
           <Button variant="outlined" startIcon={<AddOutlined />} disabled={disabled || fields.length >= calendarMaxActivities} sx={{ minHeight: 44 }}
             onClick={() => {
               const localKey = crypto.randomUUID();
@@ -124,58 +128,59 @@ export default function CalendarDayEditor({ day, busy, onCancel, onSave, onReloa
             {t("teacher:calendar.activity_progress", { done: progress.done, count: progress.total })}
           </Typography>
         </Stack>
-        {fields.length === 0 && <Typography variant="body2" color="text.secondary">{t("teacher:calendar.empty_activities")}</Typography>}
-        {fields.map((item, index) => {
-          const activity = activities[index];
-          if (!activity) return null;
-          const expanded = editing === item.localKey;
-          const invalid = errors.activities?.[index];
-          return (
-            <CalendarActivityCard key={item.id} data-done={activity.completed}>
-              <Stack direction="row" sx={{ alignItems: "flex-start", justifyContent: "space-between", gap: 1 }}>
-                <Box sx={{ display: "grid", minWidth: 0 }}>
-                  <Controller control={control} name={activityInput(index, "completed")} render={({ field }) => (
-                    <FormControlLabel sx={{ m: 0, minHeight: 44, alignItems: "flex-start", overflowWrap: "anywhere" }}
-                      label={activity.text || t("teacher:calendar.new_activity")}
-                      control={<Checkbox checked={field.value} onChange={(_, checked) => field.onChange(checked)} disabled={disabled} />} />
-                  )} />
-                  {activity.sourceLabel && validSourceUrl(activity.sourceUrl) && (
-                    <Link href={activity.sourceUrl} target="_blank" rel="noopener noreferrer"
-                      sx={theme => ({
-                        display: "inline-flex", alignItems: "flex-start", gap: 0.5, width: "fit-content",
-                        marginInlineStart: theme.spacing(5), maxWidth: "calc(100% - " + theme.spacing(5) + ")",
-                      })}>
-                      <Box component="span" sx={{ minWidth: 0, overflowWrap: "anywhere" }}>{activity.sourceLabel}</Box>
-                      <OpenInNewOutlined sx={{ fontSize: 14, mt: 0.5, flexShrink: 0 }} aria-hidden />
-                    </Link>
+        {fields.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">{t("teacher:calendar.empty_activities")}</Typography>
+        ) : (
+          <Stack component="ul" role="list" useFlexGap spacing={1} sx={{ listStyle: "none", m: 0, p: 0 }}>
+            {fields.map((item, index) => {
+              const activity = activities[index];
+              if (!activity) return null;
+              const expanded = editing === item.localKey;
+              const invalid = errors.activities?.[index];
+              const checkboxId = `${activitiesTitleId}-${item.id}`;
+              return (
+                <CalendarActivityCard key={item.id} data-done={activity.completed}>
+                  <CalendarActivitySummary>
+                    <Controller control={control} name={activityInput(index, "completed")} render={({ field }) => (
+                      <CalendarActivityToggle htmlFor={checkboxId}
+                        label={activity.text || t("teacher:calendar.new_activity")}
+                        control={<Checkbox id={checkboxId} checked={field.value}
+                          onChange={(_, checked) => field.onChange(checked)} disabled={disabled} />} />
+                    )} />
+                    <Button variant="outlined" size="small" aria-expanded={expanded} disabled={disabled}
+                      onClick={() => setEditing(expanded ? null : item.localKey)} sx={{ gridArea: "edit", minHeight: 44 }}>
+                      {t(expanded ? "teacher:calendar.done" : "teacher:calendar.edit")}
+                    </Button>
+                    {activity.sourceLabel && validSourceUrl(activity.sourceUrl) && (
+                      <CalendarActivitySource variant="body2" href={activity.sourceUrl} target="_blank" rel="noopener noreferrer">
+                        <span>{activity.sourceLabel}</span>
+                        <OpenInNewOutlined aria-hidden />
+                      </CalendarActivitySource>
+                    )}
+                  </CalendarActivitySummary>
+                  {expanded && (
+                    <CalendarActivityFields spacing={1.5}>
+                      <Controller control={control} name={activityInput(index, "text")} render={({ field }) => (
+                        <TextInput {...field} label={t("teacher:calendar.activity")} multiline minRows={2} disabled={disabled} required autoFocus
+                          error={Boolean(invalid?.text)} helperText={invalid?.text?.message && t(invalid.text.message)} />
+                      )} />
+                      <Controller control={control} name={activityInput(index, "sourceLabel")} render={({ field }) => (
+                        <TextInput {...field} label={t("teacher:calendar.source_label")} disabled={disabled}
+                          error={Boolean(invalid?.sourceLabel)} helperText={invalid?.sourceLabel?.message && t(invalid.sourceLabel.message)} />
+                      )} />
+                      <Controller control={control} name={activityInput(index, "sourceUrl")} render={({ field }) => (
+                        <TextInput {...field} label={t("teacher:calendar.source_url")} disabled={disabled} inputMode="url"
+                          error={Boolean(invalid?.sourceUrl)} helperText={invalid?.sourceUrl?.message && t(invalid.sourceUrl.message)} />
+                      )} />
+                      <Button variant="outlined" color="error" disabled={disabled} sx={{ minHeight: 44, alignSelf: "flex-start" }}
+                        onClick={() => { remove(index); setEditing(null); }}>{t("teacher:calendar.remove_activity")}</Button>
+                    </CalendarActivityFields>
                   )}
-                </Box>
-                <Button variant="outlined" size="small" aria-expanded={expanded} disabled={disabled}
-                  onClick={() => setEditing(expanded ? null : item.localKey)} sx={{ minHeight: 44, flexShrink: 0 }}>
-                  {t(expanded ? "teacher:calendar.done" : "teacher:calendar.edit")}
-                </Button>
-              </Stack>
-              {expanded && (
-                <Stack spacing={1.5} sx={{ mt: 1 }}>
-                  <Controller control={control} name={activityInput(index, "text")} render={({ field }) => (
-                    <TextInput {...field} label={t("teacher:calendar.activity")} multiline minRows={2} disabled={disabled} required autoFocus
-                      error={Boolean(invalid?.text)} helperText={invalid?.text?.message && t(invalid.text.message)} />
-                  )} />
-                  <Controller control={control} name={activityInput(index, "sourceLabel")} render={({ field }) => (
-                    <TextInput {...field} label={t("teacher:calendar.source_label")} disabled={disabled}
-                      error={Boolean(invalid?.sourceLabel)} helperText={invalid?.sourceLabel?.message && t(invalid.sourceLabel.message)} />
-                  )} />
-                  <Controller control={control} name={activityInput(index, "sourceUrl")} render={({ field }) => (
-                    <TextInput {...field} label={t("teacher:calendar.source_url")} disabled={disabled} inputMode="url"
-                      error={Boolean(invalid?.sourceUrl)} helperText={invalid?.sourceUrl?.message && t(invalid.sourceUrl.message)} />
-                  )} />
-                  <Button variant="outlined" color="error" disabled={disabled} sx={{ minHeight: 44, alignSelf: "flex-start" }}
-                    onClick={() => { remove(index); setEditing(null); }}>{t("teacher:calendar.remove_activity")}</Button>
-                </Stack>
-              )}
-            </CalendarActivityCard>
-          );
-        })}
+                </CalendarActivityCard>
+              );
+            })}
+          </Stack>
+        )}
       </Stack>
       <Controller control={control} name="notes" render={({ field }) => (
         <TextInput {...field} label={t("teacher:calendar.notes")} multiline minRows={2} disabled={disabled}

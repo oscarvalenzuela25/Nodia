@@ -179,6 +179,17 @@ describe("InvoicesTab Component", () => {
     expect(screen.getByText("fac-analyzed-002.pdf")).toBeInTheDocument();
   });
 
+  it("shows a hyphen in the folio cell when the invoice has no code", async () => {
+    vi.mocked(businessServices.getInvoices).mockResolvedValue({
+      data: [{ ...mockInvoices[0], code: null }],
+      meta: { total_items: 1, page: 1, limit: 100, total_pages: 1 },
+    });
+    renderWithClient(<InvoicesTab businessId="biz-123" />);
+
+    const row = await screen.findByRole("row", { name: /Distribuidora Mayorista/ });
+    expect(within(row).getAllByRole("cell")[0]).toHaveTextContent(/^-$/);
+  });
+
   it("preserves the file and invoice while creating its category and recovering a receipt", async () => {
     vi.mocked(cashServices.sendCashMutation)
       .mockImplementationOnce(async (_businessId, key) => ({
