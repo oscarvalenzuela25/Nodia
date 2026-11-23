@@ -3,7 +3,9 @@
 **Tarjetas de repaso de Teacher — primer corte local del 2026-11-22.**
 El [plan de tarjetas](112-teacher-flashcards-plan.md#primer-corte-nativo)
 describe mazos personales, creación manual y desde una cita, subida de
-imagen y repaso móvil. La generación automática sigue en diseño.
+imagen y repaso móvil. La generación de imágenes sigue en diseño.
+La [continuación de importación](112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto)
+incorpora JSON con vista previa y propuestas de texto para citas de lección.
 
 **Calendario de estudio de Teacher — propuesta del 2026-11-22.**
 [Plan111](111-teacher-study-calendar-plan.md) describe la segunda pestaña de

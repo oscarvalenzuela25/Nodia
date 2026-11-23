@@ -1,5 +1,7 @@
 export const flashcardImageSides = ['question', 'answer'] as const;
 export type FlashcardImageSide = (typeof flashcardImageSides)[number];
+export const FLASHCARD_IMPORT_MAX_CARDS = 30;
+export const FLASHCARD_IMPORT_MAX_BYTES = 200 * 1024;
 
 export interface FlashcardAnchor {
   session_id: string;
@@ -16,7 +18,14 @@ export interface FlashcardSource {
 export interface FlashcardDeck {
   id: string;
   title: string;
+  category: string | null;
   card_count: number;
+}
+
+export interface FlashcardDeckDefinition {
+  title: string;
+  normalizedTitle: string;
+  category: string | null;
 }
 
 export interface Flashcard {
@@ -48,3 +57,13 @@ export type FlashcardPatch = Partial<FlashcardCreate> & {
   revision: number;
   imageSide?: FlashcardImageSide;
 };
+
+export type FlashcardImportCard = Pick<
+  FlashcardCreate,
+  'question' | 'answer' | 'source'
+>;
+
+export interface FlashcardImportResult {
+  deck: FlashcardDeck;
+  imported_count: number;
+}

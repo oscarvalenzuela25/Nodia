@@ -1,6 +1,8 @@
 import { imageSize } from 'image-size';
 import type {
+  FlashcardAnchor,
   FlashcardCreate,
+  FlashcardDeckDefinition,
   FlashcardImage,
   FlashcardImageSide,
   FlashcardPatch,
@@ -21,24 +23,43 @@ export function flashcardDeckId(value: unknown): string | null {
   return value === 'general' ? null : requireUuid(value).toLowerCase();
 }
 
-export function flashcardDeckTitle(value: unknown) {
-  const title = text(value, 1, 120)
+function normalizeDeckText(value: unknown, limit: number) {
+  const result = text(value, 1, limit)
     .normalize('NFKC')
     .replace(/[\p{White_Space}\uFEFF]+/gu, ' ')
     .trim();
+  return text(result, 1, limit);
+}
+
+export function flashcardDeckTitle(value: unknown) {
+  const title = normalizeDeckText(value, 120);
   const normalizedTitle = title.toLocaleLowerCase('es').normalize('NFKC');
-  text(title, 1, 120);
   text(normalizedTitle, 1, 160);
   if (normalizedTitle === 'general') teacherError('flashcard_deck_duplicate');
   return { title, normalizedTitle };
+}
+
+export function flashcardDeckDefinition(
+  title: unknown,
+  category: unknown,
+): FlashcardDeckDefinition {
+  return {
+    ...flashcardDeckTitle(title),
+    category: category === undefined ? null : normalizeDeckText(category, 80),
+  };
 }
 
 export function readFlashcardSource(value: unknown): FlashcardSource | null {
   if (value === null || value === undefined) return null;
   const input = object(value, ['label', 'anchor']);
   const label = text(input.label, 1, 200);
-  if (input.anchor === undefined) return { label };
-  const anchor = object(input.anchor, [
+  return input.anchor === undefined
+    ? { label }
+    : { label, anchor: readFlashcardAnchor(input.anchor) };
+}
+
+export function readFlashcardAnchor(value: unknown): FlashcardAnchor {
+  const anchor = object(value, [
     'session_id',
     'content_version_id',
     'block_id',
@@ -47,13 +68,10 @@ export function readFlashcardSource(value: unknown): FlashcardSource | null {
   const selection = text(anchor.selection, 1, 2000, false);
   if (!selection.trim()) teacherError('invalid_anchor', 400);
   return {
-    label,
-    anchor: {
-      session_id: requireUuid(anchor.session_id).toLowerCase(),
-      content_version_id: requireUuid(anchor.content_version_id).toLowerCase(),
-      block_id: text(anchor.block_id, 1, 64),
-      selection,
-    },
+    session_id: requireUuid(anchor.session_id).toLowerCase(),
+    content_version_id: requireUuid(anchor.content_version_id).toLowerCase(),
+    block_id: text(anchor.block_id, 1, 64),
+    selection,
   };
 }
 

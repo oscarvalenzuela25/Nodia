@@ -21,6 +21,7 @@ import {
   CreateFlashcardDto,
   CreateFlashcardReviewDto,
   FlashcardCardsQueryDto,
+  ImportFlashcardsDto,
   PatchFlashcardDto,
 } from './dto/teacher-flashcards.dto.js';
 import { TeacherFlashcardsUseCase } from './use-case/teacher-flashcards.use-case.js';
@@ -43,6 +44,12 @@ export class TeacherFlashcardsController {
     @Body() body: CreateFlashcardDeckDto,
   ) {
     return this.flashcards.createDeck(actorReference(request.auth), body);
+  }
+
+  @Post('imports')
+  @Header('Cache-Control', 'no-store')
+  importCards(@Req() request: AuthRequest, @Body() body: ImportFlashcardsDto) {
+    return this.flashcards.importCards(actorReference(request.auth), body);
   }
 
   @Get('cards')

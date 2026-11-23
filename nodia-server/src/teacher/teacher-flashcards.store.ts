@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import type {
   Flashcard,
   FlashcardCreate,
   FlashcardDeck,
+  FlashcardDeckDefinition,
   FlashcardImageSide,
+  FlashcardImportCard,
+  FlashcardImportResult,
   FlashcardPage,
   FlashcardPatch,
 } from './types/teacher-flashcards.types.js';
@@ -39,27 +43,27 @@ export class TeacherFlashcardsStore {
          WHERE owner_user_id = $1 GROUP BY deck_id
        ), decks AS (
          SELECT 'general' AS id, 'General' AS title,
+           NULL::varchar AS category,
            COALESCE((SELECT card_count FROM counts WHERE deck_id IS NULL), 0) AS card_count, 0 AS ordering
          UNION ALL
-         SELECT d.id::text, d.title, COALESCE(counts.card_count, 0), 1 AS ordering
+         SELECT d.id::text, d.title, d.category, COALESCE(counts.card_count, 0), 1 AS ordering
          FROM teacher_flashcard_decks d LEFT JOIN counts ON counts.deck_id = d.id
          WHERE d.owner_user_id = $1
        )
-       SELECT id, title, card_count FROM decks ORDER BY ordering, lower(title), id`,
+       SELECT id, title, category, card_count FROM decks ORDER BY ordering, lower(title), id`,
       [owner],
     );
   }
 
   async createDeck(
     { manager, owner }: FlashcardScope,
-    title: string,
-    normalizedTitle: string,
+    { title, normalizedTitle, category }: FlashcardDeckDefinition,
   ): Promise<FlashcardDeck | undefined> {
     const [deck]: FlashcardDeck[] = await manager.query(
-      `INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title)
-       VALUES ($1, $2, $3) ON CONFLICT (owner_user_id, normalized_title) DO NOTHING
-       RETURNING id, title, 0 AS card_count`,
-      [owner, title, normalizedTitle],
+      `INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title, category)
+       VALUES ($1, $2, $3, $4) ON CONFLICT (owner_user_id, normalized_title) DO NOTHING
+       RETURNING id, title, category, 0 AS card_count`,
+      [owner, title, normalizedTitle, category],
     );
     return deck;
   }
@@ -70,6 +74,88 @@ export class TeacherFlashcardsStore {
       [owner, deckId],
     );
     return result.found;
+  }
+
+  async deck(
+    { manager, owner }: FlashcardScope,
+    deckId: string | null,
+  ): Promise<FlashcardDeck | undefined> {
+    const [result]: FlashcardDeck[] = await manager.query(
+      `SELECT COALESCE(d.id::text, 'general') AS id, COALESCE(d.title, 'General') AS title,
+         d.category, (SELECT count(*)::int FROM teacher_flashcards
+           WHERE owner_user_id = $1 AND deck_id IS NOT DISTINCT FROM $2::uuid) AS card_count
+       FROM (SELECT $2::uuid AS id) requested
+       LEFT JOIN teacher_flashcard_decks d ON d.owner_user_id = $1 AND d.id = requested.id
+       WHERE requested.id IS NULL OR d.id IS NOT NULL`,
+      [owner, deckId],
+    );
+    return result;
+  }
+
+  async importReceipt(
+    { manager, owner }: FlashcardScope,
+    key: string,
+  ): Promise<(FlashcardImportResult & { request_hash: string }) | undefined> {
+    const [receipt]: (FlashcardImportResult & { request_hash: string })[] =
+      await manager.query(
+        `SELECT r.request_hash, r.imported_count, jsonb_build_object(
+           'id', COALESCE(r.deck_id::text, 'general'), 'title', COALESCE(d.title, 'General'),
+           'category', d.category, 'card_count', r.card_count
+         ) AS deck
+         FROM teacher_flashcard_import_requests r LEFT JOIN teacher_flashcard_decks d
+           ON d.owner_user_id = r.owner_user_id AND d.id = r.deck_id
+         WHERE r.owner_user_id = $1 AND r.request_key = $2`,
+        [owner, key],
+      );
+    return receipt;
+  }
+
+  async recordImport(
+    { manager, owner }: FlashcardScope,
+    key: string,
+    digest: string,
+    deckId: string | null,
+    result: FlashcardImportResult,
+  ) {
+    await manager.query(
+      `INSERT INTO teacher_flashcard_import_requests
+       (owner_user_id, request_key, request_hash, deck_id, card_count, imported_count)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        owner,
+        key,
+        digest,
+        deckId,
+        result.deck.card_count,
+        result.imported_count,
+      ],
+    );
+  }
+
+  async importCards(
+    { manager, owner }: FlashcardScope,
+    deckId: string | null,
+    cards: (FlashcardImportCard & { request_hash: string })[],
+  ) {
+    // All imported cards share a creation time. Assign UUIDs in list order.
+    const ids = cards
+      .map(() => randomUUID())
+      .sort()
+      .reverse();
+    const rows = cards.map((card, index) => ({ ...card, id: ids[index] }));
+    await manager.query(
+      `WITH requested AS MATERIALIZED (
+         SELECT * FROM jsonb_to_recordset($3::jsonb)
+         AS entry(id uuid, question text, answer text, source jsonb, request_hash text)
+       ), created AS (
+         INSERT INTO teacher_flashcards (id, owner_user_id, deck_id, question, answer, source)
+         SELECT id, $1, $2, question, answer, source FROM requested RETURNING id
+       )
+       INSERT INTO teacher_flashcard_create_requests (owner_user_id, request_key, card_id, request_hash)
+       SELECT $1, gen_random_uuid(), created.id, requested.request_hash
+       FROM created JOIN requested USING (id)`,
+      [owner, deckId, JSON.stringify(rows)],
+    );
   }
 
   async cards(
@@ -125,10 +211,14 @@ export class TeacherFlashcardsStore {
     return image?.image_bytes;
   }
 
-  lockCreation({ manager, owner }: FlashcardScope, key: string) {
+  lockCreation(
+    { manager, owner }: FlashcardScope,
+    key: string,
+    operation: 'create' | 'import' = 'create',
+  ) {
     return manager.query(
       'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
-      [`teacher-flashcard-create:${owner}:${key}`],
+      [`teacher-flashcard-${operation}:${owner}:${key}`],
     );
   }
 

@@ -1,5 +1,8 @@
 import { Transform } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
   IsBoolean,
   IsIn,
   IsInt,
@@ -11,6 +14,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import {
+  FLASHCARD_IMPORT_MAX_CARDS,
   flashcardImageSides,
   type FlashcardImageSide,
 } from '../types/teacher-flashcards.types.js';
@@ -33,6 +37,23 @@ export class FlashcardCardsQueryDto {
 export class CreateFlashcardDeckDto {
   @IsString()
   title!: string;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsString()
+  category?: string;
+}
+
+export class ImportFlashcardsDto {
+  @IsUUID()
+  request_key!: string;
+
+  @IsObject()
+  destination!: Record<string, unknown>;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(FLASHCARD_IMPORT_MAX_CARDS)
+  cards!: unknown[];
 }
 
 export class CreateFlashcardDto {

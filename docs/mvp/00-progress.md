@@ -1,5 +1,16 @@
 # Progreso del MVP — Nodia
 
+**Autoría de tarjetas de Teacher — 2026-11-23.** El pegado de JSON v1
+tiene formatos de una tarjeta y de mazo, vista previa, selección y
+guardado atómico, con categoría opcional. Las citas permiten preparar
+una propuesta de pregunta y respuesta. Las tarjetas con cita accesible
+permiten regenerar texto desde su menú. Las pruebas de integración
+usaron Chromium y PostgreSQL aislado, con transporte de prueba para
+la generación. La instancia local tiene aplicadas ambas migraciones.
+Quedan pendientes la inferencia real por selección, los apuntes
+independientes y las imágenes generadas.
+[Plan112](112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto).
+
 **Tarjetas de repaso de Teacher — 2026-11-22.** La rama
 `codex/teacher-study-calendar` incorpora mazos, creación manual,
 imágenes privadas, edición, eliminación y repaso de una tarjeta a

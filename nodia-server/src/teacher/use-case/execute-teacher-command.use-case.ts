@@ -142,7 +142,7 @@ export class ExecuteTeacherCommandUseCase {
       null,
       async ({ manager, actor: current }) => {
         const [j]: { session_id: string }[] = await manager.query(
-          'SELECT j.session_id FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id WHERE j.id=$1 AND (s.owner_user_id=$2 OR $3)',
+          "SELECT j.session_id FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id WHERE j.id=$1 AND (s.owner_user_id=$2 OR $3) AND j.purpose<>'flashcard_text'",
           [jobId, current.actorId, current.isSuperAdmin],
         );
         if (!j) teacherError('not_found', 404);
@@ -222,7 +222,7 @@ export class ExecuteTeacherCommandUseCase {
       editable(scope);
       cas(s.revision, b.expected_session_revision);
       const [j]: TeacherGenerationJob[] = await m.query(
-        'SELECT * FROM teacher_generation_jobs WHERE session_id=$1 AND id=$2 FOR UPDATE',
+        "SELECT * FROM teacher_generation_jobs WHERE session_id=$1 AND id=$2 AND purpose<>'flashcard_text' FOR UPDATE",
         [s.id, t.jobId],
       );
       if (!j || j.fence !== b.expected_job_fence)
@@ -646,7 +646,12 @@ export class ExecuteTeacherCommandUseCase {
         [s!.id],
       );
       await m.query(
-        "UPDATE teacher_generation_jobs SET state='blocked_paused',updated_at=clock_timestamp() WHERE session_id=$1 AND state='queued' AND dispatches_used=0",
+        `UPDATE teacher_generation_jobs
+           SET state=CASE WHEN purpose='flashcard_text' THEN 'cancelled_before_dispatch' ELSE 'blocked_paused' END,
+               blocks_duplicate=CASE WHEN purpose='flashcard_text' THEN false ELSE blocks_duplicate END,
+               error_code=CASE WHEN purpose='flashcard_text' THEN 'session_paused' ELSE error_code END,
+               updated_at=clock_timestamp()
+         WHERE session_id=$1 AND state='queued' AND dispatches_used=0`,
         [s!.id],
       );
       return {
@@ -671,7 +676,12 @@ export class ExecuteTeacherCommandUseCase {
         [s!.id],
       );
       await m.query(
-        "UPDATE teacher_generation_jobs SET state='blocked_paused',updated_at=clock_timestamp() WHERE session_id=$1 AND state='queued' AND dispatches_used=0",
+        `UPDATE teacher_generation_jobs
+           SET state=CASE WHEN purpose='flashcard_text' THEN 'cancelled_before_dispatch' ELSE 'blocked_paused' END,
+               blocks_duplicate=CASE WHEN purpose='flashcard_text' THEN false ELSE blocks_duplicate END,
+               error_code=CASE WHEN purpose='flashcard_text' THEN 'session_archived' ELSE error_code END,
+               updated_at=clock_timestamp()
+         WHERE session_id=$1 AND state='queued' AND dispatches_used=0`,
         [s!.id],
       );
     }

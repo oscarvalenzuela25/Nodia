@@ -5,11 +5,13 @@ import type {
   CreateFlashcardDeckDto,
   CreateFlashcardDto,
   CreateFlashcardReviewDto,
+  ImportFlashcardsDto,
   PatchFlashcardDto,
 } from '../dto/teacher-flashcards.dto.js';
+import { readFlashcardImport } from '../policies/teacher-flashcard-import.js';
 import {
+  flashcardDeckDefinition,
   flashcardDeckId,
-  flashcardDeckTitle,
   readFlashcardCreate,
   readFlashcardPatch,
 } from '../policies/teacher-flashcards.js';
@@ -23,7 +25,11 @@ import {
   type FlashcardScope,
 } from '../teacher-flashcards.store.js';
 import { TeacherService } from '../teacher.service.js';
-import type { FlashcardAnchor } from '../types/teacher-flashcards.types.js';
+import type {
+  FlashcardAnchor,
+  FlashcardDeckDefinition,
+  FlashcardImportResult,
+} from '../types/teacher-flashcards.types.js';
 import {
   readAnchor,
   rejectFinalHelp,
@@ -41,11 +47,40 @@ export class TeacherFlashcardsUseCase {
   }
 
   createDeck(actor: ActorReference, input: CreateFlashcardDeckDto) {
-    const { title, normalizedTitle } = flashcardDeckTitle(input.title);
-    return this.scope(actor, async (scope) => {
-      const deck = await this.store.createDeck(scope, title, normalizedTitle);
-      if (!deck) teacherError('flashcard_deck_duplicate');
-      return deck;
+    const spec = flashcardDeckDefinition(input.title, input.category);
+    return this.scope(actor, (scope) => this.createNamedDeck(scope, spec));
+  }
+
+  importCards(actor: ActorReference, input: ImportFlashcardsDto) {
+    const { requestKey, destination, cards } = readFlashcardImport(input);
+    const digest = hash({ destination, cards });
+    return this.scope<FlashcardImportResult>(actor, async (scope) => {
+      await this.store.lockCreation(scope, requestKey, 'import');
+      const previous = await this.store.importReceipt(scope, requestKey);
+      if (previous) {
+        if (previous.request_hash !== digest)
+          teacherError('idempotency_conflict');
+        return { deck: previous.deck, imported_count: previous.imported_count };
+      }
+      const deckId =
+        destination.kind === 'new'
+          ? (await this.createNamedDeck(scope, destination.deck)).id
+          : destination.deckId;
+      if (destination.kind === 'existing')
+        await this.requireDeck(scope, deckId);
+      await this.store.importCards(
+        scope,
+        deckId,
+        cards.map((card) => ({
+          ...card,
+          request_hash: hash({ ...card, deckId, image: null }),
+        })),
+      );
+      const deck = await this.store.deck(scope, deckId);
+      if (!deck) teacherError('not_found', 404);
+      const result = { deck, imported_count: cards.length };
+      await this.store.recordImport(scope, requestKey, digest, deckId, result);
+      return result;
     });
   }
 
@@ -155,6 +190,15 @@ export class TeacherFlashcardsUseCase {
   private async requireDeck(scope: FlashcardScope, deckId: string | null) {
     if (deckId && !(await this.store.hasDeck(scope, deckId)))
       teacherError('not_found', 404);
+  }
+
+  private async createNamedDeck(
+    scope: FlashcardScope,
+    spec: FlashcardDeckDefinition,
+  ) {
+    const deck = await this.store.createDeck(scope, spec);
+    if (!deck) teacherError('flashcard_deck_duplicate');
+    return deck;
   }
 
   private async requireCard(scope: FlashcardScope, id: string) {

@@ -16,6 +16,7 @@ import {
 import { flashcardImageAccept, prepareFlashcardImage } from "../../infrastructure/flashcardImage";
 import { useFlashcardImage } from "../../infrastructure/useFlashcards";
 import CalendarDrawer from "../StudyCalendar/CalendarDrawer";
+import FlashcardTextGeneration, { type FlashcardTextRequest } from "./FlashcardTextGeneration";
 import { FlashcardActions, FlashcardMediaFields, FlashcardMediaPreview } from "./styles";
 
 const fieldSchema = z.object({
@@ -32,8 +33,10 @@ export type FlashcardEditorProps = {
   initialValues?: FlashcardDraft;
   card?: Flashcard;
   mode?: "create" | "edit" | "lesson";
+  title?: string;
   busy?: boolean;
   status?: ReactNode;
+  textRequest?: FlashcardTextRequest;
   uncertain?: boolean;
   onRetry?: () => void;
   onClose: () => void;
@@ -41,7 +44,8 @@ export type FlashcardEditorProps = {
 };
 
 export function FlashcardEditor({
-  decks, initialValues, card, mode = "create", busy = false, status, uncertain = false, onRetry, onClose, onSave,
+  decks, initialValues, card, mode = "create", title: titleOverride, busy = false, status, textRequest, uncertain = false,
+  onRetry, onClose, onSave,
 }: FlashcardEditorProps) {
   const { t } = useTranslation();
   const source = card?.source ?? initialValues?.source;
@@ -52,7 +56,7 @@ export function FlashcardEditor({
   const [uploadError, setUploadError] = useState(false);
   const [replacement, setReplacement] = useState<string | null | undefined>(initialValues?.image?.data);
   const image = useFlashcardImage(card, replacement === undefined);
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<EditorValues>({
+  const { control, handleSubmit, setValue, setFocus, formState: { errors, isSubmitting } } = useForm<EditorValues>({
     resolver: zodResolver(fieldSchema),
     defaultValues: {
       question: card?.question ?? initialValues?.question ?? "",
@@ -114,7 +118,7 @@ export function FlashcardEditor({
     void handleSubmit(save)(event);
   };
 
-  const title = t(mode === "edit" ? "teacher:flashcards.edit_card" : mode === "lesson"
+  const title = titleOverride ?? t(mode === "edit" ? "teacher:flashcards.edit_card" : mode === "lesson"
     ? "teacher:flashcards.review_card" : "teacher:flashcards.new_card");
   const saveLabel = t(mode === "edit" ? "teacher:flashcards.save_changes" : "teacher:flashcards.save_card");
 
@@ -127,6 +131,11 @@ export function FlashcardEditor({
           {source.anchor.selection}
         </Typography>
       </Box>}
+      {textRequest && <FlashcardTextGeneration request={textRequest} disabled={locked} onApply={proposal => {
+        setValue("question", proposal.question, { shouldDirty: true, shouldValidate: true });
+        setValue("answer", proposal.answer, { shouldDirty: true, shouldValidate: true });
+        setFocus("question");
+      }} />}
       <Controller control={control} name="question" render={({ field }) => (
         <TextInput {...field} label={t("teacher:flashcards.question")} required disabled={locked}
           placeholder={t("teacher:flashcards.question_placeholder")}

@@ -14,6 +14,7 @@ describe('Teacher execution deadline', () => {
     ['plan_adjustment', 300000],
     ['written_feedback', 120000],
     ['contextual_reply', 120000],
+    ['flashcard_text', 120000],
   ] as const)(
     'limits %s to its authorized execution budget',
     (purpose, budget) => {
@@ -32,6 +33,7 @@ describe('Teacher execution deadline', () => {
       'plan_adjustment',
       'written_feedback',
       'contextual_reply',
+      'flashcard_text',
     ] as const) {
       expect(
         teacherGenerationDeadline(purpose, new Date(now + 20000), now),

@@ -10,8 +10,10 @@ import { TeacherCalendarController } from './teacher-calendar.controller.js';
 import { TeacherCalendarStore } from './teacher-calendar.store.js';
 import { TeacherCalendarUseCase } from './use-case/teacher-calendar.use-case.js';
 import { TeacherFlashcardsController } from './teacher-flashcards.controller.js';
+import { TeacherFlashcardGenerationController } from './teacher-flashcard-generation.controller.js';
 import { TeacherFlashcardsStore } from './teacher-flashcards.store.js';
 import { TeacherFlashcardsUseCase } from './use-case/teacher-flashcards.use-case.js';
+import { TeacherFlashcardGenerationUseCase } from './use-case/teacher-flashcard-generation.use-case.js';
 import { TeacherLearningUseCase } from './use-case/teacher-learning.use-case.js';
 import { TeacherEnrichmentUseCase } from './use-case/teacher-enrichment.use-case.js';
 import { TeacherReceiptStatusInterceptor } from './teacher-receipt-status.interceptor.js';
@@ -43,6 +45,7 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherRequestsController,
     TeacherCalendarController,
     TeacherFlashcardsController,
+    TeacherFlashcardGenerationController,
   ],
   providers: [
     TeacherService,
@@ -50,6 +53,7 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherCalendarUseCase,
     TeacherFlashcardsStore,
     TeacherFlashcardsUseCase,
+    TeacherFlashcardGenerationUseCase,
     TeacherLearningUseCase,
     TeacherEnrichmentUseCase,
     ExecuteTeacherCommandUseCase,

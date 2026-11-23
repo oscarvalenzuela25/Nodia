@@ -52,6 +52,7 @@ import { currentTeacherQualificationProbe, teacherApiQualificationScope as scope
 
 import { assertContextualQualificationJob, contextualQualificationReplyMatches } from './teacher-contextual-qualification-policy.js';
 import { enrichmentRecord, readAnchor, rejectFinalHelp } from '../teacher/use-case/teacher-enrichment-persistence.js';
+import { requireFlashcardGenerationTarget } from '../teacher/use-case/teacher-flashcard-generation-persistence.js';
 import { TeacherModelObservationService } from './teacher-model-observation.service.js';
 import { CodexOperationException } from '../common/ai/codex/codex-contract.js';
 
@@ -72,6 +73,7 @@ const hash = (value: unknown) =>
     .digest('hex');
 type Job = TeacherGenerationJob & {
   session_owner_user_id: string;
+  lesson_selection: TeacherSelection | null;
   configuration_generation: string;
   session_generation: string | null;
   lease_owner: string;
@@ -269,7 +271,7 @@ export class TeacherGenerationRuntimeService
   }
   private async candidate(manager: EntityManager, onlyJobId: string | null) {
     const rows: Job[] = await manager.query(
-      `SELECT j.*,s.owner_user_id::text AS session_owner_user_id FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id
+      `SELECT j.*,s.owner_user_id::text AS session_owner_user_id,s.selection AS lesson_selection FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id
       WHERE j.state='queued' AND j.available_at<=clock_timestamp() AND j.deadline_at>clock_timestamp()
       AND j.created_at>clock_timestamp()-interval '300 seconds'
       AND ($2::uuid IS NULL OR j.id=$2)
@@ -303,6 +305,11 @@ export class TeacherGenerationRuntimeService
         const actor = { userId: job.actor_id, sessionId: job.auth_session_public_id ?? '' };
         const current = await this.authority(manager, actor);
         assert(job.session_owner_user_id === current.actorId || current.isSuperAdmin, 'authority_changed');
+        if (job.purpose === 'flashcard_text') {
+          assert(job.session_owner_user_id === current.actorId, 'authority_changed');
+          assert(hash(job.lesson_selection) === hash(job.selection_snapshot), 'configuration_changed');
+          await requireFlashcardGenerationTarget(manager, job.session_id, job.actor_id, job.input_snapshot);
+        }
         const configured = await this.verifySelection(manager, actor, job.selection_snapshot, job.purpose);
         assert(configured.configuration_generation === job.configuration_generation, 'configuration_changed');
         return job;
@@ -351,6 +358,11 @@ export class TeacherGenerationRuntimeService
           'authority_changed',
         );
         if (job.purpose === 'contextual_reply') await rejectFinalHelp(manager, job.session_id);
+        if (job.purpose === 'flashcard_text') {
+          assert(job.session_owner_user_id === current.actorId, 'authority_changed');
+          assert(hash(job.lesson_selection) === hash(job.selection_snapshot), 'configuration_changed');
+          await requireFlashcardGenerationTarget(manager, job.session_id, job.actor_id, job.input_snapshot);
+        }
         await this.verifySelection(manager, actor, job.selection_snapshot, job.purpose);
         config = await this.configuration(
           job.selection_snapshot,
@@ -451,7 +463,7 @@ export class TeacherGenerationRuntimeService
       sessionId: claim.job.auth_session_public_id ?? '',
     });
     const sessions = await manager.query(
-      'SELECT state,owner_user_id::text AS owner_user_id FROM teacher_sessions WHERE id=$1 FOR UPDATE',
+      'SELECT state,owner_user_id::text AS owner_user_id,selection FROM teacher_sessions WHERE id=$1 FOR UPDATE',
       [claim.job.session_id],
     );
     assert(
@@ -465,6 +477,10 @@ export class TeacherGenerationRuntimeService
         (allowPaused || sessions[0].state !== 'paused'),
       'session_paused',
     );
+    if (claim.job.purpose === 'flashcard_text') {
+      assert(sessions[0].owner_user_id === current.actorId, 'authority_changed');
+      assert(hash(sessions[0].selection) === hash(claim.job.selection_snapshot), 'configuration_changed');
+    }
     const currentConfiguration = await this.configuration(claim.job.selection_snapshot, manager,
       'agentic' in claim.config ? claim.config.agentic : undefined);
     assert(currentConfiguration.configurationGeneration === claim.config.configurationGeneration &&
@@ -493,6 +509,8 @@ export class TeacherGenerationRuntimeService
   private async arm(claim: Claim) {
     await this.source.transaction(async (manager) => {
       const row = await this.owned(manager, claim);
+      if (claim.job.purpose === 'flashcard_text')
+        await requireFlashcardGenerationTarget(manager, claim.job.session_id, claim.job.actor_id, claim.job.input_snapshot);
       assert(row.operation_phase === 'reserved' && row.dispatches_used === 0);
       const config = await this.configuration(
         claim.job.selection_snapshot,
@@ -525,6 +543,8 @@ export class TeacherGenerationRuntimeService
   private async beforeExchange(claim: Claim) {
     await this.source.transaction(async (manager) => {
       const row = await this.owned(manager, claim);
+      if (claim.job.purpose === 'flashcard_text')
+        await requireFlashcardGenerationTarget(manager, claim.job.session_id, claim.job.actor_id, claim.job.input_snapshot);
       assert(
         row.operation_phase === 'dispatch_armed' &&
           row.reserved_exchanges === 1 &&

@@ -44,6 +44,24 @@ vigente y se entrega como privada, con `no-store`. Reemplazar o
 eliminar la tarjeta libera sus bytes dentro de la misma transacción.
 El original elegido por la persona se prepara en Client.
 
+## Importación y ampliación de generación
+
+La importación recibe campos de texto revisados y se guarda en una
+transacción del propietario. Se incorpora una categoría opcional al
+mazo, con coincidencia por etiqueta en la biblioteca. El JSON no
+adquiere autoridad para consultar recursos ni descargar imágenes.
+
+Las propuestas de texto con una cita usan el ámbito de generación
+de la sesión de origen y su selección expresa. El trabajo se registra
+en el journal de Teacher y revalida la sesión, el fragmento y, para
+regenerar, la revisión de la tarjeta. El resultado queda como propuesta
+de texto. Guardar o cambiar una tarjeta sigue requiriendo el escritor
+de biblioteca y una confirmación del usuario.
+
+La generación desde apuntes sin una lección y las imágenes requieren
+definir el ámbito, la retención de propuestas, su presupuesto y el
+cierre del transporte antes de habilitar cada modalidad.
+
 ## Consecuencias
 
 - La sesión conserva sus tarjetas, marcas y política de repaso. Se

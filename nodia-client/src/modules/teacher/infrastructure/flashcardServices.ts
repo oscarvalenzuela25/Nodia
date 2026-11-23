@@ -1,5 +1,6 @@
 import { mainInstance } from "../../../config/api";
 import { fileToBase64 } from "./enrichmentSchemas";
+import { flashcardImportReceiptSchema, type FlashcardImportBatch } from "./flashcardImport";
 import {
   flashcardDeckSchema, flashcardImageByteLimit, flashcardSchema,
   type FlashcardDraft, type FlashcardUpdate,
@@ -10,9 +11,23 @@ export const flashcardDecksPath = "flashcards/decks";
 export const flashcardsPath = "flashcards/cards";
 const cardPath = (id: string) => api + "/cards/" + encodeURIComponent(id);
 
-export async function createFlashcardDeck(title: string) {
-  const response = await mainInstance.post<unknown>(api + "/decks", { title });
+export async function createFlashcardDeck(title: string, category?: string) {
+  const response = await mainInstance.post<unknown>(api + "/decks", { title, category });
   return flashcardDeckSchema.parse(response.data);
+}
+
+export async function importFlashcards(batch: FlashcardImportBatch, requestKey: string) {
+  const response = await mainInstance.post<unknown>(api + "/imports", { ...batch, request_key: requestKey });
+  const receipt = flashcardImportReceiptSchema.parse(response.data);
+  const { destination } = batch;
+  const correctDeck = destination.kind === "existing"
+    ? receipt.deck.id.toLowerCase() === destination.deck_id.toLowerCase()
+    : receipt.deck.id !== "general" && receipt.deck.title === destination.title &&
+      (receipt.deck.category ?? null) === (destination.category ?? null);
+  if (response.status !== 201 || receipt.imported_count !== batch.cards.length || !correctDeck) {
+    throw new Error("flashcard_import_unconfirmed");
+  }
+  return receipt;
 }
 
 export async function createFlashcard(draft: FlashcardDraft, requestKey: string) {

@@ -185,14 +185,96 @@ la distinción de ocurrencias repetidas quedan pendientes.
 - [x] Implementar propiedad, biblioteca manual, subida privada, menú,
   repaso por mazo y procedencia desde la lección. Mantener las tarjetas
   y las marcas de las sesiones en su recurso existente.
-- [ ] Definir el propósito de generación para apuntes, citas y
-  regeneración. Validar selecciones exactas de texto e imagen y una
-  regeneración con borrador, confirmación y recuperación.
+- [x] Añadir la importación JSON revisable para una tarjeta o un mazo.
+- [x] Incorporar el propósito de propuestas de texto para citas de
+  lección y tarjetas con esa procedencia.
+- [ ] Calificar la propuesta de texto desde una lección por selección
+  exacta y comprobar la inferencia real en el entorno autorizado.
+- [ ] Diseñar la admisión y el presupuesto propios de la biblioteca
+  para apuntes libres y tarjetas sin lección. Integrar y calificar el
+  carril de imágenes antes de exponer imagen o texto e imagen.
 - [ ] Resolver la ubicación exacta de la cita y definir la continuidad
   con las tarjetas y el repaso programado de sesión.
-- [ ] Añadir la generación por lote desde texto con revisión y estado
-  por tarjeta. Definir tamaño de lote, admisión y recuperación antes de
-  ejecutar inferencias en volumen.
+- [ ] Añadir la generación interna por lote desde apuntes con estado
+  por tarjeta. Fijar su tamaño, presupuesto y recuperación.
+
+## Importación JSON y propuestas de texto
+
+**Importar tarjetas** permite copiar dos instrucciones para un LLM externo,
+una para una tarjeta y otra para un mazo. El formato v1 admite JSON
+plano o un solo bloque de código JSON. Se puede revisar el contenido,
+marcar qué tarjetas importar y elegir el destino antes del guardado.
+El nombre y la categoría opcional se usan al crear un mazo. **General**
+es el destino inicial al omitir el mazo. Una categoría es un nombre
+opcional del mazo personal y se puede usar para filtrar los mazos.
+El importador admite hasta 30 tarjetas y
+el guardado tiene un límite de 200 KiB de JSON serializado en UTF-8.
+
+```json
+{
+  "version": 1,
+  "deck": { "title": "Inglés inicial", "category": "Idiomas" },
+  "cards": [
+    {
+      "question": "¿Cuándo uso «an»?",
+      "answer": "Antes de un sonido vocálico, como en «an apple».",
+      "source": "Apuntes de artículos"
+    }
+  ]
+}
+```
+
+El objeto `deck` y el campo `source` son opcionales. Las tarjetas
+importadas conservan una fuente de texto cuando se incluye. Para añadir
+una imagen se usa el editor de la tarjeta con un archivo local.
+Previsualizar no envía una solicitud de escritura ni llama a un modelo.
+El POST confirmado `/api/v1/teacher/flashcards/imports` admite destino
+existente o nuevo. Guarda mazo, tarjetas en el orden revisado y recibo
+en una transacción. El mismo recibo confirma un reintento sin duplicar
+las tarjetas. Una clave con distinto contenido da conflicto.
+
+Al seleccionar una cita en una lección, **Generar propuesta de texto**
+muestra la conexión, modo, modelo y razonamiento de esa sesión.
+La solicitud registra el propósito `flashcard_text` con la selección
+exacta y usa el presupuesto y el Worker de Teacher. El acceso a la
+cita y la ausencia de una evaluación final activa se vuelven a
+comprobar durante el recorrido. **Regenerar texto** usa el mismo
+contrato con la revisión actual de una tarjeta que tenga una cita
+accesible. La pregunta y respuesta actuales y la cita sustentan la
+propuesta.
+
+El POST de generación admite una intención y devuelve 202. Las lecturas
+por id de trabajo o clave de solicitud recuperan su estado. Una respuesta
+perdida se concilia por GET. Las propuestas listas se pueden poner en
+el editor, ajustar y guardar por acción expresa. La preparación no
+modifica la tarjeta, la imagen guardada ni el punto de lectura.
+
+Los apuntes libres y la regeneración de tarjetas sin cita requieren un
+ámbito de generación propio de la biblioteca. La generación de imágenes
+requiere una operación privada con persistencia temporal, calificación
+del adaptador y cierre demostrable. La recuperación de texto y de imagen
+se deberá tratar por separado para conservar propuestas parciales y
+permitir aplicar sólo los cambios aceptados. La integración local de
+texto se verifica con un transporte de prueba y PostgreSQL. La validación
+de una selección real depende de que exista una conexión configurada
+para Teacher en el entorno.
+
+### Verificación local del 2026-11-23
+
+- [Integración de importación](../../nodia-server/test/teacher-flashcards.integration.mjs).
+  Nest y PostgreSQL verificaron propiedad, orden, un solo efecto ante
+  concurrencia, rechazo de replay con contenido cambiado y rollback
+  completo ante un fallo de inserción. La reversión de la migración
+  se habilita cuando las categorías y recibos todavía están vacíos.
+- [Integración de propuesta](../../nodia-server/test/teacher-flashcard-generation.integration.mjs).
+  Nest, PostgreSQL y el Worker probaron admisión, presupuesto, cierre,
+  relectura sin reenvío, evaluación final activa y revisión obsoleta
+  con transporte de prueba. No hubo inferencias reales.
+- Chromium verificó la revisión previa al POST y el mazo categorizado.
+  Probó también la propuesta y la regeneración de texto desde el menú
+  usando los endpoints de Teacher y una publicación de prueba. El
+  cursor permaneció intacto y sólo las confirmaciones modificaron
+  la biblioteca.
 
 [Calendario de estudio](111-teacher-study-calendar-plan.md) ·
 [Ficha candidata de tarjetas](../nodia-ai/knowledge/studies/features/flashcards.md) ·

@@ -5,12 +5,13 @@ import { notifyHttpError } from "../../../config/httpFeedback";
 import useAuthStore, { hasActiveSession } from "../../../store/authStore";
 import i18n from "../../../translate";
 import { useTeacherQuery } from "./useServices";
+import type { FlashcardImportBatch } from "./flashcardImport";
 import {
   flashcardDecksSchema, flashcardPageSchema,
   type Flashcard, type FlashcardDraft, type FlashcardPage, type FlashcardUpdate,
 } from "./flashcards";
 import {
-  createFlashcard, createFlashcardDeck, deleteFlashcard, flashcardDecksPath, flashcardsPath,
+  createFlashcard, createFlashcardDeck, deleteFlashcard, flashcardDecksPath, flashcardsPath, importFlashcards,
   readFlashcardImage, recordFlashcardReview, updateFlashcard,
 } from "./flashcardServices";
 
@@ -43,7 +44,8 @@ export function useFlashcardImage(card: Flashcard | undefined, enabled = true) {
 }
 
 type Intent =
-  | { kind: "deck"; title: string }
+  | { kind: "deck"; title: string; category?: string }
+  | { kind: "import"; batch: FlashcardImportBatch; requestKey: string }
   | { kind: "create"; draft: FlashcardDraft; requestKey: string }
   | { kind: "update"; id: string; patch: FlashcardUpdate }
   | { kind: "delete"; id: string }
@@ -51,7 +53,8 @@ type Intent =
 
 async function execute(intent: Intent) {
   switch (intent.kind) {
-    case "deck": return { kind: intent.kind, data: await createFlashcardDeck(intent.title) } as const;
+    case "deck": return { kind: intent.kind, data: await createFlashcardDeck(intent.title, intent.category) } as const;
+    case "import": return { kind: intent.kind, data: await importFlashcards(intent.batch, intent.requestKey) } as const;
     case "create": return { kind: intent.kind, data: await createFlashcard(intent.draft, intent.requestKey) } as const;
     case "update": return { kind: intent.kind, data: await updateFlashcard(intent.id, intent.patch) } as const;
     case "delete":
@@ -65,6 +68,7 @@ async function execute(intent: Intent) {
 
 const successKey = {
   deck: "teacher:flashcards.deck_created",
+  import: "teacher:flashcard_import.saved",
   create: "teacher:flashcards.saved",
   update: "teacher:flashcards.saved",
   delete: "teacher:flashcards.deleted",
@@ -120,9 +124,13 @@ export function useFlashcardWrites() {
 
   return {
     busy: isPending || !active,
-    createDeck: async (title: string) => {
-      const result = await write({ kind: "deck", title });
+    createDeck: async (title: string, category?: string) => {
+      const result = await write({ kind: "deck", title, category });
       return result?.kind === "deck" ? result.data : null;
+    },
+    importCards: async (batch: FlashcardImportBatch, requestKey: string) => {
+      const result = await write({ kind: "import", batch, requestKey });
+      return result?.kind === "import" ? result.data : null;
     },
     createCard: async (draft: FlashcardDraft, requestKey: string) => {
       const result = await write({ kind: "create", draft, requestKey });

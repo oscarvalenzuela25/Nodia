@@ -4,10 +4,11 @@ export const flashcardGeneralDeck = "general";
 export const flashcardPageSize = 12;
 export const flashcardTextLimit = 2000;
 export const flashcardDeckTitleLimit = 120;
+export const flashcardCategoryLimit = 80;
 export const flashcardSourceLabelLimit = 200;
 export const flashcardImageByteLimit = 144 * 1024;
 
-const deckId = z.union([z.literal(flashcardGeneralDeck), z.uuid()]);
+export const flashcardDeckIdSchema = z.union([z.literal(flashcardGeneralDeck), z.uuid()]);
 const nonnegative = z.number().int().nonnegative();
 const revision = z.number().int().positive();
 const side = z.enum(["question", "answer"]);
@@ -25,14 +26,15 @@ export const flashcardSourceSchema = z.object({
 });
 
 export const flashcardDeckSchema = z.object({
-  id: deckId,
+  id: flashcardDeckIdSchema,
   title: z.string().trim().min(1).max(flashcardDeckTitleLimit),
   card_count: nonnegative,
+  category: z.string().trim().min(1).max(flashcardCategoryLimit).nullable().optional(),
 });
 
 export const flashcardSchema = z.object({
   id: z.uuid(),
-  deck_id: deckId,
+  deck_id: flashcardDeckIdSchema,
   question: cardText,
   answer: cardText,
   revision,
