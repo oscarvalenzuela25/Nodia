@@ -7,9 +7,11 @@ type Props = {
   decks: readonly FlashcardDeck[];
   initialValues?: FlashcardDraft;
   mode?: "create" | "lesson";
+  title?: string;
   busy?: boolean;
   status?: ReactNode;
   textRequest?: FlashcardEditorProps["textRequest"];
+  libraryRequest?: FlashcardEditorProps["libraryRequest"];
   createCard: (draft: FlashcardDraft, requestKey: string) => Promise<Flashcard | null>;
   onCreated: (card: Flashcard) => void;
   onClose: () => void;
@@ -17,7 +19,9 @@ type Props = {
 
 type CreateIntent = { draft: FlashcardDraft; key: string };
 
-export default function FlashcardCreateDrawer({ decks, initialValues, mode, busy, status, textRequest, createCard, onCreated, onClose }: Props) {
+export default function FlashcardCreateDrawer({
+  decks, initialValues, mode, title, busy, status, textRequest, libraryRequest, createCard, onCreated, onClose,
+}: Props) {
   const intent = useRef<CreateIntent | null>(null);
   const sending = useRef(false);
   const [pending, setPending] = useState(false);
@@ -51,8 +55,8 @@ export default function FlashcardCreateDrawer({ decks, initialValues, mode, busy
     }
   };
 
-  return <FlashcardEditor decks={decks} initialValues={initialValues} mode={mode} busy={busy || pending}
-    status={status} textRequest={textRequest}
+  return <FlashcardEditor decks={decks} initialValues={initialValues} mode={mode} title={title} busy={busy || pending}
+    status={status} textRequest={textRequest} libraryRequest={libraryRequest}
     uncertain={uncertain} onRetry={() => { if (intent.current) void submit(intent.current.draft); }}
     onClose={onClose} onSave={submit} />;
 }

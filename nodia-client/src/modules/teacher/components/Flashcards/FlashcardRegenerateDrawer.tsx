@@ -1,19 +1,21 @@
 import { LinearProgress } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
+import type { FlashcardProposalParts } from "../../infrastructure/flashcardLibraryProposal";
 import { useTeacherSession } from "../../infrastructure/useServices";
 import FlashcardEditor, { type FlashcardEditorProps } from "./FlashcardEditor";
 
 type Props = Pick<FlashcardEditorProps, "decks" | "busy" | "onClose" | "onSave">
-  & { card: NonNullable<FlashcardEditorProps["card"]> };
+  & { card: NonNullable<FlashcardEditorProps["card"]>; parts: FlashcardProposalParts };
 
-export default function FlashcardRegenerateDrawer({ card, ...props }: Props) {
+export default function FlashcardRegenerateDrawer({ card, parts, ...props }: Props) {
   const { t } = useTranslation();
-  const originId = card.source?.anchor?.session_id;
+  const originId = parts === "text" ? card.source?.anchor?.session_id : undefined;
   const origin = useTeacherSession(originId);
   const session = !origin.isError && origin.data?.id === originId ? origin.data : undefined;
 
-  return <FlashcardEditor {...props} card={card} mode="edit" title={t("teacher:flashcard_generation.regenerate")}
+  return <FlashcardEditor {...props} card={card} mode="edit" title={t(`teacher:flashcard_proposal.regenerate.${parts}`)}
+    libraryRequest={{ origin: { kind: "card", id: card.id, revision: card.revision }, initialParts: parts }}
     textRequest={session && {
       target: { card_id: card.id, revision: card.revision, parts: "text" },
       selection: session.selection,

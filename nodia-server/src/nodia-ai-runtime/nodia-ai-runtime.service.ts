@@ -60,6 +60,7 @@ export class NodiaAiRuntimeService {
           SELECT owner.owner_id FROM nodia_ai_jobs active JOIN nodia_ai_conversations owner ON owner.id=active.conversation_id
           WHERE active.kind IN ('turn','execution') AND active.state IN ('leased','unknown')
           ${teacher ? "UNION ALL SELECT actor_id AS owner_id FROM teacher_generation_jobs WHERE state IN ('running','unknown') AND blocks_duplicate=true" : ''}
+          ${teacher ? "UNION ALL SELECT actor_id AS owner_id FROM ai_generation_operations WHERE owner_kind='flashcard_library' AND acknowledged_at IS NULL" : ''}
         ) work GROUP BY owner_id
       )
       SELECT c.id FROM nodia_ai_conversations c
@@ -72,7 +73,8 @@ export class NodiaAiRuntimeService {
       AND r.policy_hash=$1 AND r.catalog_version=ANY($2::text[])
       AND (r.provider_dispatches_used>0 OR r.created_at+$5*interval '1 second'>clock_timestamp())
       AND (j.stage_key<>'inference' OR NOT EXISTS(SELECT 1 FROM nodia_ai_runtime_slots s WHERE s.resource_key=r.context_manifest->>'resource_key' AND s.state IN ('held','unknown')))
-      AND ((SELECT COUNT(*) FROM nodia_ai_jobs active WHERE active.kind IN ('turn','execution') AND active.state='leased')${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')" : ''})<$3
+      AND ((SELECT COUNT(*) FROM nodia_ai_jobs active WHERE active.kind IN ('turn','execution') AND active.state='leased')
+        ${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')+(SELECT count(*) FROM nodia_ai_runtime_slots s JOIN ai_generation_operations o ON o.id=s.generation_operation_id WHERE s.state='held' AND o.owner_kind='flashcard_library')" : ''})<$3
       AND COALESCE(active_owner_counts.active_count,0)<$4
       ORDER BY j.available_at,j.id FOR UPDATE OF c SKIP LOCKED LIMIT 1`,
       [policyHash, catalogs, foregroundWorkers, activePerOwner, waitSeconds],

@@ -14,8 +14,10 @@ import {
   type FlashcardDeck, type FlashcardDraft, type FlashcardSide,
 } from "../../infrastructure/flashcards";
 import { flashcardImageAccept, prepareFlashcardImage } from "../../infrastructure/flashcardImage";
+import type { FlashcardTextProposal } from "../../infrastructure/flashcardGeneration";
 import { useFlashcardImage } from "../../infrastructure/useFlashcards";
 import CalendarDrawer from "../StudyCalendar/CalendarDrawer";
+import FlashcardProposalPanel, { type FlashcardLibraryRequest } from "./FlashcardProposalPanel";
 import FlashcardTextGeneration, { type FlashcardTextRequest } from "./FlashcardTextGeneration";
 import { FlashcardActions, FlashcardMediaFields, FlashcardMediaPreview } from "./styles";
 
@@ -37,6 +39,7 @@ export type FlashcardEditorProps = {
   busy?: boolean;
   status?: ReactNode;
   textRequest?: FlashcardTextRequest;
+  libraryRequest?: FlashcardLibraryRequest;
   uncertain?: boolean;
   onRetry?: () => void;
   onClose: () => void;
@@ -44,16 +47,18 @@ export type FlashcardEditorProps = {
 };
 
 export function FlashcardEditor({
-  decks, initialValues, card, mode = "create", title: titleOverride, busy = false, status, textRequest, uncertain = false,
+  decks, initialValues, card, mode = "create", title: titleOverride, busy = false, status, textRequest, libraryRequest, uncertain = false,
   onRetry, onClose, onSave,
 }: FlashcardEditorProps) {
   const { t } = useTranslation();
   const source = card?.source ?? initialValues?.source;
   const uploadErrorId = useId();
+  const legacyId = useId();
   const input = useRef<HTMLInputElement>(null);
   const uploadInFlight = useRef(false);
   const [preparing, setPreparing] = useState(false);
   const [uploadError, setUploadError] = useState(false);
+  const [legacyOpen, setLegacyOpen] = useState<boolean>();
   const [replacement, setReplacement] = useState<string | null | undefined>(initialValues?.image?.data);
   const image = useFlashcardImage(card, replacement === undefined);
   const { control, handleSubmit, setValue, setFocus, formState: { errors, isSubmitting } } = useForm<EditorValues>({
@@ -78,19 +83,27 @@ export function FlashcardEditor({
   const locked = blocked || uncertain;
 
   const upload = async (file: File) => {
-    if (locked || uploadInFlight.current) return;
+    if (locked || uploadInFlight.current) return false;
     uploadInFlight.current = true;
     setPreparing(true);
     setUploadError(false);
     try {
       const result = await prepareFlashcardImage(file);
       setReplacement(result.data);
+      return true;
     } catch {
       setUploadError(true);
+      return false;
     } finally {
       uploadInFlight.current = false;
       setPreparing(false);
     }
+  };
+
+  const applyText = (proposal: FlashcardTextProposal) => {
+    setValue("question", proposal.question, { shouldDirty: true, shouldValidate: true });
+    setValue("answer", proposal.answer, { shouldDirty: true, shouldValidate: true });
+    setFocus("question");
   };
 
   const save = async (values: EditorValues) => {
@@ -131,11 +144,19 @@ export function FlashcardEditor({
           {source.anchor.selection}
         </Typography>
       </Box>}
-      {textRequest && <FlashcardTextGeneration request={textRequest} disabled={locked} onApply={proposal => {
-        setValue("question", proposal.question, { shouldDirty: true, shouldValidate: true });
-        setValue("answer", proposal.answer, { shouldDirty: true, shouldValidate: true });
-        setFocus("question");
-      }} />}
+      {libraryRequest && <FlashcardProposalPanel request={libraryRequest} disabled={locked} onUseText={applyText} onUseImage={upload} />}
+      {textRequest && libraryRequest && <FlashcardActions>
+        <Button type="button" variant="outlined" disabled={locked} aria-expanded={legacyOpen ?? false}
+          aria-controls={legacyId} onClick={() => setLegacyOpen(open => !open)}>
+          {t("teacher:flashcard_proposal.lesson_text")}
+        </Button>
+      </FlashcardActions>}
+      {textRequest && (libraryRequest ? <Box id={legacyId} hidden={!legacyOpen}>
+        {legacyOpen !== undefined && <FlashcardTextGeneration request={textRequest} disabled={locked || !legacyOpen} onApply={applyText} />}
+      </Box> : <FlashcardTextGeneration request={textRequest} disabled={locked} onApply={applyText} />)}
+      {libraryRequest && <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700 }}>
+        {t("teacher:flashcard_proposal.draft")}
+      </Typography>}
       <Controller control={control} name="question" render={({ field }) => (
         <TextInput {...field} label={t("teacher:flashcards.question")} required disabled={locked}
           placeholder={t("teacher:flashcards.question_placeholder")}

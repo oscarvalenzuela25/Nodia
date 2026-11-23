@@ -27,6 +27,17 @@ export class PrepareNodiaAiRestoreUseCase {
       if(await hasGenerationBridge(manager)){
         const rows:{populated:boolean}[]=await manager.query('SELECT EXISTS(SELECT 1 FROM teacher_sessions) AS populated');
         if(rows[0]?.populated)throw Error('nodia_ai:teacher_restore_requires_owner_reconciliation');
+        const [library]: { present: boolean }[] = await manager.query(
+          "SELECT to_regclass('public.teacher_flashcard_library_parts') IS NOT NULL AS present",
+        );
+        if (library?.present) {
+          const [pending]: { present: boolean }[] = await manager.query(
+            `SELECT EXISTS(SELECT 1 FROM teacher_flashcard_library_parts WHERE state IN ('queued','running'))
+               OR EXISTS(SELECT 1 FROM ai_generation_operations
+                 WHERE owner_kind='flashcard_library' AND acknowledged_at IS NULL) AS present`,
+          );
+          if (pending?.present) throw Error('nodia_ai:flashcard_library_restore_requires_owner_reconciliation');
+        }
       }
       const [clock]: { now: Date }[] = await manager.query('SELECT clock_timestamp() AS now');
       const manifest = this.validate.execute(input, new Date(clock.now), this.policy);

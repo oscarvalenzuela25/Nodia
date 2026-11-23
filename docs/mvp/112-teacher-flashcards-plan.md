@@ -190,9 +190,10 @@ la distinción de ocurrencias repetidas quedan pendientes.
   lección y tarjetas con esa procedencia.
 - [ ] Calificar la propuesta de texto desde una lección por selección
   exacta y comprobar la inferencia real en el entorno autorizado.
-- [ ] Diseñar la admisión y el presupuesto propios de la biblioteca
-  para apuntes libres y tarjetas sin lección. Integrar y calificar el
-  carril de imágenes antes de exponer imagen o texto e imagen.
+- [x] Incorporar la admisión, el presupuesto y las propuestas de
+  biblioteca para apuntes y tarjetas con o sin lección.
+- [ ] Calificar la conexión, modelo, esfuerzo y clave del carril de
+  imagen en el entorno autorizado. Verificar inferencia real por alcance.
 - [ ] Resolver la ubicación exacta de la cita y definir la continuidad
   con las tarjetas y el repaso programado de sesión.
 - [ ] Añadir la generación interna por lote desde apuntes con estado
@@ -249,15 +250,8 @@ perdida se concilia por GET. Las propuestas listas se pueden poner en
 el editor, ajustar y guardar por acción expresa. La preparación no
 modifica la tarjeta, la imagen guardada ni el punto de lectura.
 
-Los apuntes libres y la regeneración de tarjetas sin cita requieren un
-ámbito de generación propio de la biblioteca. La generación de imágenes
-requiere una operación privada con persistencia temporal, calificación
-del adaptador y cierre demostrable. La recuperación de texto y de imagen
-se deberá tratar por separado para conservar propuestas parciales y
-permitir aplicar sólo los cambios aceptados. La integración local de
-texto se verifica con un transporte de prueba y PostgreSQL. La validación
-de una selección real depende de que exista una conexión configurada
-para Teacher en el entorno.
+El recorrido de sólo texto con selección de la lección se mantiene
+junto a las [propuestas de la biblioteca](#propuestas-de-texto-e-imagen-en-la-biblioteca).
 
 ### Verificación local del 2026-11-23
 
@@ -279,3 +273,56 @@ para Teacher en el entorno.
 [Calendario de estudio](111-teacher-study-calendar-plan.md) ·
 [Ficha candidata de tarjetas](../nodia-ai/knowledge/studies/features/flashcards.md) ·
 [Cola de entregas](TODO.md#cola-actual).
+
+## Propuestas de texto e imagen en la biblioteca
+
+**Generar desde apuntes** admite hasta 8000 bytes UTF-8 de contenido.
+**Crear flashcard** desde una cita usa el fragmento vigente y conserva
+el origen al guardar. En ambos casos la propuesta ofrece pregunta,
+respuesta y, si se selecciona, una ilustración. Se prepara una tarjeta
+por intención. El menú de los tres puntos permite regenerar **Texto**,
+**Imagen** o **Texto e imagen** usando la revisión guardada.
+
+El editor muestra cada resultado en una vista previa. La persona elige
+qué partes usar, puede ajustarlas o subir otra imagen y guarda de forma
+explícita. Cuando falla la imagen, el texto listo permanece disponible.
+La imagen se puede mostrar con la pregunta o con la respuesta. El
+repaso y el progreso de la tarjeta siguen sus operaciones existentes.
+
+| Ruta bajo `/api/v1/teacher/flashcards/proposals` | Efecto |
+| --- | --- |
+| `POST /` | Admite por clave inmutable, origen, parte solicitada y selección exacta por parte. Devuelve 202 con el identificador. |
+| `GET /eligibility` | Comprueba la tupla elegida para texto o imagen. Es una lectura de configuración y evidencia. |
+| `GET /:id`, `GET /requests/:key` | Recupera estados y resultado de texto por propietario. Revalida procedencia y revisión vigentes. |
+| `GET /:id/image` | Entrega la miniatura WebP privada de una imagen lista y vigente. |
+
+El [ADR-118](../architecture/decisions/ADR-118-teacher-flashcard-proposal-execution.md)
+define presupuesto, slots compartidos y retención. El modelo de texto
+y el de imagen se eligen explícitamente. El carril inicial de biblioteca
+usa API key. La calificación con el comando
+`scripts/qualify-teacher-flashcard-image.mjs` requiere un operador,
+sesión vigente y selección exacta. La prueba envía la descripción
+sintética fija de una figura y exige cierre y reconocimiento durables.
+Se conserva la opción de sólo texto con la IA de la lección.
+
+### Evidencia local de propuestas con imagen
+
+La [integración compilada](../../nodia-server/test/teacher-flashcard-generation.integration.mjs)
+ejecutó Nest, el Worker y todas las migraciones en PostgreSQL aislado.
+Las respuestas de texto e imagen llegaron por HTTP interceptado. Se
+verificaron la calificación exclusiva de la selección, la secuencia de
+texto e imagen, la vista previa privada, la conservación de texto ante un
+resultado incierto, la revisión de tarjeta y el retiro del contenido
+vencido de las filas activas. Releer una clave incierta no repitió el POST
+generativo. El ensayo no usó proveedores reales. En la instancia local
+de Nodia no había conexiones ni claves de IA configuradas.
+
+Chromium verificó la interfaz a 320 y 1440 px con respuestas de prueba,
+incluidos el bloqueo de apuntes vacíos, la vista previa antes del guardado
+y el reemplazo de una imagen conservando el texto de la tarjeta.
+
+La [prueba de recuperación](../../nodia-server/test/teacher-flashcard-library-recovery.integration.mjs)
+comprobó que vencer un lease no libera un ejecutor vivo. Tras
+demostrar el cierre local se liberó el slot y se conservó el resultado
+remoto como incierto. También se verificaron el límite de resultados
+serializados y el rechazo de restauraciones con trabajo pendiente.

@@ -4,7 +4,7 @@
   "document_id": "studies",
   "product_id": "studies",
   "kind": "product",
-  "revision": 57,
+  "revision": 58,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -301,10 +301,11 @@ mantiene el seguimiento del piloto. La ficha conserva su estado candidato.
 El [Plan112](../../../mvp/112-teacher-flashcards-plan.md) y la
 [ficha candidata](features/flashcards.md) describen mazos personales,
 creación manual y desde una cita de lección, imagen privada y repaso
-móvil. La continuación incorpora importación JSON y propuestas de texto
-ancladas a una lección. El impacto funcional se limita a Teacher. La
-generación de imágenes, la continuidad con el repaso programado y la
-integración conversacional conservan su alcance pendiente.
+móvil. La continuación incorpora importación JSON, propuestas desde
+apuntes o citas y vistas previas por parte. El impacto funcional se
+limita a Teacher. La inferencia real del carril de biblioteca, la
+continuidad con el repaso programado y la integración conversacional
+conservan su alcance pendiente.
 
 ## Calendario personal de estudio — propuesta del 2026-11-22
 
@@ -691,7 +692,7 @@ La implementación conserva límites parciales por función y evidencia históri
 | Lecciones, práctica, corrección y refuerzo | [Ficha](features/lessons-practice-and-review.md) | Parcial; práctica12/14 y corrección escrita VM comprobadas | Sin registrar | Teacher `/nodia-teacher` |
 | Evidencia por objetivo y recomendaciones | [Ficha](features/learning-evidence-and-recommendations.md) | Parcial E1/E2/E3; evidencia/mapeos/recomendación VM | Sin registrar | Teacher `/nodia-teacher` |
 | Repaso espaciado | [Ficha](features/spaced-repetition.md) | Parcial E5; tarjeta/repaso manual VM | Sin registrar | Teacher `/nodia-teacher` |
-| Tarjetas de repaso por mazo | [Ficha](features/flashcards.md) | Parcial local; biblioteca, repaso, importación JSON y propuestas de texto vinculadas a una lección | Sin registrar | Teacher `/nodia-teacher` |
+| Tarjetas de repaso por mazo | [Ficha](features/flashcards.md) | Parcial local; biblioteca, repaso, importación JSON y propuestas de texto e imagen por partes | Sin registrar | Teacher `/nodia-teacher` |
 | Aclaraciones ancladas al material | [Ficha](features/contextual-clarifications.md) | Parcial E6; propósito y ayuda real anclada VM | Sin registrar | Teacher `/nodia-teacher` |
 | Fuentes propias y citas | [Ficha](features/learning-sources.md) | Parcial E7a; fuente textual VM; sin cita emitida | Sin registrar | Teacher `/nodia-teacher` |
 | Tipos internos de actividad y visuales declarativos | [Ficha](features/activity-types-and-visuals.md) | Parcial E7b/E7c; actividad/visual manual VM | Sin registrar | Teacher `/nodia-teacher` |

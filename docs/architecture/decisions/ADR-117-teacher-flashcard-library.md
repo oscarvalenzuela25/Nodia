@@ -58,9 +58,9 @@ regenerar, la revisión de la tarjeta. El resultado queda como propuesta
 de texto. Guardar o cambiar una tarjeta sigue requiriendo el escritor
 de biblioteca y una confirmación del usuario.
 
-La generación desde apuntes sin una lección y las imágenes requieren
-definir el ámbito, la retención de propuestas, su presupuesto y el
-cierre del transporte antes de habilitar cada modalidad.
+El [ADR-118](ADR-118-teacher-flashcard-proposal-execution.md) describe
+el propietario de ejecución de biblioteca, la retención, el presupuesto
+y el cierre para apuntes y propuestas con imagen.
 
 ## Consecuencias
 

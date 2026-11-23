@@ -34,6 +34,7 @@ function LessonFlashcardDrawer({ selection, sourceLabel, aiSelection, onClose }:
 
   return <FlashcardCreateDrawer mode="lesson" decks={decks.data ?? []}
     textRequest={{ target: { source: anchor }, selection: aiSelection }}
+    libraryRequest={{ origin: { kind: "quote", anchor } }}
     initialValues={{
       question: "",
       answer: selection.quote,

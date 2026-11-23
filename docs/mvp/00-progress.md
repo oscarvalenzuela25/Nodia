@@ -1,5 +1,16 @@
 # Progreso del MVP — Nodia
 
+**Propuestas de tarjetas con imagen — 2026-11-23.** Teacher prepara
+una tarjeta desde apuntes o citas y ofrece regenerar el texto, la
+imagen o ambos desde el menú. Cada resultado se revisa antes de
+incorporarlo al editor. PostgreSQL y Chromium verificaron el
+recorrido con respuestas interceptadas. El carril de biblioteca
+requiere una selección API key. La imagen se habilita con una
+calificación propia por selección. Se aplicaron las dos migraciones
+y se reiniciaron el API y el Worker locales. La instancia local
+permanece sin conexiones de IA operativas.
+[Plan112](112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca).
+
 **Autoría de tarjetas de Teacher — 2026-11-23.** El pegado de JSON v1
 tiene formatos de una tarjeta y de mazo, vista previa, selección y
 guardado atómico, con categoría opcional. Las citas permiten preparar

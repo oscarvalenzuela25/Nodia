@@ -8,10 +8,12 @@ import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import StyleOutlined from "@mui/icons-material/StyleOutlined";
 import { useTranslation } from "react-i18next";
 import type { Flashcard } from "../../infrastructure/flashcards";
+import type { FlashcardProposalParts } from "../../infrastructure/flashcardLibraryProposal";
 import { useFlashcardImage } from "../../infrastructure/useFlashcards";
 import { FlashcardMenuTrigger, FlashcardRowButton, FlashcardRowLayout, FlashcardRowMedia, FlashcardSnippet } from "./styles";
 
-type Action = "edit" | "delete" | "regenerate";
+type Action = "edit" | "delete" | FlashcardProposalParts;
+const regenerationParts: FlashcardProposalParts[] = ["text", "image", "both"];
 type Props = {
   card: Flashcard;
   busy: boolean;
@@ -19,7 +21,7 @@ type Props = {
   onOpen: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onRegenerate?: () => void;
+  onRegenerate: (parts: FlashcardProposalParts) => void;
 };
 
 export default function FlashcardRow({ card, busy, active, onOpen, onEdit, onDelete, onRegenerate }: Props) {
@@ -92,18 +94,18 @@ export default function FlashcardRow({ card, busy, active, onOpen, onEdit, onDel
           const action = pendingAction.current;
           pendingAction.current = null;
           if (action === "edit") onEdit();
-          if (action === "regenerate") onRegenerate?.();
           if (action === "delete") onDelete();
+          if (action !== null && action !== "edit" && action !== "delete") onRegenerate(action);
         } },
       }}>
       <MenuItem disabled={busy} onClick={() => selectAction("edit")} sx={{ minHeight: 44 }}>
         <ListItemIcon><EditOutlined fontSize="small" /></ListItemIcon>
         {t("teacher:flashcards.edit")}
       </MenuItem>
-      {onRegenerate && <MenuItem disabled={busy} onClick={() => selectAction("regenerate")} sx={{ minHeight: 44 }}>
+      {regenerationParts.map(part => <MenuItem key={part} disabled={busy} onClick={() => selectAction(part)} sx={{ minHeight: 44 }}>
         <ListItemIcon><AutoAwesomeOutlined fontSize="small" /></ListItemIcon>
-        {t("teacher:flashcard_generation.regenerate")}
-      </MenuItem>}
+        {t(`teacher:flashcard_proposal.regenerate.${part}`)}
+      </MenuItem>)}
       <MenuItem disabled={busy} onClick={() => selectAction("delete")}
         sx={{ minHeight: 44, color: "error.main", "& .MuiListItemIcon-root": { color: "inherit" } }}>
         <ListItemIcon><DeleteOutlineOutlined fontSize="small" /></ListItemIcon>

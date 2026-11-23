@@ -6,7 +6,9 @@ El [Plan112](../../mvp/112-teacher-flashcards-plan.md) y la
 [ficha candidata](studies/features/flashcards.md) describen la biblioteca
 personal de mazos, tarjetas con imagen privada y repaso móvil. La
 continuación agrega [importación JSON y propuestas de texto desde citas](../../mvp/112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto).
-La generación de imágenes y la integración con NodiaAI siguen pendientes.
+Las [propuestas de biblioteca](../../mvp/112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca)
+incluyen texto e imagen con vista previa. La calificación por proveedor
+real y la integración con NodiaAI siguen pendientes.
 
 ## Calendario de estudio de Teacher — propuesta del 2026-11-22
 

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Box, Button, Chip, IconButton, LinearProgress, Pagination, Stack, Tooltip, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
+import AutoAwesomeOutlined from "@mui/icons-material/AutoAwesomeOutlined";
 import ContentPasteOutlined from "@mui/icons-material/ContentPasteOutlined";
 import LayersOutlined from "@mui/icons-material/LayersOutlined";
 import PlayArrowOutlined from "@mui/icons-material/PlayArrowOutlined";
@@ -14,6 +15,7 @@ import TextInput from "../../../../components/inputs/TextInput";
 import {
   flashcardCategoryLimit, flashcardDeckTitleLimit, flashcardGeneralDeck, type Flashcard, type FlashcardDraft, type FlashcardSide,
 } from "../../infrastructure/flashcards";
+import type { FlashcardProposalParts } from "../../infrastructure/flashcardLibraryProposal";
 import { useFlashcardDecks, useFlashcards, useFlashcardWrites } from "../../infrastructure/useFlashcards";
 import CalendarDrawer from "../StudyCalendar/CalendarDrawer";
 import TeacherLoading from "../TeacherLoading";
@@ -26,7 +28,8 @@ import FlashcardReview from "./FlashcardReview";
 import FlashcardRow from "./FlashcardRow";
 import { DeckButton, DeckCount, FlashcardActions, FlashcardGrid, FlashcardHeader, FlashcardList, FlashcardPanel, FlashcardWorkspace } from "./styles";
 
-type Drawer = { kind: "deck" | "create" | "import" } | { kind: "edit" | "browse" | "regenerate"; card: Flashcard };
+type Drawer = { kind: "deck" | "create" | "notes" | "import" } | { kind: "edit" | "browse"; card: Flashcard }
+  | { kind: "regenerate"; card: Flashcard; parts: FlashcardProposalParts };
 const categoryKey = (label?: string | null) => label?.toLocaleLowerCase("es").normalize("NFKC");
 
 export default function Flashcards({ active }: { active: boolean }) {
@@ -134,6 +137,9 @@ export default function Flashcards({ active }: { active: boolean }) {
         <Button variant="outlined" startIcon={<ContentPasteOutlined />} disabled={!canCreate} onClick={() => setDrawer({ kind: "import" })}>
           {t("teacher:flashcard_import.title")}
         </Button>
+        <Button variant="outlined" startIcon={<AutoAwesomeOutlined />} disabled={!canCreate} onClick={() => setDrawer({ kind: "notes" })}>
+          {t("teacher:flashcard_proposal.from_notes")}
+        </Button>
         <Button variant="contained" startIcon={<AddOutlined />} disabled={!canCreate} onClick={openNewCard}>
           {t("teacher:flashcards.new_card")}
         </Button>
@@ -206,7 +212,7 @@ export default function Flashcards({ active }: { active: boolean }) {
               {cardsInPage.map(card => <FlashcardRow key={card.id} card={card} busy={busy} active={active}
                 onOpen={() => setDrawer({ kind: "browse", card })}
                 onEdit={() => setDrawer({ kind: "edit", card })}
-                onRegenerate={card.source?.anchor ? () => setDrawer({ kind: "regenerate", card }) : undefined}
+                onRegenerate={parts => setDrawer({ kind: "regenerate", card, parts })}
                 onDelete={() => setDeleting(card)} />)}
             </FlashcardGrid> : <Box sx={{ px: 2, py: 3, textAlign: "center", border: 1, borderColor: "divider", borderRadius: 1.5 }}>
               <Typography color="text.secondary">{t("teacher:flashcards.empty_deck")}</Typography>
@@ -227,7 +233,9 @@ export default function Flashcards({ active }: { active: boolean }) {
         closeDrawer();
         focusAfterBrowse.current = true;
       }} />}
-    {drawer?.kind === "create" && <FlashcardCreateDrawer decks={decks.data ?? []}
+    {(drawer?.kind === "create" || drawer?.kind === "notes") && <FlashcardCreateDrawer decks={decks.data ?? []}
+      title={drawer.kind === "notes" ? t("teacher:flashcard_proposal.from_notes") : undefined}
+      libraryRequest={drawer.kind === "notes" ? { origin: { kind: "notes" } } : undefined}
       initialValues={{ deck_id: deckId, question: "", answer: "" }} busy={writes.busy || decks.isFetching}
       createCard={writes.createCard} onClose={closeDrawer} onCreated={card => {
         selectDeck(card.deck_id);
@@ -236,7 +244,7 @@ export default function Flashcards({ active }: { active: boolean }) {
       }} />}
     {drawer?.kind === "edit" && <FlashcardEditor decks={decks.data ?? []} mode="edit" card={drawer.card}
       busy={writes.busy || decks.isFetching} onClose={closeDrawer} onSave={(draft, side) => saveCard(drawer.card, draft, side)} />}
-    {drawer?.kind === "regenerate" && <FlashcardRegenerateDrawer decks={decks.data ?? []} card={drawer.card}
+    {drawer?.kind === "regenerate" && <FlashcardRegenerateDrawer decks={decks.data ?? []} card={drawer.card} parts={drawer.parts}
       busy={writes.busy || decks.isFetching} onClose={closeDrawer} onSave={(draft, side) => saveCard(drawer.card, draft, side)} />}
     {drawer?.kind === "browse" && <CalendarDrawer title={t("teacher:flashcards.view_card")}
       description={deckTitle} onClose={closeDrawer}>
