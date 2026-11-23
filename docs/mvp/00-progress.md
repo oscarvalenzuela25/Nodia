@@ -1,5 +1,15 @@
 # Progreso del MVP — Nodia
 
+**Tarjetas de repaso de Teacher — 2026-11-22.** La rama
+`codex/teacher-study-calendar` incorpora mazos, creación manual,
+imágenes privadas, edición, eliminación y repaso de una tarjeta a
+la vez. El recorrido de lección guarda la cita y conserva el cursor.
+Client y Server compilaron. Chromium con Nest y PostgreSQL aislado
+verificó el primer corte en escritorio y a 320 px. La migración está
+aplicada en la instancia local. El siguiente corte requiere definir
+y calificar el propósito de generación y regeneración.
+[Plan112](112-teacher-flashcards-plan.md#primer-corte-nativo).
+
 **Calendario de estudio de Teacher — 2026-11-22.** La rama
 `codex/teacher-study-calendar` incorpora la pestaña y el avance derivado
 de las marcas por actividad. Chromium verificó el pegado, la finalización

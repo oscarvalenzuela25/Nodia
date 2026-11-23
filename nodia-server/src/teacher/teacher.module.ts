@@ -9,6 +9,9 @@ import { TeacherRequestsController } from './teacher-requests.controller.js';
 import { TeacherCalendarController } from './teacher-calendar.controller.js';
 import { TeacherCalendarStore } from './teacher-calendar.store.js';
 import { TeacherCalendarUseCase } from './use-case/teacher-calendar.use-case.js';
+import { TeacherFlashcardsController } from './teacher-flashcards.controller.js';
+import { TeacherFlashcardsStore } from './teacher-flashcards.store.js';
+import { TeacherFlashcardsUseCase } from './use-case/teacher-flashcards.use-case.js';
 import { TeacherLearningUseCase } from './use-case/teacher-learning.use-case.js';
 import { TeacherEnrichmentUseCase } from './use-case/teacher-enrichment.use-case.js';
 import { TeacherReceiptStatusInterceptor } from './teacher-receipt-status.interceptor.js';
@@ -39,11 +42,14 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherEnrichmentController,
     TeacherRequestsController,
     TeacherCalendarController,
+    TeacherFlashcardsController,
   ],
   providers: [
     TeacherService,
     TeacherCalendarStore,
     TeacherCalendarUseCase,
+    TeacherFlashcardsStore,
+    TeacherFlashcardsUseCase,
     TeacherLearningUseCase,
     TeacherEnrichmentUseCase,
     ExecuteTeacherCommandUseCase,

@@ -1,5 +1,12 @@
 # Contexto funcional de productos para NodiaAI
 
+## Tarjetas de repaso de Teacher — primer corte local del 2026-11-22
+
+El [Plan112](../../mvp/112-teacher-flashcards-plan.md) y la
+[ficha candidata](studies/features/flashcards.md) describen la biblioteca
+personal de mazos, tarjetas con imagen privada y repaso móvil. La
+generación automática y la integración con NodiaAI siguen pendientes.
+
 ## Calendario de estudio de Teacher — propuesta del 2026-11-22
 
 La [ficha candidata](studies/features/study-calendar.md) y el
