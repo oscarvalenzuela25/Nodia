@@ -6,6 +6,7 @@ import type {
 } from '../types/teacher.types.js';
 import { hash, teacherError } from '../policies/teacher-validation.js';
 import { promptSnapshot } from '../policies/teacher-prompts.js';
+import { readFlashcardGenerationTarget } from '../policies/teacher-flashcard-generation.js';
 import { latestTeacherSetupSummary } from './teacher-setup-summary.js';
 import { learningGenerationContext } from './teacher-learning-persistence.js';
 import { enrichmentGenerationContext } from './teacher-enrichment-persistence.js';
@@ -56,26 +57,47 @@ export async function admitTeacherGeneration(
   ].includes(purpose)
     ? await enrichmentGenerationContext(m, s)
     : null;
-  const inputSnapshot = {
-    ...(enrichmentContext ? { enrichment_context: enrichmentContext } : {}),
-    ...(pedagogicalEvidence ? { learning_evidence: pedagogicalEvidence } : {}),
-    ...input,
-    ...(['setup_reply', 'plan_outline', 'plan_adjustment'].includes(purpose)
-      ? { setup_summary: setupSummary }
-      : {}),
-    session: {
-      topic: s.topic,
-      objective: s.objective,
-      context: s.context,
-      declared_base: s.declared_base,
-      explanation_language: s.explanation_language,
-    },
+  const inputSnapshot =
+    purpose === 'flashcard_text'
+      ? {
+          ...input,
+          session: { explanation_language: s.explanation_language },
+          target,
+        }
+      : {
+          ...(enrichmentContext
+            ? { enrichment_context: enrichmentContext }
+            : {}),
+          ...(pedagogicalEvidence
+            ? { learning_evidence: pedagogicalEvidence }
+            : {}),
+          ...input,
+          ...(['setup_reply', 'plan_outline', 'plan_adjustment'].includes(
+            purpose,
+          )
+            ? { setup_summary: setupSummary }
+            : {}),
+          session: {
+            topic: s.topic,
+            objective: s.objective,
+            context: s.context,
+            declared_base: s.declared_base,
+            explanation_language: s.explanation_language,
+          },
+          target,
+        };
+  const semantic = hash({
+    purpose,
     target,
-  };
-  const semantic = hash({ purpose, target, input: inputSnapshot, variant });
+    input: inputSnapshot,
+    variant,
+    ...(purpose === 'flashcard_text' ? { selection: s.selection } : {}),
+  });
   const [existing] = await m.query(
-    'SELECT id,state FROM teacher_generation_jobs WHERE session_id=$1 AND semantic_key=$2 AND blocks_duplicate',
-    [s.id, semantic],
+    `SELECT id,state FROM teacher_generation_jobs WHERE session_id=$1 AND semantic_key=$2
+      AND (blocks_duplicate OR ($3='flashcard_text' AND actor_id=$4 AND state='unknown'))
+      ORDER BY blocks_duplicate DESC,created_at DESC,id DESC LIMIT 1`,
+    [s.id, semantic, purpose, actor.actorId],
   );
   if (existing)
     return {
@@ -97,7 +119,19 @@ export async function admitTeacherGeneration(
     s.selection,
     purpose,
   );
-  const snapshot = promptSnapshot(purpose, inputSnapshot);
+  const promptInput =
+    purpose === 'flashcard_text'
+      ? {
+          source: {
+            selection: readFlashcardGenerationTarget(input).source.selection,
+          },
+          explanation_language: s.explanation_language,
+          ...(input.existing_card
+            ? { existing_card: input.existing_card }
+            : {}),
+        }
+      : inputSnapshot;
+  const snapshot = promptSnapshot(purpose, promptInput);
   const id = randomUUID();
   await m.query(
     `INSERT INTO teacher_generation_jobs(id,session_id,actor_id,auth_session_public_id,purpose,plan_revision_id,unit_id,section_id,attempt_id,replaces_job_id,semantic_key,input_snapshot,prompt_snapshot,template_ref,template_version,template_hash,input_hash,selection_snapshot,configuration_generation,session_generation,deadline_at)

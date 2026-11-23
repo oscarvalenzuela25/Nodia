@@ -7,6 +7,7 @@ const executionBudgetMs: Readonly<Record<TeacherPurpose, number>> = {
   learning_packet: 300000,
   assessment_only: 300000,
   contextual_reply: 120_000,
+  flashcard_text: 120_000,
   written_feedback: 120000,
 };
 

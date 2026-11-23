@@ -17,8 +17,24 @@ const docker = (...args) =>
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   }).trim();
-export async function createNodiaAiIntegrationFixture(stage = 'ai10') {
+export async function createNodiaAiIntegrationFixture(
+  stage = 'ai10',
+  localDatabase,
+) {
   if (!/^ai[0-9]+$/.test(stage)) throw new Error('Invalid test stage');
+  const local = localDatabase ? new URL(localDatabase) : null;
+  if (
+    local &&
+    (local.protocol !== 'postgresql:' ||
+      local.hostname !== '127.0.0.1' ||
+      !local.port ||
+      !local.username ||
+      !local.pathname.startsWith('/' + stage + '_test_') ||
+      !/^\/[a-z0-9_]+$/.test(local.pathname) ||
+      local.search ||
+      local.hash)
+  )
+    throw new Error('Expected a dedicated loopback test database');
   const container = `template_${stage}_${process.pid}_${randomBytes(4).toString('hex')}`;
   const password = randomBytes(20).toString('hex');
   let started = false,
@@ -34,39 +50,51 @@ export async function createNodiaAiIntegrationFixture(stage = 'ai10') {
     }
   };
   try {
-    docker(
-      'run',
-      '-d',
-      '--rm',
-      '--name',
-      container,
-      '-p',
-      '127.0.0.1::5432',
-      '-e',
-      `POSTGRES_USER=${stage}`,
-      '-e',
-      `POSTGRES_PASSWORD=${password}`,
-      '-e',
-      `POSTGRES_DB=${stage}`,
-      'postgres:16-alpine',
-    );
-    started = true;
-    for (let attempt = 0; attempt < 80; attempt++) {
-      try {
-        docker('exec', container, 'pg_isready', '-h', '127.0.0.1', '-U', stage);
-        break;
-      } catch (error) {
-        if (attempt === 79) throw error;
-        await delay(250);
+    if (!local) {
+      docker(
+        'run',
+        '-d',
+        '--rm',
+        '--name',
+        container,
+        '-p',
+        '127.0.0.1::5432',
+        '-e',
+        `POSTGRES_USER=${stage}`,
+        '-e',
+        `POSTGRES_PASSWORD=${password}`,
+        '-e',
+        `POSTGRES_DB=${stage}`,
+        'postgres:16-alpine',
+      );
+      started = true;
+      for (let attempt = 0; attempt < 80; attempt++) {
+        try {
+          docker(
+            'exec',
+            container,
+            'pg_isready',
+            '-h',
+            '127.0.0.1',
+            '-U',
+            stage,
+          );
+          break;
+        } catch (error) {
+          if (attempt === 79) throw error;
+          await delay(250);
+        }
       }
     }
     const options = {
       type: 'postgres',
       host: '127.0.0.1',
-      port: Number(docker('port', container, '5432/tcp').split(':').at(-1)),
-      username: stage,
-      password,
-      database: stage,
+      port: local
+        ? Number(local.port)
+        : Number(docker('port', container, '5432/tcp').split(':').at(-1)),
+      username: local ? decodeURIComponent(local.username) : stage,
+      password: local ? decodeURIComponent(local.password) : password,
+      database: local ? local.pathname.slice(1) : stage,
       synchronize: false,
       entities: [
         fileURLToPath(new URL('../dist/**/*.entity.js', import.meta.url)),
@@ -76,6 +104,15 @@ export async function createNodiaAiIntegrationFixture(stage = 'ai10') {
       ],
     };
     db = await new DataSource(options).initialize();
+    if (
+      local &&
+      (
+        await db.query(
+          "SELECT 1 FROM pg_tables WHERE schemaname='public' LIMIT 1",
+        )
+      ).length
+    )
+      throw new Error('Expected an empty disposable test database');
     await db.runMigrations();
     const identities = new Map(
       ['1', '2', '3'].map((userId) => [

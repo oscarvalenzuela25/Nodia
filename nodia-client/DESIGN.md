@@ -405,6 +405,8 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
   - `padding: theme.spacing(2, 4)` (16px vertical/32px lateral) en `md`+.
   - Ajuste solicitado el2026-11-14: sólo el contenedor completo de página reduce el padding vertical. Mantener padding interno de paneles/modales y reserva inferior de MobileBottomNav/safe area.
 - **Prohibición de Doble Padding**: Las páginas hijas (`src/modules/*/pages/*`) **nunca deben declarar su propio padding exterior** sobre `ContainerPage` o el nodo raíz, ya que esto duplicaría el padding (llegando a 64px de espacio desperdiciado en móviles). Toda página hereda el padding responsivo provisto por `PageContent` en `BaseLayout`.
+
+- **Aviso de conexión**: Se muestra debajo de la barra superior y dentro de la columna principal. Su margen sigue el de `PageContent`; el menú lateral abierto o contraído define el ancho disponible. En `xs` el texto se apila sobre la acción de reintento, de al menos 44px.
 - **Paneles anidados compactos**: el padding exterior de `PageContent` no define el padding de cada tarjeta. En `xs`, usar `12px` a `16px` internos según densidad; evitar acumular varios marcos con padding de `24px`/`32px`. Conservar separación legible y controles táctiles de `44px`; compactar espacios, no los objetivos de interacción. Referencia: listado/detalle de AiProviders.
 - **Detalle móvil**: evitar repetir la cabecera completa del listado; conservar nombre, Volver y las acciones de la instancia. Si las pestañas se apilan, usar orientación vertical real para semántica y teclado, conservando selección y configuración al redimensionar.
 - **Gaps Verticales y Horizontales en Móvil**:

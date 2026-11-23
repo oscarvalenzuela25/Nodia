@@ -1,6 +1,6 @@
 import AdaptiveWorkspace from "../../components/AdaptiveWorkspace/AdaptiveWorkspace";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Typography } from "@mui/material";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Alert, Box, Button, LinearProgress, Menu, MenuItem, Pagination, Stack, Switch, Tab, Tabs, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import SchoolOutlined from "@mui/icons-material/SchoolOutlined";
 import AutoStoriesOutlined from "@mui/icons-material/AutoStoriesOutlined";
@@ -11,7 +11,7 @@ import PlayArrowOutlined from "@mui/icons-material/PlayArrowOutlined";
 import TipsAndUpdatesOutlined from "@mui/icons-material/TipsAndUpdatesOutlined";
 import { Link, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import LessonTopics from "../../components/LessonTopics";
+import LessonTopicsWithFlashcards from "../../components/LessonTopics/LessonTopicsWithFlashcards";
 import useAuth from "../../../../hooks/useAuth";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import InputSearch from "../../../../components/inputs/InputSearch";
@@ -29,6 +29,8 @@ import { JobStatus } from "../../components/JobPanel";
 import { useJobStatus } from "../../components/JobPanel/useJobStatus";
 import TeacherLoading from "../../components/TeacherLoading";
 import StudyJourney from "../../components/StudyJourney";
+import StudyCalendar from "../../components/StudyCalendar";
+import Flashcards from "../../components/Flashcards";
 import SetupConversation from "../../components/SetupConversation";
 import StudyContinuation from "../../components/StudyContinuation";
 import DiagnosticEntry from "../../components/DiagnosticEntry/DiagnosticEntry";
@@ -52,17 +54,17 @@ const SESSION_STATE_COLORS = {
   archived: "error",
 } as const;
 
-function Plans() {
+function Plans({ active }: { active: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [archived, setArchived] = useState(false);
-  const sessions = useTeacherSessions(page, search, archived);
+  const sessions = useTeacherSessions(page, search, archived, active);
   const command = useTeacherCommand();
   const openResult = (result: CommandResult) => { if (result.session_id) void navigate(`/nodia-teacher/${result.session_id}`); };
   return <Page>
-    <Header><Box><ProductBrand variant="overline" color="primary">{t("teacher:product")}</ProductBrand><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box>
+    <Header><Box><Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>{t("teacher:my_plans")}</Typography><Typography color="text.secondary">{t("teacher:plans_description")}</Typography></Box>
       <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, width: { xs: "100%", sm: "auto" } }}>
         {supportsPwaRegistration() && <Button variant="outlined" href={TEACHER_DOWNLOADS_ROUTE} sx={{ minHeight: 44 }}>{t("teacher:offline_study.library")}</Button>}
         <Button variant="contained" startIcon={<AddOutlined />} disabled={command.isPending || sessions.isFetching} component={Link} to={TEACHER_NEW_ROUTE}>{t("teacher:new_session")}</Button>
@@ -123,6 +125,37 @@ function Plans() {
       )}
     </TeacherLoading>
     {sessions.data && sessions.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page} count={sessions.data.meta.total_pages} disabled={sessions.isFetching || command.isPending} onChange={(_, value) => setPage(value)} />}
+  </Page>;
+}
+
+function TeacherOverview() {
+  const { t } = useTranslation();
+  const id = useId();
+  const [tab, setTab] = useState<"plans" | "calendar" | "flashcards">("plans");
+  const [calendarMounted, setCalendarMounted] = useState(false);
+  const [flashcardsMounted, setFlashcardsMounted] = useState(false);
+  return <Page>
+    <Stack spacing={1} sx={{ minWidth: 0 }}>
+      <ProductBrand variant="overline" color="primary" sx={{ alignSelf: "flex-start" }}>{t("teacher:product")}</ProductBrand>
+      <Tabs value={tab} variant="fullWidth" aria-label={t("teacher:product")} onChange={(_, value: unknown) => {
+        if (value === "calendar") setCalendarMounted(true);
+        if (value === "flashcards") setFlashcardsMounted(true);
+        if (value === "calendar" || value === "plans" || value === "flashcards") setTab(value);
+      }} sx={{ maxWidth: 680, "& .MuiTab-root": { minWidth: 0, px: { xs: 0.75, sm: 2 }, overflowWrap: "anywhere" } }}>
+        <Tab value="plans" label={t("teacher:my_plans")} id={id + "-plans-tab"} aria-controls={id + "-plans"} />
+        <Tab value="calendar" label={t("teacher:calendar.heading")} id={id + "-calendar-tab"} aria-controls={id + "-calendar"} />
+        <Tab value="flashcards" label={t("teacher:flashcards.heading")} id={id + "-flashcards-tab"} aria-controls={id + "-flashcards"} />
+      </Tabs>
+    </Stack>
+    <Box id={id + "-plans"} role="tabpanel" aria-labelledby={id + "-plans-tab"} hidden={tab !== "plans"}>
+      <Plans active={tab === "plans"} />
+    </Box>
+    <Box id={id + "-calendar"} role="tabpanel" aria-labelledby={id + "-calendar-tab"} hidden={tab !== "calendar"}>
+      {calendarMounted && <StudyCalendar active={tab === "calendar"} />}
+    </Box>
+    <Box id={id + "-flashcards"} role="tabpanel" aria-labelledby={id + "-flashcards-tab"} hidden={tab !== "flashcards"}>
+      {flashcardsMounted && <Flashcards active={tab === "flashcards"} />}
+    </Box>
   </Page>;
 }
 
@@ -388,6 +421,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
 
   const sectionIndex = plan?.outline.sections.findIndex(section => section.units.some(unit => unit.id === unitId)) ?? -1;
   const section = sectionIndex >= 0 ? plan?.outline.sections[sectionIndex] : undefined;
+  const lessonTitle = section?.units.find(unit => unit.id === unitId)?.title;
   const nextSection = sectionIndex >= 0 ? plan?.outline.sections[sectionIndex + 1] : undefined;
   const nextUnit = nextSection?.units[0];
   const canStartSectionFinal = section && enabled(session.allowed_actions, "start_section_final")
@@ -594,10 +628,11 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
               <LessonHeader>
                 <Typography variant="overline">{t("teacher:theory")}</Typography>
                 <Typography ref={lessonHeading} tabIndex={-1} variant="h5" component="h2">
-                  {plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title}
+                  {lessonTitle}
                 </Typography>
               </LessonHeader>
-              <LessonTopics blocks={lesson.blocks} contentVersionId={lesson.content_version_id} history={lesson.lesson_interactions}
+              <LessonTopicsWithFlashcards key={lesson.content_version_id} sourceLabel={lessonTitle || session.title || session.topic}
+                blocks={lesson.blocks} contentVersionId={lesson.content_version_id} history={lesson.lesson_interactions}
                 session={session} busy={locked || material.isFetching} command={command} onResult={applyResult}
                 savedBlockId={session.cursor.content_version_id === lesson.content_version_id ? session.cursor.block_id : null}
                 onSaveReadingPoint={blockId => saveCursor({
@@ -612,7 +647,7 @@ function SessionWorkspace({ session, busy, fetching, command }: WorkspaceProps) 
                   {supportsPwaRegistration() && enabled(lesson.allowed_actions, "read_theory") &&
                     <OfflineLessonDownload key={lesson.content_version_id} studyId={session.id} unitId={unitId}
                       planRevisionId={materialPlanId} contentVersionId={lesson.content_version_id}
-                      title={plan.outline.sections.flatMap(section => section.units).find(unit => unit.id === unitId)?.title ?? ""}
+                      title={lessonTitle ?? ""}
                       readingContext={section ? {
                         sectionId: section.id,
                         cursorRevision: session.cursor.revision,
@@ -649,5 +684,5 @@ export default function Teacher() {
   const { user, sessionVersion } = useAuth();
   useOfflineReadingSync();
   const scope = `${user?.id}:${sessionVersion}`;
-  return sessionId ? <TeacherSession key={`${scope}:${sessionId}`} sessionId={sessionId} /> : <Plans key={scope} />;
+  return sessionId ? <TeacherSession key={`${scope}:${sessionId}`} sessionId={sessionId} /> : <TeacherOverview key={scope} />;
 }

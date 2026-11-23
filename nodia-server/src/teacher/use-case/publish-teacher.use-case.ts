@@ -1,4 +1,5 @@
 import { refreshLearningEvidence } from './teacher-learning-persistence.js';
+import { publishFlashcardText } from './teacher-flashcard-generation-persistence.js';
 import {
   publishEnrichmentReply,
   validateEnrichmentCitations,
@@ -50,6 +51,10 @@ export class PublishTeacherUseCase {
     if (!s) teacherError('not_found', 404);
     if (job.purpose === 'contextual_reply')
       return publishEnrichmentReply(m, job, output);
+    if (job.purpose === 'flashcard_text') {
+      if (s.state === 'paused') teacherError('session_paused');
+      return publishFlashcardText(m, job, output);
+    }
     const data = parseJsonOutput(output),
       input = job.input_snapshot;
     if (job.purpose === 'setup_reply') {

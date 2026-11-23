@@ -604,6 +604,1337 @@
         "openWorldHint": false
       },
       "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_calendars_list",
+      "kind": "read",
+      "resourceKey": "teacher_calendars",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.listPlans"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendars_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarListInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "CalendarPlansPage",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_calendars_get",
+      "kind": "read",
+      "resourceKey": "teacher_calendars",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.plan"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendars_get",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarGetInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "CalendarPlanDetail",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_calendar_days_get",
+      "kind": "read",
+      "resourceKey": "teacher_calendar_days",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.day"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendar_days_get",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarDayGetInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "CalendarDayDetail",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_calendar_categories_list",
+      "kind": "read",
+      "resourceKey": "teacher_calendar_categories",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.categories"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendar_categories_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "PagedInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "CalendarCategoriesPage",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_calendars_prepare_create",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendars",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.createPlan"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendars_prepare_create",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarCreateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "create"
+    },
+    {
+      "name": "nodia_teacher_calendars_prepare_update",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendars",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.patchPlan"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendars_prepare_update",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarUpdateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "update"
+    },
+    {
+      "name": "nodia_teacher_calendars_prepare_delete",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendars",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.deletePlan"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendars_prepare_delete",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "IdentifiedInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "delete"
+    },
+    {
+      "name": "nodia_teacher_calendar_days_prepare_update",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendar_days",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.patchDay"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendar_days_prepare_update",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarDayUpdateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "update"
+    },
+    {
+      "name": "nodia_teacher_calendar_activities_prepare_set_completion",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendar_activities",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.patchDay"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones. La operación cambia una actividad de la jornada y deja que el dominio derive su finalización."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendar_activities_prepare_set_completion",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarActivityCompletionInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "set_completion"
+    },
+    {
+      "name": "nodia_teacher_calendar_categories_prepare_create",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendar_categories",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.createCategory"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendar_categories_prepare_create",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarCategoryCreateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "create"
+    },
+    {
+      "name": "nodia_teacher_calendar_categories_prepare_update",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_calendar_categories",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherCalendarController.patchCategory"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_calendar_categories_prepare_update",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "CalendarCategoryUpdateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "update"
+    },
+    {
+      "name": "nodia_teacher_flashcard_decks_list",
+      "kind": "read",
+      "resourceKey": "teacher_flashcard_decks",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.decks"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway. El catálogo pagina los mazos del mismo dominio, incluido General."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcard_decks_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "PagedInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "FlashcardDecksPage",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_flashcards_list",
+      "kind": "read",
+      "resourceKey": "teacher_flashcards",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.cards"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcards_list",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "FlashcardListInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "FlashcardsPage",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_flashcards_get",
+      "kind": "read",
+      "resourceKey": "teacher_flashcards",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.cards"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway. El listado de tarjetas es el origen semántico del detalle. La operación usa una lectura nativa propia por ID y proyecta sólo texto, etiqueta de fuente y metadatos de la imagen."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session"
+        ]
+      },
+      "outputContract": "authorized_teacher_projection",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcards_get",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "IdentifiedInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "definition": "FlashcardDetail",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "authorized_read"
+    },
+    {
+      "name": "nodia_teacher_flashcard_decks_prepare_create",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_flashcard_decks",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.createDeck"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcard_decks_prepare_create",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "FlashcardDeckCreateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "create"
+    },
+    {
+      "name": "nodia_teacher_flashcards_prepare_create",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_flashcards",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.createCard"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcards_prepare_create",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "FlashcardCreateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "create"
+    },
+    {
+      "name": "nodia_teacher_flashcards_prepare_update",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_flashcards",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.patchCard"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcards_prepare_update",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "FlashcardUpdateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "update"
+    },
+    {
+      "name": "nodia_teacher_flashcards_prepare_delete",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_flashcards",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.deleteCard"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcards_prepare_delete",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "IdentifiedInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "delete"
+    },
+    {
+      "name": "nodia_teacher_flashcard_imports_prepare_create",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_flashcard_imports",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.importCards"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcard_imports_prepare_create",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "FlashcardImportInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "create"
+    },
+    {
+      "name": "nodia_teacher_flashcard_reviews_prepare_create",
+      "kind": "prepare_change",
+      "resourceKey": "teacher_flashcard_reviews",
+      "targetModuleRoute": "/nodia-teacher",
+      "requireAction": null,
+      "sourceHandlerIds": [
+        "TeacherFlashcardsController.review"
+      ],
+      "backendBindings": [],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      },
+      "inputContract": {
+        "schemaStatus": "closed_runtime_contract",
+        "systemManaged": [
+          "actor",
+          "session",
+          "request_key",
+          "revision",
+          "confirmation"
+        ]
+      },
+      "outputContract": "draft_and_public_proposal_without_confirmation_token",
+      "implementationContract": {
+        "stage": "teacher-study-crud",
+        "capabilityId": "nodia_teacher_flashcard_reviews_prepare_create",
+        "revision": 1,
+        "schemaPath": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "inputSchema": {
+          "definition": "FlashcardReviewCreateInput",
+          "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        "outputSchema": {
+          "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+          "definition": "PreparationResult",
+          "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        "handlerSources": [
+          "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts"
+        ],
+        "requiredModuleRoutes": [
+          "/nodia-teacher"
+        ]
+      },
+      "publication": {
+        "implemented": true,
+        "published": false,
+        "implementationScope": "local_candidate_no_provider_acceptance",
+        "requires": [
+          "explicit_registry_and_compiled_approved_knowledge",
+          "current_session_and_target_module",
+          "domain_authority",
+          "human_confirmation_pipeline",
+          "durable_step_recovery",
+          "mode_tool_protocol_verified"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "impact": "create"
     }
   ],
   "handlerCoverage": [
@@ -696,6 +2027,188 @@
         "kind": "semantic_derivation",
         "note": "La consulta conversacional reutiliza el caso de uso nativo de lectura dentro de la transacción autorizada del gateway y proyecta una respuesta acotada por negocio."
       }
+    },
+    {
+      "operationId": "TeacherCalendarController.listPlans",
+      "toolNames": [
+        "nodia_teacher_calendars_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.plan",
+      "toolNames": [
+        "nodia_teacher_calendars_get"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.day",
+      "toolNames": [
+        "nodia_teacher_calendar_days_get"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.categories",
+      "toolNames": [
+        "nodia_teacher_calendar_categories_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.createPlan",
+      "toolNames": [
+        "nodia_teacher_calendars_prepare_create"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.patchPlan",
+      "toolNames": [
+        "nodia_teacher_calendars_prepare_update"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.deletePlan",
+      "toolNames": [
+        "nodia_teacher_calendars_prepare_delete"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.patchDay",
+      "toolNames": [
+        "nodia_teacher_calendar_days_prepare_update",
+        "nodia_teacher_calendar_activities_prepare_set_completion"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.createCategory",
+      "toolNames": [
+        "nodia_teacher_calendar_categories_prepare_create"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherCalendarController.patchCategory",
+      "toolNames": [
+        "nodia_teacher_calendar_categories_prepare_update"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.decks",
+      "toolNames": [
+        "nodia_teacher_flashcard_decks_list"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway. El catálogo pagina los mazos del mismo dominio, incluido General."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.cards",
+      "toolNames": [
+        "nodia_teacher_flashcards_list",
+        "nodia_teacher_flashcards_get"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La lectura reutiliza la autoridad personal y los casos de uso de Teacher dentro de la transacción autorizada del gateway."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.createDeck",
+      "toolNames": [
+        "nodia_teacher_flashcard_decks_prepare_create"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.createCard",
+      "toolNames": [
+        "nodia_teacher_flashcards_prepare_create"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.patchCard",
+      "toolNames": [
+        "nodia_teacher_flashcards_prepare_update"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.deleteCard",
+      "toolNames": [
+        "nodia_teacher_flashcards_prepare_delete"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.importCards",
+      "toolNames": [
+        "nodia_teacher_flashcard_imports_prepare_create"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
+    },
+    {
+      "operationId": "TeacherFlashcardsController.review",
+      "toolNames": [
+        "nodia_teacher_flashcard_reviews_prepare_create"
+      ],
+      "derivation": {
+        "kind": "semantic_derivation",
+        "note": "La preparación usa el dominio nativo de Teacher. El efecto sólo se aplica tras la confirmación humana exacta y revalida alcance y precondiciones."
+      }
     }
   ],
   "newHandlers": [
@@ -762,6 +2275,150 @@
       "sourcePath": "nodia-server/src/business-cash/business-cash-movements.controller.ts",
       "method": "GET",
       "path": "/api/v1/business-cash-movements/monthly-summary"
+    },
+    {
+      "operationId": "TeacherCalendarController.listPlans",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/teacher/calendar/plans"
+    },
+    {
+      "operationId": "TeacherCalendarController.plan",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/teacher/calendar/plans/:planId"
+    },
+    {
+      "operationId": "TeacherCalendarController.day",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/teacher/calendar/plans/:planId/days/:dayId"
+    },
+    {
+      "operationId": "TeacherCalendarController.categories",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/teacher/calendar/categories"
+    },
+    {
+      "operationId": "TeacherCalendarController.createPlan",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "POST",
+      "path": "/api/v1/teacher/calendar/plans"
+    },
+    {
+      "operationId": "TeacherCalendarController.patchPlan",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "PATCH",
+      "path": "/api/v1/teacher/calendar/plans/:planId"
+    },
+    {
+      "operationId": "TeacherCalendarController.deletePlan",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "DELETE",
+      "path": "/api/v1/teacher/calendar/plans/:planId"
+    },
+    {
+      "operationId": "TeacherCalendarController.patchDay",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "PATCH",
+      "path": "/api/v1/teacher/calendar/plans/:planId/days/:dayId"
+    },
+    {
+      "operationId": "TeacherCalendarController.createCategory",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "POST",
+      "path": "/api/v1/teacher/calendar/categories"
+    },
+    {
+      "operationId": "TeacherCalendarController.patchCategory",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-calendar.controller.ts",
+      "method": "PATCH",
+      "path": "/api/v1/teacher/calendar/categories/:categoryId"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.decks",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/teacher/flashcards/decks"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.cards",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "GET",
+      "path": "/api/v1/teacher/flashcards/cards"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.createDeck",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "POST",
+      "path": "/api/v1/teacher/flashcards/decks"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.createCard",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "POST",
+      "path": "/api/v1/teacher/flashcards/cards"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.patchCard",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "PATCH",
+      "path": "/api/v1/teacher/flashcards/cards/:id"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.deleteCard",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "DELETE",
+      "path": "/api/v1/teacher/flashcards/cards/:id"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.importCards",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "POST",
+      "path": "/api/v1/teacher/flashcards/imports"
+    },
+    {
+      "operationId": "TeacherFlashcardsController.review",
+      "treatment": "domain_tool",
+      "toolNames": [],
+      "sourcePath": "nodia-server/src/teacher/teacher-flashcards.controller.ts",
+      "method": "POST",
+      "path": "/api/v1/teacher/flashcards/cards/:id/reviews"
     }
   ]
 }

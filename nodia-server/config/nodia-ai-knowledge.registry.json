@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "catalog_release": "nodia-ai-business-pos/6",
+  "catalog_release": "nodia-ai-teacher-study/1",
   "context_module_route": "/tools/nodia-ai",
   "source_paths": [
     "docs/nodia-ai/knowledge/businesses/README.md",
@@ -96,13 +96,15 @@
     "docs/nodia-ai/knowledge/studies/features/concept-memory-and-map.md",
     "docs/nodia-ai/knowledge/studies/features/contextual-clarifications.md",
     "docs/nodia-ai/knowledge/studies/features/diagnostic-and-skip-assessment.md",
+    "docs/nodia-ai/knowledge/studies/features/flashcards.md",
     "docs/nodia-ai/knowledge/studies/features/learning-evidence-and-recommendations.md",
     "docs/nodia-ai/knowledge/studies/features/learning-sources.md",
     "docs/nodia-ai/knowledge/studies/features/lessons-practice-and-review.md",
     "docs/nodia-ai/knowledge/studies/features/offline-reading-progress.md",
     "docs/nodia-ai/knowledge/studies/features/offline-study-material.md",
     "docs/nodia-ai/knowledge/studies/features/session-setup-and-planning.md",
-    "docs/nodia-ai/knowledge/studies/features/spaced-repetition.md"
+    "docs/nodia-ai/knowledge/studies/features/spaced-repetition.md",
+    "docs/nodia-ai/knowledge/studies/features/study-calendar.md"
   ],
   "capabilities": [
     {
@@ -5754,7 +5756,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-tools/nodia-ai-tool-registry.module.ts",
-          "sha256": "366f47d4346ca0ec18ad65a885b30896d520ef94dd3321b700304773d1c9f6de"
+          "sha256": "03adda67d6e951a8f032a9b963ab4ee4e05af7f4d9410464481dde04c91143e1"
         }
       ],
       "input_schema": {
@@ -5882,7 +5884,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-tools/nodia-ai-tool-registry.module.ts",
-          "sha256": "366f47d4346ca0ec18ad65a885b30896d520ef94dd3321b700304773d1c9f6de"
+          "sha256": "03adda67d6e951a8f032a9b963ab4ee4e05af7f4d9410464481dde04c91143e1"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
@@ -6391,6 +6393,1278 @@
         "/tools/business"
       ],
       "revision": 1
+    },
+    {
+      "capability_id": "nodia_teacher_calendars_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarListInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarPlansPage",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendars_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarGetInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarPlanDetail",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendar_days_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarDayGetInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarDayDetail",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendar_categories_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "PagedInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarCategoriesPage",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendars_prepare_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarCreateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendars_prepare_update",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarUpdateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendars_prepare_delete",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "IdentifiedInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendar_days_prepare_update",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarDayUpdateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendar_activities_prepare_set_completion",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarActivityCompletionInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendar_categories_prepare_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarCategoryCreateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_calendar_categories_prepare_update",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+          "sha256": "3bf22484759f303f924ca76ff1424f602a78c59a03894b8bdd52eb1ee8aba28e"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-calendar.use-case.ts",
+          "sha256": "b0184b533ca26f6e5c797319b0d6c9dc8d33aeb6b758b1be04e519f188ba4045"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-calendar.store.ts",
+          "sha256": "d1c55596adb83801f6b79e0d042e0f2e11a702c9fc4a895142f858eb0b4045e2"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "CalendarCategoryUpdateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcard_decks_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "PagedInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardDecksPage",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcards_list",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardListInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardsPage",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcards_get",
+      "revision": 1,
+      "publication": "published",
+      "kind": "read",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "IdentifiedInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardDetail",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcard_decks_prepare_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardDeckCreateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcards_prepare_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardCreateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcards_prepare_update",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardUpdateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcards_prepare_delete",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "IdentifiedInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcard_imports_prepare_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardImportInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
+    },
+    {
+      "capability_id": "nodia_teacher_flashcard_reviews_prepare_create",
+      "revision": 1,
+      "publication": "published",
+      "kind": "prepare_change",
+      "required_module_routes": [
+        "/nodia-teacher"
+      ],
+      "implementation_sources": [
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-tools.module.ts",
+          "sha256": "b17ac44f1003ea341f9c448b13d038521dcbea3f3f5395e239740dd8fad7691f"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-contracts.ts",
+          "sha256": "0a594b832a7c103bcaa006c2046d6ab708b085f8a191f0f67e4ea293687c75c8"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher.service.ts",
+          "sha256": "d41555f4a1b35da4a1e4e3b8b71b0b6e64e5beae8d2d91c970ce03f65098f293"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+          "sha256": "aab76d898f9d10a4e54ab8b43f274082475c5bd154587a70976f18510fa9808c"
+        },
+        {
+          "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
+          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+        },
+        {
+          "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
+          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
+          "sha256": "c6e4bdaaa5d722e39ed1e848d68c58462c1128fad9ba6ff0c690bbdd7298c0d9"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-operation-identity.ts",
+          "sha256": "290df875f55a4c45af45fd696bc2c8db9cf476d3f2e94e18dbb45ff34d4a2279"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.ts",
+          "sha256": "a802e02b2b3f5ac14a90e6939f47ace96a0da6d7dc90f6fa7a95120443b71efe"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-confirmation/nodia-ai-confirmation.module.ts",
+          "sha256": "702d16507c2463b21ceaa613ccbb760be77caea65dcf8016372b866742271773"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-native-effect/use-case/execute-nodia-ai-local-effect.use-case.ts",
+          "sha256": "4691ded9ee9bc79594c115fe14c885146a24dbccf0b8ac0aaf31d72e31a16776"
+        },
+        {
+          "path": "nodia-server/src/nodia-ai-proposal/types/local-operation.types.ts",
+          "sha256": "d8d5c870dddfb305e5b1904c3b50d96ce61ec87726eeb86ac62898a7a8f8fa75"
+        }
+      ],
+      "input_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study.schema.json",
+        "definition": "FlashcardReviewCreateInput",
+        "sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+      },
+      "output_schema": {
+        "path": "nodia-server/src/nodia-ai-products/contracts/teacher-study-proposal-result.schema.json",
+        "definition": "PreparationResult",
+        "sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+      },
+      "evidence_paths": [
+        "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+      ]
     }
   ],
   "bindings": [
@@ -7998,6 +9272,152 @@
       ],
       "sections": [
         "Consultas de solo lectura en NodiaAI"
+      ]
+    },
+    {
+      "document_id": "studies.study-calendar",
+      "fragment_id": "study-calendar-crud-v1",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Operaciones desde NodiaAI"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_teacher_calendars_list",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_calendars_get",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_calendar_days_get",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_calendar_categories_list",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_calendars_prepare_create",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_calendars_prepare_update",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_calendars_prepare_delete",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_calendar_days_prepare_update",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_calendar_activities_prepare_set_completion",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_calendar_categories_prepare_create",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_calendar_categories_prepare_update",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        }
+      ],
+      "required_module_routes": [
+        "/nodia-teacher"
+      ]
+    },
+    {
+      "document_id": "studies.flashcards",
+      "fragment_id": "flashcards-crud-v1",
+      "purpose": "feature_explanation",
+      "sections": [
+        "Operaciones desde NodiaAI"
+      ],
+      "requires": [
+        {
+          "capability_id": "nodia_teacher_flashcard_decks_list",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcards_list",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcards_get",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcard_decks_prepare_create",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcards_prepare_create",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcards_prepare_update",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcards_prepare_delete",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcard_imports_prepare_create",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        },
+        {
+          "capability_id": "nodia_teacher_flashcard_reviews_prepare_create",
+          "revision": 1,
+          "input_schema_sha256": "c67f0e68940cfa022fb8214dbd344de659b01868cba9e9a6ebeb5d30dafd0168",
+          "output_schema_sha256": "83358417020db8ff5dcd026e309f9cd4d19e322e1cc39cd208ca9695714f45eb"
+        }
+      ],
+      "required_module_routes": [
+        "/nodia-teacher"
       ]
     }
   ]

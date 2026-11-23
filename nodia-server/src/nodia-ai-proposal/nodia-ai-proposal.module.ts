@@ -9,6 +9,11 @@ import {
   type NodiaAiSecureOperation,
 } from './types/secure-operation.types.js';
 import { NodiaAiProviderOperationsModule } from '../nodia-ai-provider-operations/nodia-ai-provider-operations.module.js';
+import { NodiaAiTeacherOperationsModule } from '../nodia-ai-teacher-operations/nodia-ai-teacher-operations.module.js';
+import {
+  NODIA_AI_TEACHER_OPERATIONS,
+  type NodiaAiTeacherOperation,
+} from '../nodia-ai-teacher-operations/types.js';
 import {
   NODIA_AI_PROVIDER_OPERATIONS,
   type NodiaAiProviderOperation,
@@ -114,6 +119,7 @@ import {
     NodiaAiRentalOperationsModule,
     NodiaAiCoreOperationsModule,
     NodiaAiProviderOperationsModule,
+    NodiaAiTeacherOperationsModule,
     TypeOrmModule.forFeature([
       NodiaAiConversation,
       NodiaAiDraft,
@@ -197,6 +203,7 @@ import {
         NODIA_AI_PROVIDER_OPERATIONS,
         NODIA_AI_SECURE_OPERATIONS,
         NODIA_AI_PREFERENCE_OPERATIONS,
+        NODIA_AI_TEACHER_OPERATIONS,
       ],
       useFactory: (
         finance: PrepareNodiaAiFinanceMovementUseCase,
@@ -210,6 +217,7 @@ import {
         providers: readonly NodiaAiProviderOperation[],
         secure: readonly NodiaAiSecureOperation[],
         preferences: readonly NodiaAiPreferenceOperation[],
+        teacher: readonly NodiaAiTeacherOperation[],
       ) => [
         finance,
         ...operations,
@@ -222,6 +230,7 @@ import {
         ...providers,
         ...secure,
         ...preferences,
+        ...teacher,
       ],
     },
     {
@@ -249,6 +258,7 @@ import {
     NodiaAiRentalOperationsModule,
     NodiaAiCoreOperationsModule,
     NodiaAiProviderOperationsModule,
+    NodiaAiTeacherOperationsModule,
     PrepareNodiaAiFinanceMovementUseCase,
     CanonicalizeNodiaAiProposalUseCase,
     NodiaAiProposalService,

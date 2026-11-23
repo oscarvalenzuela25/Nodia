@@ -1,5 +1,56 @@
 # Progreso del MVP — Nodia
 
+**CRUD de Teacher en NodiaAI — 2026-11-23.** La rama
+`codex/teacher-study-calendar` activa siete lecturas y trece preparaciones
+de cambios en `nodia-ai-teacher-study/1` con la aprobación de Calendario
+revisión 5 y Tarjetas de repaso revisión 6. PostgreSQL aislado verificó la
+composición, la confirmación, el comprobante, el avance derivado y el ámbito
+por cuenta. La adopción en el entorno de destino queda pendiente.
+[Catálogo40](40-nodia-ai-tool-catalog-v1.md#calendarios-y-tarjetas-de-teacher) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md) ·
+[Verificación](../evidence/nodia-ai-teacher-catalog-20261123.md).
+
+**Propuestas de tarjetas con imagen — 2026-11-23.** Teacher prepara
+una tarjeta desde apuntes o citas y ofrece regenerar el texto, la
+imagen o ambos desde el menú. Cada resultado se revisa antes de
+incorporarlo al editor. PostgreSQL y Chromium verificaron el
+recorrido con respuestas interceptadas. El carril de biblioteca
+requiere una selección API key. La imagen se habilita con una
+calificación propia por selección. Se aplicaron las dos migraciones
+y se reiniciaron el API y el Worker locales. La instancia local
+permanece sin conexiones de IA operativas.
+[Plan112](112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca).
+
+**Autoría de tarjetas de Teacher — 2026-11-23.** El pegado de JSON v1
+tiene formatos de una tarjeta y de mazo, vista previa, selección y
+guardado atómico, con categoría opcional. Las citas permiten preparar
+una propuesta de pregunta y respuesta. Las tarjetas con cita accesible
+permiten regenerar texto desde su menú. Las pruebas de integración
+usaron Chromium y PostgreSQL aislado, con transporte de prueba para
+la generación. La instancia local tiene aplicadas ambas migraciones.
+Quedan pendientes la inferencia real por selección, los apuntes
+independientes y las imágenes generadas.
+[Plan112](112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto).
+
+**Tarjetas de repaso de Teacher — 2026-11-22.** La rama
+`codex/teacher-study-calendar` incorpora mazos, creación manual,
+imágenes privadas, edición, eliminación y repaso de una tarjeta a
+la vez. El recorrido de lección guarda la cita y conserva el cursor.
+Client y Server compilaron. Chromium con Nest y PostgreSQL aislado
+verificó el primer corte en escritorio y a 320 px. La migración está
+aplicada en la instancia local. El siguiente corte requiere definir
+y calificar el propósito de generación y regeneración.
+[Plan112](112-teacher-flashcards-plan.md#primer-corte-nativo).
+
+**Calendario de estudio de Teacher — 2026-11-22.** La rama
+`codex/teacher-study-calendar` incorpora la pestaña y el avance derivado
+de las marcas por actividad. Chromium verificó el pegado, la finalización
+y la reapertura tras recargar con Nest y PostgreSQL 16.15 aislados.
+[Plan111 §8](111-teacher-study-calendar-plan.md#8-primer-corte-de-implementación).
+La instancia local incluye gestión desde el menú de cada calendario y
+filtros combinables de estado y categoría.
+[Plan111 §10](111-teacher-study-calendar-plan.md#10-gestión-del-calendario-y-filtro-de-actividad).
+
 **Teacher, piloto de fragmentos interactivos — 2026-11-22.** La comparación
 de **sit** y **seat** y las fichas de **BEE–22** están disponibles en
 desarrollo. El navegador verificó ambos ejercicios en un plan sintético
