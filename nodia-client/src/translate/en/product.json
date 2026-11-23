@@ -43,7 +43,7 @@
     "bundle": "bundle"
   },
   "bulk_create_unknown": "We could not confirm whether the new products were saved. Your rows are kept and creating them again is blocked. Manually review the catalogue to check what was saved before closing and importing again.",
-  "table_show_additional_columns": "Show availability, status and last updated",
-  "table_hide_additional_columns": "Hide availability, status and last updated",
+  "table_show_additional_columns": "Show last updated and status",
+  "table_hide_additional_columns": "Hide last updated and status",
   "profit_percentage_retired": "Stored margin is no longer supported. Refresh the form and review the sale price again."
 }

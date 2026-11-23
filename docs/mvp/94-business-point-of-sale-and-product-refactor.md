@@ -1537,3 +1537,31 @@ Chromium verificó el orden de foco, el cierre por teclado y por clic y la
 posición del botón sin desbordamiento a 320, 599, 600 y 1280 px en español
 oscuro e inglés claro. El ensayo usó ventas sintéticas. La regresión
 automatizada verificó que otro guardado vuelve a mostrar el aviso.
+
+## 46. Búsqueda de códigos en Productos — 2026-11-23
+
+El filtro de Productos reemplaza «Código del producto» por dos selectores
+independientes de búsqueda bajo «Código de factura» y «Código de barras».
+Cada buscador aparece en Todos y Con código y permanece vacío hasta que se
+escribe. Client espera 300 ms y consulta el fragmento en el negocio actual
+con `code_cont` o `barcode_cont`, en páginas de 50. Aplicar usa el código
+exacto mediante `code_eq` o `barcode_eq`. Cambiar a Sin código borra el
+código de ese borrador. Cancelar restaura los criterios aplicados al reabrir.
+Aplicar, quitar filtros y limpiar reinician el paginado. Actividad queda al
+final y Limpiar restablece Activo.
+
+La disponibilidad se retira del listado de Productos, incluidos filtros,
+tabla, tarjetas y comparación histórica. El formulario manual y las reglas
+de disponibilidad del POS conservan su contrato hasta revisar stock.
+El precio de venta normal de $0 destaca el producto actual con un fondo
+rojizo en tabla y tarjeta. El importe sigue visible y las ofertas conservan
+su presentación.
+
+El ajuste reutiliza el API de Productos y no cambia las capacidades,
+autoridad ni datos que obtiene NodiaAI. El contexto de la interfaz se
+registra en la [ficha candidata de códigos](../nodia-ai/knowledge/businesses/features/product-alias-and-code-completeness.md#búsqueda-de-códigos-en-productos--2026-11-23).
+
+Chromium con datos sintéticos verificó búsquedas vacías al abrir, selección
+por teclado, combinación de ambos códigos y conservación del resultado al
+cambiar entre tarjeta y tabla. A 320, 390, 600 y 1280 px se comprobó el
+listado o sus filtros, con español claro e inglés oscuro.

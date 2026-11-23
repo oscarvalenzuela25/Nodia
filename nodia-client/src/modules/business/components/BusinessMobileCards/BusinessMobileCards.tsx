@@ -16,6 +16,7 @@ import type {
   InvoiceEntity,
 } from "../../infrastructure/types";
 import { calculatePriceDiff, priceMeasurementsComparable } from "../../pages/BusinessDetail/components/ProductsTab/helpers";
+import { zeroSalePriceSx } from "../../pages/BusinessDetail/components/ProductsTab/productRowStyles";
 import ProductImageThumbnail from "../../pages/BusinessDetail/components/ProductsTab/components/ProductImageThumbnail";
 import ProductBarcodeIndicator from "../../pages/BusinessDetail/components/ProductsTab/components/ProductBarcodeIndicator";
 import ProductSalePrice from "../../pages/BusinessDetail/components/ProductsTab/components/ProductSalePrice";
@@ -263,7 +264,6 @@ export function ProductMobileCard({
       value: <ProductSalePrice measurementUnit={item.measurement_unit} salePrice={item.sale_price} offerPrice={current ? item.offer_price : undefined} offerEnabled={current && item.is_offer_enabled === true} />,
       fullWidth: true,
     },
-    { key: "availability", label: t("pos.availability"), value: t(item.has_stock === true ? "pos.available" : item.has_stock === false ? "pos.unavailable" : "pos.availability_unknown") },
     {
       key: "updated",
       label: t("product_updated_at"),
@@ -277,6 +277,7 @@ export function ProductMobileCard({
         title={product.name}
         status={<Status active={product.is_active} />}
         disabled={disabled}
+        sx={product.sale_price === 0 ? zeroSalePriceSx : undefined}
         fields={[
           ...(onImage ? [{ key: "image", label: t("pos.image_column"), value: <ProductImageThumbnail name={product.name} image={product.image} disabled={disabled} onOpen={() => onImage(product)} />, fullWidth: true }] : []),
           ...fields(product, true),
