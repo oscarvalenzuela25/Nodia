@@ -330,3 +330,92 @@ comprobó que vencer un lease no libera un ejecutor vivo. Tras
 demostrar el cierre local se liberó el slot y se conservó el resultado
 remoto como incierto. También se verificaron el límite de resultados
 serializados y el rechazo de restauraciones con trabajo pendiente.
+
+## Dimensiones de la cuadrícula de tarjetas
+
+La biblioteca mantiene el ancho de sus columnas cuando hay pocas
+tarjetas. Cada tarjeta mide hasta 256 píxeles y la vista previa
+reserva un espacio de proporción 16:9. El ancho disponible determina
+cuántas tarjetas caben en una fila.
+
+Chrome verificó una y varias tarjetas entre 320 y 1650 píxeles,
+incluidas imágenes verticales y panorámicas. La evaluación frente a
+la [ficha aprobada de Tarjetas, revisión 6](../nodia-ai/knowledge/studies/features/flashcards.md)
+sitúa el impacto en la presentación de la biblioteca. El contexto
+funcional de NodiaAI describe las mismas operaciones y datos.
+
+## Sets de mazos — propuesta de interfaz
+
+El usuario aprobó el mockup y autorizó implementar su alcance en la misma
+rama. Un Set agrupa mazos relacionados. El árbol permite organizar, por
+ejemplo, **Inglés en 30 días** con un mazo por jornada. En escritorio se explora el árbol a
+la izquierda. En móvil, **Mazos y sets** despliega el mismo recorrido y
+se recoge al elegir un mazo o un Set. El mismo icono en un recuadro
+identifica cada tipo en el árbol y el encabezado. Al abrir un mazo, el
+vínculo al Set padre usa el icono de carpeta.
+
+La biblioteca combina el filtro por Set con el de categoría del mazo.
+**General** sigue accesible para las tarjetas sin mazo y **Mazos sin set**
+reúne los mazos sueltos. El flujo de creación y edición presenta la
+asociación opcional a un único Set del propietario.
+
+El árbol y el detalle de un Set muestran diez mazos por página. Los
+detalles de Sets y mazos ofrecen **Lista** y **Cuadrícula**. En cuadrícula
+los mazos se ven como pilas de colección y las tarjetas tienen formato
+de carta ilustrada.
+
+Cada Set y mazo tiene un botón de papelera que abre una confirmación.
+Al eliminar un Set, sus mazos conservan sus tarjetas y pasan a
+**Mazos sin set**. Eliminar un mazo retira sus tarjetas, imágenes y
+marcas de repaso en la misma transacción. **General** es un destino fijo.
+
+### Contrato y compatibilidad
+
+La migración `1793950000000-CreateTeacherFlashcardSets` crea los Sets
+por propietario y añade `set_id` opcional al mazo. Los mazos existentes
+quedan sin Set. El alta de mazo acepta la asociación opcional y
+`PATCH /teacher/flashcards/decks/:id` permite cambiar su título,
+categoría o Set, incluida la desvinculación. El mismo controlador expone
+`GET/POST /teacher/flashcards/sets` y las bajas por ID de mazo y Set.
+La paginación de diez utiliza el inventario de mazos ya leído para el
+selector de destinos y comparte el estado entre árbol y detalle.
+
+La importación conserva su formato v1. Un mazo importado como nuevo
+empieza sin Set y se puede asignar desde su edición. Los contratos
+publicados de NodiaAI conservan sus campos y operaciones. La
+[ficha candidata de Sets](../nodia-ai/knowledge/studies/features/flashcard-sets.md)
+documenta el alcance nativo.
+
+### Verificación local
+
+El recorrido de [Nest y PostgreSQL aislado](../../nodia-server/test/teacher-flashcards.integration.mjs)
+pasó 13 escenarios. Comprueba el paso de mazos históricos a la nueva estructura, el ámbito
+por cuenta, la baja sin perder mazos, la eliminación de sus tarjetas y
+el reintento de una importación tras editar el mazo.
+
+Chromium ejecutó la biblioteca con respuestas HTTP de prueba a 1440 y
+320 píxeles. Se verificaron la navegación, la paginación sincronizada,
+las dos vistas, conservar la confirmación tras un error y reintentar la
+baja explícitamente. La suite completa de Client pasó 3506 pruebas.
+
+### Prueba local con API y PostgreSQL reales
+
+La rama se levantó en `http://localhost:5174/nodia-teacher` con
+`nodia_teacher_sets_local`, una copia local de la base configurada.
+TypeORM aplicó las migraciones pendientes hasta
+`CreateTeacherFlashcardSets1793950000000`. La base original conservó
+su historial de migraciones.
+
+Chromium recorrió Teacher con una cuenta sintética autorizada y
+comprobó un Set de 11 mazos, páginas de 10 y 1, filtros combinados,
+vistas de lista y cuadrícula, subida de imagen, repaso, persistencia
+al recargar, reasignación y ambas confirmaciones de eliminación. Los
+mazos conservados y General retuvieron sus tarjetas. Se revisaron
+anchos de 1536, 390 y 320 píxeles. Una ráfaga inicial de altas
+sintéticas recibió HTTP 429. El recorrido se retomó usando los datos
+ya guardados y espaciando las operaciones.
+
+La segunda revisión de la interfaz alineó las acciones con el
+encabezado en paneles amplios. En tarjetas angostas el menú queda
+sobre la ilustración y deja espacio para la categoría. Se comprobó
+el ajuste en la ruta real y pasaron 28 pruebas focales de Client.

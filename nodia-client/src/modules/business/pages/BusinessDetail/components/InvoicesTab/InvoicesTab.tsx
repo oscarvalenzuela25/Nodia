@@ -552,7 +552,7 @@ export const InvoicesTab: FC<Props> = ({
                   <TableRow key={inv.id} hover>
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {inv.code || t("business:invoice_without_code")}
+                        {inv.code || "-"}
                       </Typography>
                     </TableCell>
                     <TableCell>{inv.provider?.name ?? "-"}</TableCell>

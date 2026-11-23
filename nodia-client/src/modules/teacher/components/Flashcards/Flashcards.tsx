@@ -1,81 +1,142 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Box, Button, Chip, IconButton, LinearProgress, Pagination, Stack, Tooltip, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import AutoAwesomeOutlined from "@mui/icons-material/AutoAwesomeOutlined";
 import ContentPasteOutlined from "@mui/icons-material/ContentPasteOutlined";
-import LayersOutlined from "@mui/icons-material/LayersOutlined";
+import CreateNewFolderOutlined from "@mui/icons-material/CreateNewFolderOutlined";
+import DeleteOutlineOutlined from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlined from "@mui/icons-material/EditOutlined";
 import PlayArrowOutlined from "@mui/icons-material/PlayArrowOutlined";
 import { useTranslation } from "react-i18next";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
-import TextInput from "../../../../components/inputs/TextInput";
 import {
-  flashcardCategoryLimit, flashcardDeckTitleLimit, flashcardGeneralDeck, type Flashcard, type FlashcardDraft, type FlashcardSide,
+  flashcardDeckPageSize, flashcardGeneralDeck, type Flashcard, type FlashcardDeck, type FlashcardDeckFields,
+  type FlashcardDraft, type FlashcardSet, type FlashcardSide,
 } from "../../infrastructure/flashcards";
+import { filterFlashcardLibrary, flashcardCategoryKey, flashcardDeckPage, unassignedDeckFilter } from "../../infrastructure/flashcardLibrary";
 import type { FlashcardProposalParts } from "../../infrastructure/flashcardLibraryProposal";
-import { useFlashcardDecks, useFlashcards, useFlashcardWrites } from "../../infrastructure/useFlashcards";
+import { useFlashcardDecks, useFlashcards, useFlashcardSets, useFlashcardWrites } from "../../infrastructure/useFlashcards";
 import CalendarDrawer from "../StudyCalendar/CalendarDrawer";
 import TeacherLoading from "../TeacherLoading";
+import { FlashcardCollectionDeck, FlashcardCollectionItems, FlashcardCollectionViewToggle, type FlashcardCollectionView } from "./FlashcardCollection";
 import FlashcardContent from "./FlashcardContent";
 import FlashcardCreateDrawer from "./FlashcardCreateDrawer";
+import FlashcardDeckDrawer from "./FlashcardDeckDrawer";
+import { FlashcardDeckPagination, FlashcardDeckTree, FlashcardLibraryMark } from "./FlashcardDeckTree";
 import FlashcardEditor from "./FlashcardEditor";
 import FlashcardImportDrawer from "./FlashcardImportDrawer";
 import FlashcardRegenerateDrawer from "./FlashcardRegenerateDrawer";
 import FlashcardReview from "./FlashcardReview";
 import FlashcardRow from "./FlashcardRow";
-import { DeckButton, DeckCount, FlashcardActions, FlashcardGrid, FlashcardHeader, FlashcardList, FlashcardPanel, FlashcardWorkspace } from "./styles";
+import { FlashcardActions, FlashcardDetailHeader, FlashcardDetailPanel, FlashcardHeader, FlashcardWorkspace } from "./styles";
 
-type Drawer = { kind: "deck" | "create" | "notes" | "import" } | { kind: "edit" | "browse"; card: Flashcard }
+type Drawer = { kind: "create" | "notes" | "import" | "new-set" } | { kind: "new-deck"; setId?: string }
+  | { kind: "edit-deck"; deck: FlashcardDeck } | { kind: "edit" | "browse"; card: Flashcard }
   | { kind: "regenerate"; card: Flashcard; parts: FlashcardProposalParts };
-const categoryKey = (label?: string | null) => label?.toLocaleLowerCase("es").normalize("NFKC");
+type Selection = { kind: "deck" | "set"; id: string };
+type Deletion = { kind: "deck"; item: FlashcardDeck } | { kind: "set"; item: FlashcardSet } | { kind: "card"; item: Flashcard };
+const noDecks: readonly FlashcardDeck[] = [];
+const noSets: readonly FlashcardSet[] = [];
 
 export default function Flashcards({ active }: { active: boolean }) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const headingId = useId();
   const listId = useId();
-  const decksId = useId();
   const focusAfterBrowse = useRef(false);
   const activeDeckHeading = useRef<HTMLHeadingElement>(null);
-  const [deckId, setDeckId] = useState<string>(flashcardGeneralDeck);
-  const [categoryFilter, setCategoryFilter] = useState<string>();
+  const [selection, setSelection] = useState<Selection>({ kind: "deck", id: flashcardGeneralDeck });
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [setFilter, setSetFilter] = useState("");
+  const [expandedSetIds, setExpandedSetIds] = useState<ReadonlySet<string>>(() => new Set());
+  const [deckPages, setDeckPages] = useState<ReadonlyMap<string, number>>(() => new Map());
+  const [cardsView, setCardsView] = useState<FlashcardCollectionView>("grid");
+  const [decksView, setDecksView] = useState<FlashcardCollectionView>("grid");
   const [page, setPage] = useState(1);
   const [review, setReview] = useState(false);
   const [drawer, setDrawer] = useState<Drawer>();
-  const [deleting, setDeleting] = useState<Flashcard>();
+  const [deleting, setDeleting] = useState<Deletion>();
   const decks = useFlashcardDecks(active);
-  const deck = decks.data?.find(item => item.id === deckId);
-  const categories = new Map<string, string>();
-  for (const item of decks.data ?? []) {
-    const key = categoryKey(item.category);
-    if (key && item.category && !categories.has(key)) categories.set(key, item.category);
-  }
-  const activeCategory = categoryFilter && categories.has(categoryFilter) ? categoryFilter : undefined;
-  const visibleDecks = activeCategory ? decks.data?.filter(item => categoryKey(item.category) === activeCategory) : decks.data;
+  const sets = useFlashcardSets(active);
+  const collator = useMemo(() => new Intl.Collator(i18n.resolvedLanguage, { numeric: true, sensitivity: "base" }), [i18n.resolvedLanguage]);
+  const allDecks = useMemo(() => decks.data?.toSorted((a, b) => collator.compare(a.title, b.title) || a.id.localeCompare(b.id)) ?? noDecks,
+    [decks.data, collator]);
+  const allSets = sets.data ?? noSets;
+  const deckId = selection.kind === "deck" ? selection.id : "";
+  const selectedSet = selection.kind === "set" ? allSets.find(item => item.id === selection.id) : undefined;
+  const deck = allDecks.find(item => item.id === deckId);
+  const deckParent = allSets.find(item => item.id === deck?.set_id);
+  const activeSetFilter = allSets.some(set => set.id === setFilter) || setFilter === unassignedDeckFilter ? setFilter : "";
+  const activeCategory = categoryFilter && allDecks.some(item => flashcardCategoryKey(item.category) === categoryFilter) ? categoryFilter : "";
+  const library = useMemo(() => filterFlashcardLibrary(allDecks, allSets, activeSetFilter, activeCategory),
+    [allDecks, allSets, activeSetFilter, activeCategory]);
+  const setDecks = (selectedSet && library.bySet.get(selectedSet.id)) || noDecks;
+  const currentSetPage = flashcardDeckPage(setDecks, selectedSet && deckPages.get(selectedSet.id));
   const cards = useFlashcards(deckId, page, active && !review && Boolean(deck));
   const writes = useFlashcardWrites();
   const deckTitle = deckId === flashcardGeneralDeck ? t("teacher:flashcards.general") : deck?.title;
-  const busy = decks.isFetching || cards.isFetching || writes.busy;
-  const canCreate = !busy && Boolean(deck) && !decks.isError;
+  const libraryBusy = decks.isFetching || sets.isFetching || writes.busy;
+  const busy = libraryBusy || cards.isFetching;
+  const canCreate = !busy && Boolean(library.general) && !decks.isError;
   const cardsInPage = cards.data?.meta.page === page ? cards.data.data : undefined;
   const closeDrawer = () => setDrawer(undefined);
-  const selectDeck = (id: string, category = decks.data?.find(item => item.id === id)?.category) => {
-    if (activeCategory && activeCategory !== categoryKey(category)) setCategoryFilter(undefined);
-    setDeckId(id);
-    setPage(1);
-  };
-  const filterByCategory = (key?: string) => {
-    setCategoryFilter(key);
-    if (!key || key === categoryKey(deck?.category)) return;
-    const firstMatch = decks.data?.find(item => categoryKey(item.category) === key);
-    if (firstMatch) {
-      setDeckId(firstMatch.id);
+  const setDeckPage = (id: string, value: number) => setDeckPages(previous => new Map(previous).set(id, value));
+  const toggleSet = (id: string) => setExpandedSetIds(previous => {
+    const next = new Set(previous);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    return next;
+  });
+  const expandSet = (id: string) => setExpandedSetIds(previous => previous.has(id) ? previous : new Set(previous).add(id));
+  const selectDeck = (id: string, item = allDecks.find(value => value.id === id)) => {
+    if (item && id !== flashcardGeneralDeck) {
+      const category = flashcardCategoryKey(item.category);
+      const clearCategory = Boolean(activeCategory && activeCategory !== category);
+      const clearSet = Boolean(activeSetFilter && (activeSetFilter === unassignedDeckFilter ? item.set_id : activeSetFilter !== item.set_id));
+      if (clearCategory) setCategoryFilter("");
+      if (clearSet) setSetFilter("");
+      if (item.set_id) {
+        expandSet(item.set_id);
+        const previousSiblings = allDecks.filter(candidate => candidate.id !== id && candidate.set_id === item.set_id &&
+          (!activeCategory || clearCategory || flashcardCategoryKey(candidate.category) === activeCategory) &&
+          (collator.compare(candidate.title, item.title) || candidate.id.localeCompare(item.id)) < 0);
+        setDeckPage(item.set_id, Math.floor(previousSiblings.length / flashcardDeckPageSize) + 1);
+      }
+    }
+    if (selection.kind !== "deck" || deckId !== id) {
+      setSelection({ kind: "deck", id });
       setPage(1);
     }
   };
-  const openNewCard = () => setDrawer({ kind: "create" });
+  const selectSet = (id: string) => {
+    if (activeSetFilter && activeSetFilter !== id) {
+      setSetFilter("");
+      setDeckPages(new Map());
+    }
+    expandSet(id);
+    setSelection({ kind: "set", id });
+  };
+  const filterByCategory = (key: string) => {
+    setCategoryFilter(key);
+    setDeckPages(new Map());
+    if (!key || !deck || deck.id === flashcardGeneralDeck || flashcardCategoryKey(deck.category) === key) return;
+    const first = filterFlashcardLibrary(allDecks, allSets, activeSetFilter, key).decks[0];
+    if (first?.set_id) expandSet(first.set_id);
+    setSelection({ kind: "deck", id: first?.id ?? flashcardGeneralDeck });
+    setPage(1);
+  };
+  const filterBySet = (value: string) => {
+    setSetFilter(value);
+    setDeckPages(new Map());
+    if (value && value !== unassignedDeckFilter) {
+      expandSet(value);
+      setSelection({ kind: "set", id: value });
+    } else if (value === unassignedDeckFilter && (selectedSet || deck?.set_id)) {
+      const first = filterFlashcardLibrary(allDecks, allSets, value, activeCategory).decks[0];
+      setSelection({ kind: "deck", id: first?.id ?? flashcardGeneralDeck });
+      setPage(1);
+    }
+  };
 
   useEffect(() => {
     if (!active || review || busy || drawer || deleting || !focusAfterBrowse.current) return;
@@ -83,11 +144,20 @@ export default function Flashcards({ active }: { active: boolean }) {
     focusAfterBrowse.current = false;
   }, [active, review, busy, drawer, deleting]);
 
-  const saveDeck = async (title: string, category?: string) => {
+  const saveDeck = async (fields: FlashcardDeckFields) => {
     try {
-      const created = await writes.createDeck(title, category);
-      if (!created) return;
-      selectDeck(created.id, created.category);
+      if (drawer?.kind === "new-set") {
+        const created = await writes.createSet(fields.title);
+        if (!created) return;
+        setCategoryFilter("");
+        selectSet(created.id);
+      } else {
+        const saved = drawer?.kind === "edit-deck"
+          ? await writes.updateDeck(drawer.deck.id, fields)
+          : await writes.createDeck({ title: fields.title, category: fields.category ?? undefined, set_id: fields.set_id });
+        if (!saved) return;
+        selectDeck(saved.id, saved);
+      }
       closeDrawer();
       focusAfterBrowse.current = true;
     } catch {
@@ -113,10 +183,36 @@ export default function Flashcards({ active }: { active: boolean }) {
     }
   };
 
-  const deleteCard = async (card: Flashcard) => {
+  const confirmDeletion = async (target: Deletion) => {
     try {
-      if (!await writes.deleteCard(card.id)) return;
-      if (page > 1 && cardsInPage?.length === 1) setPage(page - 1);
+      if (target.kind === "card") {
+        if (!await writes.deleteCard(target.item.id)) return;
+        if (page > 1 && cardsInPage?.length === 1) setPage(page - 1);
+      } else if (target.kind === "deck") {
+        if (!await writes.deleteDeck(target.item.id)) return;
+        if (deckId === target.item.id) {
+          if (deckParent) selectSet(deckParent.id);
+          else selectDeck(flashcardGeneralDeck);
+        }
+      } else {
+        if (!await writes.deleteSet(target.item.id)) return;
+        if (setFilter === target.item.id) setSetFilter("");
+        setDeckPages(previous => {
+          const next = new Map(previous);
+          next.delete(target.item.id);
+          return next;
+        });
+        setExpandedSetIds(previous => {
+          const next = new Set(previous);
+          next.delete(target.item.id);
+          return next;
+        });
+        if (selectedSet?.id === target.item.id) {
+          const child = setDecks[0];
+          if (child) selectDeck(child.id, { ...child, set_id: null });
+          else selectDeck(flashcardGeneralDeck);
+        }
+      }
       setDeleting(undefined);
       focusAfterBrowse.current = true;
     } catch {
@@ -125,9 +221,12 @@ export default function Flashcards({ active }: { active: boolean }) {
   };
 
   if (review) return <FlashcardReview key={deckId} deckId={deckId} decks={decks.data ?? []} active={active}
-    busy={writes.busy || decks.isFetching} rateCard={writes.rateCard} onSelectDeck={selectDeck}
+    busy={libraryBusy} rateCard={writes.rateCard} onSelectDeck={selectDeck}
     onClose={() => { focusAfterBrowse.current = true; setReview(false); }} />;
 
+  const title = selectedSet?.title ?? deckTitle ?? t("teacher:flashcards.deck_cards");
+  const removingCard = deleting?.kind === "card";
+  const removingSet = deleting?.kind === "set";
   return <Stack component="section" aria-labelledby={headingId} spacing={3} sx={{ minWidth: 0 }}>
     <FlashcardHeader>
       <Typography component="h2" id={headingId} variant="h5" sx={{ fontWeight: 700 }}>
@@ -140,103 +239,118 @@ export default function Flashcards({ active }: { active: boolean }) {
         <Button variant="outlined" startIcon={<AutoAwesomeOutlined />} disabled={!canCreate} onClick={() => setDrawer({ kind: "notes" })}>
           {t("teacher:flashcard_proposal.from_notes")}
         </Button>
-        <Button variant="contained" startIcon={<AddOutlined />} disabled={!canCreate} onClick={openNewCard}>
+        <Button variant="contained" startIcon={<AddOutlined />} disabled={!canCreate} onClick={() => setDrawer({ kind: "create" })}>
           {t("teacher:flashcards.new_card")}
         </Button>
       </FlashcardActions>
     </FlashcardHeader>
     <FlashcardWorkspace>
-      <FlashcardPanel aria-labelledby={decksId}>
-        <Stack spacing={1}>
-          <FlashcardHeader>
-            <Typography id={decksId} component="h3" variant="h6">{t("teacher:flashcards.decks")}</Typography>
-            <Tooltip title={t("teacher:flashcards.new_deck")}>
-              <span>
-                <IconButton type="button" aria-label={t("teacher:flashcards.new_deck")} disabled={busy}
-                  onClick={() => setDrawer({ kind: "deck" })} sx={{ width: 44, height: 44 }}><AddOutlined /></IconButton>
-              </span>
-            </Tooltip>
-          </FlashcardHeader>
-          <QueryErrorAlert retryVariant="outlined" isError={decks.isError} isFetching={decks.isFetching} onRetry={decks.refetch} />
-          {categories.size > 0 && <Stack role="group" aria-label={t("teacher:flashcard_import.category_filter")}
-            direction="row" useFlexGap spacing={0.75} sx={{ flexWrap: "wrap", "& .MuiChip-root": { minHeight: 44, maxWidth: "100%" } }}>
-            <Chip component="button" type="button" label={t("teacher:flashcard_import.category_all")}
-              color={!activeCategory ? "primary" : "default"} variant={!activeCategory ? "filled" : "outlined"}
-              aria-pressed={!activeCategory} onClick={() => filterByCategory()} disabled={busy} />
-            {[...categories].map(([key, category]) => (
-              <Chip component="button" type="button" key={key} label={category}
-                color={activeCategory === key ? "primary" : "default"} variant={activeCategory === key ? "filled" : "outlined"}
-                aria-pressed={activeCategory === key} onClick={() => filterByCategory(key)} disabled={busy} />
-            ))}
-          </Stack>}
-          <TeacherLoading loading={decks.isLoading}>
-            {visibleDecks?.length ? <FlashcardList>
-              {visibleDecks.map(item => <li key={item.id}>
-                <DeckButton type="button" variant="outlined" aria-pressed={deckId === item.id}
-                  disabled={busy} onClick={() => { if (item.id !== deckId) selectDeck(item.id); }}>
-                  <LayersOutlined fontSize="small" sx={{ flexShrink: 0 }} />
-                  <Stack component="span" sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
-                    <Typography component="span" variant="subtitle2">
-                      {item.id === flashcardGeneralDeck ? t("teacher:flashcards.general") : item.title}
-                    </Typography>
-                    {item.category && <Typography component="span" variant="caption" color="text.secondary">{item.category}</Typography>}
-                  </Stack>
-                  <DeckCount aria-label={t("teacher:flashcards.card_count", { count: item.card_count })}>{item.card_count}</DeckCount>
-                </DeckButton>
-              </li>)}
-            </FlashcardList> : decks.data && <Typography color="text.secondary">{t("teacher:flashcards.empty_decks")}</Typography>}
-          </TeacherLoading>
-        </Stack>
-      </FlashcardPanel>
-      <FlashcardPanel aria-labelledby={listId}>
+      <FlashcardDeckTree sets={library.sets} decks={library.decks} generalDeck={library.general} setOptions={allSets}
+        categoryOptions={library.categories} setFilter={activeSetFilter} categoryFilter={activeCategory}
+        selectedSetId={selectedSet?.id} selectedDeckId={deckId} expandedSetIds={expandedSetIds} pages={deckPages}
+        busy={libraryBusy} loading={decks.isLoading || sets.isLoading} hasError={decks.isError && !decks.data} setsUnavailable={sets.isError && !sets.data}
+        onSetFilter={filterBySet} onCategoryFilter={filterByCategory} onToggleSet={toggleSet} onSelectSet={selectSet}
+        onSelectDeck={item => selectDeck(item.id, item)} onPageChange={setDeckPage}
+        onDeleteSet={item => setDeleting({ kind: "set", item })} onDeleteDeck={item => setDeleting({ kind: "deck", item })}
+        actions={<FlashcardActions sx={{ "& > .MuiButton-root": { px: 1 } }}>
+          <Button variant="outlined" startIcon={<CreateNewFolderOutlined />} disabled={libraryBusy || sets.isError}
+            onClick={() => setDrawer({ kind: "new-set" })}>{t("teacher:flashcard_sets.new_set")}</Button>
+          <Button variant="outlined" startIcon={<AddOutlined />} disabled={libraryBusy || decks.isError}
+            onClick={() => setDrawer({ kind: "new-deck", setId: selectedSet?.id ?? deckParent?.id })}>{t("teacher:flashcards.new_deck")}</Button>
+        </FlashcardActions>}
+      >
+        <QueryErrorAlert retryVariant="outlined" isError={decks.isError} isFetching={decks.isFetching} onRetry={decks.refetch} />
+        <QueryErrorAlert retryVariant="outlined" isError={sets.isError} isFetching={sets.isFetching} onRetry={sets.refetch} />
+      </FlashcardDeckTree>
+      <FlashcardDetailPanel aria-labelledby={listId}>
         <Stack spacing={2}>
-          <FlashcardHeader>
-            <Box>
-              <Typography id={listId} ref={activeDeckHeading} tabIndex={-1} component="h3" variant="h6">
-                {deckTitle ?? t("teacher:flashcards.deck_cards")}
-              </Typography>
-              {deck && <Typography variant="body2" color="text.secondary">
-                {t("teacher:flashcards.card_count", { count: deck.card_count })}
+          {deckParent && <Button variant="outlined" startIcon={<FlashcardLibraryMark kind="set" />} disabled={libraryBusy}
+            onClick={() => selectSet(deckParent.id)} sx={{ alignSelf: "flex-start", textAlign: "start", overflowWrap: "anywhere", maxWidth: "100%" }}>
+            {deckParent.title}
+          </Button>}
+          <FlashcardDetailHeader>
+            <Stack spacing={0.5} sx={{ gridArea: "summary", minWidth: 0 }}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                {(deck || selectedSet) && <FlashcardLibraryMark kind={selectedSet ? "set" : deckId === flashcardGeneralDeck ? "general" : "deck"} />}
+                <Typography id={listId} ref={activeDeckHeading} tabIndex={-1} component="h3" variant="h6" sx={{ overflowWrap: "anywhere" }}>
+                  {title}
+                </Typography>
+              </Stack>
+              {deck && <Stack direction="row" spacing={0.75} useFlexGap sx={{ alignItems: "center", flexWrap: "wrap" }}>
+                <Typography variant="body2" color="text.secondary">{t("teacher:flashcards.card_count", { count: deck.card_count })}</Typography>
+                {deck.category && <Chip size="small" label={deck.category} sx={{ maxWidth: "100%" }} />}
+              </Stack>}
+              {selectedSet && <Typography variant="body2" color="text.secondary">
+                {t("teacher:flashcard_sets.deck_count", { count: setDecks.length })}
               </Typography>}
-              {deck?.category && <Chip size="small" label={deck.category} sx={{ mt: 0.5, maxWidth: "100%" }} />}
-            </Box>
-            <FlashcardActions>
-              <Button variant="outlined" startIcon={<PlayArrowOutlined />} disabled={busy || !deck?.card_count}
+            </Stack>
+            {selectedSet ? <LibraryTrash title={t("teacher:flashcard_sets.delete_set_label", { title })}
+              disabled={libraryBusy} onClick={() => setDeleting({ kind: "set", item: selectedSet })} />
+              : deck && deckId !== flashcardGeneralDeck && <LibraryTrash title={t("teacher:flashcard_sets.delete_deck_label", { title })}
+                disabled={busy} onClick={() => setDeleting({ kind: "deck", item: deck })} />}
+            {selectedSet && <FlashcardActions sx={{ gridArea: "actions" }}>
+              <Button variant="outlined" startIcon={<AddOutlined />} disabled={libraryBusy || decks.isError}
+                onClick={() => setDrawer({ kind: "new-deck", setId: selectedSet.id })}>{t("teacher:flashcards.new_deck")}</Button>
+            </FlashcardActions>}
+            {deck && <FlashcardActions sx={{ gridArea: "actions" }}>
+              {deckId !== flashcardGeneralDeck && <Button variant="outlined" startIcon={<EditOutlined />} disabled={busy}
+                onClick={() => setDrawer({ kind: "edit-deck", deck })}>{t("teacher:flashcard_sets.edit_deck")}</Button>}
+              <Button variant="outlined" startIcon={<PlayArrowOutlined />} disabled={busy || !deck.card_count}
                 onClick={() => setReview(true)}>{t("teacher:flashcards.start_review")}</Button>
-            </FlashcardActions>
-          </FlashcardHeader>
-          <QueryErrorAlert retryVariant="outlined" isError={cards.isError} isFetching={cards.isFetching} onRetry={cards.refetch} />
-          {cards.isFetching && !cards.isLoading && cardsInPage && <LinearProgress aria-label={t("core:loading_route")} />}
-          <TeacherLoading loading={decks.isLoading || cards.isLoading}>
-            {cardsInPage && (cardsInPage.length ? <FlashcardGrid>
-              {cardsInPage.map(card => <FlashcardRow key={card.id} card={card} busy={busy} active={active}
-                onOpen={() => setDrawer({ kind: "browse", card })}
-                onEdit={() => setDrawer({ kind: "edit", card })}
-                onRegenerate={parts => setDrawer({ kind: "regenerate", card, parts })}
-                onDelete={() => setDeleting(card)} />)}
-            </FlashcardGrid> : <Box sx={{ px: 2, py: 3, textAlign: "center", border: 1, borderColor: "divider", borderRadius: 1.5 }}>
-              <Typography color="text.secondary">{t("teacher:flashcards.empty_deck")}</Typography>
-            </Box>)}
-          </TeacherLoading>
-          {cards.data && cards.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page}
-            count={cards.data.meta.total_pages} disabled={busy} siblingCount={0}
-            sx={{ "& .MuiPaginationItem-root": { minWidth: 44, height: 44 }, "& .MuiPagination-ul": { rowGap: 0.5 } }}
-            onChange={(_, value) => setPage(value)} />}
+            </FlashcardActions>}
+          </FlashcardDetailHeader>
+          {selectedSet && <>
+            {currentSetPage.data.length > 0 ? <>
+              <FlashcardCollectionViewToggle value={decksView} onChange={setDecksView} disabled={libraryBusy} />
+              <FlashcardCollectionItems mode={decksView} aria-label={t("teacher:flashcard_sets.decks_in_set")}>
+                {currentSetPage.data.map(item => <FlashcardCollectionDeck key={item.id} deck={item} mode={decksView} busy={libraryBusy}
+                  onSelect={() => selectDeck(item.id, item)} onDelete={() => setDeleting({ kind: "deck", item })} />)}
+              </FlashcardCollectionItems>
+              <FlashcardDeckPagination page={currentSetPage.page} total={setDecks.length} disabled={libraryBusy}
+                onPageChange={value => setDeckPage(selectedSet.id, value)} />
+            </> : <LibraryEmpty>{t(activeCategory ? "teacher:flashcard_sets.no_matches" : "teacher:flashcard_sets.empty_set")}</LibraryEmpty>}
+          </>}
+          {deck && <>
+            <QueryErrorAlert retryVariant="outlined" isError={cards.isError} isFetching={cards.isFetching} onRetry={cards.refetch} />
+            {cards.isFetching && !cards.isLoading && cardsInPage && <LinearProgress aria-label={t("core:loading_route")} />}
+            <TeacherLoading loading={cards.isLoading}>
+              {cardsInPage && (cardsInPage.length ? <Stack spacing={1.5}>
+                <FlashcardCollectionViewToggle value={cardsView} onChange={setCardsView} disabled={busy} />
+                <FlashcardCollectionItems mode={cardsView} aria-label={t("teacher:flashcards.heading")}>
+                  {cardsInPage.map(card => <FlashcardRow key={card.id} card={card} mode={cardsView} category={deck.category} busy={busy} active={active}
+                    onOpen={() => setDrawer({ kind: "browse", card })}
+                    onEdit={() => setDrawer({ kind: "edit", card })}
+                    onRegenerate={parts => setDrawer({ kind: "regenerate", card, parts })}
+                    onDelete={() => setDeleting({ kind: "card", item: card })} />)}
+                </FlashcardCollectionItems>
+              </Stack> : <LibraryEmpty>{t("teacher:flashcards.empty_deck")}</LibraryEmpty>)}
+            </TeacherLoading>
+            {cards.data && cards.data.meta.total_pages > 1 && <Pagination variant="outlined" page={page}
+              count={cards.data.meta.total_pages} disabled={busy} siblingCount={0}
+              sx={{ "& .MuiPaginationItem-root": { minWidth: 44, height: 44 }, "& .MuiPagination-ul": { rowGap: 0.5 } }}
+              onChange={(_, value) => setPage(value)} />}
+          </>}
+          {!selectedSet && !deck && <TeacherLoading loading={decks.isLoading || sets.isLoading}>
+            <LibraryEmpty>{t("teacher:flashcard_sets.selection_unavailable")}</LibraryEmpty>
+          </TeacherLoading>}
         </Stack>
-      </FlashcardPanel>
+      </FlashcardDetailPanel>
     </FlashcardWorkspace>
 
-    {drawer?.kind === "deck" && <CreateDeckDrawer busy={writes.busy} onClose={closeDrawer} onSave={saveDeck} />}
+    {(drawer?.kind === "new-set" || drawer?.kind === "new-deck" || drawer?.kind === "edit-deck") &&
+      <FlashcardDeckDrawer kind={drawer.kind} sets={allSets} setsUnavailable={!sets.data} busy={libraryBusy}
+        initial={drawer.kind === "edit-deck" ? drawer.deck : drawer.kind === "new-deck" ? { set_id: drawer.setId } : undefined}
+        onClose={closeDrawer} onSave={saveDeck} />}
     {drawer?.kind === "import" && <FlashcardImportDrawer decks={decks.data ?? []}
       busy={writes.busy || decks.isFetching} save={writes.importCards} onClose={closeDrawer} onImported={({ deck: imported }) => {
-        selectDeck(imported.id, imported.category);
+        selectDeck(imported.id, allDecks.find(item => item.id === imported.id) ?? imported);
         closeDrawer();
         focusAfterBrowse.current = true;
       }} />}
     {(drawer?.kind === "create" || drawer?.kind === "notes") && <FlashcardCreateDrawer decks={decks.data ?? []}
       title={drawer.kind === "notes" ? t("teacher:flashcard_proposal.from_notes") : undefined}
       libraryRequest={drawer.kind === "notes" ? { origin: { kind: "notes" } } : undefined}
-      initialValues={{ deck_id: deckId, question: "", answer: "" }} busy={writes.busy || decks.isFetching}
+      initialValues={{ deck_id: deckId || flashcardGeneralDeck, question: "", answer: "" }} busy={writes.busy || decks.isFetching}
       createCard={writes.createCard} onClose={closeDrawer} onCreated={card => {
         selectDeck(card.deck_id);
         closeDrawer();
@@ -250,39 +364,27 @@ export default function Flashcards({ active }: { active: boolean }) {
       description={deckTitle} onClose={closeDrawer}>
       <FlashcardContent card={drawer.card} revealed />
     </CalendarDrawer>}
-    {deleting && <ConfirmDialog open title={t("teacher:flashcards.delete_card")}
-      message={t("teacher:flashcards.delete_message", { question: deleting.question, deck: deckTitle })}
-      onClose={() => setDeleting(undefined)} onConfirm={() => { void deleteCard(deleting); }}
-      confirmText={t("teacher:flashcards.delete")} isLoading={writes.busy} />}
+    {deleting && <ConfirmDialog open
+      title={t(removingCard ? "teacher:flashcards.delete_card" : removingSet ? "teacher:flashcard_sets.confirm_set_title" : "teacher:flashcard_sets.confirm_deck_title")}
+      message={deleting.kind === "card" ? t("teacher:flashcards.delete_message", { question: deleting.item.question, deck: deckTitle })
+        : t(deleting.kind === "set" ? "teacher:flashcard_sets.confirm_set_message" : "teacher:flashcard_sets.confirm_deck_message", { title: deleting.item.title })}
+      onClose={() => setDeleting(undefined)} onConfirm={() => { void confirmDeletion(deleting); }}
+      confirmText={t("teacher:flashcards.delete")} isLoading={writes.busy}
+      confirmDisabled={libraryBusy || (removingCard && cards.isFetching)} />}
   </Stack>;
 }
 
-const deckFields = z.object({
-  title: z.string().trim().min(1, "teacher:flashcards.required").max(flashcardDeckTitleLimit, "teacher:flashcards.deck_title_limit"),
-  category: z.string().trim().max(flashcardCategoryLimit, "teacher:flashcard_import.category_limit"),
-});
+function LibraryEmpty({ children }: { children: string }) {
+  return <Box sx={{ px: 2, py: 3, textAlign: "center", border: 1, borderColor: "divider", borderRadius: 1.5 }}>
+    <Typography color="text.secondary">{children}</Typography>
+  </Box>;
+}
 
-type CreateDeckProps = { busy: boolean; onClose: () => void; onSave: (title: string, category?: string) => Promise<void> };
-function CreateDeckDrawer({ busy, onClose, onSave }: CreateDeckProps) {
-  const { t } = useTranslation();
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<z.input<typeof deckFields>>({
-    resolver: zodResolver(deckFields), defaultValues: { title: "", category: "" },
-  });
-  const locked = busy || isSubmitting;
-  return <CalendarDrawer title={t("teacher:flashcards.new_deck")} busy={locked} onClose={onClose}>
-    <Stack component="form" noValidate spacing={2} onSubmit={handleSubmit(({ title, category }) => onSave(title, category || undefined))}>
-      <Controller name="title" control={control} render={({ field }) => (
-        <TextInput {...field} required disabled={locked} label={t("teacher:flashcards.deck_title")}
-          error={Boolean(errors.title)} helperText={errors.title?.message && t(errors.title.message, { limit: flashcardDeckTitleLimit })} />
-      )} />
-      <Controller name="category" control={control} render={({ field }) => (
-        <TextInput {...field} disabled={locked} label={t("teacher:flashcard_import.category_optional")}
-          error={Boolean(errors.category)} helperText={errors.category?.message && t(errors.category.message, { limit: flashcardCategoryLimit })} />
-      )} />
-      <FlashcardActions sx={{ justifyContent: "flex-end" }}>
-        <Button variant="outlined" disabled={locked} onClick={onClose}>{t("core:cancel")}</Button>
-        <Button variant="contained" type="submit" disabled={locked}>{t("teacher:flashcards.create_deck")}</Button>
-      </FlashcardActions>
-    </Stack>
-  </CalendarDrawer>;
+function LibraryTrash({ title, disabled, onClick }: { title: string; disabled: boolean; onClick: () => void }) {
+  return <Tooltip title={title}>
+    <span data-flashcard-detail-trash style={{ gridArea: "trash" }}><IconButton type="button" aria-label={title} disabled={disabled}
+      onClick={onClick} sx={{ width: 44, height: 44, color: "text.secondary", "&:hover": { color: "error.main" } }}>
+      <DeleteOutlineOutlined />
+    </IconButton></span>
+  </Tooltip>;
 }

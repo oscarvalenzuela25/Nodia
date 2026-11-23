@@ -419,6 +419,7 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
 
 - **Espaciado Vertical**: Entre campos de formulario contiguos se debe mantener una separación estándar de `16px` a `20px` (`gap: 2` a `2.5`).
 - **Ancho Completo**: Todos los inputs (`TextInput`, `SelectSingleInput`, `SelectMultipleInput`, `TranslationInput`) deben configurarse con `fullWidth` dentro de sus contenedores móviles.
+- **Limpiar selector individual**: La X se centra en el campo, ocupa espacio horizontal y conserva la altura del selector al aparecer o desaparecer. La opción táctil conserva un área de 44 px y al borrar devuelve el foco al selector.
 - **Acciones junto a texto**: TextInput admite `endAdornment` y una descripción externa enlazada mediante `aria-describedby`. En una fila con botón de envío, ubicar etiqueta/ayuda fuera de la fila para centrar botón y campo, sin offsets; en xs apilar y ocupar todo el ancho. Ojito accesible con etiqueta ES/EN/aria-pressed y mouseDown preventDefault conserva borrador/foco al alternar tipo. Referencia verificada: GeminiLoginViewer,44px,600/1280px centrados y320/390px sin overflow.
 - **Fechas nativas**: el indicador de calendario debe usar el mismo color del texto del input en ambos temas, preservando el selector nativo y su accesibilidad. Referencia: TextInput con currentColor y colorScheme.
 - **Teclado Virtual y Auto-Scroll**:

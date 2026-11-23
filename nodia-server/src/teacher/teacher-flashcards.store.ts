@@ -3,19 +3,25 @@ import { randomUUID } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import type {
   Flashcard,
+  FlashcardCollectionTitle,
   FlashcardCreate,
   FlashcardDeck,
   FlashcardDeckDefinition,
+  FlashcardDeckPatch,
   FlashcardImageSide,
   FlashcardImportCard,
   FlashcardImportResult,
   FlashcardPage,
   FlashcardPatch,
+  FlashcardSet,
 } from './types/teacher-flashcards.types.js';
 
 export type FlashcardScope = { manager: EntityManager; owner: string };
 export const FLASHCARD_PAGE_SIZE = 12;
 export const FLASHCARD_DECK_PAGE_SIZE = 50;
+
+type FlashcardImportReceipt =
+  (FlashcardImportResult & { request_hash: string }) | { request_hash: null };
 
 const cardColumns = `c.id, COALESCE(c.deck_id::text, 'general') AS deck_id,
   c.question, c.answer, c.revision,
@@ -44,14 +50,14 @@ export class TeacherFlashcardsStore {
          WHERE owner_user_id = $1 GROUP BY deck_id
        ), decks AS (
          SELECT 'general' AS id, 'General' AS title,
-           NULL::varchar AS category,
+           NULL::varchar AS category, NULL::uuid AS set_id,
            COALESCE((SELECT card_count FROM counts WHERE deck_id IS NULL), 0) AS card_count, 0 AS ordering
          UNION ALL
-         SELECT d.id::text, d.title, d.category, COALESCE(counts.card_count, 0), 1 AS ordering
+         SELECT d.id::text, d.title, d.category, d.set_id, COALESCE(counts.card_count, 0), 1 AS ordering
          FROM teacher_flashcard_decks d LEFT JOIN counts ON counts.deck_id = d.id
          WHERE d.owner_user_id = $1
        )
-       SELECT id, title, category, card_count FROM decks ORDER BY ordering, lower(title), id`,
+       SELECT id, title, category, set_id, card_count FROM decks ORDER BY ordering, lower(title), id`,
       [owner],
     );
   }
@@ -60,14 +66,15 @@ export class TeacherFlashcardsStore {
     const [result]: { data: FlashcardDeck[]; total: number }[] =
       await manager.query(
         `WITH decks AS MATERIALIZED (
-           SELECT NULL::uuid AS deck_id, 'General' AS title, NULL::varchar AS category, 0 AS ordering
+           SELECT NULL::uuid AS deck_id, 'General' AS title, NULL::varchar AS category,
+             NULL::uuid AS set_id, 0 AS ordering
            UNION ALL
-           SELECT id, title, category, 1 AS ordering
+           SELECT id, title, category, set_id, 1 AS ordering
            FROM teacher_flashcard_decks WHERE owner_user_id = $1
          ), page AS MATERIALIZED (
            SELECT * FROM decks ORDER BY ordering, lower(title), deck_id LIMIT $2 OFFSET $3
          ), projected AS (
-           SELECT COALESCE(p.deck_id::text, 'general') AS id, p.title, p.category, p.ordering,
+           SELECT COALESCE(p.deck_id::text, 'general') AS id, p.title, p.category, p.set_id, p.ordering,
              CASE WHEN p.deck_id IS NULL THEN
                (SELECT count(*)::int FROM teacher_flashcards WHERE owner_user_id = $1 AND deck_id IS NULL)
              ELSE
@@ -98,14 +105,118 @@ export class TeacherFlashcardsStore {
   async createDeck(
     { manager, owner }: FlashcardScope,
     { title, normalizedTitle, category }: FlashcardDeckDefinition,
+    setId: string | null,
   ): Promise<FlashcardDeck | undefined> {
     const [deck]: FlashcardDeck[] = await manager.query(
-      `INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title, category)
-       VALUES ($1, $2, $3, $4) ON CONFLICT (owner_user_id, normalized_title) DO NOTHING
-       RETURNING id, title, category, 0 AS card_count`,
-      [owner, title, normalizedTitle, category],
+      `INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title, category, set_id)
+       VALUES ($1, $2, $3, $4, $5) ON CONFLICT (owner_user_id, normalized_title) DO NOTHING
+       RETURNING id, title, category, set_id, 0 AS card_count`,
+      [owner, title, normalizedTitle, category, setId],
     );
     return deck;
+  }
+
+  async patchDeck(
+    { manager, owner }: FlashcardScope,
+    deckId: string,
+    patch: FlashcardDeckPatch,
+  ): Promise<FlashcardDeck | undefined> {
+    const [deck]: FlashcardDeck[] = await manager.query(
+      `WITH updated AS (
+         UPDATE teacher_flashcard_decks
+         SET title = COALESCE($3, title), normalized_title = COALESCE($4, normalized_title),
+           category = CASE WHEN $5 THEN $6::varchar ELSE category END,
+           set_id = CASE WHEN $7 THEN $8::uuid ELSE set_id END
+         WHERE owner_user_id = $1 AND id = $2
+         RETURNING id, title, category, set_id
+       )
+       SELECT updated.*, (SELECT count(*)::int FROM teacher_flashcards
+         WHERE owner_user_id = $1 AND deck_id = $2) AS card_count
+       FROM updated`,
+      [
+        owner,
+        deckId,
+        patch.title ?? null,
+        patch.normalizedTitle ?? null,
+        patch.category !== undefined,
+        patch.category ?? null,
+        patch.setId !== undefined,
+        patch.setId ?? null,
+      ],
+    );
+    return deck;
+  }
+
+  async deleteDeck(scope: FlashcardScope, deckId: string) {
+    const { manager, owner } = scope;
+    await this.removeCards(scope, 'deck_id', deckId);
+    // Preserve the import key in the same transaction to prevent replay into General
+    // or recreating the deleted destination after a response is lost.
+    await manager.query(
+      `UPDATE teacher_flashcard_import_requests SET deck_id = NULL, request_hash = NULL
+       WHERE owner_user_id = $1 AND deck_id = $2`,
+      [owner, deckId],
+    );
+    await manager.query(
+      'DELETE FROM teacher_flashcard_decks WHERE owner_user_id = $1 AND id = $2',
+      [owner, deckId],
+    );
+  }
+
+  async lockDeck(
+    { manager, owner }: FlashcardScope,
+    deckId: string,
+    mode: 'update' | 'key-share',
+  ) {
+    const [row]: { id: string }[] = await manager.query(
+      `SELECT id FROM teacher_flashcard_decks WHERE owner_user_id = $1 AND id = $2
+       FOR ${mode === 'update' ? 'UPDATE' : 'KEY SHARE'}`,
+      [owner, deckId],
+    );
+    return Boolean(row);
+  }
+
+  sets({ manager, owner }: FlashcardScope): Promise<FlashcardSet[]> {
+    return manager.query(
+      `SELECT s.id, s.title, count(d.id)::int AS deck_count
+       FROM teacher_flashcard_sets s LEFT JOIN teacher_flashcard_decks d
+         ON d.owner_user_id = s.owner_user_id AND d.set_id = s.id
+       WHERE s.owner_user_id = $1
+       GROUP BY s.id ORDER BY lower(s.title), s.id`,
+      [owner],
+    );
+  }
+
+  async createSet(
+    { manager, owner }: FlashcardScope,
+    { title, normalizedTitle }: FlashcardCollectionTitle,
+  ): Promise<FlashcardSet | undefined> {
+    const [set]: FlashcardSet[] = await manager.query(
+      `INSERT INTO teacher_flashcard_sets (owner_user_id, title, normalized_title)
+       VALUES ($1, $2, $3) ON CONFLICT (owner_user_id, normalized_title) DO NOTHING
+       RETURNING id, title, 0 AS deck_count`,
+      [owner, title, normalizedTitle],
+    );
+    return set;
+  }
+
+  async lockSet({ manager, owner }: FlashcardScope, setId: string) {
+    const [row]: { id: string }[] = await manager.query(
+      `SELECT id FROM teacher_flashcard_sets WHERE owner_user_id = $1 AND id = $2
+       FOR KEY SHARE`,
+      [owner, setId],
+    );
+    return Boolean(row);
+  }
+
+  async deleteSet({ manager, owner }: FlashcardScope, setId: string) {
+    const [row]: { id: string }[] = await manager.query(
+      `WITH deleted AS (
+         DELETE FROM teacher_flashcard_sets WHERE owner_user_id = $1 AND id = $2 RETURNING id
+       ) SELECT id FROM deleted`,
+      [owner, setId],
+    );
+    return Boolean(row);
   }
 
   async hasDeck({ manager, owner }: FlashcardScope, deckId: string) {
@@ -122,7 +233,7 @@ export class TeacherFlashcardsStore {
   ): Promise<FlashcardDeck | undefined> {
     const [result]: FlashcardDeck[] = await manager.query(
       `SELECT COALESCE(d.id::text, 'general') AS id, COALESCE(d.title, 'General') AS title,
-         d.category, (SELECT count(*)::int FROM teacher_flashcards
+         d.category, d.set_id, (SELECT count(*)::int FROM teacher_flashcards
            WHERE owner_user_id = $1 AND deck_id IS NOT DISTINCT FROM $2::uuid) AS card_count
        FROM (SELECT $2::uuid AS id) requested
        LEFT JOIN teacher_flashcard_decks d ON d.owner_user_id = $1 AND d.id = requested.id
@@ -135,18 +246,17 @@ export class TeacherFlashcardsStore {
   async importReceipt(
     { manager, owner }: FlashcardScope,
     key: string,
-  ): Promise<(FlashcardImportResult & { request_hash: string }) | undefined> {
-    const [receipt]: (FlashcardImportResult & { request_hash: string })[] =
-      await manager.query(
-        `SELECT r.request_hash, r.imported_count, jsonb_build_object(
+  ): Promise<FlashcardImportReceipt | undefined> {
+    const [receipt]: FlashcardImportReceipt[] = await manager.query(
+      `SELECT r.request_hash, r.imported_count, CASE WHEN r.request_hash IS NOT NULL THEN jsonb_build_object(
            'id', COALESCE(r.deck_id::text, 'general'), 'title', COALESCE(d.title, 'General'),
-           'category', d.category, 'card_count', r.card_count
-         ) AS deck
+           'category', d.category, 'set_id', d.set_id, 'card_count', r.card_count
+         ) END AS deck
          FROM teacher_flashcard_import_requests r LEFT JOIN teacher_flashcard_decks d
            ON d.owner_user_id = r.owner_user_id AND d.id = r.deck_id
          WHERE r.owner_user_id = $1 AND r.request_key = $2`,
-        [owner, key],
-      );
+      [owner, key],
+    );
     return receipt;
   }
 
@@ -354,10 +464,18 @@ export class TeacherFlashcardsStore {
     return Boolean(row);
   }
 
-  async deleteCard({ manager, owner }: FlashcardScope, id: string) {
+  deleteCard(scope: FlashcardScope, id: string) {
+    return this.removeCards(scope, 'id', id);
+  }
+
+  private async removeCards(
+    { manager, owner }: FlashcardScope,
+    column: 'id' | 'deck_id',
+    id: string,
+  ) {
     await manager.query(
       `WITH deleted AS (
-        DELETE FROM teacher_flashcards WHERE owner_user_id = $1 AND id = $2 RETURNING id
+        DELETE FROM teacher_flashcards WHERE owner_user_id = $1 AND ${column} = $2 RETURNING id
        ) UPDATE teacher_flashcard_create_requests r SET request_hash = NULL
          FROM deleted WHERE r.owner_user_id = $1 AND r.card_id = deleted.id`,
       [owner, id],

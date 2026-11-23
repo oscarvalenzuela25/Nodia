@@ -704,6 +704,7 @@ La implementación conserva límites parciales por función y evidencia históri
 | Repaso espaciado | [Ficha](features/spaced-repetition.md) | Parcial E5; tarjeta/repaso manual VM | Sin registrar | Teacher `/nodia-teacher` |
 | Calendario personal de estudio | [Ficha](features/study-calendar.md) | Calendarios, categorías y avance por actividad verificados en laboratorio | Publicado en el catálogo de la rama, revisión 5 | Teacher `/nodia-teacher` |
 | Tarjetas de repaso por mazo | [Ficha](features/flashcards.md) | Parcial local; biblioteca, repaso, importación JSON y propuestas de texto e imagen por partes | Publicado en el catálogo de la rama, revisión 6 | Teacher `/nodia-teacher` |
+| Sets de mazos | [Ficha](features/flashcard-sets.md) | Implementado localmente en Teacher | Ficha candidata sin registrar | Teacher `/nodia-teacher` |
 | Aclaraciones ancladas al material | [Ficha](features/contextual-clarifications.md) | Parcial E6; propósito y ayuda real anclada VM | Sin registrar | Teacher `/nodia-teacher` |
 | Fuentes propias y citas | [Ficha](features/learning-sources.md) | Parcial E7a; fuente textual VM; sin cita emitida | Sin registrar | Teacher `/nodia-teacher` |
 | Tipos internos de actividad y visuales declarativos | [Ficha](features/activity-types-and-visuals.md) | Parcial E7b/E7c; actividad/visual manual VM | Sin registrar | Teacher `/nodia-teacher` |
