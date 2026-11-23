@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import ArrowOutwardOutlined from "@mui/icons-material/ArrowOutwardOutlined";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { CardRoot, FieldGrid } from "./styles";
 
@@ -31,6 +32,7 @@ type Props = {
   actions?: MobileCardAction[];
   primaryAction?: MobileCardAction;
   disabled?: boolean;
+  sx?: SxProps<Theme>;
 };
 export default function MobileRecordCard({
   title,
@@ -40,12 +42,13 @@ export default function MobileRecordCard({
   actions = [],
   primaryAction,
   disabled = false,
+  sx,
 }: Props) {
   const { t } = useTranslation();
   const id = useId();
   const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
   return (
-    <CardRoot aria-label={accessibleTitle ?? title}>
+    <CardRoot aria-label={accessibleTitle ?? title} sx={sx}>
       <Box
         sx={{
           display: "flex",
