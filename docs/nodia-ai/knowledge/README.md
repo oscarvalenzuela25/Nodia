@@ -1,21 +1,31 @@
 # Contexto funcional de productos para NodiaAI
 
+## Calendarios y tarjetas de Teacher en NodiaAI
+
+El usuario aprobó las revisiones 5 de Calendario de estudio y 6 de
+Tarjetas de repaso. El catálogo `nodia-ai-teacher-study/1` activa en la
+rama de Teacher las consultas propias y las preparaciones de cambios con
+confirmación humana.
+[Ficha de Calendario](studies/features/study-calendar.md#operaciones-desde-nodiaai) ·
+[Ficha de Tarjetas](studies/features/flashcards.md#operaciones-desde-nodiaai) ·
+[Aprobación](../../evidence/nodia-ai-teacher-catalog-approval-20261123.md).
+
 ## Tarjetas de repaso de Teacher — primer corte local del 2026-11-22
 
 El [Plan112](../../mvp/112-teacher-flashcards-plan.md) y la
-[ficha candidata](studies/features/flashcards.md) describen la biblioteca
+[ficha de tarjetas](studies/features/flashcards.md) describen la biblioteca
 personal de mazos, tarjetas con imagen privada y repaso móvil. La
 continuación agrega [importación JSON y propuestas de texto desde citas](../../mvp/112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto).
 Las [propuestas de biblioteca](../../mvp/112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca)
-incluyen texto e imagen con vista previa. La calificación por proveedor
-real y la integración con NodiaAI siguen pendientes.
+incluyen texto e imagen con vista previa. La calificación de la
+generación por proveedor real sigue pendiente.
 
 ## Calendario de estudio de Teacher — propuesta del 2026-11-22
 
-La [ficha candidata](studies/features/study-calendar.md) y el
-[Plan111](../../mvp/111-teacher-study-calendar-plan.md) recorren diseño, datos,
-pegado y gestión del estado del calendario personal. Documentación draft y
-unregistered.
+El diseño, los datos, el pegado y la gestión del estado del calendario
+personal se describen en la ficha y el plan.
+[Ficha de Calendario](studies/features/study-calendar.md) ·
+[Plan111](../../mvp/111-teacher-study-calendar-plan.md).
 
 ## Catálogo de Productos y precios — 2026-11-21
 

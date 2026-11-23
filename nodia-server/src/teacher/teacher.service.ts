@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource, type EntityManager } from 'typeorm';
 import {
   currentActor,
@@ -62,10 +62,11 @@ export class TeacherService {
     sessionId: string | null,
     work: (scope: TeacherScope) => Promise<T>,
     locked = false,
+    transaction = actor.transaction,
   ): Promise<T> {
     if (sessionId) requireUuid(sessionId);
-    return this.source.transaction('READ COMMITTED', async (manager) => {
-      await lockAuthority(manager);
+    const run = async (manager: EntityManager) => {
+      if (!transaction) await lockAuthority(manager);
       const current = await currentActor(manager, actor);
       await this.modules.execute(current.actorId, ['/nodia-teacher'], manager);
       if (locked) await lockNodiaAiQueue(manager);
@@ -83,7 +84,14 @@ export class TeacherService {
           teacherError('not_found', 404);
       }
       return work({ manager, actor: current, session, reference: actor });
-    });
+    };
+    if (!transaction) return this.source.transaction('READ COMMITTED', run);
+    // The internal runtime owns the authority barrier and statement deadline.
+    if (!transaction.queryRunner?.isTransactionActive)
+      throw new InternalServerErrorException(
+        'authorization:transaction_required',
+      );
+    return run(transaction);
   }
   async command<T extends Record<string, unknown>>(
     actor: ActorReference,

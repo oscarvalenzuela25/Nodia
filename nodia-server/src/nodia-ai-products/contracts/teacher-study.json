@@ -1,0 +1,184 @@
+{
+  "tools": [
+    {
+      "toolName": "nodia_teacher_calendars_list",
+      "resourceKey": "teacher_calendars",
+      "operationKey": "list",
+      "kind": "read",
+      "description": "Lista los calendarios de estudio propios de Nodia Teacher. Filtra por categoría y estado. Incluye las jornadas totales y completadas de cada calendario.",
+      "inputSchema": "CalendarListInput",
+      "outputSchema": "CalendarPlansPage"
+    },
+    {
+      "toolName": "nodia_teacher_calendars_get",
+      "resourceKey": "teacher_calendars",
+      "operationKey": "get",
+      "kind": "read",
+      "description": "Consulta un calendario de estudio propio por ID, sus categorías, el avance y una página de jornadas con sus identificadores. Usa el detalle de jornada para leer actividades y fuentes.",
+      "inputSchema": "CalendarGetInput",
+      "outputSchema": "CalendarPlanDetail"
+    },
+    {
+      "toolName": "nodia_teacher_calendar_days_get",
+      "resourceKey": "teacher_calendar_days",
+      "operationKey": "get",
+      "kind": "read",
+      "description": "Consulta una jornada propia por los ID de calendario y jornada. Incluye notas, avance, y una página de actividades con sus identificadores y fuentes.",
+      "inputSchema": "CalendarDayGetInput",
+      "outputSchema": "CalendarDayDetail"
+    },
+    {
+      "toolName": "nodia_teacher_calendar_categories_list",
+      "resourceKey": "teacher_calendar_categories",
+      "operationKey": "list",
+      "kind": "read",
+      "description": "Lista las categorías de calendario propias de Nodia Teacher, con su color y estado activo o inactivo.",
+      "inputSchema": "PagedInput",
+      "outputSchema": "CalendarCategoriesPage"
+    },
+    {
+      "toolName": "nodia_teacher_calendars_prepare_create",
+      "resourceKey": "teacher_calendars",
+      "operationKey": "create",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación un calendario de estudio personal por fechas o días numerados. Usa el formato de plan v1, con jornadas, actividades y fuentes opcionales.",
+      "inputSchema": "CalendarCreateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_calendars_prepare_update",
+      "resourceKey": "teacher_calendars",
+      "operationKey": "update",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación el cambio de título, categorías o estado activo de un calendario de estudio propio. Omitir una propiedad conserva su valor.",
+      "inputSchema": "CalendarUpdateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_calendars_prepare_delete",
+      "resourceKey": "teacher_calendars",
+      "operationKey": "delete",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación la eliminación de un calendario de estudio propio, incluidas sus jornadas, actividades y avance.",
+      "inputSchema": "IdentifiedInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_calendar_days_prepare_update",
+      "resourceKey": "teacher_calendar_days",
+      "operationKey": "update",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación los nuevos detalles y la lista completa de actividades de una jornada propia. Conserva los ID de las actividades que permanezcan. Las omitidas se eliminan.",
+      "inputSchema": "CalendarDayUpdateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_calendar_activities_prepare_set_completion",
+      "resourceKey": "teacher_calendar_activities",
+      "operationKey": "set_completion",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación marcar o desmarcar una actividad de una jornada propia por ID. Teacher deriva la finalización de la jornada de sus actividades.",
+      "inputSchema": "CalendarActivityCompletionInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_calendar_categories_prepare_create",
+      "resourceKey": "teacher_calendar_categories",
+      "operationKey": "create",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación una categoría personal de calendarios de estudio con un nombre y color.",
+      "inputSchema": "CalendarCategoryCreateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_calendar_categories_prepare_update",
+      "resourceKey": "teacher_calendar_categories",
+      "operationKey": "update",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación el cambio de nombre, color o estado activo de una categoría personal de calendarios de estudio. Omitir una propiedad conserva su valor.",
+      "inputSchema": "CalendarCategoryUpdateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_flashcard_decks_list",
+      "resourceKey": "teacher_flashcard_decks",
+      "operationKey": "list",
+      "kind": "read",
+      "description": "Lista los mazos de tarjetas de repaso propios, incluido General, con sus categorías y cantidad de tarjetas.",
+      "inputSchema": "PagedInput",
+      "outputSchema": "FlashcardDecksPage"
+    },
+    {
+      "toolName": "nodia_teacher_flashcards_list",
+      "resourceKey": "teacher_flashcards",
+      "operationKey": "list",
+      "kind": "read",
+      "description": "Lista las tarjetas de un mazo propio. Si omites el mazo usa General. Devuelve una vista de la pregunta y los ID para consultar tarjeta y respuesta completas.",
+      "inputSchema": "FlashcardListInput",
+      "outputSchema": "FlashcardsPage"
+    },
+    {
+      "toolName": "nodia_teacher_flashcards_get",
+      "resourceKey": "teacher_flashcards",
+      "operationKey": "get",
+      "kind": "read",
+      "description": "Consulta una tarjeta de repaso propia con pregunta, respuesta, etiqueta de fuente y lado de la imagen si existe.",
+      "inputSchema": "IdentifiedInput",
+      "outputSchema": "FlashcardDetail"
+    },
+    {
+      "toolName": "nodia_teacher_flashcard_decks_prepare_create",
+      "resourceKey": "teacher_flashcard_decks",
+      "operationKey": "create",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación un mazo de tarjetas de repaso propio con una categoría de texto opcional.",
+      "inputSchema": "FlashcardDeckCreateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_flashcards_prepare_create",
+      "resourceKey": "teacher_flashcards",
+      "operationKey": "create",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación una tarjeta de repaso con pregunta, respuesta y etiqueta de fuente opcional. Sin mazo explícito se guarda en General.",
+      "inputSchema": "FlashcardCreateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_flashcards_prepare_update",
+      "resourceKey": "teacher_flashcards",
+      "operationKey": "update",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación cambios de pregunta, respuesta, mazo, fuente o imagen de una tarjeta de repaso propia. Para quitar la fuente usa null. Puedes mover o quitar una imagen existente.",
+      "inputSchema": "FlashcardUpdateInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_flashcards_prepare_delete",
+      "resourceKey": "teacher_flashcards",
+      "operationKey": "delete",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación la eliminación de una tarjeta de repaso propia por ID.",
+      "inputSchema": "IdentifiedInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_flashcard_imports_prepare_create",
+      "resourceKey": "teacher_flashcard_imports",
+      "operationKey": "create",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación hasta 30 tarjetas de repaso en una sola importación a un mazo propio, General o un mazo nuevo con categoría opcional.",
+      "inputSchema": "FlashcardImportInput",
+      "outputSchema": "PreparationResult"
+    },
+    {
+      "toolName": "nodia_teacher_flashcard_reviews_prepare_create",
+      "resourceKey": "teacher_flashcard_reviews",
+      "operationKey": "create",
+      "kind": "prepare_change",
+      "description": "Prepara para confirmación el registro de si recordaste una tarjeta de repaso propia. Usa el ID de la tarjeta.",
+      "inputSchema": "FlashcardReviewCreateInput",
+      "outputSchema": "PreparationResult"
+    }
+  ]
+}

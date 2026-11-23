@@ -48,17 +48,28 @@ function readCard(raw: unknown): FlashcardImportCard {
   };
 }
 
+export function readFlashcardImportContent(
+  rawDestination: unknown,
+  rawCards: unknown,
+) {
+  const destination = readDestination(rawDestination);
+  if (
+    !Array.isArray(rawCards) ||
+    !rawCards.length ||
+    rawCards.length > FLASHCARD_IMPORT_MAX_CARDS
+  )
+    teacherError('invalid_input', 400);
+  const cards = rawCards.map(readCard);
+  return { destination, cards };
+}
+
 export function readFlashcardImport(raw: unknown) {
   const input = object(raw, ['request_key', 'destination', 'cards']);
   const requestKey = requireUuid(input.request_key).toLowerCase();
-  const destination = readDestination(input.destination);
-  if (
-    !Array.isArray(input.cards) ||
-    !input.cards.length ||
-    input.cards.length > FLASHCARD_IMPORT_MAX_CARDS
-  )
-    teacherError('invalid_input', 400);
-  const cards = input.cards.map(readCard);
+  const { destination, cards } = readFlashcardImportContent(
+    input.destination,
+    input.cards,
+  );
   if (Buffer.byteLength(JSON.stringify(input)) > FLASHCARD_IMPORT_MAX_BYTES)
     teacherError('flashcard_import_too_large', 413);
   return { requestKey, destination, cards };

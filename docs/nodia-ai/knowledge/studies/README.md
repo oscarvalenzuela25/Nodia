@@ -296,6 +296,16 @@ describe los dos ejercicios del piloto de desarrollo y su feedback local.
 El [Plan106 §22](../../../mvp/106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22)
 mantiene el seguimiento del piloto. La ficha conserva su estado candidato.
 
+## Calendarios y tarjetas en NodiaAI — 2026-11-23
+
+El catálogo `nodia-ai-teacher-study/1` activa en la rama siete consultas
+y trece preparaciones de cambios con confirmación humana. Las fichas
+publicadas corresponden a Calendario de estudio revisión 5 y Tarjetas de
+repaso revisión 6. Teacher aplica el ámbito de cada cuenta y revalida el
+destino antes de ejecutar un cambio aprobado.
+[Catálogo de Teacher](../../../mvp/40-nodia-ai-tool-catalog-v1.md#calendarios-y-tarjetas-de-teacher) ·
+[Aprobación](../../../evidence/nodia-ai-teacher-catalog-approval-20261123.md).
+
 ## Tarjetas de repaso — primer corte local del 2026-11-22
 
 El [Plan112](../../../mvp/112-teacher-flashcards-plan.md) y la
@@ -692,7 +702,8 @@ La implementación conserva límites parciales por función y evidencia históri
 | Lecciones, práctica, corrección y refuerzo | [Ficha](features/lessons-practice-and-review.md) | Parcial; práctica12/14 y corrección escrita VM comprobadas | Sin registrar | Teacher `/nodia-teacher` |
 | Evidencia por objetivo y recomendaciones | [Ficha](features/learning-evidence-and-recommendations.md) | Parcial E1/E2/E3; evidencia/mapeos/recomendación VM | Sin registrar | Teacher `/nodia-teacher` |
 | Repaso espaciado | [Ficha](features/spaced-repetition.md) | Parcial E5; tarjeta/repaso manual VM | Sin registrar | Teacher `/nodia-teacher` |
-| Tarjetas de repaso por mazo | [Ficha](features/flashcards.md) | Parcial local; biblioteca, repaso, importación JSON y propuestas de texto e imagen por partes | Sin registrar | Teacher `/nodia-teacher` |
+| Calendario personal de estudio | [Ficha](features/study-calendar.md) | Calendarios, categorías y avance por actividad verificados en laboratorio | Publicado en el catálogo de la rama, revisión 5 | Teacher `/nodia-teacher` |
+| Tarjetas de repaso por mazo | [Ficha](features/flashcards.md) | Parcial local; biblioteca, repaso, importación JSON y propuestas de texto e imagen por partes | Publicado en el catálogo de la rama, revisión 6 | Teacher `/nodia-teacher` |
 | Aclaraciones ancladas al material | [Ficha](features/contextual-clarifications.md) | Parcial E6; propósito y ayuda real anclada VM | Sin registrar | Teacher `/nodia-teacher` |
 | Fuentes propias y citas | [Ficha](features/learning-sources.md) | Parcial E7a; fuente textual VM; sin cita emitida | Sin registrar | Teacher `/nodia-teacher` |
 | Tipos internos de actividad y visuales declarativos | [Ficha](features/activity-types-and-visuals.md) | Parcial E7b/E7c; actividad/visual manual VM | Sin registrar | Teacher `/nodia-teacher` |

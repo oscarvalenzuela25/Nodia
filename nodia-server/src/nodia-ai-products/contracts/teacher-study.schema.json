@@ -1,0 +1,1304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodia.local/schemas/teacher-study/1",
+  "$defs": {
+    "Uuid": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36,
+      "pattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$"
+    },
+    "Page": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999999
+    },
+    "PageMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "$ref": "#/$defs/Page"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_pages": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["page", "total", "total_pages"]
+    },
+    "Revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "IdentifiedInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        }
+      },
+      "required": ["id"]
+    },
+    "PagedInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "$ref": "#/$defs/Page"
+        }
+      },
+      "required": []
+    },
+    "CalendarCategoryName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "\\S"
+    },
+    "CalendarColor": {
+      "type": "string",
+      "enum": ["violet", "green", "blue", "amber"]
+    },
+    "CalendarCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "name": {
+          "$ref": "#/$defs/CalendarCategoryName"
+        },
+        "color": {
+          "$ref": "#/$defs/CalendarColor"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": ["id", "name", "color", "active"]
+    },
+    "CalendarCategoriesPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/CalendarCategory"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/PageMeta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "CalendarDate": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "CalendarNumberedSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "numbered"
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        }
+      },
+      "required": ["kind", "days"]
+    },
+    "CalendarDatedSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "dated"
+        },
+        "start": {
+          "$ref": "#/$defs/CalendarDate"
+        },
+        "end": {
+          "$ref": "#/$defs/CalendarDate"
+        }
+      },
+      "required": ["kind", "start", "end"]
+    },
+    "CalendarSchedule": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CalendarNumberedSchedule"
+        },
+        {
+          "$ref": "#/$defs/CalendarDatedSchedule"
+        }
+      ]
+    },
+    "CalendarSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "\\S"
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "^[Hh][Tt][Tt][Pp][Ss]://",
+          "description": "URL HTTPS de la fuente. Nodia Teacher valida la URL al guardar."
+        }
+      },
+      "required": ["label", "url"]
+    },
+    "CalendarImportActivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "\\S"
+        },
+        "source": {
+          "$ref": "#/$defs/CalendarSource"
+        }
+      },
+      "required": ["text"]
+    },
+    "CalendarEditableActivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "\\S"
+        },
+        "source": {
+          "$ref": "#/$defs/CalendarSource"
+        },
+        "completed": {
+          "type": "boolean"
+        }
+      },
+      "required": ["text", "completed"]
+    },
+    "CalendarStoredActivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "\\S"
+        },
+        "source": {
+          "$ref": "#/$defs/CalendarSource"
+        },
+        "completed": {
+          "type": "boolean"
+        }
+      },
+      "required": ["id", "text", "completed"]
+    },
+    "CalendarDaySummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CalendarDate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minutes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activity_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "completed_activity_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "completed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "date",
+        "title",
+        "minutes",
+        "activity_count",
+        "completed_activity_count",
+        "completed"
+      ]
+    },
+    "CalendarDayDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "date": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CalendarDate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minutes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activity_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "completed_activity_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "activities": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/CalendarStoredActivity"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/PageMeta"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "date",
+        "title",
+        "minutes",
+        "activity_count",
+        "completed_activity_count",
+        "completed",
+        "notes",
+        "revision",
+        "activities",
+        "meta"
+      ]
+    },
+    "CalendarPlanSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "schedule": {
+          "$ref": "#/$defs/CalendarSchedule"
+        },
+        "categories": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/CalendarCategory"
+          }
+        },
+        "day_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "completed_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "active",
+        "schedule",
+        "categories",
+        "day_count",
+        "completed_count"
+      ]
+    },
+    "CalendarPlanDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "schedule": {
+          "$ref": "#/$defs/CalendarSchedule"
+        },
+        "categories": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/CalendarCategory"
+          }
+        },
+        "day_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "completed_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 366
+        },
+        "days": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/CalendarDaySummary"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/PageMeta"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "active",
+        "schedule",
+        "categories",
+        "day_count",
+        "completed_count",
+        "days",
+        "meta"
+      ]
+    },
+    "CalendarPlansPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/CalendarPlanSummary"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/PageMeta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "CalendarListInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "$ref": "#/$defs/Page"
+        },
+        "category_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "inactive", "all"],
+          "description": "Cuando se omite, muestra calendarios activos."
+        }
+      },
+      "required": []
+    },
+    "CalendarGetInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "page": {
+          "$ref": "#/$defs/Page"
+        }
+      },
+      "required": ["id"]
+    },
+    "CalendarDayGetInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "page": {
+          "$ref": "#/$defs/Page"
+        }
+      },
+      "required": ["plan_id", "id"]
+    },
+    "CalendarNumberedImportDay": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 366
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "activities": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "$ref": "#/$defs/CalendarImportActivity"
+          }
+        }
+      },
+      "required": ["day"]
+    },
+    "CalendarDatedImportDay": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/CalendarDate"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 120
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "activities": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "$ref": "#/$defs/CalendarImportActivity"
+          }
+        }
+      },
+      "required": ["date"]
+    },
+    "CalendarNumberedPlanInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "number",
+          "const": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "categories": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/CalendarCategoryName"
+          },
+          "uniqueItems": true
+        },
+        "schedule": {
+          "$ref": "#/$defs/CalendarNumberedSchedule"
+        },
+        "days": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/CalendarNumberedImportDay"
+          }
+        }
+      },
+      "required": ["version", "title", "schedule"]
+    },
+    "CalendarDatedPlanInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "number",
+          "const": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "categories": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/CalendarCategoryName"
+          },
+          "uniqueItems": true
+        },
+        "schedule": {
+          "$ref": "#/$defs/CalendarDatedSchedule"
+        },
+        "days": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/CalendarDatedImportDay"
+          }
+        }
+      },
+      "required": ["version", "title", "schedule"]
+    },
+    "CalendarCreateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CalendarNumberedPlanInput"
+            },
+            {
+              "$ref": "#/$defs/CalendarDatedPlanInput"
+            }
+          ]
+        },
+        "new_categories": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/CalendarCategoryName"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": ["plan"]
+    },
+    "CalendarUpdateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "category_ids": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/Uuid"
+          },
+          "uniqueItems": true
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": ["id"],
+      "minProperties": 2
+    },
+    "CalendarDayUpdateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minutes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1440
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activities": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "$ref": "#/$defs/CalendarEditableActivity"
+          }
+        }
+      },
+      "required": ["plan_id", "id", "title", "notes", "minutes", "activities"]
+    },
+    "CalendarActivityCompletionInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plan_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "activity_id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "completed": {
+          "type": "boolean"
+        }
+      },
+      "required": ["plan_id", "id", "activity_id", "completed"]
+    },
+    "CalendarCategoryCreateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/CalendarCategoryName"
+        },
+        "color": {
+          "$ref": "#/$defs/CalendarColor"
+        }
+      },
+      "required": ["name", "color"]
+    },
+    "CalendarCategoryUpdateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "name": {
+          "$ref": "#/$defs/CalendarCategoryName"
+        },
+        "color": {
+          "$ref": "#/$defs/CalendarColor"
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": ["id"],
+      "minProperties": 2
+    },
+    "FlashcardDeckId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "general"
+        },
+        {
+          "$ref": "#/$defs/Uuid"
+        }
+      ]
+    },
+    "FlashcardDeck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "card_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["id", "title", "category", "card_count"]
+    },
+    "FlashcardDecksPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/FlashcardDeck"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/PageMeta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "FlashcardListInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "deck_id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        },
+        "page": {
+          "$ref": "#/$defs/Page"
+        }
+      },
+      "required": []
+    },
+    "FlashcardImageSide": {
+      "type": "string",
+      "enum": ["question", "answer"]
+    },
+    "FlashcardImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "side": {
+          "$ref": "#/$defs/FlashcardImageSide"
+        }
+      },
+      "required": ["side"]
+    },
+    "FlashcardSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        }
+      },
+      "required": ["label"]
+    },
+    "FlashcardSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "deck_id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 320,
+          "pattern": "\\S"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "image": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FlashcardImage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FlashcardSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "question_truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "deck_id",
+        "question",
+        "revision",
+        "image",
+        "source",
+        "question_truncated"
+      ]
+    },
+    "FlashcardDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "deck_id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "image": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FlashcardImage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FlashcardSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "id",
+        "deck_id",
+        "question",
+        "revision",
+        "image",
+        "source",
+        "answer"
+      ]
+    },
+    "FlashcardsPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "$ref": "#/$defs/FlashcardSummary"
+          }
+        },
+        "meta": {
+          "$ref": "#/$defs/PageMeta"
+        }
+      },
+      "required": ["data", "meta"]
+    },
+    "FlashcardDeckCreateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "\\S"
+        }
+      },
+      "required": ["title"]
+    },
+    "FlashcardCreateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "deck_id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        }
+      },
+      "required": ["question", "answer"]
+    },
+    "FlashcardUpdateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "deck_id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "image_side": {
+          "$ref": "#/$defs/FlashcardImageSide"
+        },
+        "remove_image": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": ["id"],
+      "minProperties": 2,
+      "not": {
+        "properties": {
+          "image_side": true,
+          "remove_image": true
+        },
+        "required": ["image_side", "remove_image"]
+      }
+    },
+    "FlashcardImportExistingDeck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "existing"
+        },
+        "deck_id": {
+          "$ref": "#/$defs/FlashcardDeckId"
+        }
+      },
+      "required": ["kind", "deck_id"]
+    },
+    "FlashcardImportNewDeck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "new"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "\\S"
+        }
+      },
+      "required": ["kind", "title"]
+    },
+    "FlashcardImportCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        }
+      },
+      "required": ["question", "answer"]
+    },
+    "FlashcardImportInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FlashcardImportExistingDeck"
+            },
+            {
+              "$ref": "#/$defs/FlashcardImportNewDeck"
+            }
+          ]
+        },
+        "cards": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/FlashcardImportCard"
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["destination", "cards"]
+    },
+    "FlashcardReviewCreateInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "remembered": {
+          "type": "boolean"
+        }
+      },
+      "required": ["id", "remembered"]
+    }
+  }
+}

@@ -56,6 +56,7 @@ export class TeacherCalendarStore {
     page: number,
     categoryId: string | undefined,
     active: boolean | null,
+    pageSize = CALENDAR_PAGE_SIZE,
   ): Promise<CalendarPlanPage> {
     const [result]: { data: CalendarPlanSummary[]; total: number }[] =
       await manager.query(
@@ -89,19 +90,13 @@ export class TeacherCalendarStore {
           ORDER BY created_at DESC, id DESC), '[]'::jsonb) AS data,
           (SELECT count(*)::int FROM filtered) AS total
         FROM projected`,
-        [
-          owner,
-          categoryId ?? null,
-          active,
-          CALENDAR_PAGE_SIZE,
-          (page - 1) * CALENDAR_PAGE_SIZE,
-        ],
+        [owner, categoryId ?? null, active, pageSize, (page - 1) * pageSize],
       );
     return {
       data: result.data,
       meta: {
         page,
-        total_pages: Math.ceil(result.total / CALENDAR_PAGE_SIZE),
+        total_pages: Math.ceil(result.total / pageSize),
         total: result.total,
       },
     };
@@ -196,13 +191,34 @@ export class TeacherCalendarStore {
     return Boolean(result);
   }
 
-  async lockPlan({ manager, owner }: FetchScope, planId: string) {
+  async lockPlan(
+    { manager, owner }: FetchScope,
+    planId: string,
+    mode: 'patch' | 'day' | 'delete' = 'patch',
+  ) {
+    const locks = {
+      patch: 'NO KEY UPDATE',
+      day: 'KEY SHARE',
+      delete: 'UPDATE',
+    };
     const [result]: { id: string }[] = await manager.query(
       `SELECT id FROM teacher_calendar_plans
-       WHERE owner_user_id = $1 AND id = $2 FOR NO KEY UPDATE`,
+       WHERE owner_user_id = $1 AND id = $2 FOR ${locks[mode]}`,
       [owner, planId],
     );
     return Boolean(result);
+  }
+
+  planDayRevisions(
+    { manager, owner }: FetchScope,
+    planId: string,
+  ): Promise<{ id: string; revision: number }[]> {
+    return manager.query(
+      `SELECT d.id, d.revision FROM teacher_calendar_days d
+       JOIN teacher_calendar_plans p ON p.id = d.plan_id
+       WHERE p.owner_user_id = $1 AND p.id = $2 ORDER BY d.ordinal`,
+      [owner, planId],
+    );
   }
 
   updatePlan(
@@ -222,15 +238,16 @@ export class TeacherCalendarStore {
     { manager, owner }: FetchScope,
     planId: string,
     categoryIds: string[],
-  ): Promise<{ id: string; active: boolean; assigned: boolean }[]> {
+  ): Promise<(CalendarCategory & { assigned: boolean })[]> {
     return manager.query(
-      `SELECT c.id, c.active, EXISTS (
+      `SELECT c.id, c.name, c.color, c.active, EXISTS (
         SELECT 1 FROM teacher_calendar_plan_categories pc
         WHERE pc.owner_user_id = c.owner_user_id AND pc.plan_id = $2
           AND pc.category_id = c.id
       ) AS assigned
       FROM teacher_calendar_categories c
-      WHERE c.owner_user_id = $1 AND c.id = ANY($3::uuid[])`,
+      WHERE c.owner_user_id = $1 AND c.id = ANY($3::uuid[])
+      ORDER BY c.id`,
       [owner, planId, categoryIds],
     );
   }
@@ -408,6 +425,31 @@ export class TeacherCalendarStore {
       WHERE owner_user_id = $1 ORDER BY normalized_name, id`,
       [owner],
     );
+  }
+
+  async categoriesPage({ manager, owner }: FetchScope, page: number) {
+    const [result]: { data: CalendarCategory[]; total: number }[] =
+      await manager.query(
+        `WITH selected AS MATERIALIZED (
+          SELECT ${categoryFields}, normalized_name
+          FROM teacher_calendar_categories WHERE owner_user_id = $1
+        ), page AS (
+          SELECT * FROM selected ORDER BY normalized_name, id LIMIT $2 OFFSET $3
+        )
+        SELECT COALESCE(jsonb_agg(to_jsonb(page) - 'normalized_name'
+          ORDER BY normalized_name, id), '[]'::jsonb) AS data,
+          (SELECT count(*)::int FROM selected) AS total
+        FROM page`,
+        [owner, CALENDAR_PAGE_SIZE, (page - 1) * CALENDAR_PAGE_SIZE],
+      );
+    return {
+      data: result.data,
+      meta: {
+        page,
+        total_pages: Math.ceil(result.total / CALENDAR_PAGE_SIZE),
+        total: result.total,
+      },
+    };
   }
 
   categoriesByNames(

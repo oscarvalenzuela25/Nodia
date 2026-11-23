@@ -66,6 +66,11 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherPublisherRegistration,
     TeacherReceiptStatusInterceptor,
   ],
-  exports: [TeacherService, PublishTeacherUseCase],
+  exports: [
+    TeacherService,
+    PublishTeacherUseCase,
+    TeacherCalendarUseCase,
+    TeacherFlashcardsUseCase,
+  ],
 })
 export class TeacherModule {}

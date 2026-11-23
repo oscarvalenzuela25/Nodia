@@ -44,6 +44,11 @@ import type {
   ProposalPreparerContext,
   StoredProposalStep,
 } from '../../nodia-ai-proposal/types/proposal-preparer.types.js';
+import { nodiaAiTeacherOperationIdentity } from '../../nodia-ai-teacher-operations/teacher-operation-identity.js';
+import {
+  NODIA_AI_TEACHER_OPERATIONS,
+  type NodiaAiTeacherOperation,
+} from '../../nodia-ai-teacher-operations/types.js';
 
 type RentalPort =
   | NodiaAiRentalConfigurationOperation
@@ -61,6 +66,7 @@ export class ExecuteNodiaAiLocalEffectUseCase {
   >;
   private readonly corePorts: ReadonlyMap<string, NodiaAiCoreOperation>;
   private readonly rentalPorts: ReadonlyMap<string, RentalPort>;
+  private readonly teacherPorts: ReadonlyMap<string, NodiaAiTeacherOperation>;
   constructor(
     private readonly finance: ExecuteNodiaAiFinanceEffectUseCase,
     @Inject(NODIA_AI_BUSINESS_OPERATIONS)
@@ -80,6 +86,8 @@ export class ExecuteNodiaAiLocalEffectUseCase {
     providerOperations: readonly NodiaAiProviderOperation[] = [],
     @Inject(NODIA_AI_PREFERENCE_OPERATIONS)
     preferenceOperations: readonly NodiaAiPreferenceOperation[] = [],
+    @Inject(NODIA_AI_TEACHER_OPERATIONS)
+    teacherOperations: readonly NodiaAiTeacherOperation[] = [],
   ) {
     const ports = new Map<string, NodiaAiNativeOperation>();
     for (const port of operations) {
@@ -152,6 +160,16 @@ export class ExecuteNodiaAiLocalEffectUseCase {
       preferences.set(port.toolName, port);
     }
     this.preferencePorts = preferences;
+    const teacher = new Map<string, NodiaAiTeacherOperation>();
+    for (const port of teacherOperations) {
+      if (
+        !nodiaAiTeacherOperationIdentity(port.toolName) ||
+        teacher.has(port.toolName)
+      )
+        throw new Error('nodia_ai:invalid_native_operation');
+      teacher.set(port.toolName, port);
+    }
+    this.teacherPorts = teacher;
   }
   /** Called only after the SQL callback has committed/rolled back; cache is never authority. */
   async invalidateCoreCaches(): Promise<void> {
@@ -172,7 +190,8 @@ export class ExecuteNodiaAiLocalEffectUseCase {
       this.rentalPorts.get(step.toolName) ??
       this.corePorts.get(step.toolName) ??
       this.providerPorts.get(step.toolName) ??
-      this.preferencePorts.get(step.toolName);
+      this.preferencePorts.get(step.toolName) ??
+      this.teacherPorts.get(step.toolName);
     if (!port || port.contractHash !== step.contractHash)
       throw new ConflictException('nodia_ai:catalog_changed');
     return port.executeConfirmed(step, context);

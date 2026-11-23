@@ -11,16 +11,23 @@ import type {
 } from '../dto/teacher-calendar.dto.js';
 import {
   readCalendarCategoryName,
+  readCalendarCategoryPatch,
   readCalendarColor,
   readCalendarDayPatch,
+  readCalendarPage,
   readCalendarPlan,
   readCalendarPlanPatch,
   readCalendarPlanStatus,
 } from '../policies/teacher-calendar.js';
 import { requireUuid, teacherError } from '../policies/teacher-validation.js';
-import { TeacherCalendarStore } from '../teacher-calendar.store.js';
+import {
+  CALENDAR_PAGE_SIZE,
+  TeacherCalendarStore,
+} from '../teacher-calendar.store.js';
 import { TeacherService } from '../teacher.service.js';
 import type {
+  CalendarCategoryName,
+  CalendarPlanPatch,
   CalendarPlanStatus,
   CalendarPlanWrite,
 } from '../types/teacher-calendar.types.js';
@@ -38,8 +45,13 @@ export class TeacherCalendarUseCase {
     actor: ActorReference,
     work: (scope: CalendarScope) => Promise<T>,
   ): Promise<T> {
-    return this.teacher.scope(actor, null, ({ manager, actor: current }) =>
-      work({ manager, owner: current.actorId }),
+    return this.teacher.scope(
+      actor,
+      null,
+      ({ manager, actor: current }) =>
+        work({ manager, owner: current.actorId }),
+      false,
+      actor.transaction,
     );
   }
 
@@ -48,9 +60,9 @@ export class TeacherCalendarUseCase {
     page: number,
     categoryId?: string,
     status: CalendarPlanStatus = 'active',
+    pageSize = CALENDAR_PAGE_SIZE,
   ) {
-    if (!Number.isInteger(page) || page < 1 || page > 999999999)
-      teacherError('invalid_input', 400);
+    readCalendarPage(page);
     const category =
       categoryId === undefined ? undefined : requireUuid(categoryId);
     const selected = readCalendarPlanStatus(status);
@@ -60,6 +72,7 @@ export class TeacherCalendarUseCase {
         page,
         category,
         selected === 'all' ? null : selected === 'active',
+        pageSize,
       ),
     );
   }
@@ -113,20 +126,7 @@ export class TeacherCalendarUseCase {
     return this.scope(actor, async (scope) => {
       if (!(await this.store.lockPlan(scope, planId)))
         teacherError('not_found', 404);
-      if (patch.category_ids && patch.category_ids.length > 0) {
-        await this.store.lockCategories(scope);
-        const categories = await this.store.categoriesForPlanUpdate(
-          scope,
-          planId,
-          patch.category_ids,
-        );
-        if (categories.length !== patch.category_ids.length)
-          teacherError('not_found', 404);
-        if (
-          categories.some((category) => !category.active && !category.assigned)
-        )
-          teacherError('calendar_category_inactive');
-      }
+      await this.validatePlanCategories(scope, planId, patch.category_ids);
       if (patch.title !== undefined || patch.active !== undefined)
         await this.store.updatePlan(scope, planId, patch);
       if (patch.category_ids !== undefined)
@@ -164,8 +164,7 @@ export class TeacherCalendarUseCase {
     requireUuid(dayId);
     const { revision, activities, ...fields } = readCalendarDayPatch(input);
     return this.scope(actor, async (scope) => {
-      const day = await this.store.lockDay(scope, planId, dayId);
-      if (!day) teacherError('not_found', 404);
+      const day = await this.requireLockedDay(scope, planId, dayId);
       if (day.revision !== revision || revision === 2147483647)
         teacherError('revision_conflict');
       const existingIds = new Set(await this.store.activityIds(scope, dayId));
@@ -191,6 +190,11 @@ export class TeacherCalendarUseCase {
     return this.scope(actor, (scope) => this.store.categories(scope));
   }
 
+  categoriesPage(actor: ActorReference, page: number) {
+    readCalendarPage(page);
+    return this.scope(actor, (scope) => this.store.categoriesPage(scope, page));
+  }
+
   createCategory(actor: ActorReference, input: CreateCalendarCategoryDto) {
     const name = readCalendarCategoryName(input.name);
     const color = readCalendarColor(input.color);
@@ -208,40 +212,145 @@ export class TeacherCalendarUseCase {
     input: PatchCalendarCategoryDto,
   ) {
     requireUuid(categoryId);
-    if (
-      input.name === undefined &&
-      input.color === undefined &&
-      input.active === undefined
-    )
-      teacherError('invalid_input', 400);
-    if (input.active !== undefined && typeof input.active !== 'boolean')
-      teacherError('invalid_input', 400);
-    const name =
-      input.name === undefined
-        ? undefined
-        : readCalendarCategoryName(input.name);
-    const color =
-      input.color === undefined ? undefined : readCalendarColor(input.color);
+    const { name, color, active } = readCalendarCategoryPatch(input);
     return this.scope(actor, async (scope) => {
       await this.store.lockCategories(scope);
-      const category = await this.store.category(scope, categoryId);
-      if (!category) teacherError('not_found', 404);
-      if (name && name.normalized_name !== category.normalized_name) {
-        const [duplicate] = await this.store.categoriesByNames(scope, [
-          name.normalized_name,
-        ]);
-        if (duplicate) teacherError('calendar_category_duplicate');
-      }
+      const category = await this.requireCategoryChange(
+        scope,
+        categoryId,
+        name,
+      );
       const updated = await this.store.updateCategory(
         scope,
         categoryId,
         name ?? category,
         color ?? category.color,
-        input.active ?? category.active,
+        active ?? category.active,
       );
       if (!updated) teacherError('not_found', 404);
       return updated;
     });
+  }
+
+  inspectPlanCreation(
+    actor: ActorReference,
+    plan: CalendarPlanWrite,
+    requestKey?: string,
+  ) {
+    return this.scope(actor, async (scope) => {
+      if (requestKey)
+        await this.store.lockCreationRequest(
+          scope,
+          requireUuid(requestKey).toLowerCase(),
+        );
+      return this.classifyPlanCategories(scope, plan);
+    });
+  }
+
+  inspectPlanChange(
+    actor: ActorReference,
+    id: string,
+    intent: CalendarPlanPatch | 'delete',
+  ) {
+    requireUuid(id);
+    return this.scope(actor, async (scope) => {
+      if (intent === 'delete') {
+        const key = await this.store.planCreationKey(scope, id);
+        if (!key) teacherError('not_found', 404);
+        await this.store.lockCreationRequest(scope, key);
+      }
+      if (
+        !(await this.store.lockPlan(
+          scope,
+          id,
+          intent === 'delete' ? 'delete' : 'patch',
+        ))
+      )
+        teacherError('not_found', 404);
+      await this.store.lockCategories(scope);
+      const { days, ...plan } = await this.requirePlan(scope, id);
+      const categories =
+        intent === 'delete'
+          ? []
+          : await this.validatePlanCategories(scope, id, intent.category_ids);
+      const revisions =
+        intent === 'delete' ? await this.store.planDayRevisions(scope, id) : [];
+      const activityCount =
+        intent === 'delete'
+          ? days.reduce((count, day) => count + day.activity_count, 0)
+          : 0;
+      return { plan, categories, revisions, activityCount };
+    });
+  }
+
+  inspectDayChange(actor: ActorReference, planId: string, dayId: string) {
+    requireUuid(planId);
+    requireUuid(dayId);
+    return this.scope(actor, async (scope) => {
+      const { revision } = await this.requireLockedDay(scope, planId, dayId);
+      if (revision === 2147483647) teacherError('revision_conflict');
+      return this.requireDay(scope, planId, dayId);
+    });
+  }
+
+  inspectCategoryCreation(actor: ActorReference, name: CalendarCategoryName) {
+    return this.scope(actor, async (scope) => {
+      await this.store.lockCategories(scope);
+      await this.requireAvailableCategoryName(scope, name.normalized_name);
+    });
+  }
+
+  inspectCategoryChange(
+    actor: ActorReference,
+    id: string,
+    name?: CalendarCategoryName,
+  ) {
+    requireUuid(id);
+    return this.scope(actor, async (scope) => {
+      await this.store.lockCategories(scope);
+      return this.requireCategoryChange(scope, id, name);
+    });
+  }
+
+  private async validatePlanCategories(
+    scope: CalendarScope,
+    planId: string,
+    categoryIds?: string[],
+  ) {
+    if (!categoryIds?.length) return [];
+    await this.store.lockCategories(scope);
+    const categories = await this.store.categoriesForPlanUpdate(
+      scope,
+      planId,
+      categoryIds,
+    );
+    if (categories.length !== categoryIds.length)
+      teacherError('not_found', 404);
+    if (categories.some((category) => !category.active && !category.assigned))
+      teacherError('calendar_category_inactive');
+    return categories;
+  }
+
+  private async requireAvailableCategoryName(
+    scope: CalendarScope,
+    normalizedName: string,
+  ) {
+    const [duplicate] = await this.store.categoriesByNames(scope, [
+      normalizedName,
+    ]);
+    if (duplicate) teacherError('calendar_category_duplicate');
+  }
+
+  private async requireCategoryChange(
+    scope: CalendarScope,
+    id: string,
+    newName?: CalendarCategoryName,
+  ) {
+    const category = await this.store.category(scope, id);
+    if (!category) teacherError('not_found', 404);
+    if (newName && newName.normalized_name !== category.normalized_name)
+      await this.requireAvailableCategoryName(scope, newName.normalized_name);
+    return category;
   }
 
   private async requirePlan(scope: CalendarScope, id: string) {
@@ -260,7 +369,20 @@ export class TeacherCalendarUseCase {
     return day;
   }
 
-  private async resolvePlanCategories(
+  private async requireLockedDay(
+    scope: CalendarScope,
+    planId: string,
+    dayId: string,
+  ) {
+    // Matches deletion's parent-first order and lets edits to distinct days proceed.
+    if (!(await this.store.lockPlan(scope, planId, 'day')))
+      teacherError('not_found', 404);
+    const day = await this.store.lockDay(scope, planId, dayId);
+    if (!day) teacherError('not_found', 404);
+    return day;
+  }
+
+  private async classifyPlanCategories(
     scope: CalendarScope,
     plan: CalendarPlanWrite,
   ) {
@@ -276,19 +398,29 @@ export class TeacherCalendarUseCase {
     const allowed = new Set(
       plan.newCategories.map((category) => category.normalized_name),
     );
+    return plan.categories.map((name) => {
+      const category = existing.get(name.normalized_name) ?? null;
+      if (category && !category.active)
+        teacherError('calendar_category_inactive');
+      if (!category && !allowed.has(name.normalized_name))
+        teacherError('calendar_category_required');
+      return { name, category };
+    });
+  }
+
+  private async resolvePlanCategories(
+    scope: CalendarScope,
+    plan: CalendarPlanWrite,
+  ) {
     const ids: string[] = [];
-    for (const name of plan.categories) {
-      const current = existing.get(name.normalized_name);
-      if (current) {
-        if (!current.active) teacherError('calendar_category_inactive');
-        ids.push(current.id);
-      } else {
-        if (!allowed.has(name.normalized_name))
-          teacherError('calendar_category_required');
-        const created = await this.store.createCategory(scope, name, 'violet');
-        if (!created) teacherError('calendar_category_duplicate');
-        ids.push(created.id);
-      }
+    for (const { name, category } of await this.classifyPlanCategories(
+      scope,
+      plan,
+    )) {
+      const selected =
+        category ?? (await this.store.createCategory(scope, name, 'violet'));
+      if (!selected) teacherError('calendar_category_duplicate');
+      ids.push(selected.id);
     }
     return ids;
   }

@@ -4,7 +4,9 @@ import { randomUUID } from 'node:crypto';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
+import { lockAuthority } from '../dist/authorization/authority-transaction.js';
 import { AllExceptionsFilter } from '../dist/common/filters/all-exceptions.filter.js';
+import { calendarReadCandidates, calendarWriteCandidates } from '../dist/nodia-ai-teacher-operations/calendar-operations.js';
 import { teacherBodyParser } from '../dist/teacher/teacher-body-parser.js';
 import { TeacherCalendarController } from '../dist/teacher/teacher-calendar.controller.js';
 import { TeacherCalendarStore } from '../dist/teacher/teacher-calendar.store.js';
@@ -307,6 +309,158 @@ try {
     assert.ok(expectStatus(await request('categories'), 200).some(({ id }) => id === category.id));
     assert.equal(expectStatus(await request('plans?status=all&category_id=' + category.id), 200).meta.total, 0);
     await assert.rejects(lab.migrate(managementMigration, 'down'), /Preserve calendar states/);
+  });
+
+  const calendars = app.get(TeacherCalendarUseCase);
+  const reader = (name) => calendarReadCandidates(calendars).find(({ toolName }) => toolName === `nodia_teacher_${name}`);
+  const writer = (name) => calendarWriteCandidates(calendars).find(({ toolName }) => toolName === `nodia_teacher_${name}`);
+  const actorContext = (nativeActor, work, requestKey = randomUUID()) =>
+    lab.db.transaction(async (manager) => {
+      await lockAuthority(manager);
+      return work({
+        actorId: nativeActor.userId, sessionId: nativeActor.sessionId, manager, requestKey,
+      });
+    });
+  const confirmed = (operation, prepared, requestKey = randomUUID()) => actorContext(lab.actor, async (context) => {
+    await operation.verify(prepared, context);
+    return operation.execute(prepared, context);
+  }, requestKey);
+  const statusIs = (status) => (error) => error.getStatus() === status;
+  const stale = (error) => error.getStatus() === 409 && error.message === 'nodia_ai:preconditions_changed';
+  let aiPlanId;
+  let aiDayId;
+  await check('catalog creation remains a draft until confirmed, honors category changes, and bounds personal reads', async () => {
+    const operation = writer('calendars_prepare_create');
+    const input = {
+      plan: {
+        version: 1, title: '  NodiaAI calendar  ', categories: [' NodiaAI '],
+        schedule: { kind: 'dated', start: '2026-11-23', end: '2026-12-14' },
+        days: [{ date: '2026-11-23', notes: 'Not a public resource', activities: [
+          { text: ' Read ', source: { label: ' Source ', url: 'https://example.test/study' } },
+          { text: 'Write' }, { text: 'Listen' }, { text: 'Speak' },
+        ] }],
+      },
+      new_categories: ['NodiaAI'],
+    };
+    const baseline = (await calendars.listPlans(lab.actor, 1)).meta.total;
+    const prepare = () => actorContext(lab.actor, (context) => operation.prepare(input, context));
+    const first = await prepare();
+    assert.equal(first.command.plan.title, 'NodiaAI calendar');
+    assert.equal(first.command.plan.days[0].activities[0].source.label, 'Source');
+    assert.deepEqual(first.command.new_categories, ['NodiaAI']);
+    assert.equal((await calendars.listPlans(lab.actor, 1)).meta.total, baseline);
+    assert.ok(!(await calendars.categories(lab.actor)).some(({ name }) => name === 'NodiaAI'));
+    await calendars.createCategory(lab.actor, { name: 'NodiaAI', color: 'blue' });
+    await assert.rejects(confirmed(operation, first), stale);
+
+    const prepared = await prepare();
+    assert.deepEqual(prepared.command.new_categories, []);
+    const key = randomUUID();
+    ({ id: aiPlanId } = await confirmed(operation, prepared, key));
+    const repeat = await actorContext(lab.actor, (context) => operation.execute(prepared, context), key);
+    assert.equal(repeat.id, aiPlanId);
+    assert.equal((await calendars.listPlans(lab.actor, 1)).meta.total, baseline + 1);
+    const get = reader('calendars_get');
+    const pageOne = await actorContext(lab.actor, (context) => get.execute({ id: aiPlanId }, context));
+    const pageTwo = await actorContext(lab.actor, (context) => get.execute({ id: aiPlanId, page: 2 }, context));
+    assert.equal(pageOne.days.length, 20);
+    assert.deepEqual(pageTwo.days.map(({ ordinal }) => ordinal), [21, 22]);
+    assert.deepEqual(pageTwo.meta, { page: 2, total: 22, total_pages: 2 });
+    aiDayId = pageOne.days[0].id;
+    const dayPage = await actorContext(lab.actor, (context) => reader('calendar_days_get').execute({ plan_id: aiPlanId, id: aiDayId }, context));
+    assert.equal(dayPage.activities.length, 3);
+    assert.deepEqual(dayPage.meta, { page: 1, total: 4, total_pages: 2 });
+    await assert.rejects(actorContext(lab.other, (context) => get.execute({ id: aiPlanId }, context)), statusIs(404));
+    await assert.rejects(actorContext(lab.noModule, (context) => get.execute({ id: aiPlanId }, context)), statusIs(403));
+    const list = await actorContext(lab.other, (context) => reader('calendars_list').execute({}, context));
+    assert.deepEqual(list.data, []);
+  });
+
+  await check('catalog completion uses the native revision and derives jornada progress from all its activities', async () => {
+    const operation = writer('calendar_activities_prepare_set_completion');
+    const day = await calendars.day(lab.actor, aiPlanId, aiDayId);
+    const activityId = day.activities[0].id;
+    const prepare = () => actorContext(lab.actor, (context) => operation.prepare(
+      { plan_id: aiPlanId, id: aiDayId, activity_id: activityId, completed: true }, context,
+    ));
+    const before = await prepare();
+    assert.equal(before.id, activityId);
+    const patch = { revision: day.revision, title: 'Nueva jornada', notes: day.notes, minutes: day.minutes, activities: day.activities };
+    await calendars.patchDay(lab.actor, aiPlanId, aiDayId, patch);
+    await assert.rejects(confirmed(operation, before), stale);
+    assert.equal((await calendars.day(lab.actor, aiPlanId, aiDayId)).activities[0].completed, false);
+    const completed = await confirmed(operation, await prepare());
+    assert.equal(completed.id, activityId);
+    const partial = await calendars.day(lab.actor, aiPlanId, aiDayId);
+    assert.equal(partial.completed, false);
+    assert.equal(partial.notes, day.notes);
+    assert.deepEqual(partial.activities[0].source, day.activities[0].source);
+    await confirmed(operation, await prepare());
+    assert.equal((await calendars.day(lab.actor, aiPlanId, aiDayId)).revision, partial.revision);
+    const update = writer('calendar_days_prepare_update');
+    const full = await actorContext(lab.actor, (context) => update.prepare({
+      plan_id: aiPlanId, id: aiDayId, title: partial.title, notes: partial.notes,
+      minutes: partial.minutes, activities: partial.activities.map((activity) => ({ ...activity, completed: true })),
+    }, context));
+    await confirmed(update, full);
+    assert.equal((await calendars.day(lab.actor, aiPlanId, aiDayId)).completed, true);
+    assert.equal((await calendars.plan(lab.actor, aiPlanId)).completed_count, 1);
+  });
+
+  await check('catalog changes preserve native plan and category status rules and reject stale category edits', async () => {
+    const create = writer('calendar_categories_prepare_create');
+    const patch = writer('calendar_categories_prepare_update');
+    const update = writer('calendars_prepare_update');
+    const candidate = await actorContext(lab.actor, (context) => create.prepare({ name: 'AI target', color: 'green' }, context));
+    const { id } = await confirmed(create, candidate);
+    const preview = await actorContext(lab.actor, (context) => update.prepare({
+      id: aiPlanId, title: '   Calendario actualizado   ', active: false, category_ids: [id],
+    }, context));
+    assert.deepEqual(preview.preview.categories, ['AI target']);
+    const before = await calendars.plan(lab.actor, aiPlanId);
+    await confirmed(update, preview);
+    const inactive = await actorContext(lab.actor, (context) => reader('calendars_list').execute({
+      category_id: id, status: 'inactive',
+    }, context));
+    assert.deepEqual(inactive.data.map((plan) => plan.id), [aiPlanId]);
+    const after = await calendars.plan(lab.actor, aiPlanId);
+    assert.equal(after.title, 'Calendario actualizado');
+    assert.equal(after.active, false);
+    assert.deepEqual(after.days, before.days);
+    const preparePatch = () => actorContext(lab.actor, (context) => patch.prepare({ id, active: false }, context));
+    const first = await preparePatch();
+    await calendars.patchCategory(lab.actor, id, { name: 'Nombre cambiado' });
+    await assert.rejects(confirmed(patch, first), stale);
+    await confirmed(patch, await preparePatch());
+    const categories = await actorContext(lab.actor, (context) => reader('calendar_categories_list').execute({}, context));
+    assert.deepEqual(categories.data.find((category) => category.id === id), {
+      id, name: 'Nombre cambiado', color: 'green', active: false,
+    });
+  });
+
+  await check('confirmed calendar deletion rejects a stale edit and keeps its compare lock through deletion', async () => {
+    const operation = writer('calendars_prepare_delete');
+    const prepare = () => actorContext(lab.actor, (context) => operation.prepare({ id: aiPlanId }, context));
+    const before = await prepare();
+    assert.equal(before.preview.activity_count, 4);
+    const { revision, title, notes, minutes, activities } = await calendars.day(lab.actor, aiPlanId, aiDayId);
+    await calendars.patchDay(lab.actor, aiPlanId, aiDayId, { revision, title, notes: 'Updated', minutes, activities });
+    await assert.rejects(confirmed(operation, before), stale);
+    const accepted = await prepare();
+    await actorContext(lab.actor, async (context) => {
+      await operation.verify(accepted, context);
+      await assert.rejects(
+        actorContext(lab.actor, async ({ manager }) => {
+          await manager.query("SET LOCAL lock_timeout = '100ms'");
+          await calendars.patchDay({ ...lab.actor, transaction: manager }, aiPlanId, aiDayId, {
+            revision: revision + 1, title, notes, minutes, activities,
+          });
+        }),
+        (error) => error.code === '55P03',
+      );
+      await operation.execute(accepted, context);
+    });
+    await assert.rejects(calendars.plan(lab.actor, aiPlanId), statusIs(404));
   });
 
   await check('module revocation blocks even a known creation receipt', async () => {

@@ -4,7 +4,12 @@ import { randomUUID } from 'node:crypto';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
+import { lockAuthority } from '../dist/authorization/authority-transaction.js';
 import { AllExceptionsFilter } from '../dist/common/filters/all-exceptions.filter.js';
+import {
+  flashcardReadCandidates,
+  flashcardWriteCandidates,
+} from '../dist/nodia-ai-teacher-operations/flashcard-operations.js';
 import { teacherBodyParser } from '../dist/teacher/teacher-body-parser.js';
 import { TeacherFlashcardsController } from '../dist/teacher/teacher-flashcards.controller.js';
 import { TeacherFlashcardsStore } from '../dist/teacher/teacher-flashcards.store.js';
@@ -53,6 +58,21 @@ const check = async (name, run) => {
 };
 const webp =
   'UklGRlYAAABXRUJQVlA4WAoAAAAQAAAAAgAAAQAAQUxQSAcAAAAAkZGRkZGRAFZQOCAoAAAAkAEAnQEqAwACAAFAJiWIAnS6AAOYAP70vu/R9cIsjL/G+IL2pMAAAA==';
+const flashcards = new TeacherFlashcardsUseCase(
+  lab.store,
+  new TeacherFlashcardsStore(),
+);
+const reads = new Map(
+  flashcardReadCandidates(flashcards).map((port) => [port.toolName, port]),
+);
+const writes = new Map(
+  flashcardWriteCandidates(flashcards).map((port) => [port.toolName, port]),
+);
+const checkpoint = (actor, work) =>
+  lab.db.transaction(async (manager) => {
+    await lockAuthority(manager);
+    return work({ actorId: actor.userId, sessionId: actor.sessionId, manager });
+  });
 let app;
 
 try {
@@ -442,6 +462,11 @@ try {
       );
       card = expectStatus(await patchSource(source), 200);
       assert.deepEqual(card.source, source);
+      const getter = reads.get('nodia_teacher_flashcards_get');
+      const aiCard = await checkpoint(lab.actor, (context) =>
+        getter.execute({ id: card.id }, context),
+      );
+      assert.deepEqual(aiCard.source, { label: 'Atomicity' });
       await lab.store.scope(
         lab.actor,
         sessionId,
@@ -753,6 +778,191 @@ try {
         [],
       );
       assert.equal(expectStatus(await send(body), 201).imported_count, 2);
+    },
+  );
+
+  await check(
+    'NodiaAI deck pages keep ordering and counts scoped to the owner',
+    async () => {
+      await lab.db.query(`
+      INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title)
+      SELECT 1, 'Flashcard catalog ' || s, 'flashcard catalog ' || s
+      FROM generate_series(1, 51) AS p(s)`);
+      const list = reads.get('nodia_teacher_flashcard_decks_list');
+      const [first, second] = await checkpoint(lab.actor, async (context) => [
+        await list.execute({}, context),
+        await list.execute({ page: 2 }, context),
+      ]);
+      const expected = expectStatus(await request('decks'), 200);
+      assert.equal(first.data.length, 50);
+      assert.equal(first.data[0].id, 'general');
+      assert.deepEqual(first.meta, {
+        page: 1,
+        total: expected.length,
+        total_pages: 2,
+      });
+      assert.equal(second.meta.page, 2);
+      assert.deepEqual([...first.data, ...second.data], expected);
+      await assert.rejects(
+        checkpoint(lab.noModule, (context) => list.execute({}, context)),
+        (error) => error.getStatus() === 403,
+      );
+    },
+  );
+
+  await check(
+    'NodiaAI flashcard effects keep owner, revisions and checkpoint rollback',
+    async () => {
+      const importPort = writes.get(
+        'nodia_teacher_flashcard_imports_prepare_create',
+      );
+      const getPort = reads.get('nodia_teacher_flashcards_get');
+      const listPort = reads.get('nodia_teacher_flashcards_list');
+      const updatePort = writes.get('nodia_teacher_flashcards_prepare_update');
+      const deletePort = writes.get('nodia_teacher_flashcards_prepare_delete');
+      const reviewPort = writes.get(
+        'nodia_teacher_flashcard_reviews_prepare_create',
+      );
+      const longQuestion = '🟪'.repeat(400);
+      const input = {
+        destination: {
+          kind: 'new',
+          title: '  AI   imports  ',
+          category: '  Review  ',
+        },
+        cards: [
+          {
+            question: longQuestion,
+            answer: '  Confirmed answer. ',
+            source: ' Notes ',
+          },
+        ],
+      };
+      const proposal = await checkpoint(lab.actor, (context) =>
+        importPort.prepare(input, context),
+      );
+      assert.deepEqual(proposal.command.destination, {
+        kind: 'new',
+        title: 'AI imports',
+        category: 'Review',
+      });
+      assert.deepEqual(
+        await lab.db.query(
+          "SELECT id FROM teacher_flashcard_decks WHERE title = 'AI imports'",
+        ),
+        [],
+      );
+      const requestKey = randomUUID();
+      await checkpoint(lab.actor, async (context) => {
+        await importPort.verify(proposal, context);
+        for (let i = 0; i < 2; i++) {
+          assert.deepEqual(
+            await importPort.execute(proposal, { ...context, requestKey }),
+            { id: requestKey },
+          );
+        }
+      });
+      const [{ deck_id: deckId, imported_count: count }] = await lab.db.query(
+        'SELECT deck_id, imported_count FROM teacher_flashcard_import_requests WHERE request_key = $1',
+        [requestKey],
+      );
+      assert.equal(count, 1);
+      const page = await checkpoint(lab.actor, (context) =>
+        listPort.execute({ deck_id: deckId }, context),
+      );
+      assert.equal(page.meta.total, 1);
+      const [summary] = page.data;
+      assert.equal(Array.from(summary.question).length, 320);
+      assert.equal(summary.question_truncated, true);
+      assert.equal(Object.hasOwn(summary, 'answer'), false);
+      const id = summary.id;
+      const get = (identity) =>
+        checkpoint(identity, (context) => getPort.execute({ id }, context));
+      assert.deepEqual(await get(lab.actor), {
+        id,
+        deck_id: deckId,
+        question: longQuestion,
+        answer: 'Confirmed answer.',
+        revision: 1,
+        image: null,
+        source: { label: 'Notes' },
+      });
+      await assert.rejects(get(lab.other), { message: 'teacher:not_found' });
+
+      const pendingDelete = await checkpoint(lab.actor, (context) =>
+        deletePort.prepare({ id }, context),
+      );
+      assert.deepEqual(pendingDelete.preview, {
+        question: longQuestion,
+        deck_title: 'AI imports',
+        removes_image: false,
+        removes_review_history: true,
+      });
+      const pendingUpdate = await checkpoint(lab.actor, (context) =>
+        updatePort.prepare(
+          { id, source: null, answer: '  New answer.  ' },
+          context,
+        ),
+      );
+      const update = async (context) => {
+        await updatePort.verify(pendingUpdate, context);
+        return updatePort.execute(pendingUpdate, {
+          ...context,
+          requestKey: randomUUID(),
+        });
+      };
+      await assert.rejects(
+        checkpoint(lab.actor, async (context) => {
+          assert.deepEqual(await update(context), { id });
+          assert.equal(
+            (await getPort.execute({ id }, context)).answer,
+            'New answer.',
+          );
+          throw new Error('synthetic rollback');
+        }),
+        { message: 'synthetic rollback' },
+      );
+      assert.equal((await get(lab.actor)).answer, 'Confirmed answer.');
+      await checkpoint(lab.actor, update);
+      assert.equal((await get(lab.actor)).source, null);
+      await assert.rejects(
+        checkpoint(lab.actor, (context) =>
+          deletePort.verify(pendingDelete, context),
+        ),
+        { message: 'teacher:revision_conflict' },
+      );
+      await assert.rejects(
+        checkpoint(lab.actor, (context) =>
+          deletePort.execute(pendingDelete, {
+            ...context,
+            requestKey: randomUUID(),
+          }),
+        ),
+        { message: 'teacher:revision_conflict' },
+      );
+      assert.equal((await get(lab.actor)).answer, 'New answer.');
+
+      const reviewKey = randomUUID();
+      await checkpoint(lab.actor, async (context) => {
+        const review = await reviewPort.prepare(
+          { id, remembered: false },
+          context,
+        );
+        assert.deepEqual(
+          await reviewPort.execute(review, {
+            ...context,
+            requestKey: reviewKey,
+          }),
+          { id },
+        );
+      });
+      assert.deepEqual(
+        await lab.db.query(
+          'SELECT card_id, remembered FROM teacher_flashcard_reviews WHERE request_key = $1',
+          [reviewKey],
+        ),
+        [{ card_id: id, remembered: false }],
+      );
     },
   );
 

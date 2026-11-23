@@ -15,6 +15,7 @@ import type {
 
 export type FlashcardScope = { manager: EntityManager; owner: string };
 export const FLASHCARD_PAGE_SIZE = 12;
+export const FLASHCARD_DECK_PAGE_SIZE = 50;
 
 const cardColumns = `c.id, COALESCE(c.deck_id::text, 'general') AS deck_id,
   c.question, c.answer, c.revision,
@@ -53,6 +54,45 @@ export class TeacherFlashcardsStore {
        SELECT id, title, category, card_count FROM decks ORDER BY ordering, lower(title), id`,
       [owner],
     );
+  }
+
+  async deckPage({ manager, owner }: FlashcardScope, page: number) {
+    const [result]: { data: FlashcardDeck[]; total: number }[] =
+      await manager.query(
+        `WITH decks AS MATERIALIZED (
+           SELECT NULL::uuid AS deck_id, 'General' AS title, NULL::varchar AS category, 0 AS ordering
+           UNION ALL
+           SELECT id, title, category, 1 AS ordering
+           FROM teacher_flashcard_decks WHERE owner_user_id = $1
+         ), page AS MATERIALIZED (
+           SELECT * FROM decks ORDER BY ordering, lower(title), deck_id LIMIT $2 OFFSET $3
+         ), projected AS (
+           SELECT COALESCE(p.deck_id::text, 'general') AS id, p.title, p.category, p.ordering,
+             CASE WHEN p.deck_id IS NULL THEN
+               (SELECT count(*)::int FROM teacher_flashcards WHERE owner_user_id = $1 AND deck_id IS NULL)
+             ELSE
+               (SELECT count(*)::int FROM teacher_flashcards WHERE owner_user_id = $1 AND deck_id = p.deck_id)
+             END AS card_count
+           FROM page p
+         )
+         SELECT COALESCE(jsonb_agg(to_jsonb(projected) - 'ordering'
+           ORDER BY ordering, lower(title), id), '[]'::jsonb) AS data,
+           (SELECT count(*)::int FROM decks) AS total
+         FROM projected`,
+        [
+          owner,
+          FLASHCARD_DECK_PAGE_SIZE,
+          (page - 1) * FLASHCARD_DECK_PAGE_SIZE,
+        ],
+      );
+    return {
+      data: result.data,
+      meta: {
+        page,
+        total: result.total,
+        total_pages: Math.ceil(result.total / FLASHCARD_DECK_PAGE_SIZE),
+      },
+    };
   }
 
   async createDeck(

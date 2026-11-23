@@ -1,5 +1,15 @@
 # Progreso del MVP — Nodia
 
+**CRUD de Teacher en NodiaAI — 2026-11-23.** La rama
+`codex/teacher-study-calendar` activa siete lecturas y trece preparaciones
+de cambios en `nodia-ai-teacher-study/1` con la aprobación de Calendario
+revisión 5 y Tarjetas de repaso revisión 6. PostgreSQL aislado verificó la
+composición, la confirmación, el comprobante, el avance derivado y el ámbito
+por cuenta. La adopción en el entorno de destino queda pendiente.
+[Catálogo40](40-nodia-ai-tool-catalog-v1.md#calendarios-y-tarjetas-de-teacher) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md) ·
+[Verificación](../evidence/nodia-ai-teacher-catalog-20261123.md).
+
 **Propuestas de tarjetas con imagen — 2026-11-23.** Teacher prepara
 una tarjeta desde apuntes o citas y ofrece regenerar el texto, la
 imagen o ambos desde el menú. Cada resultado se revisa antes de

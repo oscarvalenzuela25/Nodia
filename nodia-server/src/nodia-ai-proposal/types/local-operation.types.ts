@@ -2,6 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { isFinanceBigint } from '../../finance-common/validation/finance-validation.js';
 import { nodiaAiFinanceOperationIdentity } from '../../nodia-ai-finance-effect/types/financial-operation.types.js';
 import type { NodiaAiJsonObject } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
+import { nodiaAiTeacherOperationIdentity } from '../../nodia-ai-teacher-operations/teacher-operation-identity.js';
 import type {
   NodiaAiBusinessMutation,
   NodiaAiBusinessResource,
@@ -442,7 +443,8 @@ export function nodiaAiLocalOperationIdentity(name: string) {
         nodiaAiRentalOperationIdentity(name) ??
         nodiaAiCoreOperationIdentity(name) ??
         nodiaAiProviderOperationIdentity(name) ??
-        nodiaAiPreferenceOperationIdentity(name));
+        nodiaAiPreferenceOperationIdentity(name) ??
+        nodiaAiTeacherOperationIdentity(name));
 }
 export function nodiaAiPreferenceOperationIdentity(name: string) {
   const operation =
@@ -493,6 +495,23 @@ export function validateNodiaAiLocalReceipt(
 ) {
   const identity = nodiaAiLocalOperationIdentity(source.tool_name);
   if (!identity || !receipt) return invalid();
+  if (identity.family === 'teacher') {
+    const targetId = source.command_template.id;
+    if (
+      Object.keys(receipt).length !== 5 ||
+      receipt.schema_version !== 1 ||
+      receipt.resource_key !== identity.resourceKey ||
+      receipt.operation !== identity.operation ||
+      !isNodiaAiDomainUuid(receipt.resource_id) ||
+      !isFinanceBigint(receipt.owner_id) ||
+      receipt.owner_id !== source.scope.subject_user_id ||
+      Object.keys(source.scope).length !== 1 ||
+      ((identity.operation !== 'create' || targetId !== undefined) &&
+        receipt.resource_id !== targetId)
+    )
+      return invalid();
+    return { resource_key: identity.resourceKey, id: receipt.resource_id };
+  }
   assert(
     identity.family === 'preference'
       ? 'PreferenceEffectReceipt'
@@ -615,15 +634,17 @@ export function buildNodiaAiLocalReceipt(
     ...(source.tool_name === 'nodia_finance_movements_prepare_create'
       ? {}
       : { operation: identity.operation }),
-    ...(identity.family === 'preference'
-      ? { owner_id: result.ownerId ?? null, revision: result.revision ?? null }
-      : identity.family === 'core' || identity.family === 'ai_provider'
-        ? {}
-        : identity.family === 'rental'
-          ? { property_id: result.propertyId ?? null }
-          : identity.family === 'finance'
-            ? { subject_user_id: result.ownerId ?? null }
-            : { business_id: result.businessId ?? null }),
+    ...(identity.family === 'teacher'
+      ? { owner_id: result.ownerId ?? null }
+      : identity.family === 'preference'
+        ? { owner_id: result.ownerId ?? null, revision: result.revision ?? null }
+        : identity.family === 'core' || identity.family === 'ai_provider'
+          ? {}
+          : identity.family === 'rental'
+            ? { property_id: result.propertyId ?? null }
+            : identity.family === 'finance'
+              ? { subject_user_id: result.ownerId ?? null }
+              : { business_id: result.businessId ?? null }),
   };
   validateNodiaAiLocalReceipt(source, receipt, assert);
   return receipt;

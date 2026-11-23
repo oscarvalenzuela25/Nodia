@@ -1,5 +1,12 @@
 # Especificación del MVP — Nodia
 
+**Calendarios y tarjetas en NodiaAI — 2026-11-23.** La rama de Teacher
+activa siete consultas y trece preparaciones de cambios con confirmación
+humana. La aprobación cubre Calendario de estudio revisión 5 y Tarjetas de
+repaso revisión 6.
+[Catálogo de Teacher](40-nodia-ai-tool-catalog-v1.md#calendarios-y-tarjetas-de-teacher) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md).
+
 **Tarjetas de repaso de Teacher — primer corte local del 2026-11-22.**
 El [plan de tarjetas](112-teacher-flashcards-plan.md#primer-corte-nativo)
 describe mazos personales, creación manual y desde una cita, subida de

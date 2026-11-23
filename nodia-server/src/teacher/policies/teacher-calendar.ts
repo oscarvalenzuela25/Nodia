@@ -111,10 +111,36 @@ export function readCalendarColor(value: unknown): CalendarColor {
   return color ?? invalid('color');
 }
 
+export function readCalendarCategoryPatch(value: unknown) {
+  const input = readObject(value, ['name', 'color', 'active'], 'category');
+  if (
+    input.name === undefined &&
+    input.color === undefined &&
+    input.active === undefined
+  )
+    invalid('category');
+  return {
+    name:
+      input.name === undefined
+        ? undefined
+        : readCalendarCategoryName(input.name),
+    color:
+      input.color === undefined ? undefined : readCalendarColor(input.color),
+    active:
+      input.active === undefined
+        ? undefined
+        : readBoolean(input.active, 'active'),
+  };
+}
+
 export function readCalendarPlanStatus(value: unknown): CalendarPlanStatus {
   return (
     calendarPlanStatuses.find((entry) => entry === value) ?? invalid('status')
   );
+}
+
+export function readCalendarPage(value: unknown): number {
+  return readInt(value, 1, 999999999, 'page');
 }
 
 export function readCalendarPlanPatch(value: unknown): CalendarPlanPatch {
@@ -348,4 +374,33 @@ export function readCalendarDayPatch(value: unknown): CalendarDayWrite {
     return { id, ...activity, completed };
   });
   return { revision, ...readDayFields(input, 'day', false), activities };
+}
+
+/** Rebuild the v1 import envelope from the exact values accepted by the domain. */
+export function calendarImportFromPlan(plan: CalendarPlanWrite) {
+  const { schedule } = plan;
+  return {
+    version: 1,
+    title: plan.title,
+    categories: plan.categories.map(({ name }) => name),
+    schedule,
+    days: plan.days.map(({ ordinal, title, notes, minutes, activities }) => ({
+      ...(schedule.kind === 'numbered'
+        ? { day: ordinal }
+        : {
+            date: new Date(
+              Date.parse(schedule.start) + (ordinal - 1) * civilDayMs,
+            )
+              .toISOString()
+              .slice(0, 10),
+          }),
+      ...(title === null ? {} : { title }),
+      ...(notes === null ? {} : { notes }),
+      ...(minutes === null ? {} : { minutes }),
+      activities: activities.map(({ text, source }) => ({
+        text,
+        ...(source ? { source: { ...source } } : {}),
+      })),
+    })),
+  };
 }

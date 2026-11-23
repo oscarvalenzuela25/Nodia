@@ -4,13 +4,13 @@
   "document_id": "studies.flashcards",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 5,
-  "document_status": "draft",
+  "revision": 6,
+  "document_status": "approved",
   "implementation": {
     "status": "partial",
-    "notes": "Biblioteca, repaso, importación JSON y propuestas de pregunta, respuesta e imagen desde apuntes o citas. La regeneración admite partes revisables. Inferencia real y calificación operacional pendientes."
+    "notes": "Biblioteca, repaso, importación JSON y propuestas de texto e imagen en Teacher. Contratos y adaptadores candidatos para consultas y propuestas confirmables en NodiaAI. La generación sigue pendiente de inferencia real por selección."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -46,16 +46,27 @@
       "kind": "implementation"
     },
     {
+      "path": "nodia-server/src/nodia-ai-teacher-operations/flashcard-operations.ts",
+      "kind": "implementation"
+    },
+    {
       "path": "nodia-client/src/modules/teacher/pages/Teacher/Teacher.tsx",
       "kind": "implementation"
     }
   ],
   "verification": {
     "checked_on": "2026-11-23",
-    "evidence_paths": ["docs/mvp/112-teacher-flashcards-plan.md"],
-    "notes": "Pruebas locales de propiedad, persistencia privada, importación atómica y propuestas de texto e imagen. La integración de generación usa HTTP interceptado. Pendientes inferencia real e integración conversacional."
+    "evidence_paths": [
+      "docs/mvp/112-teacher-flashcards-plan.md",
+      "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+    ],
+    "notes": "Contratos, propiedad y confirmación comprobados en PostgreSQL aislado. La aprobación y la verificación del catálogo se registran en las evidencias enlazadas."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-teacher-catalog-approval-20261123.md",
+    "revision": 6,
+    "content_sha256": "27e593fb52ea142b5f1142b9e72443398906548bd356763c9091d2104053e898"
+  }
 }
 ---
 
@@ -95,6 +106,27 @@ admite imágenes privadas subidas por la persona.
 | Editar y mover | Guardar una revisión de los campos elegidos y cambiar de mazo. | Flujo nativo local. |
 | Eliminar una tarjeta | Retirar la tarjeta, su imagen y sus marcas de mazo tras confirmar. | Flujo nativo local. |
 | Repasar un mazo | Revelar la respuesta y registrar la elección de repaso. | Flujo nativo local. La programación conserva su alcance por sesión. |
+
+## Operaciones desde NodiaAI
+
+Las herramientas consultan los mazos propios, sus tarjetas y el detalle
+de una tarjeta. El detalle incluye el texto, la etiqueta de fuente y
+el lado de la imagen cuando existe. Para abrir una cita o ver una
+imagen privada se utiliza Teacher.
+
+Una propuesta puede crear un mazo con categoría opcional, crear una
+tarjeta, editar su pregunta, respuesta o etiqueta de fuente, moverla
+de mazo, ajustar el lado de una imagen existente, retirarla o borrar
+la tarjeta. General se aplica al crear una tarjeta sin indicar mazo.
+La importación puede guardar juntas hasta 30 tarjetas en un mazo
+existente o nuevo. El registro de repaso usa la elección explícita
+de la persona sobre si recordó la respuesta.
+
+La persona revisa y confirma las propuestas desde el control de NodiaAI.
+Al borrar una tarjeta también se retiran su imagen y el historial de
+repaso asociado. Una revisión desactualizada requiere preparar un
+nuevo cambio. La generación o regeneración de texto e imagen, subir
+archivos y editar una cita estructurada se realizan desde Teacher.
 
 ## Datos, autoridad y filtros
 

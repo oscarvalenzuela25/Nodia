@@ -4,13 +4,13 @@
   "document_id": "studies.study-calendar",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 4,
-  "document_status": "draft",
+  "revision": 5,
+  "document_status": "approved",
   "implementation": {
     "status": "implemented",
-    "notes": "Calendario nativo en Client y Server, con edición de título y categorías, filtro de actividad, reactivación y eliminación confirmadas."
+    "notes": "Calendario nativo en Client y Server. Hay contratos y adaptadores candidatos para consultas y propuestas confirmables en NodiaAI."
   },
-  "integration_status": "unregistered",
+  "integration_status": "published",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
   "sources": [
     {
@@ -24,14 +24,25 @@
     {
       "path": "docs/architecture/decisions/ADR-116-teacher-study-calendar-ownership.md",
       "kind": "specification"
+    },
+    {
+      "path": "nodia-server/src/nodia-ai-teacher-operations/calendar-operations.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
-    "checked_on": "2026-11-22",
-    "evidence_paths": ["docs/mvp/111-teacher-study-calendar-plan.md"],
-    "notes": "Verificación de laboratorio con Client, Nest compilado y PostgreSQL 16.15. Pendiente adopción por entorno y evaluación de integración con NodiaAI."
+    "checked_on": "2026-11-23",
+    "evidence_paths": [
+      "docs/mvp/111-teacher-study-calendar-plan.md",
+      "docs/evidence/nodia-ai-teacher-catalog-20261123.md"
+    ],
+    "notes": "Contratos, propiedad y confirmación comprobados en PostgreSQL aislado. La aprobación y la verificación del catálogo se registran en las evidencias enlazadas."
   },
-  "approval": null
+  "approval": {
+    "reference": "docs/evidence/nodia-ai-teacher-catalog-approval-20261123.md",
+    "revision": 5,
+    "content_sha256": "e5ac78c6b11f18401d00b07c2f42c42b0e9838cee64ea940fe411f1f31d8dd07"
+  }
 }
 ---
 
@@ -67,9 +78,30 @@ y actualiza los recuentos del calendario.
 | Operación propuesta | Efecto esperado | Estado del contrato |
 | --- | --- | --- |
 | Listar calendarios y abrir jornada | Leer registros y recuentos propios. Filtrar por estado y categoría | API nativa con Activos como vista inicial. |
-| Crear, editar y marcar | Persistir el calendario o el cambio revisado por la persona | Guardado nativo por revisión. Integración de NodiaAI pendiente de evaluación. |
+| Crear, editar y marcar | Persistir el calendario o el cambio revisado por la persona | Guardado nativo por revisión. Contratos conversacionales candidatos. |
 | Actualizar, activar, desactivar o eliminar un calendario | Editar título y categorías, alternar su actividad o eliminar calendario, jornadas y avance | Gestión en Teacher. El estado y el título conservan jornadas y avance. |
 | Pegar un plan | Analizar texto y preparar una vista previa local. Confirmar aplica el alta nativa | Esquema v1 con validación e idempotencia de Server verificadas en laboratorio. |
+
+## Operaciones desde NodiaAI
+
+Las herramientas consultan los calendarios, las jornadas y las
+categorías de la cuenta autenticada con acceso a Nodia Teacher.
+El listado parte de los calendarios activos. Se puede filtrar por
+categoría y por estado y recorrer las jornadas y actividades por página.
+Una fuente puede incluir un enlace HTTPS que la persona puede abrir.
+
+Una propuesta puede crear un calendario por fechas o días numerados
+con el plan v1, actualizar su título y categorías, activarlo,
+desactivarlo o eliminarlo. Para editar una jornada se conservan las
+actividades que deban seguir en ella. Cada actividad también se puede
+marcar o desmarcar individualmente. Teacher calcula si la jornada
+queda completa a partir de las marcas vigentes. Las categorías pueden
+crearse, editarse, activarse y desactivarse.
+
+La persona revisa y confirma cada propuesta desde el control de NodiaAI.
+Para borrar un calendario debe identificar el título y revisar el
+impacto en jornadas, actividades y avance. Si cambian el destino o
+los datos que justificaron una propuesta, debe prepararse una nueva.
 
 ## Datos mínimos y resolución de dudas
 
