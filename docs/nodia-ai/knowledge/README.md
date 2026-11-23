@@ -1,5 +1,8 @@
 # Contexto funcional de productos para NodiaAI
 
+El [contexto candidato de Sets](studies/features/flashcard-sets.md)
+describe la agrupación y gestión nativas de mazos en Teacher.
+
 ## Calendarios y tarjetas de Teacher en NodiaAI
 
 El usuario aprobó las revisiones 5 de Calendario de estudio y 6 de

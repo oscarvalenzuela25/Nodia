@@ -120,4 +120,24 @@ describe("SelectSingleInput", () => {
 
     expect(handleChange).toHaveBeenCalledWith(null);
   });
+
+  it("returns keyboard focus to the selector when the clear button disappears", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const props = { label: "Módulo", options, onChange };
+    const { rerender } = render(<SelectSingleInput {...props} value="settings" />);
+    const trigger = screen.getByRole("button", { name: "Módulo" });
+
+    await user.tab();
+    expect(trigger).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Limpiar selección" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+
+    expect(onChange).toHaveBeenCalledWith(null);
+    rerender(<SelectSingleInput {...props} value={null} />);
+    expect(screen.queryByRole("button", { name: "Limpiar selección" })).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
 });

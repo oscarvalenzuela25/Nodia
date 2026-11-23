@@ -20,9 +20,11 @@ import {
   CreateFlashcardDeckDto,
   CreateFlashcardDto,
   CreateFlashcardReviewDto,
+  CreateFlashcardSetDto,
   FlashcardCardsQueryDto,
   ImportFlashcardsDto,
   PatchFlashcardDto,
+  PatchFlashcardDeckDto,
 } from './dto/teacher-flashcards.dto.js';
 import { TeacherFlashcardsUseCase } from './use-case/teacher-flashcards.use-case.js';
 
@@ -44,6 +46,48 @@ export class TeacherFlashcardsController {
     @Body() body: CreateFlashcardDeckDto,
   ) {
     return this.flashcards.createDeck(actorReference(request.auth), body);
+  }
+
+  @Patch('decks/:id')
+  @Header('Cache-Control', 'no-store')
+  patchDeck(
+    @Req() request: AuthRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: PatchFlashcardDeckDto,
+  ) {
+    return this.flashcards.patchDeck(actorReference(request.auth), id, body);
+  }
+
+  @Delete('decks/:id')
+  @HttpCode(204)
+  @Header('Cache-Control', 'no-store')
+  deleteDeck(
+    @Req() request: AuthRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.flashcards.deleteDeck(actorReference(request.auth), id);
+  }
+
+  @Get('sets')
+  @Header('Cache-Control', 'no-store')
+  sets(@Req() request: AuthRequest) {
+    return this.flashcards.sets(actorReference(request.auth));
+  }
+
+  @Post('sets')
+  @Header('Cache-Control', 'no-store')
+  createSet(@Req() request: AuthRequest, @Body() body: CreateFlashcardSetDto) {
+    return this.flashcards.createSet(actorReference(request.auth), body);
+  }
+
+  @Delete('sets/:id')
+  @HttpCode(204)
+  @Header('Cache-Control', 'no-store')
+  deleteSet(
+    @Req() request: AuthRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.flashcards.deleteSet(actorReference(request.auth), id);
   }
 
   @Post('imports')

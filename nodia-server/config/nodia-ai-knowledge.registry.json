@@ -7117,11 +7117,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         }
       ],
       "input_schema": {
@@ -7165,11 +7165,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         }
       ],
       "input_schema": {
@@ -7213,11 +7213,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         }
       ],
       "input_schema": {
@@ -7261,11 +7261,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         },
         {
           "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
@@ -7333,11 +7333,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         },
         {
           "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
@@ -7405,11 +7405,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         },
         {
           "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
@@ -7477,11 +7477,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         },
         {
           "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
@@ -7549,11 +7549,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         },
         {
           "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",
@@ -7621,11 +7621,11 @@
         },
         {
           "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts",
-          "sha256": "55070f69907ee3bd796c85a2e4bad5009d0e9d7d8027e99335d5dad51cb0ed2e"
+          "sha256": "a06956bb88ac23fc75659295397150e20155505ff105eca4b40e558a601467c2"
         },
         {
           "path": "nodia-server/src/teacher/teacher-flashcards.store.ts",
-          "sha256": "4a38d8711322c52dfb2b9db2a842276c365c07706ddc82958ba9910b44b8c9c1"
+          "sha256": "7186486267af0e7437e8125442e9fc10804bef286772266915755d35b2310f92"
         },
         {
           "path": "nodia-server/src/nodia-ai-teacher-operations/teacher-proposal-operation.ts",

@@ -1,5 +1,5 @@
 import type { FC, KeyboardEvent, MouseEvent } from "react";
-import { useState, useMemo, useId } from "react";
+import { useState, useMemo, useId, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -21,6 +21,7 @@ import {
   RequiredStar,
   SelectTrigger,
   ValueContainer,
+  ClearSelectionSlot,
   SelectedText,
   PlaceholderText,
   StyledPopover,
@@ -58,6 +59,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   const testId = dataTestIdProp ?? dataTestId;
 
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLabel, setSelectedLabel] = useState<SelectSingleOption | null>(null);
 
@@ -107,7 +109,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
 
   const handleClear = (e: MouseEvent<unknown>) => {
     e.stopPropagation();
-    if (fullSizeClear) document.getElementById(inputId)?.focus();
+    triggerRef.current?.focus();
     onChange(null);
   };
 
@@ -143,6 +145,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
 
       <SelectTrigger
         id={inputId}
+        ref={triggerRef}
         role="button"
         aria-label={label}
         tabIndex={disabled || loadingOptions ? -1 : 0}
@@ -167,15 +170,16 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
           {clearable && selectedOption && !disabled && (
-            <IconButton
-              size="small"
-              aria-label={t("clear_selection")}
-              onClick={handleClear}
-              disabled={fullSizeClear && loadingOptions}
-              sx={fullSizeClear ? { width: 44, height: 44 } : { p: 0.25 }}
-            >
-              <CloseIcon fontSize="small" sx={{ fontSize: "1rem" }} />
-            </IconButton>
+            <ClearSelectionSlot fullSize={fullSizeClear}>
+              <IconButton
+                size="small"
+                aria-label={t("clear_selection")}
+                onClick={handleClear}
+                disabled={fullSizeClear && loadingOptions}
+              >
+                <CloseIcon fontSize="small" sx={{ fontSize: "1rem" }} />
+              </IconButton>
+            </ClearSelectionSlot>
           )}
           <KeyboardArrowDownIcon
             fontSize="small"

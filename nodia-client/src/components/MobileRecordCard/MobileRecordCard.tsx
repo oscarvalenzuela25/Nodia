@@ -25,6 +25,7 @@ export type MobileCardAction = {
 };
 type Props = {
   title: string;
+  accessibleTitle?: string;
   status?: ReactNode;
   fields: { key: string; label: string; value: ReactNode; fullWidth?: boolean }[];
   actions?: MobileCardAction[];
@@ -33,6 +34,7 @@ type Props = {
 };
 export default function MobileRecordCard({
   title,
+  accessibleTitle,
   status,
   fields,
   actions = [],
@@ -43,7 +45,7 @@ export default function MobileRecordCard({
   const id = useId();
   const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
   return (
-    <CardRoot aria-label={title}>
+    <CardRoot aria-label={accessibleTitle ?? title}>
       <Box
         sx={{
           display: "flex",
@@ -56,6 +58,7 @@ export default function MobileRecordCard({
           <Typography
             component="h3"
             variant="body1"
+            aria-label={accessibleTitle}
             sx={{ fontWeight: 600, overflowWrap: "anywhere" }}
           >
             {title}
@@ -64,7 +67,7 @@ export default function MobileRecordCard({
         </Box>
         {actions.length > 0 && (
           <IconButton
-            aria-label={t("layout:mobile_cards.actions", { name: title })}
+            aria-label={t("layout:mobile_cards.actions", { name: accessibleTitle ?? title })}
             aria-haspopup="menu"
             aria-controls={anchor ? id : undefined}
             disabled={disabled}

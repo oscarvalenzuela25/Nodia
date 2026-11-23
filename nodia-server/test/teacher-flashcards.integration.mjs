@@ -51,6 +51,7 @@ const lab = await teacherUpgradeLab({
 });
 const migration = '1793900000000-CreateTeacherFlashcards';
 const importMigration = '1793910000000-ImportTeacherFlashcards';
+const setsMigration = '1793950000000-CreateTeacherFlashcardSets';
 const checks = [];
 const check = async (name, run) => {
   await run();
@@ -157,6 +158,39 @@ try {
     },
   );
 
+  await check(
+    'set migration preserves historical decks and cards',
+    async () => {
+      const prior = await lab.db.query(`
+      WITH deck AS (
+        INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title)
+        VALUES (1, 'Pre-set deck', 'pre-set deck') RETURNING id
+      )
+      INSERT INTO teacher_flashcards (owner_user_id, deck_id, question, answer)
+      SELECT 1, id, 'Historical question?', 'Historical answer.' FROM deck
+      RETURNING deck_id, question
+    `);
+      await lab.migrate(setsMigration);
+      await lab.migrate(setsMigration, 'down');
+      await lab.migrate(setsMigration);
+      assert.deepEqual(
+        await lab.db.query(`
+        SELECT c.deck_id, c.question, d.set_id
+        FROM teacher_flashcards c JOIN teacher_flashcard_decks d
+          ON (d.owner_user_id, d.id) = (c.owner_user_id, c.deck_id)
+        WHERE d.title = 'Pre-set deck'
+      `),
+        [{ ...prior[0], set_id: null }],
+      );
+      await lab.db.query('DELETE FROM teacher_flashcards WHERE deck_id=$1', [
+        prior[0].deck_id,
+      ]);
+      await lab.db.query('DELETE FROM teacher_flashcard_decks WHERE id=$1', [
+        prior[0].deck_id,
+      ]);
+    },
+  );
+
   class FlashcardLabModule {}
   Module({
     controllers: [TeacherFlashcardsController],
@@ -236,7 +270,13 @@ try {
     'General is virtual, named decks are owner-only, and create replay is idempotent',
     async () => {
       assert.deepEqual(expectStatus(await request('decks'), 200), [
-        { id: 'general', title: 'General', category: null, card_count: 0 },
+        {
+          id: 'general',
+          title: 'General',
+          category: null,
+          set_id: null,
+          card_count: 0,
+        },
       ]);
       const createDeck = (title, actor) =>
         request('decks', { method: 'POST', body: { title }, actor });
@@ -262,6 +302,210 @@ try {
         0,
       );
       expectStatus(await request('decks', { actor: 'no-module' }), 403);
+    },
+  );
+
+  await check(
+    'owner-only optional set membership, with detachment preserving cards',
+    async () => {
+      const makeSet = (title, actor) =>
+        request('sets', {
+          method: 'POST',
+          body: { title },
+          actor,
+        });
+      const set = expectStatus(await makeSet('  Daily  English  '), 201);
+      const foreign = expectStatus(
+        await makeSet('Daily English', 'other'),
+        201,
+      );
+      assert.deepEqual(set, {
+        id: set.id,
+        title: 'Daily English',
+        deck_count: 0,
+      });
+      assert.equal(
+        expectStatus(await makeSet('daily english'), 409).code,
+        'flashcard_set_duplicate',
+      );
+      expectStatus(await request('sets', { actor: 'no-module' }), 403);
+      const add = (body, actor) =>
+        request('decks', {
+          method: 'POST',
+          body,
+          actor,
+        });
+      expectStatus(await add({ title: 'Day 01', set_id: false }), 400);
+      expectStatus(await add({ title: 'Day 01', set_id: foreign.id }), 404);
+      const deck = expectStatus(
+        await add({
+          title: 'Day 01',
+          category: 'Practice',
+          set_id: set.id,
+        }),
+        201,
+      );
+      const path = 'decks/' + deck.id;
+      const patch = (body, actor) =>
+        request(path, {
+          method: 'PATCH',
+          body,
+          actor,
+        });
+      expectStatus(await patch({}), 400);
+      expectStatus(await patch({ set_id: foreign.id }), 404);
+      expectStatus(await patch({ title: 'Foreign' }, 'other'), 404);
+      assert.equal(
+        expectStatus(await patch({ title: personalDeck.title }), 409).code,
+        'flashcard_deck_duplicate',
+      );
+      assert.deepEqual(
+        expectStatus(await patch({ set_id: null, category: null }), 200),
+        {
+          ...deck,
+          category: null,
+          set_id: null,
+        },
+      );
+      assert.deepEqual(expectStatus(await patch({ set_id: set.id }), 200), {
+        ...deck,
+        category: null,
+      });
+      assert.deepEqual(expectStatus(await request('sets'), 200), [
+        { ...set, deck_count: 1 },
+      ]);
+      assert.deepEqual(
+        expectStatus(await request('sets', { actor: 'other' }), 200),
+        [foreign],
+      );
+      const created = expectStatus(
+        await createCard({
+          ...manual,
+          request_key: randomUUID(),
+          deck_id: deck.id,
+        }),
+        201,
+      );
+      const removeSet = (id, actor) =>
+        request('sets/' + id, { method: 'DELETE', actor });
+      expectStatus(await removeSet(set.id, 'other'), 404);
+      await assert.rejects(
+        lab.migrate(setsMigration, 'down'),
+        /Preserve the flashcard sets and import tombstones/,
+      );
+      expectStatus(await removeSet(set.id), 204);
+      assert.deepEqual(expectStatus(await request('sets'), 200), []);
+      assert.deepEqual(
+        expectStatus(await request('decks'), 200).find(
+          ({ id }) => id === deck.id,
+        ),
+        { ...deck, category: null, set_id: null, card_count: 1 },
+      );
+      assert.deepEqual(
+        expectStatus(await request('cards?deck_id=' + deck.id), 200).data,
+        [created],
+      );
+      expectStatus(await request(path, { method: 'DELETE' }), 204);
+      expectStatus(await removeSet(foreign.id, 'other'), 204);
+    },
+  );
+
+  await check(
+    'deleting a deck removes its cards, media and reviews and retains non-replayable keys',
+    async () => {
+      const proposal = {
+        request_key: randomUUID(),
+        destination: { kind: 'new', title: 'Retired deck' },
+        cards: [{ question: 'Example?', answer: 'Example.' }],
+      };
+      const send = (payload) =>
+        request('imports', { method: 'POST', body: payload });
+      const { deck } = expectStatus(await send(proposal), 201);
+      const destination = {
+        ...manual,
+        request_key: randomUUID(),
+        deck_id: deck.id,
+      };
+      const card = expectStatus(
+        await createCard({
+          ...destination,
+          image: { side: 'question', data: webp },
+        }),
+        201,
+      );
+      expectStatus(
+        await request('cards/' + card.id + '/reviews', {
+          method: 'POST',
+          body: { request_key: randomUUID(), remembered: true },
+        }),
+        204,
+      );
+      const foreign = request('decks/' + deck.id, {
+        method: 'DELETE',
+        actor: 'other',
+      });
+      expectStatus(await foreign, 404);
+      expectStatus(await request('decks/general', { method: 'DELETE' }), 400);
+      const [created, removed] = await Promise.all([
+        createCard({ ...destination, request_key: randomUUID() }),
+        request('decks/' + deck.id, { method: 'DELETE' }),
+      ]);
+      assert.ok(
+        [201, 404].includes(created.status),
+        JSON.stringify(created.value),
+      );
+      expectStatus(removed, 204);
+      expectStatus(await request('cards?deck_id=' + deck.id), 404);
+      expectStatus(await request('cards/' + card.id + '/image'), 404);
+      assert.deepEqual(
+        await lab.db.query(
+          'SELECT id FROM teacher_flashcards WHERE deck_id=$1',
+          [deck.id],
+        ),
+        [],
+      );
+      assert.deepEqual(
+        await lab.db.query(
+          'SELECT card_id FROM teacher_flashcard_reviews WHERE card_id=$1',
+          [card.id],
+        ),
+        [],
+      );
+      assert.equal(
+        expectStatus(
+          await createCard({
+            ...destination,
+            image: { side: 'question', data: webp },
+          }),
+          410,
+        ).code,
+        'flashcard_deleted',
+      );
+      assert.equal(
+        expectStatus(await send(proposal), 410).code,
+        'flashcard_deck_deleted',
+      );
+      assert.equal(
+        expectStatus(
+          await send({
+            ...proposal,
+            cards: [{ question: 'New?', answer: 'Yes.' }],
+          }),
+          410,
+        ).code,
+        'flashcard_deck_deleted',
+      );
+      assert.deepEqual(
+        await lab.db.query(
+          'SELECT deck_id, request_hash FROM teacher_flashcard_import_requests WHERE owner_user_id=1 AND request_key=$1',
+          [proposal.request_key],
+        ),
+        [{ deck_id: null, request_hash: null }],
+      );
+      await assert.rejects(
+        lab.migrate(setsMigration, 'down'),
+        /Preserve the flashcard sets and import tombstones/,
+      );
     },
   );
 
@@ -612,6 +856,7 @@ try {
           id: deck.id,
           title: 'Pronunciation',
           category: 'Idiomas y sonido',
+          set_id: null,
           card_count: 2,
         },
         imported_count: 2,
@@ -673,10 +918,22 @@ try {
         await request('cards/' + stored[0].id, { method: 'DELETE' }),
         204,
       );
-      assert.deepEqual(
-        expectStatus(await importCards(proposal), 201),
-        confirmed,
+      const set = expectStatus(
+        await request('sets', { method: 'POST', body: { title: 'Listening' } }),
+        201,
       );
+      const edited = expectStatus(
+        await request('decks/' + deck.id, {
+          method: 'PATCH',
+          body: { title: 'Edited deck', category: 'Listening', set_id: set.id },
+        }),
+        200,
+      );
+      assert.equal(edited.title, 'Edited deck');
+      assert.deepEqual(expectStatus(await importCards(proposal), 201), {
+        ...confirmed,
+        deck: { ...deck, set_id: set.id },
+      });
       const remainingCards = expectStatus(await request(cardsPath), 200).data;
       assert.deepEqual(
         remainingCards.map(({ question }) => question),
@@ -802,7 +1059,10 @@ try {
         total_pages: 2,
       });
       assert.equal(second.meta.page, 2);
-      assert.deepEqual([...first.data, ...second.data], expected);
+      assert.deepEqual(
+        [...first.data, ...second.data],
+        expected.map(({ set_id: _setId, ...deck }) => deck),
+      );
       await assert.rejects(
         checkpoint(lab.noModule, (context) => list.execute({}, context)),
         (error) => error.getStatus() === 403,

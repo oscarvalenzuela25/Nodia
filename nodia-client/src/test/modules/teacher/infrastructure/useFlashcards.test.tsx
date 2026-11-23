@@ -81,6 +81,55 @@ describe("Teacher flashcard queries and mutations", () => {
     expect(client.getQueryState(listKey)?.isInvalidated).toBe(false);
   });
 
+  it("keeps the set and its decks on failure, then detaches decks on a confirmed deletion", async () => {
+    const { client, wrapper } = setup();
+    const setId = "8d87bff0-a2c3-4f8e-9a91-ad29d17d6c26";
+    const set = { id: setId, title: "Vocabulary", deck_count: 1 };
+    const deck = { id: request, title: "Greetings", set_id: setId, card_count: 1 };
+    const deckKey = [...prefix, "flashcards/decks", undefined];
+    const setKey = [...prefix, "flashcards/sets", undefined];
+    const otherDeckKey = ["teacher", "other", 2, "flashcards/decks", undefined];
+    client.setQueryData(setKey, [set]);
+    client.setQueryData(deckKey, [deck]);
+    client.setQueryData(otherDeckKey, [deck]);
+    const deckCardKey = [...prefix, "flashcards/cards", { deck_id: deck.id, page: 1 }];
+    client.setQueryData(deckCardKey, list);
+    stub.delete.mockRejectedValueOnce(new Error("server unavailable")).mockResolvedValueOnce({ status: 204 });
+    const { result } = renderHook(() => useFlashcardWrites(), { wrapper });
+
+    await act(async () => { await expect(result.current.deleteSet(setId)).rejects.toThrow("server unavailable"); });
+    expect(client.getQueryData(setKey)).toEqual([set]);
+    expect(client.getQueryData(deckKey)).toEqual([deck]);
+    expect(stub.success).not.toHaveBeenCalled();
+    await act(async () => { expect(await result.current.deleteSet(setId)).toBe(true); });
+    expect(stub.delete).toHaveBeenLastCalledWith("/teacher/flashcards/sets/" + setId);
+    expect(client.getQueryData(setKey)).toEqual([]);
+    expect(client.getQueryData(deckKey)).toEqual([{ ...deck, set_id: null }]);
+    expect(client.getQueryData(otherDeckKey)).toEqual([deck]);
+    expect(client.getQueryData(deckCardKey)).toEqual(list);
+  });
+
+  it("clears cached pages and their private images only for a confirmed deleted deck", async () => {
+    const { client, wrapper } = setup();
+    const deck = { id: request, title: "Greetings", set_id: null, card_count: 1 };
+    const deckKey = [...prefix, "flashcards/decks", undefined];
+    const deckCardKey = [...prefix, "flashcards/cards", { deck_id: deck.id, page: 2 }];
+    client.setQueryData(deckKey, [deck]);
+    client.setQueryData(deckCardKey, { ...list, data: [{ ...card, deck_id: deck.id }] });
+    client.setQueryData(listKey, { ...list, data: [] });
+    client.setQueryData(imageKey, "private-image");
+    client.setQueryData(otherImage, "separate-owner");
+    stub.delete.mockResolvedValue({ status: 204 });
+    const { result } = renderHook(() => useFlashcardWrites(), { wrapper });
+
+    await act(async () => { expect(await result.current.deleteDeck(deck.id)).toBe(true); });
+    expect(client.getQueryData(deckKey)).toEqual([]);
+    expect(client.getQueryData(deckCardKey)).toBeUndefined();
+    expect(client.getQueryData(listKey)).toMatchObject({ data: [] });
+    expect(client.getQueryData(imageKey)).toBeUndefined();
+    expect(client.getQueryData(otherImage)).toBe("separate-owner");
+  });
+
   it("keeps the image private until enabled and rejects an unexpected response type", async () => {
     const { wrapper } = setup();
     stub.get.mockResolvedValue({ data: new Blob(["bad"], { type: "text/html" }) });

@@ -19,14 +19,28 @@ export interface FlashcardDeck {
   id: string;
   title: string;
   category: string | null;
+  set_id: string | null;
   card_count: number;
 }
 
-export interface FlashcardDeckDefinition {
+export interface FlashcardSet {
+  id: string;
+  title: string;
+  deck_count: number;
+}
+
+export interface FlashcardCollectionTitle {
   title: string;
   normalizedTitle: string;
+}
+
+export interface FlashcardDeckDefinition extends FlashcardCollectionTitle {
   category: string | null;
 }
+
+export type FlashcardDeckPatch = Partial<FlashcardDeckDefinition> & {
+  setId?: string | null;
+};
 
 export interface Flashcard {
   id: string;

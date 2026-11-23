@@ -73,6 +73,7 @@ import type {
 import ProductModal, { type ProductFormData } from "./components/ProductModal";
 import ProductImageModal from "./components/ProductImageModal";
 import ProductImageThumbnail from "./components/ProductImageThumbnail";
+import ProductBarcodeIndicator from "./components/ProductBarcodeIndicator";
 import ProductSalePrice from "./components/ProductSalePrice";
 import type { ProductSaveTarget } from "./components/ProductModal/hooks/useDeferredProductSave";
 import ProductBulkImport from "./components/ProductBulkImport";
@@ -871,7 +872,8 @@ export const ProductsTab: FC<Props> = ({
             <TableSkeleton
               columns={[
                 { width: 48, align: "center" },
-                { header: t("business:product_code") },
+                { align: "center", header: t("business:pos.barcode") },
+                { header: t("business:product_invoice_code") },
                 { header: t("business:product_name") },
                 { header: t("business:product_alias") },
                 { align: "center", header: t("business:pos.image_column") },
@@ -928,7 +930,8 @@ export const ProductsTab: FC<Props> = ({
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ width: 48, p: 0.5 }} align="center" />
-                    <TableCell>{t("business:product_code")}</TableCell>
+                    <TableCell align="center">{t("business:pos.barcode")}</TableCell>
+                    <TableCell>{t("business:product_invoice_code")}</TableCell>
                     <TableCell>{t("business:product_name")}</TableCell>
                     <TableCell>{t("business:product_alias")}</TableCell>
                     <TableCell align="center">{t("business:pos.image_column")}</TableCell>
@@ -973,7 +976,7 @@ export const ProductsTab: FC<Props> = ({
                 <TableBody>
                   {!isLoading && displayedProducts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={showAdditionalColumns ? 12 : 9} align="center" sx={{ py: 6 }}>
+                      <TableCell colSpan={showAdditionalColumns ? 13 : 10} align="center" sx={{ py: 6 }}>
                         <Typography
                           variant="subtitle1"
                           sx={{ fontWeight: 600, mb: 0.5 }}
@@ -1036,6 +1039,7 @@ export const ProductsTab: FC<Props> = ({
                                 </span>
                               </Tooltip>
                             </TableCell>
+                            <TableCell align="center"><ProductBarcodeIndicator barcode={prod.barcode} /></TableCell>
                             <TableCell sx={{ fontWeight: 600, maxWidth: 200, overflowWrap: "anywhere" }}>
                               {prod.code ?? "—"}
                             </TableCell>
@@ -1184,6 +1188,9 @@ export const ProductsTab: FC<Props> = ({
                                 <HistoryOutlinedIcon
                                   sx={{ fontSize: 16, color: "text.secondary" }}
                                 />
+                              </TableCell>
+                              <TableCell align="center">
+                                {historicalLog.barcode === undefined ? "—" : <ProductBarcodeIndicator barcode={historicalLog.barcode} />}
                               </TableCell>
                               <TableCell
                                 sx={{

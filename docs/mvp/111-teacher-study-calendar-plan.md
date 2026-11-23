@@ -352,3 +352,18 @@ abre su menú como control aparte. Chromium comprobó el clic en el
 espacio libre de la tarjeta, la selección con teclado y el retorno del
 foco al cerrar el menú a 1573 px y 320 px. El ajuste corresponde a la
 interacción de Client y conserva el contrato y el contexto de NodiaAI.
+
+## 11. Presentación de las actividades en el editor de jornada
+
+La lista alinea el checkbox con la primera línea del título y muestra
+la fuente debajo, en el mismo eje. El botón de edición tiene su propia
+columna y los campos abiertos se distinguen del resumen de la actividad.
+Chrome verificó el editor a 320 y 520 píxeles en tema oscuro, y a
+320 píxeles en tema claro. La prueba incluye títulos de varias líneas,
+enlaces extensos, foco en el campo de actividad y marcado con teclado.
+
+El cambio se limita a la presentación y al nombre accesible de la
+sección. Los conceptos, las operaciones y el significado de los
+recuentos en la [ficha aprobada de Calendario, revisión 5](../nodia-ai/knowledge/studies/features/study-calendar.md)
+siguen aplicando al editor. La evaluación concluye que el ajuste carece
+de impacto sobre el contexto de NodiaAI.

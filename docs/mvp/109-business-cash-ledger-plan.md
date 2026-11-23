@@ -33,7 +33,7 @@ bancaria, cuentas por pagar o integración automática con POS.
 | Categorías en Drawer | Crear y administrar nombre/descripción; las mismas categorías sirven para ambos tipos de movimiento |
 | Categoría obligatoria por movimiento | Todo ingreso/egreso debe tener una categoría del mismo negocio |
 | Filtros arriba a la izquierda | Categoría, rango de fechas y actividad; GET con query params mediante el adaptador Ransack |
-| Datos del día inicialmente | Caja comienza en hoy y activos; cambiar el período actualiza tabla y paneles |
+| Datos del mes inicialmente | Caja comienza con el mes civil actual y activos; cambiar el período actualiza tabla y paneles |
 | Acciones arriba a la derecha | Agregar ingreso, agregar egreso y gestionar categorías |
 | Dos paneles | Cantidad y total de ingresos; cantidad y total de egresos; ambos sobre el conjunto filtrado completo |
 | Tabla con buscador propio | Search a la izquierda de la cabecera de tabla; filas con fondo success/error; acciones a la derecha en menú de tres puntos |
@@ -188,8 +188,9 @@ devuelve cero coincidencias en un negocio autorizado. La asignación a ese ID s�
 falla con 404. Client codifica comas como `%2C` para el parser `qs` con
 `comma:true` y conserva `false` en la serialización de actividad.
 
-La pantalla usa `ActiveStatusSelect` y envía hoy en ambos extremos y activo
-al entrar o limpiar filtros.
+La pantalla usa `ActiveStatusSelect` y envía el primer y el último día
+del mes civil actual en America/Santiago y activo al entrar o limpiar
+filtros. Esta regla de interfaz reemplaza el valor inicial del día.
 Todos omite `is_active_eq`. Una lectura HTTP sin filtro de fecha cubre todo el
 período. La lista de selección para una asignación nueva pide sólo activas.
 el filtro de movimientos puede buscar categorías activas e inactivas. Aplicar,
@@ -876,8 +877,8 @@ Se muestran tarjetas por debajo de 600 px y tabla con scroll local desde
 600 px. La paginación queda fuera del scroll. Tipo y actividad tienen
 etiquetas textuales en ambas vistas.
 
-El filtro inicial y la acción de limpiar usan hoy en America/Santiago y
-actividad Activo. El rango, categoría, actividad y búsqueda se envían a
+El filtro inicial y la acción de limpiar usan el mes civil actual en
+America/Santiago y actividad Activo. El rango, categoría, actividad y búsqueda se envían a
 Server. Los paneles muestran conteos y sumas exactas en CLP de todos los
 movimientos de la selección antes de paginar. Las lecturas y las claves de
 caché mantienen actor, sesión y negocio. Un error de lectura ofrece
