@@ -2,23 +2,18 @@
 
 Fecha: 2026-10-07. Implementación autorizada y comprobada con pruebas Windows/Linux y enlace OAuth real Linux. Autorización con cuenta y persistencia del VPS pendientes; sin aprobación automática de producción.
 
-Nodia permite iniciar la sesión del CLI Agentic del servidor desde el navegador de otro equipo. Un Mac puede completar la autorización Google sin instalar Antigravity localmente. Los modos operativos son Agentic y API key. [Plan 90](../../mvp/90-agentic-api-only-web-retirement.md).
+Nodia permite iniciar la sesión del CLI Agentic del servidor desde el navegador de otro equipo. Un Mac puede completar la autorización Google sin instalar Antigravity localmente. La sesión Web sigue siendo independiente. Esta funcionalidad no implementa OpenAI/Codex, que continúa en el [plan pendiente 33](../../mvp/33-chatgpt-integration-pending.md).
 
 ## Uso desde la aplicación
 
 1. Abrir **Ajustes Generales → Proveedores de IA** y entrar al detalle de una conexión Gemini con Agentic habilitado.
-2. Seleccionar **Agentic → Autenticar sesión Agentic**.
+2. Seleccionar **Token Plan (Agentic) → Autenticar sesión Agentic**.
 3. Pulsar **Conectar cuenta Google**. Si la sesión del servidor ya se verifica, el intento termina sin cambiar la cuenta.
 4. Si hace falta autenticarse, pulsar **Abrir inicio de sesión Google**, completar la autorización en Google y copiar el código que muestra el proveedor.
 5. Pegar ese código en Nodia y pulsar **Validar código**. El CLI del servidor lo intercambia; Nodia verifica la sesión antes de mostrar éxito.
 6. Sincronizar/configurar los modelos Agentic deseados. Autenticación no asigna modelos ni prueba una extracción.
 
-La sesión Agentic es **compartida por todas las conexiones Gemini del microservicio**. Elegir otra conexión cambia las preferencias de modelo. Para cambiar la cuenta, abre **Agentic → Desconectar Gemini**, confirma el alcance compartido y vuelve a **Autenticar sesión Agentic** para elegir la nueva cuenta en Google. Las claves de API y la sesión de Codex tienen almacenes independientes.
-
-El cierre requiere que el perfil esté disponible. Si hay un análisis
-o login activo, el diálogo conserva el error y permite otro intento explícito
-cuando termine. Si se pierde la confirmación del resultado, **Comprobar sesión**
-consulta salud sin repetir el cierre.
+La sesión Agentic es **compartida por todas las conexiones Gemini del microservicio**. Elegir otra conexión cambia modelos/preferencias, no la cuenta ni la cuota. El modal informa esta condición. Actualmente cambiar de cuenta es una operación administrativa del CLI; el botón verifica una sesión ya válida y no cierra otras cuentas automáticamente.
 
 ## Estados y recuperación
 
@@ -60,13 +55,11 @@ Evidencia: 62 pruebas Client focalizadas (página, detalle, tarjeta, alertas y m
 
 ## Rutas y permisos
 
-Prefijo público `/api/v1/ai-providers` (también alias `/api/v1/ai-provider`),
-con sesión Nodia y acceso al módulo en el destino `/ai-providers`.
+Prefijo público `/api/v1/ai-providers` (también alias `/api/v1/ai-provider`), con sesión Nodia y permiso `ai:manage`:
 
 | Ruta | Entrada o respuesta |
 |---|---|
 | `POST /gemini-agentic-login/start` | Iniciar/recuperar el intento activo propio; devuelve el trabajo. |
-| `POST /gemini-agentic-login/logout` | Cierre manual del perfil Agentic compartido. Devuelve `{authenticated:false}` tras verificación. |
 | `GET /gemini-agentic-login/current` | `{job: <trabajo>}` o `{job:null}`. Nunca una respuesta HTTP vacía. |
 | `GET /gemini-agentic-login/:jobId` | Estado solo para el dueño. |
 | `POST /gemini-agentic-login/:jobId/code` | `{code: string}`; código sin controles, 8..2048 caracteres. |

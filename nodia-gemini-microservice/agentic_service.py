@@ -13,7 +13,6 @@ from collections.abc import Callable
 from loguru import logger
 
 from agentic_cli import CliConfig, CliRunner, prepare_cli_home
-from agentic_profile_logout import sign_out_cli_profile
 from cli_execution_receipt import CliExecutionReceipt
 from agentic_observation import command_data, discovered_models, observed_quota
 from agentic_progress import NativeFileCliProgress
@@ -60,21 +59,6 @@ class AntigravityAgentService:
 
     async def observe_authentication(self) -> dict:
         return await self._observe(timeout=12)
-
-    async def logout(self, home: Path) -> None:
-        try:
-            await self.begin_authentication()
-        except ServiceError as error:
-            if error.code == "agentic_busy":
-                raise ServiceError("runtime_busy", "El perfil está ocupado por otra operación.", 409) from None
-            if error.code == "agentic_unavailable":
-                raise ServiceError("agentic_logout_unavailable",
-                                   "No se pudo verificar el transporte de la sesión agéntica.", 503) from None
-            raise
-        try:
-            await sign_out_cli_profile(self.runner, home)
-        finally:
-            self.finish_authentication()
 
     def finish_authentication(self) -> None:
         if not self._authenticating:

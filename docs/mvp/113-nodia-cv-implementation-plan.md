@@ -490,3 +490,18 @@ la reversión se detiene para preservar datos y evitar reabrir altas.
   Producción, CI ligado a un SHA remoto y cobertura real del journal
   quedan pendientes de adopción.
   [Evidencia CV-06](../evidence/nodia-cv-pilot-vm-and-ats-20261124.md).
+
+## 16. Separación del despliegue de Gemini — 2026-11-24
+
+El CD del [primer merge a master](https://github.com/oscarvalenzuela25/Nodia/pull/102)
+validó los baselines y detuvo la preparación antes de solicitar migraciones
+o publicación. La protección del CD exige una entrega coordinada cuando
+cambia el adaptador de Gemini.
+[Ejecución de CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45473004012).
+
+La promoción de Nodia CV conserva la generación API key, las cinco
+migraciones, los PDF y el registro de recuperación. La implementación
+completa del cambio de cuenta de Gemini queda en
+[`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d)
+para actualizar el adaptador y sus consumidores en una entrega coordinada.
+Esta promoción usa la protección de CD existente.

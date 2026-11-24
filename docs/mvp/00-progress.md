@@ -1,9 +1,9 @@
 # Progreso del MVP — Nodia
 
-**Desconexión de Gemini Agentic — 2026-11-24.** Ajustes IA incluye la
-confirmación de cierre de sesión compartida y el regreso al inicio de
-sesión de Google para cambiar de cuenta.
-[Contrato de proveedores](ai-provider-feature-contract.md#desconectar-gemini-agentic--2026-11-24).
+**Desconexión de Gemini Agentic — 2026-11-24.** La implementación
+validada en laboratorio queda en
+[`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d).
+Su publicación requiere una entrega coordinada del adaptador y Ajustes IA.
 
 **Nodia CV — piloto CV-06 verificado en la VM aislada, 2026-11-24.**
 Alta del módulo, dos cuentas, generación API key y los dos PDF exactos
