@@ -7,6 +7,7 @@ import useGeneralSettingsStore from "../../store/generalSettings/generalSettings
 import { queryClient } from "../../config/reactQuery";
 import i18n from "../../translate";
 import { saveProviderVisitPreference } from "../../modules/notifications/infrastructure/services";
+import { disconnectGeminiAgentic } from "../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn() } }));
 const originalAdapter = mainInstance.defaults.adapter;
@@ -84,6 +85,27 @@ describe("API session renewal", () => {
     expect(refreshCount).toBe(1);
     expect(useAuthStore.getState().token).toBeNull();
   });
+
+  it("does not replay a Gemini disconnect rejected by the server", async () => {
+    const adapter = vi.fn(async (config: InternalAxiosRequestConfig) => { throw reject(config); });
+    mainInstance.defaults.adapter = adapter;
+    await expect(disconnectGeminiAgentic(useAuthStore.getState().sessionVersion))
+      .rejects.toMatchObject({ response: { status: 401 } });
+    expect(adapter).toHaveBeenCalledOnce();
+    expect(adapter.mock.calls[0][0]).toMatchObject({
+      method: "post",
+      url: expect.stringMatching(/\/ai-providers\/gemini-agentic-login\/logout$/),
+    });
+    expect(adapter.mock.calls[0][0].data).toBeUndefined();
+  });
+
+  it.each([{ authenticated: true }, { authenticated: false, account: "extra" }])(
+    "rejects unexpected Gemini disconnect acknowledgements",
+    async (payload) => {
+      mainInstance.defaults.adapter = async (config) => response(config, payload);
+      await expect(disconnectGeminiAgentic(useAuthStore.getState().sessionVersion)).rejects.toThrow();
+    },
+  );
 
   it("clears private cache and permissions when the refresh token is rejected", async () => {
     queryClient.setQueryData(["private"], "sensitive data");

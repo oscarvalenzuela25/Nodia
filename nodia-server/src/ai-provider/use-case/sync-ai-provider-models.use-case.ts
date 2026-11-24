@@ -5,6 +5,7 @@ import {
   Optional,
 } from '@nestjs/common';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
+import { filterAgenticModels, restrictAgenticModelFields } from '../helpers/agentic-model-policy.helper.js';
 import { observedModels } from '../helpers/model-observation.helper.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
@@ -78,14 +79,17 @@ export class SyncAiProviderModelsUseCase {
       (targetMode === 'agentic'
         ? 'agentic'
         : (provider.fields?.engine as GeminiExecutionEngine) || undefined);
-    const modeFields =
-      (provider.fields?.[targetMode] as Record<string, any>) || {};
+    const scopedFields =
+      (provider.fields?.[targetMode] as Record<string, unknown>) || {};
+    const modeFields = targetMode === 'agentic'
+      ? restrictAgenticModelFields(scopedFields) : scopedFields;
     const hasAnyModeScoped =
       Boolean(provider.fields?.agentic) || Boolean(provider.fields?.api_key);
-    const currentSelectedModel =
+    const selected =
       modeFields.selected_model ||
       (!hasAnyModeScoped ? provider.fields?.selected_model : null) ||
       null;
+    const currentSelectedModel = typeof selected === 'string' ? selected : null;
     if (targetMode === 'api_key') {
       if (
         options?.engine ||
@@ -137,10 +141,11 @@ export class SyncAiProviderModelsUseCase {
         provider.catalog?.can_use_agentic !== true
       )
         throw new BadRequestException('El canal Codex no está habilitado.');
-      const models = await this.codex.listModels(provider.id);
-      if (!models.length)
+      const discovered = await this.codex.listModels(provider.id);
+      if (!discovered.length)
         throw new BadRequestException('Codex no entregó modelos disponibles.');
-      if (shouldPersist)
+      const models = filterAgenticModels(scopedFields, discovered);
+      if (shouldPersist && models.length > 0)
         await this.aiProviderService.mergeDiscoveredModels(
           provider.id,
           'agentic',
@@ -200,7 +205,8 @@ export class SyncAiProviderModelsUseCase {
         `No se encontraron modelos disponibles para el proveedor "${provider.name || provider.key}".`,
       );
     }
-    if (shouldPersist) {
+    discoveredModels = filterAgenticModels(scopedFields, discoveredModels);
+    if (shouldPersist && discoveredModels.length > 0) {
       await this.aiProviderService.mergeDiscoveredModels(
         provider.id,
         targetMode as 'agentic',

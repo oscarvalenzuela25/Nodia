@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { deployBackend, operationId, operationAbsent, requireReady, sshCommand } from './cd-vps.mjs';
+import { deployBackend, operationId, operationAbsent, readBackend, requireReady, sshCommand } from './cd-vps.mjs';
 import { uploadId, uploadIdentity } from './cd-upload.mjs';
 import { CdRejected } from './cd-github.mjs';
 const blob = Buffer.concat([Buffer.from([0,0,0,11]), Buffer.from('ssh-ed25519'), Buffer.from([0,0,0,32]), Buffer.alloc(32,7)]);
@@ -49,6 +49,51 @@ const unchangedOptions = { ...options, plan: { ...options.plan, server_content_e
   candidateTree: oldTree, candidateRelease: release(next, oldTree) };
 const operationMissing = { code: 1, body: { schema_version: 1, status: 'failed',
   error_code: 'operation_not_found', automatic_retry_allowed: false } };
+const geminiProof = { schema_version: 1, source_sha: next, source_tree_sha: '1'.repeat(40), image_id: 'sha256:' + '2'.repeat(64) };
+const observedGemini = (source = old, hash = oldTree, proof = geminiProof) => ({ code: 0, body: {
+  ...ready(source, hash), ...(proof === null ? {} : { gemini_runtime: proof }) } });
+
+test('baseline forwards only the typed and live optional Gemini proof from the restricted status', async () => {
+  const calls = [];
+  const baseline = await readBackend(environment, { sshOptions: { expectedFingerprint },
+    send: async (_, command) => { calls.push(command); return observedGemini(); } });
+  assert.deepEqual(calls, ['status']);
+  assert.deepEqual(baseline.current, ready().current);
+  assert.deepEqual(baseline.gemini_runtime, geminiProof);
+});
+
+test('coordinated backend checks exact runtime before submit and after commit without retrying drift', async t => {
+  const uploaded = { code: 0, body: { schema_version: 1, status: 'uploaded', artifact_id: artifact.id,
+    artifact_zip_sha256: artifact.digest.slice(7), bytes: 123, deployment_requested: false } };
+  const accepted = { code: 0, body: { schema_version: 1, status: 'submitted', operation_id: id,
+    phase: 'submitted', deployment_requested: true, automatic_retry_allowed: false } };
+  for (const [name, initial, fresh, final, effect] of [
+    ['consistent', observedGemini(), observedGemini(), observedGemini(next, tree), 'complete'],
+    ['missing before upload', observedGemini(old, oldTree, null), null, null, 'no_upload'],
+    ['changed before submit', observedGemini(), observedGemini(old, oldTree, { ...geminiProof, image_id: 'sha256:' + '3'.repeat(64) }), null, 'no_submit'],
+    ['removed after actual Node commit', observedGemini(), observedGemini(), observedGemini(next, tree, null), 'complete_then_blocked'],
+  ]) await t.test(name, async t => {
+    const directory = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'nodia-cd-runtime-'));
+    const stateFile = path.join(directory, 'backend-state.json');
+    t.after(() => { if (fs.existsSync(stateFile)) fs.unlinkSync(stateFile); fs.rmdirSync(directory); });
+    const calls = [], replies = [operationMissing, initial, uploaded, fresh, accepted,
+      { code: 0, body: operation('complete') }, final];
+    const deployment = deployBackend({ ...options, plan: { ...options.plan, gemini_runtime: geminiProof }, stateFile,
+      revalidate: async () => { calls.push('ci'); },
+      send: async (_, command) => { calls.push(command); return replies.shift(); } });
+    if (effect === 'complete') assert.deepEqual((await deployment).gemini_runtime, geminiProof);
+    else await assert.rejects(deployment, /gemini_runtime_attestation_changed/);
+    assert.equal(calls.filter(command => command.startsWith('upload ')).length, effect === 'no_upload' ? 0 : 1);
+    assert.equal(calls.filter(command => command.startsWith('deploy ')).length, effect.startsWith('complete') ? 1 : 0);
+    if (effect === 'complete_then_blocked') {
+      const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+      assert.equal(state.status, 'complete');
+      assert.equal(state.deployment_performed, true);
+      assert.equal(Object.hasOwn(state, 'gemini_runtime'), false);
+    }
+    if (effect.startsWith('complete')) assert.equal(calls[calls.indexOf('ci') + 1], 'status');
+  });
+});
 function statusOnlySend(body = ready()) {
   const calls = [];
   return { calls, send: async (_, command) => {

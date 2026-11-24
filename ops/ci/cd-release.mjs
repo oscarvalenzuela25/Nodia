@@ -5,8 +5,8 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { verifyArtifact } from './artifact-release.mjs';
 import { CdRejected, extractOriginalZip, githubClient, isHex, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
-import { deploymentPlan, unmanagedRuntimePaths } from './cd-selection.mjs';
-import { deployBackend, readBackend } from './cd-vps.mjs';
+import { deploymentPlan, unmanagedRuntimeError, unmanagedRuntimePaths } from './cd-selection.mjs';
+import { deployBackend, readBackend, requireGeminiRuntimeMatch } from './cd-vps.mjs';
 import { preflightPages, publishPages } from './cd-pages.mjs';
 import { pwaVerificationDetails, verifyPublishedPwaAssets } from './pwa-assets.mjs';
 import { inventory } from '../production/package-backend-release.mjs';
@@ -36,14 +36,18 @@ export async function prepareRelease(environment = process.env, { api = githubCl
   requireCd(client.status === 'baseline_verified' && server.status === 'baseline_verified' &&
     isSha(client.source_sha) && isSha(server.source_sha) && typeof client.config_changed === 'boolean' &&
     server.current?.source_sha === server.source_sha, 'release_baselines_invalid');
-  const unmanaged = unmanagedRuntimePaths({ repo: root, base: server.source_sha, head: ci.source_sha });
-  if (unmanaged.length) {
-    writeState(path.join(output, 'runtime-block.json'), { error_code: 'unmanaged_runtime_change_requires_coordinated_rollout',
-      paths: unmanaged.slice(0, 100), total_paths: unmanaged.length });
-    requireCd(false, 'unmanaged_runtime_change_requires_coordinated_rollout');
+  let plan;
+  try {
+    plan = deploymentPlan({ repo: root, head: ci.source_sha, clientBase: client.source_sha,
+      serverBase: server.source_sha, forceClient: client.config_changed, geminiRuntime: server.gemini_runtime });
+  } catch (error) {
+    if (error instanceof CdRejected && error.message === unmanagedRuntimeError) {
+      const unmanaged = unmanagedRuntimePaths({ repo: root, base: server.source_sha, head: ci.source_sha });
+      writeState(path.join(output, 'runtime-block.json'), { error_code: unmanagedRuntimeError,
+        paths: unmanaged.slice(0, 100), total_paths: unmanaged.length });
+    }
+    throw error;
   }
-  const plan = deploymentPlan({ repo: root, head: ci.source_sha, clientBase: client.source_sha,
-    serverBase: server.source_sha, forceClient: client.config_changed });
   const listed = await api.artifacts(ci);
   const result = { ...plan, ci, prior_cd_run: environment.CD_PRIOR_RUN === 'true',
     client_baseline: client, server_baseline: server.current, artifacts: {} };
@@ -145,7 +149,8 @@ export async function updateServer(environment = process.env, { api, read = read
   if (!plan.server_required) {
     const baseline = await read(environment);
     requireCd(baseline.source_sha === plan.server_base, 'backend_changed_after_plan');
-    result = { status: 'not_required', source_sha: baseline.source_sha, deployment_requested: false };
+    result = { status: 'not_required', source_sha: baseline.source_sha, deployment_requested: false,
+      ...requireGeminiRuntimeMatch(plan.gemini_runtime, baseline.gemini_runtime) };
   } else {
     const artifact = plan.artifacts.server;
     result = await deploy({ environment, plan, artifact, zipFile: artifact.zip_file, zipBytes: artifact.zip_bytes, ci: plan.ci,
@@ -184,6 +189,7 @@ export async function updateClient(environment = process.env, { api, verify = ve
   requireCd(plan.server_required ? (['complete', 'already_current'].includes(backend.status) && backend.source_sha === plan.source_sha ||
     confirmedEquivalentBackend(plan, backend)) :
     backend.status === 'not_required', 'backend_must_be_confirmed_before_pages');
+  requireGeminiRuntimeMatch(plan.gemini_runtime, backend.gemini_runtime);
   requireClientPreflight(output, plan);
   api ??= githubClient(environment);
   const revalidate = () => api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha);

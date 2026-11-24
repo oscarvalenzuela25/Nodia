@@ -187,7 +187,7 @@ export class GetAiProvidersHealthUseCase {
         provider.default_mode === undefined
           ? provider.mode
           : provider.default_mode;
-      const fields = configuredModelFields(provider.fields ?? {});
+      const fields = configuredModelFields(provider.fields ?? {}, provider.default_mode ?? provider.mode);
       const hasScoped = Boolean(fields.agentic || fields.api_key);
       const modelFields = (fields[defaultMode ?? ''] ??
         (hasScoped ? {} : fields)) as Record<string, unknown>;

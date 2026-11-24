@@ -1,18 +1,5 @@
 import { alpha, styled, type CSSObject, type Theme } from "@mui/material/styles";
 
-export const PageTitle = styled("h1")(({ theme }) => ({
-  fontFamily: '"Karmatic Arcade", monospace, sans-serif',
-  fontWeight: 400,
-  fontSize: "34px",
-  lineHeight: 1.25,
-  margin: 0,
-  display: "inline-block",
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
-  backgroundClip: "text",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-}));
-
 export const Page = styled("section")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",

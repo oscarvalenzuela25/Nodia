@@ -1,5 +1,28 @@
 # Contrato funcional de conexiones IA y regresiones
 
+## Catálogos de Agentic por conexión — 2026-11-24
+
+Una conexión puede guardar `fields.agentic.allowed_model_ids` con los IDs
+exactos que admite en Agentic. La sincronización muestra la intersección con
+el catálogo real. Sin política configurada se mantiene el catálogo del
+proveedor. En una conexión restringida, actualizar los metadatos conserva
+el conjunto de modelos activos. Activar un modelo y asignarle un rol requiere
+una selección explícita.
+
+La migración `1794010000000` actualiza las conexiones existentes. Gemini
+permite el ID `gemini-4-hydrogen-high`, observado con la etiqueta
+**Gemini 4 Hydrogen** en Ajustes. Quedan vacíos los modelos activos, el
+principal, el foco OCR y las preferencias de modelo. Codex conserva
+**GPT-6 Luna**, **GPT-6.1 Terra** y **GPT-6.2 Sol** con los metadatos
+de razonamiento observados en Codex 0.171.0. Las asignaciones que apuntaban
+a modelos retirados quedan vacías. API key mantiene su catálogo y
+configuración por conexión. El historial conserva las selecciones con
+las que se registraron los resultados.
+
+La migración elimina preferencias retiradas. La recuperación de esos
+valores requiere el respaldo previo. Un catálogo configurado no acredita
+la ejecución de sus modelos. [Ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-provider-interface-and-module-access.md#catálogo-agentic-por-conexión--2026-11-24).
+
 ## GPT Agentic: preferencias recuperables y diagnóstico — 2026-11-14
 
 Por solicitud expresa, las intensidades configurables Agentic tienen una fuente

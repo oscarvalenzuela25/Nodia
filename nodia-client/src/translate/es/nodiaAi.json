@@ -1,5 +1,6 @@
 {
   "workspace": {
+    "title": "Nodia IA",
     "start": "Iniciar conversación",
     "ready_title": "¿En qué te ayudo?"
   },

@@ -2,6 +2,15 @@
   "agentic_login": {
     "title": "Sign in to Gemini Agentic",
     "manage": "Authenticate Agentic session",
+    "disconnect": "Disconnect Gemini",
+    "disconnect_confirm": "This signs out the Google account shared by all Gemini Agentic connections on this server. You can then connect another account.",
+    "disconnected": "Gemini Agentic session disconnected",
+    "disconnect_busy": "Gemini Agentic is in use on this server. Try again after the active operation ends.",
+    "disconnect_unavailable": "The Gemini Agentic service is unavailable. Try again when the connection is restored.",
+    "disconnect_check": "Check session",
+    "disconnect_check_help": "Check the session status before trying to disconnect again.",
+    "disconnect_uncertain": "We could not verify whether the session was signed out.",
+    "disconnect_failed": "Could not confirm that Gemini disconnected",
     "connect": "Connect Google account",
     "open_google": "Open Google sign-in",
     "code_label": "Authorization code",
@@ -190,6 +199,7 @@
   "modal_sync_models": {
     "choose_reasoning": "Select reasoning...",
     "no_models_available": "The provider returned no available models.",
+    "no_allowed_models_available": "The provider catalog does not include any models permitted for this connection.",
     "title": "Sync & configure models",
     "subtitle": "Discover live models from the provider and select which ones to activate for the system.",
     "provider_badge_agentic": "Agentic",

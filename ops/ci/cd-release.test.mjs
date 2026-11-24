@@ -23,6 +23,27 @@ test('Pages cannot access credentials or make requests until backend completion 
     await assert.rejects(updateClient(f.environment),/backend_must_be_confirmed_before_pages/);
   }
 });
+test('Pages requires the post-apply backend proof for the same coordinated Gemini image', async t => {
+  const f = clientCandidate(t);
+  const proof = { schema_version: 1, source_sha: f.plan.source_sha,
+    source_tree_sha: 'b'.repeat(40), image_id: 'sha256:' + 'c'.repeat(64) };
+  f.plan.gemini_runtime = proof;
+  f.write('release-plan.json', f.plan);
+  await preflightClient(f.environment, f);
+  const result = { status: 'complete', source_sha: f.plan.source_sha };
+  let published = 0;
+  const publish = async () => { published++; return { status: 'complete' }; };
+  const confirm = async ({ result }) => result;
+  for (const stale of [result, { ...result, gemini_runtime: { ...proof, source_tree_sha: 'e'.repeat(40) } }]) {
+    f.write('backend-result.json', stale);
+    await assert.rejects(updateClient(f.environment, { api: f.api, verify: f.verify, publish, confirm }),
+      /gemini_runtime_attestation_changed/);
+  }
+  assert.equal(published, 0);
+  f.write('backend-result.json', { ...result, gemini_runtime: proof });
+  await updateClient(f.environment, { api: f.api, verify: f.verify, publish, confirm });
+  assert.equal(published, 1);
+});
 test('rerun or development context cannot begin delivery even with existing state',async t=>{
   const f=fixture(t);
   for(const change of [{GITHUB_RUN_ATTEMPT:'2'},{GITHUB_REF:'refs/heads/development'},{GITHUB_EVENT_NAME:'pull_request'}])

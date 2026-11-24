@@ -1,19 +1,8 @@
 import { alpha, styled } from "@mui/material/styles";
 import { Box, Chip, FormControlLabel, Paper, Stack, Typography } from "@mui/material";
+import { productBrandStyle } from "../../../../theme/productBrand";
 
-export const ProductBrand = styled(Typography)(({ theme }) => ({
-  fontFamily: '"Karmatic Arcade", monospace, sans-serif',
-  fontWeight: 400,
-  fontSize: "2.125rem",
-  letterSpacing: 0,
-  lineHeight: "normal",
-  display: "inline-block",
-  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.tertiary?.main ?? theme.palette.secondary.main} 100%)`,
-  backgroundClip: "text",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  [theme.breakpoints.down("sm")]: { fontSize: "1.5rem" },
-}));
+export const ProductBrand = styled(Typography)(productBrandStyle);
 export const PlanFilters = styled(Stack)(({ theme }) => ({ gap: theme.spacing(1), alignItems: "flex-start", [theme.breakpoints.up("sm")]: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", columnGap: theme.spacing(2) } }));
 export const PlanSearch = styled(Box)(({ theme }) => ({ width: "100%", minWidth: 0, [theme.breakpoints.up("sm")]: { width: "50%" } }));
 export const ArchivedFilter = styled(FormControlLabel)(({ theme }) => ({ margin: 0, minHeight: 44, "& .MuiFormControlLabel-label": { ...theme.typography.body2 } }));

@@ -10,6 +10,7 @@ declare module "axios" {
     skipAuth?: boolean;
     validateSession?: boolean;
     authRetried?: boolean;
+    retryUnauthorized?: boolean;
     expectedAuthSessionVersion?: number;
     authSessionVersion?: number;
     authToken?: string | null;
@@ -146,6 +147,7 @@ export function createAuthSession(client: AxiosInstance) {
           throw new CanceledError("Session changed");
         }
         if (error.response?.status === 401 && config && !config.skipAuth && !config.validateSession && state.token) {
+          if (config.retryUnauthorized === false) throw error;
           if (!config.authRetried) {
             config.authRetried = true;
             // A concurrent request may already have renewed the token.

@@ -80,6 +80,7 @@ const SyncModelsEditor: FC<SyncModelsModalProps> = ({
   const modeFields = typeof scopedFields === "object" && scopedFields !== null && !Array.isArray(scopedFields)
     ? scopedFields as Record<string, unknown>
     : providerFields.agentic || providerFields.api_key ? {} : providerFields;
+  const curatedAgentic = activeMode === "agentic" && Object.hasOwn(modeFields, "allowed_model_ids");
   const savedLevels = modeFields.thinking_levels;
   const thinkingLevels: Record<string, unknown> = {
     ...(typeof savedLevels === "object" && savedLevels !== null && !Array.isArray(savedLevels) ? savedLevels : {}),
@@ -154,7 +155,7 @@ const SyncModelsEditor: FC<SyncModelsModalProps> = ({
         });
       }
 
-      if (initialSelected.size === 0) {
+      if (initialSelected.size === 0 && !curatedAgentic) {
         fetchedList.forEach((m) => initialSelected.add(m.id));
       }
 
@@ -185,7 +186,7 @@ const SyncModelsEditor: FC<SyncModelsModalProps> = ({
         setOcrModelId("");
       }
     },
-    [activeMode]
+    [activeMode, curatedAgentic]
   );
 
   const fetchLiveModels = useCallback(() => {
@@ -579,7 +580,9 @@ const SyncModelsEditor: FC<SyncModelsModalProps> = ({
 
           {/* DISCOVERED MODELS LIST */}
           {!isLoadingDiscovery && !discoveryError && isOperationalMode && discoverySucceeded && discoveredModels.length === 0 && (
-            <Alert severity="info">{t("ai_providers:modal_sync_models.no_models_available")}</Alert>
+            <Alert severity="info">{t(curatedAgentic
+              ? "ai_providers:modal_sync_models.no_allowed_models_available"
+              : "ai_providers:modal_sync_models.no_models_available")}</Alert>
           )}
           {!isLoadingDiscovery && !discoveryError && discoveredModels.length > 0 && (
             <>

@@ -8,6 +8,7 @@ import { DataSource, type EntityManager } from 'typeorm';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { validateCatalogId } from '../../common/dto/catalog-id.dto.js';
 import { AiProvider } from '../entities/ai-provider.entity.js';
+import { refreshAgenticModelMetadata } from '../helpers/agentic-model-policy.helper.js';
 import { resolveAiProviderUpdate } from './ai-provider-configuration.rules.js';
 import { runAiProviderConfigurationTransaction } from './ai-provider-configuration-transaction.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
@@ -430,8 +431,11 @@ export class ManageAiProviderSecureSessionUseCase {
       where: { id: providerId },
       relations: { catalog: true },
     });
+    const availableModels = mode === 'agentic'
+      ? refreshAgenticModelMetadata(current.fields?.agentic, models)
+      : models;
     const resolved = resolveAiProviderUpdate(
-      { fields: { [mode]: { available_models: models } } },
+      { fields: { [mode]: { available_models: availableModels } } },
       current,
       current.catalog ?? null,
     );

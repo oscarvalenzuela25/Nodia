@@ -7,6 +7,26 @@
 
 ## Comportamiento implementado
 
+### GPT-6.2-Sol en el catálogo Agentic — 2026-11-24
+
+La sincronización de la conexión ChatGPT de producción devolvió ocho modelos,
+hasta GPT-6.1-Sol. El paquete de Codex del Server sube de `0.161.0` a `0.171.0`,
+versión que incorpora GPT-6.2-Sol al catálogo.
+[Release de Codex](https://github.com/openai/codex/releases/tag/rust-v0.171.0).
+
+En Linux x64, el Server compilado abrió y cerró ese binario con un perfil
+temporal y leyó `model/list` por su transporte habitual. El catálogo devolvió
+11 modelos. GPT-6.2-Sol y GPT-6.1-Sol publicaron las mismas seis opciones
+`low`, `medium`, `high`, `xhigh`, `max` y `ultra`. El selector de Nodia
+usa esos metadatos y mantiene su selección guardada.
+
+La [configuración de las conexiones existentes](../../mvp/ai-provider-feature-contract.md#catálogos-de-agentic-por-conexión--2026-11-24)
+incorpora GPT-6.2-Sol a las opciones Agentic junto con GPT-6 Luna y
+GPT-6.1 Terra. **Actualizar modelos** consulta los metadatos de la cuenta.
+El descubrimiento y el transporte se verificaron localmente. La inferencia
+con una cuenta y la calificación de capacidades ligadas al nuevo binario
+siguen pendientes. Teacher conserva su host nativo específico.
+
 ### Actualización del catálogo solicitada — 2026-10-28
 
 La referencia aportada por el usuario incluye GPT-6.1 Sol, GPT-6 Astra, GPT-6.1 Terra, GPT-6 Sol y GPT-6 Luna. Es una selección solicitada, no una lista cerrada en código ni una prueba de capacidades. Los IDs, etiquetas, modalidades y esfuerzos deben proceder del `model/list` de la conexión; sincronizar Ajustes debe persistir el catálogo para que NodiaAI lo reciba. Conservar selección y foco OCR si siguen vigentes, otros modos y conversaciones históricas; no cambiar de modelo automáticamente.
