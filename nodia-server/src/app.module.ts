@@ -40,6 +40,7 @@ import { NodiaAiModule } from './nodia-ai/nodia-ai.module.js';
 import { NodiaAiPreferenceModule } from './nodia-ai-preference/nodia-ai-preference.module.js';
 import { TeacherModule } from './teacher/teacher.module.js';
 import { NewsModule } from './news/news.module.js';
+import { NodiaCvModule } from './nodia-cv/nodia-cv.module.js';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { NewsModule } from './news/news.module.js';
     NodiaAiPreferenceModule,
     TeacherModule,
     NewsModule,
+    NodiaCvModule,
   ],
   controllers: [AppController],
   providers: [

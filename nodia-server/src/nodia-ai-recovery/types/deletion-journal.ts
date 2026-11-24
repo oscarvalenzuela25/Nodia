@@ -1,10 +1,15 @@
 export const NODIA_AI_DELETION_JOURNAL = Symbol('NODIA_AI_DELETION_JOURNAL');
 export const NODIA_AI_DELETION_PROOF = Symbol('NODIA_AI_DELETION_PROOF');
 
+export type NodiaAiCvJournalResource =
+  | { kind: 'cv_profile'; profile_id: string }
+  | { kind: 'cv_version'; version_id: string };
+
 export type NodiaAiJournalResource =
   | { kind: 'conversation'; conversation_id: string; storage_generations: string[] }
   | { kind: 'attachment'; conversation_id: string; attachment_id: string; storage_generations: string[] }
-  | { kind: 'preference'; preference_id: string };
+  | { kind: 'preference'; preference_id: string }
+  | NodiaAiCvJournalResource;
 
 export interface NodiaAiDeletionJournalPort {
   readonly enabled: boolean;

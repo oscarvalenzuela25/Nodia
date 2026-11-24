@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { CodexSession } from '../../common/ai/codex/codex-contract.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
+import { GeminiAgenticLogoutService } from '../../common/ai/gemini-agentic-logout.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GetAiProviderTopbarStatusUseCase } from './get-ai-provider-topbar-status.use-case.js';
@@ -53,7 +54,12 @@ function setup() {
     findDefaultProviderStatus,
     getDualEngineStatus,
     observe,
-    subject: new GetAiProviderTopbarStatusUseCase(providers, gemini, codex),
+    subject: new GetAiProviderTopbarStatusUseCase(
+      providers,
+      gemini,
+      codex,
+      new GeminiAgenticLogoutService(),
+    ),
   };
 }
 

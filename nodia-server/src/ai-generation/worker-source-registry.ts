@@ -3,18 +3,21 @@ export interface GenerationWorkerSource {
   execute(workerId: string, signal: AbortSignal): Promise<boolean>;
   recover(): Promise<void>;
 }
+
+type GenerationWorkerDomain = 'teacher' | 'flashcard-library' | 'cv';
+
 /** One worker lifecycle, one canonical capacity store; domains register work, not locks. */
 @Injectable()
 export class GenerationWorkerSourceRegistry {
   private readonly sources = new Map<
-    'teacher' | 'flashcard-library',
+    GenerationWorkerDomain,
     GenerationWorkerSource
   >();
   private next = 0;
 
   register(
     source: GenerationWorkerSource,
-    domain: 'teacher' | 'flashcard-library' = 'teacher',
+    domain: GenerationWorkerDomain = 'teacher',
   ): void {
     const current = this.sources.get(domain);
     if (current && current !== source)

@@ -31,6 +31,40 @@ describe('HTTP module policy', () => {
     expect(resolveHttpModulePolicy(preferences, ['other-type'], 'GET')).toBeUndefined();
   });
 
+  it('requires the CV module for exact profile, generation, PDF and version operations', () => {
+    const controller = ['nodia-cv'];
+    for (const [method, path] of [
+      ['GET', 'profiles'],
+      ['GET', 'profiles/:id'],
+      ['POST', 'profiles'],
+      ['PUT', 'profiles/:id'],
+      ['DELETE', 'profiles/:id'],
+      ['GET', 'ai-selection/catalog'],
+      ['GET', 'ai-selection/eligibility'],
+      ['POST', 'generations'],
+      ['GET', 'generations/:id'],
+      ['GET', 'generations/requests/:key'],
+      ['PUT', 'drafts/:id'],
+      ['POST', 'drafts/:id/pdf'],
+      ['GET', 'drafts/:id/pdf/:artifactId'],
+      ['GET', 'versions'],
+      ['POST', 'versions'],
+      ['GET', 'versions/:id'],
+      ['DELETE', 'versions/:id'],
+      ['GET', 'versions/:id/pdf'],
+    ]) {
+      expect(resolveHttpModulePolicy(controller, [path], method)).toEqual({
+        routes: ['/nodia-cv'],
+        match: 'all',
+      });
+    }
+    expect(resolveHttpModulePolicy(controller, ['profiles/:id'], 'POST')).toBeUndefined();
+    expect(resolveHttpModulePolicy(controller, ['generations/:id'], 'POST')).toBeUndefined();
+    expect(resolveHttpModulePolicy(controller, ['versions/:id/pdf'], 'DELETE')).toBeUndefined();
+    expect(resolveHttpModulePolicy(controller, ['profiles', 'generations'], 'GET')).toBeUndefined();
+    expect(resolveHttpModulePolicy(['nodia-cv/profiles'], [''], 'GET')).toBeUndefined();
+  });
+
   it('admits only the exact Personal News operations for an authenticated owner', () => {
     const controller = ['news/personal'];
     for (const [method, handler] of [
@@ -116,6 +150,8 @@ describe('HTTP module policy', () => {
       [['models', 'selectable-models'], 'GET'],
       [[':id/session'], 'GET'],
       [[':id/session/login'], 'POST'],
+      [['gemini-agentic-login/start'], 'POST'],
+      [['gemini-agentic-login/logout'], 'POST'],
       [[':id'], 'PUT'],
     ] as const) {
       expect(resolveHttpModulePolicy(aliases, handlers, method)).toEqual({

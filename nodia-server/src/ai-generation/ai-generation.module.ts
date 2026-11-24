@@ -28,5 +28,8 @@ import { FlashcardLibraryTransport } from './flashcard-library-transport.service
   {provide:AiGenerationPort,useExisting:RouteTextGenerationService},GenerationWorkerSourceRegistry,TeacherGenerationRuntimeService,
   FlashcardLibraryStore,FlashcardLibraryRuntimeService,FlashcardLibraryTransport,
   {provide:TEACHER_GENERATION_PORT,useExisting:TeacherGenerationRuntimeService},
-],exports:[TEACHER_GENERATION_PORT,AiGenerationPort,TeacherGenerationRuntimeService,GenerationWorkerSourceRegistry,FlashcardLibraryStore,FlashcardLibraryTransport]})
+],exports:[
+  TEACHER_GENERATION_PORT,AiGenerationPort,TeacherGenerationRuntimeService,GenerationWorkerSourceRegistry,
+  FlashcardLibraryStore,FlashcardLibraryTransport,ApiNodiaAiCredentialsService,ApiTextGenerationService,NodiaAiConnectionsService,
+]})
 export class AiGenerationModule {}

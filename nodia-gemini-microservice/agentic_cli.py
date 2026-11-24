@@ -22,6 +22,7 @@ from service_errors import ServiceError
 
 # Transport candidates, not evidence of a working session or MCP/attachment support.
 CHAT_CLI_VERSIONS = frozenset({"1.3.1", "1.4.2"})
+CLI_ACCOUNT_TOKEN_NAME = "antigravity-oauth-token"
 
 
 @dataclass(frozen=True)
@@ -87,7 +88,7 @@ def prepare_cli_home(home: Path, document: Path | None = None, *, account_home: 
                 or home.resolve() == account_home.resolve()
                 or not settings.parent.resolve().is_relative_to(home.resolve())):
             raise ValueError("A separate private CLI home is required")
-        for name in ("antigravity-oauth-token", "installation_id"):
+        for name in (CLI_ACCOUNT_TOKEN_NAME, "installation_id"):
             source = account_home.resolve() / ".gemini" / "antigravity-cli" / name
             destination = settings.parent / name
             if destination.exists() or destination.is_symlink():
@@ -212,11 +213,12 @@ class CliRunner(OwnedProcessOwner):
         return False  # Retain the process/handles; do not re-kill a stale PID.
 
 
+    def _binary_checksum(self) -> str:
+        with self.config.binary.open("rb") as binary:
+            return hashlib.file_digest(binary, "sha512").hexdigest()
+
     async def initialize(self) -> None:
-        def checksum() -> str:
-            with self.config.binary.open("rb") as binary:
-                return hashlib.file_digest(binary, "sha512").hexdigest()
-        if await asyncio.to_thread(checksum) != self.config.sha512:
+        if not await self.verifies_binary_checksum():
             raise ServiceError("agentic_cli_incompatible", "El binario agéntico no coincide con la versión verificada.")
         info = self.config.binary.stat()
         self._verified_stat = (info.st_mtime_ns, info.st_size)
@@ -238,6 +240,26 @@ class CliRunner(OwnedProcessOwner):
         elif process.returncode is None:
             process.kill()
         await asyncio.wait_for(process.wait(), self._TERMINATE_SECONDS)
+
+    def has_idle_verified_transport(self) -> bool:
+        if self._closed or self._spawns or self._processes or self._verified_stat is None:
+            return False
+        info = self.config.binary.stat()
+        return (info.st_mtime_ns, info.st_size) == self._verified_stat
+
+    async def verifies_binary_checksum(self) -> bool:
+        return await asyncio.to_thread(self._binary_checksum) == self.config.sha512
+
+    async def confirms_signed_out(self) -> bool:
+        # Exact exit and diagnostics observed from the pinned noninteractive CLI
+        # with an empty credential store. Print-mode /usage can initiate login.
+        diagnostics = bytearray()
+        output, code = await self.run(["models"], timeout=3, stderr_observer=diagnostics.extend)
+        return (self.has_idle_verified_transport() and code == 1 and not output.strip()
+                and diagnostics.splitlines() == [
+                    b"Fetching available models...",
+                    b"Error: Please sign in to view available models. Launch the CLI without arguments to sign in.",
+                ])
 
     async def run(self, args: list[str], *, stdin: bytes | None = None,
                   cwd: Path | None = None, home: Path | None = None,

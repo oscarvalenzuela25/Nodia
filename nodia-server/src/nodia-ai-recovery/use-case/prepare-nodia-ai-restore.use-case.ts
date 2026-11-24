@@ -1,13 +1,38 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { hasGenerationBridge } from '../../ai-generation/chat-generation-ownership.js';
-import { DataSource } from 'typeorm';
+import { hasCvGenerationStore } from '../../ai-generation/cv-generation-presence.js';
+import { DataSource, type EntityManager } from 'typeorm';
 import { lockAuthority } from '../../authorization/authority-transaction.js';
 import { lockNodiaAiQueue } from '../../nodia-ai-runtime/queue-lock.js';
 import type { NodiaAiRuntimePolicy } from '../../nodia-ai-runtime/config/runtime-policy.js';
 import { ExpireNodiaAiConversationsUseCase } from '../../nodia-ai-conversation/use-case/expire-nodia-ai-conversations.use-case.js';
-import { ValidateNodiaAiRestoreUseCase, type NodiaAiRestoreInput } from './validate-nodia-ai-restore.use-case.js';
+import {
+  ValidateNodiaAiRestoreUseCase,
+  type NodiaAiRestoreInput,
+  type NodiaAiValidatedDeletionManifest,
+} from './validate-nodia-ai-restore.use-case.js';
 import { NodiaAiAttachmentService } from '../../nodia-ai-attachment/nodia-ai-attachment.service.js';
 import { NodiaAiAttachment } from '../../nodia-ai-attachment/entities/nodia-ai-attachment.entity.js';
+import { expireRestoredCvGenerations } from '../../nodia-cv/nodia-cv-generation.store.js';
+
+async function applyCvTombstones(manager: EntityManager, manifest: NodiaAiValidatedDeletionManifest) {
+  if (manifest.schema_version !== 2) return;
+  const profileIds = manifest.entries.flatMap(entry => entry.kind === 'cv_profile' ? [entry.profile_id] : []);
+  const versionIds = manifest.entries.flatMap(entry => entry.kind === 'cv_version' ? [entry.version_id] : []);
+  if (!profileIds.length && !versionIds.length) return;
+  const [schema]: { profiles: boolean; versions: boolean }[] = await manager.query(
+    `SELECT to_regclass('public.nodia_cv_profiles') IS NOT NULL AS profiles,
+       to_regclass('public.nodia_cv_versions') IS NOT NULL AS versions`,
+  );
+  if (profileIds.length && schema?.profiles) {
+    await manager.query('UPDATE nodia_cv_profile_create_receipts SET request_hash=NULL WHERE profile_id=ANY($1::uuid[])', [profileIds]);
+    await manager.query('DELETE FROM nodia_cv_profiles WHERE id=ANY($1::uuid[])', [profileIds]);
+  }
+  if (versionIds.length && schema?.versions) {
+    // PostgreSQL cascades to the version bytes. The save receipt stays consumed.
+    await manager.query('DELETE FROM nodia_cv_versions WHERE id=ANY($1::uuid[])', [versionIds]);
+  }
+}
 
 /** Operator-only composition, deliberately absent from API/worker DI. No network or native effect. */
 @Injectable()
@@ -39,8 +64,21 @@ export class PrepareNodiaAiRestoreUseCase {
           if (pending?.present) throw Error('nodia_ai:flashcard_library_restore_requires_owner_reconciliation');
         }
       }
+      const hasCvGenerations = await hasCvGenerationStore(manager);
+      if (hasCvGenerations) {
+        const [pending]: { present: boolean }[] = await manager.query(
+          `SELECT EXISTS(SELECT 1 FROM nodia_cv_generations WHERE state IN ('queued','running'))
+             OR EXISTS(SELECT 1 FROM ai_generation_operations
+               WHERE owner_kind='cv' AND acknowledged_at IS NULL) AS present`,
+        );
+        if (pending?.present) throw Error('nodia_ai:cv_restore_requires_owner_reconciliation');
+      }
       const [clock]: { now: Date }[] = await manager.query('SELECT clock_timestamp() AS now');
       const manifest = this.validate.execute(input, new Date(clock.now), this.policy);
+      // Restored drafts may predate a later saved/deleted version and its receipt.
+      // Retire transient sources before reconciling permanent CV resources.
+      if (hasCvGenerations) await expireRestoredCvGenerations(manager);
+      await applyCvTombstones(manager, manifest);
       // Restored ready/claimed records can have been sent after backup capture. None proves never-sent.
       await manager.query("UPDATE nodia_ai_execution_grants SET revoked_at=$1 WHERE revoked_at IS NULL", [clock.now]);
       await manager.query('DELETE FROM nodia_ai_confirmation_challenges');

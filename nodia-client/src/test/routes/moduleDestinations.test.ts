@@ -11,6 +11,7 @@ describe("stable module destinations", () => {
     const paths = APP_AVAILABLE_ROUTES.map(route => route.value);
     expect(new Set(paths).size).toBe(paths.length);
     expect(paths).toContain("/nodia-teacher");
+    expect(paths).toContain("/nodia-cv");
     expect(paths.every(path => !/^\/(tools|settings|general-settings)\//.test(path))).toBe(true);
     for (const destination of Object.values(LEGACY_MODULE_DESTINATIONS)) expect(paths).toContain(destination);
   });

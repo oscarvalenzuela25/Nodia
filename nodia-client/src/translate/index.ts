@@ -20,6 +20,7 @@ import providerContactsEs from "./es/provider_contacts.json";
 import nodiaAiEs from "./es/nodiaAi.json";
 import nodiaAiErrorsEs from "./es/nodia_ai.json";
 import teacherEs from "./es/teacher.json";
+import nodiaCvEs from "./es/nodiaCv.json";
 import teacherStudyCalendarImportEs from "./es/teacher_study_calendar_import.json";
 import newsEs from "./es/news.json";
 import notificationsEs from "./es/notifications.json";
@@ -43,6 +44,7 @@ import providerContactsEn from "./en/provider_contacts.json";
 import nodiaAiEn from "./en/nodiaAi.json";
 import nodiaAiErrorsEn from "./en/nodia_ai.json";
 import teacherEn from "./en/teacher.json";
+import nodiaCvEn from "./en/nodiaCv.json";
 import teacherStudyCalendarImportEn from "./en/teacher_study_calendar_import.json";
 import newsEn from "./en/news.json";
 import notificationsEn from "./en/notifications.json";
@@ -100,6 +102,7 @@ const resources = {
     nodiaAi: nodiaAiEs,
     nodia_ai: nodiaAiErrorsEs,
     teacher: teacherEs,
+    nodiaCv: nodiaCvEs,
     teacher_study_calendar_import: teacherStudyCalendarImportEs,
     news: newsEs,
     notifications: notificationsEs,
@@ -123,6 +126,7 @@ const resources = {
     nodiaAi: nodiaAiEn,
     nodia_ai: nodiaAiErrorsEn,
     teacher: teacherEn,
+    nodiaCv: nodiaCvEn,
     teacher_study_calendar_import: teacherStudyCalendarImportEn,
     news: newsEn,
     notifications: notificationsEn,
@@ -155,6 +159,7 @@ i18n
       "nodiaAi",
       "nodia_ai",
       "teacher",
+      "nodiaCv",
       "teacher_study_calendar_import",
       "news",
       "notifications",
@@ -166,11 +171,11 @@ i18n
   });
 
 if (typeof window !== "undefined") {
+  document.documentElement.lang = normalizeLanguage(i18n.language ?? DEFAULT_LANGUAGE);
   i18n.on("languageChanged", (language) => {
-    window.localStorage.setItem(
-      LANGUAGE_STORAGE_KEY,
-      normalizeLanguage(language)
-    );
+    const normalized = normalizeLanguage(language);
+    document.documentElement.lang = normalized;
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, normalized);
   });
 }
 

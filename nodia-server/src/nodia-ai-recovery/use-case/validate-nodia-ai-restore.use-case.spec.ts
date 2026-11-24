@@ -80,6 +80,27 @@ describe('ValidateNodiaAiRestoreUseCase', () => {
     input.manifest = JSON.stringify(manifest); input.journalHead.sha256 = createHash('sha256').update(input.manifest).digest('hex');
     expect(validate.execute(input, now, policy)).toEqual(manifest);
   });
+  it('accepts two pinned CV identities in v2 and rejects additional fields on them', () => {
+    const { input } = fixture();
+    const id = randomUUID();
+    const manifest: NodiaAiResourceDeletionManifest = {
+      schema_version: 2, backup_id: input.backup.id, coverage_from: input.backup.captured_at,
+      coverage_through: now.toISOString(), first_sequence: 1,
+      entries: [
+        { kind: 'cv_profile', profile_id: id, sequence: 1, deleted_at: now.toISOString() },
+        { kind: 'cv_version', version_id: id, sequence: 2, deleted_at: now.toISOString() },
+      ],
+    };
+    const seal = () => {
+      input.manifest = JSON.stringify(manifest);
+      input.journalHead = { sha256: createHash('sha256').update(input.manifest).digest('hex'), last_sequence: 2 };
+    };
+    seal();
+    expect(validate.execute(input, now, policy)).toEqual(manifest);
+    Object.assign(manifest.entries[0], { profile: 'private' });
+    seal();
+    expect(() => validate.execute(input, now, policy)).toThrow('restore_manifest_invalid');
+  });
   it.each(['unknown_kind', 'missing_generation', 'extra_generation', 'duplicate_resource', 'secret_field', 'legacy_kind', 'wrong_schema_type'])('rejects invalid v2 resource %s even with valid digest', scenario => {
     const { input } = fixture();
     const entry: Record<string, unknown> = { kind: 'attachment', sequence: 1, deleted_at: now.toISOString(), conversation_id: randomUUID(), attachment_id: randomUUID(), storage_generations: [randomUUID()] };
