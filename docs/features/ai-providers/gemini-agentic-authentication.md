@@ -30,7 +30,8 @@ conserva el botón, el endpoint público y el cierre privado del perfil. La ruta
 privada toma la reserva del perfil compartido y verifica el cierre antes de
 permitir que la interfaz inicie una nueva autenticación. La entrega debe
 coordinar el adaptador, Server y Ajustes IA. El
-[CD automático](../../../ops/ci/README.md) entrega Client y Node API/worker.
+[procedimiento coordinado](../../../ops/production/ai-runtime/README.md#actualización-coordinada-del-adaptador-gemini--2026-11-24)
+acredita la imagen activa antes de que el CD entregue Node y Client.
 
 ## Estados y recuperación
 

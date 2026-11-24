@@ -36,6 +36,9 @@ TRANSPORT_ASSETS = frozenset({'deploy-backend-receiver.py', 'deploy-gateway.py',
 SAFE_ENV = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8', 'TZ': 'UTC'}
 WRITERS = (('api_active', 'nodia-api.service', 'dist/main.js'),
            ('worker_active', 'nodia-ai-worker.service', 'dist/nodia-ai-worker.js'))
+# Reviewed and recorded in production-ai-login-live-20261112-r01.json.
+GEMINI_HOST_SHA256 = 'dbfabae8443c7db29b6c3da27f8b25f5313214dc430b2c8de2acd7cf0a3e8a51'
+GEMINI_UNIT_SHA256 = 'a9fe8902d34e6fdaefc543f8a1148b6926aba874f9a1c4f4aafca45fc6a66aa8'
 
 
 def require(condition, code):
@@ -216,7 +219,7 @@ def command(arguments, timeout=25):
 
 def unit_state(unit):
     result = command(['/usr/bin/systemctl', 'show', unit, '--no-pager',
-                      '--property=ActiveState,SubState,Result,MainPID,ControlGroup,DropInPaths'])
+                      '--property=ActiveState,SubState,Result,MainPID,ControlGroup,DropInPaths,FragmentPath,NeedDaemonReload'])
     return dict(line.split('=', 1) for line in result.splitlines() if '=' in line)
 
 
@@ -277,6 +280,74 @@ def application_service_guard():
         POST_MIGRATION_EVIDENCE=policy.POST_MIGRATION_EVIDENCE), None, settings)
 
 
+def protected_gemini_path(path):
+    for parent in reversed(path.parents):
+        protect(parent, directory=True)
+    return path
+
+
+def pinned_gemini_file(path, digest):
+    require(0 < protect(protected_gemini_path(path), 0o644).st_size <= 16 * 1024,
+            'gemini_runtime_host_file_invalid')
+    raw = path.read_bytes()
+    require(len(raw) <= 16 * 1024 and hashlib.sha256(raw).hexdigest() == digest,
+            'gemini_runtime_host_file_changed')
+    return raw
+
+
+def verify_running_gemini_image(expected_image_id):
+    require(isinstance(expected_image_id, str) and re.fullmatch(r'sha256:[a-f0-9]{64}', expected_image_id),
+            'gemini_runtime_image_identity_invalid')
+    helper = LIB / 'ai-runtime/gemini-host.py'
+    source = pinned_gemini_file(helper, GEMINI_HOST_SHA256)
+    unit = Path('/etc/systemd/system/nodia-gemini.service')
+    pinned_gemini_file(unit, GEMINI_UNIT_SHA256)
+    state = unit_state(unit.name)
+    require(state.get('ActiveState') == 'active' and state.get('SubState') == 'running' and
+            state.get('Result') == 'success' and state.get('ControlGroup') == '/system.slice/nodia-gemini.service' and
+            state.get('FragmentPath') == str(unit) and state.get('DropInPaths') == '' and
+            state.get('NeedDaemonReload') == 'no' and re.fullmatch(r'[1-9][0-9]*', state.get('MainPID', '')),
+            'gemini_runtime_service_unverified')
+    # The same checked bytes used by the reviewed unit's ExecStartPre/Post.
+    host = SimpleNamespace()
+    exec(compile(source, str(helper), 'exec'), host.__dict__)
+    container = host.inspect()
+    require(isinstance(container, dict) and container.get('running') is True and
+            type(container.get('pid')) is int and container['pid'] > 1 and
+            container.get('image') == expected_image_id and
+            isinstance(container.get('label'), dict) and
+            container.get('label', {}).get('sh.nodia.runtime') == 'agentic',
+            'gemini_runtime_container_unverified')
+    try:
+        host.validate_policy(container)
+    except (RuntimeError, TypeError, KeyError):
+        raise ValueError('gemini_runtime_container_policy_changed') from None
+
+
+def gemini_runtime_attestation():
+    record_path = Path('/var/lib/nodia-ai-runtime-setup/gemini-rollout-current.json')
+    try:
+        record_path.lstat()
+    except FileNotFoundError:
+        return None  # Hosts without a coordinated runtime retain the legacy status shape.
+    record = bounded_json(protected_gemini_path(record_path))
+    require(isinstance(record, dict) and set(record) == {'schema_version', 'source_sha', 'source_tree_sha', 'image_id'} and
+            type(record['schema_version']) is int and record['schema_version'] == 1 and
+            all(isinstance(record[key], str) and re.fullmatch(r'[a-f0-9]{40}', record[key])
+                for key in ('source_sha', 'source_tree_sha')) and
+            isinstance(record['image_id'], str) and re.fullmatch(r'sha256:[a-f0-9]{64}', record['image_id']),
+            'gemini_runtime_attestation_invalid')
+    image_path = protected_gemini_path(Path('/etc/nodia/ai-runtime/gemini-image.json'))
+    expected_image = {key: record[key] for key in ('schema_version', 'source_sha', 'image_id')}
+    image = bounded_json(image_path)
+    require(isinstance(image, dict) and type(image.get('schema_version')) is int and image == expected_image,
+            'gemini_runtime_attestation_image_mismatch')
+    verify_running_gemini_image(record['image_id'])
+    require(bounded_json(image_path) == expected_image and bounded_json(record_path) == record,
+            'gemini_runtime_attestation_changed')
+    return record
+
+
 def deployment_status(*, reconciliation_override=None):
     current = Path('/opt/nodia/current')
     require(current.is_symlink() and current.lstat().st_uid == current.lstat().st_gid == 0,
@@ -328,11 +399,20 @@ def deployment_status(*, reconciliation_override=None):
                     os.path.samefile(process / 'exe', '/usr/local/bin/node') and
                     (process / 'cmdline').read_bytes().split(b'\0') ==
                     [b'/usr/local/bin/node', entry.encode(), b''], 'writer_release_identity_mismatch')
-    return {'schema_version': 1, 'status': 'deployment_ready', 'user': 'nodia-deploy',
-            'forced_command': True, 'privileged_helper_enabled': True, 'deployment_implemented': True,
-            'deployment_requested': False, 'current': {'release_id': release.name, 'source_sha': source,
-            'package_tree_sha256': tree}, 'blocked': unresolved,
-            'application': application}
+    response = {'schema_version': 1, 'status': 'deployment_ready', 'user': 'nodia-deploy',
+                'forced_command': True, 'privileged_helper_enabled': True, 'deployment_implemented': True,
+                'deployment_requested': False, 'current': {'release_id': release.name, 'source_sha': source,
+                'package_tree_sha256': tree}, 'blocked': unresolved,
+                'application': application}
+    try:
+        runtime = gemini_runtime_attestation()
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
+        # A separate runtime is optional for ordinary Node/Pages delivery.
+        # The coordinated path requires an exact, positive proof at every gate.
+        runtime = None
+    if runtime is not None:
+        response['gemini_runtime'] = runtime
+    return response
 
 
 def incoming_inventory():

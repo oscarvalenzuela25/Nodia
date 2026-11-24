@@ -1,5 +1,42 @@
 # Login de Codex y Antigravity en el VPS
 
+## Actualización coordinada del adaptador Gemini — 2026-11-24
+
+El [operador de rollout](rollout-gemini.py) prepara una imagen de Antigravity
+desde el árbol Git revisado y conserva el perfil privado existente. El
+cambio de aplicación se publica mediante el CD normal.
+
+1. Tras validar CI de la entrega a `development`, empaquetar desde su fuente
+   comprometida con `python ops/production/ai-runtime/rollout-gemini.py package
+   --output output/gemini-rollout-NUEVO`. Transferir el directorio al VPS
+   mediante la cuenta administrativa existente. Contrastar la huella del
+   operador y del manifiesto con la salida local revisada.
+2. Identificar el release Server actual por el comando SSH restringido
+   `status`. En el VPS, autenticar sudo privadamente y ejecutar el operador
+   revisado con `activate --execute --bundle RUTA --manifest-sha256 HASH
+   --expected-backend-release RELEASE`. Sin `--execute` permanece inerte.
+   Construye y prueba la imagen sin red ni perfil real en los tests.
+   Antes del cambio obtiene los locks de receptor e instalación, comprueba
+   identidad y salud, abre mantenimiento, pausa los timers y confirma el
+   drenaje TLS de sólo lectura antes y después de detener API/worker.
+3. El operador retiene el contenedor anterior, cambia la imagen fijada y
+   arranca la unidad revisada. Verifica contención y la ruta privada de
+   desconexión por lectura del esquema. Restablece consumidores y timers
+   con el mismo Server, instala el receptor revisado y acredita el árbol
+   Gemini y la imagen activa por `status`. Conserva el perfil, el token
+   interno y las asignaciones. La verificación no ejecuta una desconexión.
+4. Sólo tras el recibo de runtime activo, promover a `master` mediante un
+   merge que preserve la ascendencia de la fuente empaquetada. El CD compara
+   el árbol Gemini acreditado con el del commit candidato y vuelve a
+   verificar la imagen durante la entrega. Server aplica la migración de
+   catálogos y Pages publica el botón después de Server.
+
+Un fallo conserva el contenedor anterior si ya se apartó y las huellas y
+originales privados de la operación. Consultar la fase guardada antes de
+recuperar el entorno. El identificador del árbol impide repetir el mismo
+cambio de resultado incierto. El operador deja los servicios y el flag de
+mantenimiento en su último estado comprobado para conciliación.
+
 ## Teacher GPT: host separado y diagnóstico — candidato 2026-11-14
 
 Teacher GPT utiliza el host de texto de [ADR093](../../../docs/architecture/decisions/ADR-093-teacher-agentic-text-runtimes.md),
