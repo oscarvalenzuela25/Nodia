@@ -1,6 +1,6 @@
 # PWA de Nodia — plan de implementación por entregas
 
-> Estado vigente al 2026-11-21. PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15). PWA-005 y el punto de lectura de PWA-006 se publicaron y verificaron en Chrome para Windows con las bases de PWA-002/003 (§8.3). PWA-002/003 conservan sus verificaciones de despliegue por alcance (§4 y §5). PWA-004 sigue su entrega independiente (§6). §11 y §14 conservan sus cortes históricos. Ver [TODO](TODO.md).
+> Estado vigente al 2026-11-21. PWA-001 cerrado por alcance con aceptación humana de funcionamiento (§15). PWA-005 y el punto de lectura de PWA-006 se publicaron y verificaron en Chrome para Windows con las bases de PWA-002/003 (§8.3). PWA-002/003 conservan sus verificaciones de despliegue por alcance (§4 y §5). PWA-004 se publicó y conserva pendiente la verificación de una entrega real en producción (§6.8). §11 y §14 conservan sus cortes históricos. Ver [TODO](TODO.md).
 > Fecha: 2026-11-13. Rama de planificación: `codex/plan-pwa-installation`, desde `development`.
 > Rama histórica de implementación local: `codex/pwa-001-installation`, desde development/origin en `a780099b456b9cb930865543d836e61147cc4190`. Opción gráfica1 seleccionada. La publicación posterior se registra en§12; no repetir esa operación al retomar el QA de instalación.
 > Fuentes: [Client08](08-stack-frontend.md), [auth14](14-authentication.md), [privacidad89](89-module-access-and-user-data-scope.md), [rutas ADR092](../architecture/decisions/ADR-092-stable-module-navigation-routes.md), [rendimiento37](37-web-performance-implementation-plan.md), [producción99](99-production-deployment-and-cicd-plan.md) y [diseño Client](../../nodia-client/DESIGN.md).
@@ -824,6 +824,23 @@ devolvió HTTP 530 al solicitar el worker después del cierre.
 El 2026-11-20 el usuario decidió aplazar la validación de Web Push en iPhone
 y retomar el tema si aparecen fallos. iOS sigue sin verificación en un
 dispositivo real. PWA-002 y PWA-003 tienen sus propios criterios de avance.
+
+### 6.8. Publicación de Proveedores y Web Push — 2026-11-21
+
+Los cambios de Proveedores y Web Push se integraron mediante el
+[PR 87 a development](https://github.com/oscarvalenzuela25/Nodia/pull/87) y
+el [PR 88 a master](https://github.com/oscarvalenzuela25/Nodia/pull/88).
+El [CI de master](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44942092269)
+verificó 64 migraciones en una instalación limpia y aplicó las cuatro nuevas
+durante el ensayo en PostgreSQL 16 contra el artefacto desplegado. El
+[CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/44943107340)
+confirmó los despliegues de Server y Client del commit `e2edef0e`.
+
+El smoke HTTPS confirmó el API activo, los módulos de Notificaciones en la
+versión pública `f284539291e069d345ebf205` y los 13 archivos del lector de
+Teacher. La nueva ruta de configuración Web Push respondió 401 ante la
+consulta anónima. La disponibilidad autenticada del registro y una entrega
+real en producción quedan por comprobar.
 
 ## 7. PWA-005 — lectura offline por módulo
 

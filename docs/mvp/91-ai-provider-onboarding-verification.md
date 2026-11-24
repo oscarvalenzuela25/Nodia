@@ -70,3 +70,28 @@ Los nombres OpenAI/Gemini describen adaptadores concretos, no una lista cerrada 
 ## Puerta para proveedores futuros
 
 Añadir una fila proveedor/modo en el reporte con P01..P16, adjuntar ejecución real de las capacidades que anuncia y declarar explícitamente las no soportadas. No copiar Gemini/OpenAI como capacidad supuesta; reutilizar el contrato y adaptar autenticación, descubrimiento y transporte reales. Añadir regresiones antes de habilitar el modo en catálogo; el flag de catálogo nunca prueba disponibilidad. Un adaptador API compatible debe probar salida real, opciones, errores y cancelación con su endpoint real. El proveedor queda listo sólo para las operaciones y el entorno realmente verificados.
+
+## Evaluación de Alibaba Cloud Model Studio — 2026-11-24
+
+Alibaba permite un uso interactivo del Token Plan en herramientas de coding y
+agentes, como Codex CLI. Su política excluye los backends de aplicaciones
+personalizadas para Personal y Team Edition. El Token Plan queda descartado
+como credencial para el runtime de Nodia. [Política de uso de Token Plan](https://www.alibabacloud.com/help/en/model-studio/token-plan-permissions-and-usage)
+y [guía oficial de Codex CLI](https://www.alibabacloud.com/help/en/model-studio/codex).
+
+La API estándar de Model Studio, con pago por uso, es candidata al modo
+`api_key` bajo la identidad `qwen` ya presente en el catálogo. El registro de
+adaptadores operativos de Nodia sólo incluye Gemini y OpenAI. Alibaba documenta
+una clave estándar por región y workspace, descubrimiento paginado y APIs de
+texto compatibles con OpenAI. La incorporación requiere un transporte para
+Model Studio con destinos oficiales, selección explícita de modelo y el runtime
+común de NodiaAI. [Clave estándar](https://www.alibabacloud.com/help/en/model-studio/get-api-key),
+[descubrimiento de modelos](https://www.alibabacloud.com/help/es/model-studio/list-models)
+y [API Responses](https://www.alibabacloud.com/help/en/model-studio/compatibility-with-openai-responses-api).
+
+La evaluación es documental y de código. Si se prioriza la incorporación,
+el primer hito generativo es P06 con una clave estándar, un modelo seleccionado
+del catálogo del workspace y texto sintético. Las lecturas por function calling,
+Teacher y OCR requieren sus comprobaciones aplicables. El descuento del
+AI General-purpose Savings Plan se evalúa sobre el consumo medido.
+[Facturación de Model Studio](https://www.alibabacloud.com/help/en/model-studio/bill-query-and-cost-management).

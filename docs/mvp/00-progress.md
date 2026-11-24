@@ -126,6 +126,12 @@ modelo una vista acotada a los precios. [Diagnóstico y verificación](../eviden
 [Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
 y [catálogo40](40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21).
 
+**Horarios de Proveedores y Web Push — 2026-11-21.** El lote PWA-004 se
+publicó en Server y Client. Pasaron CI, el ensayo de las cuatro migraciones
+y CD. El smoke confirmó los módulos de Notificaciones y la protección de la
+configuración Web Push. La entrega real en producción sigue pendiente de
+verificación. [Plan103 §6.8](103-pwa-progressive-implementation-plan.md#68-publicación-de-proveedores-y-web-push--2026-11-21).
+
 **Experiencia del lector offline de Teacher — 2026-11-21.** En producción
 se sirven la presentación formateada, la acción persistente para abrir la
 copia y la comparación de los puntos en conflicto. Chrome comprobó el
