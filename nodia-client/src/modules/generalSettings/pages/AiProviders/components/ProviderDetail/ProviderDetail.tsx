@@ -5,6 +5,7 @@ import {
   notifyHttpError,
 } from "../../../../../../config/httpFeedback";
 import QueryErrorAlert from "../../../../../../components/QueryErrorAlert";
+import { ConfirmDialog } from "../../../../../../components/ConfirmDialog/ConfirmDialog";
 import type { FC } from "react";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -53,6 +54,7 @@ import {
   getObservedSessionStatus,
 } from "../../infrastructure/observations";
 import { useCodexSessionObservation } from "../../infrastructure/useCodexSessionObservation";
+import { useGeminiAgenticDisconnect } from "../../infrastructure/useGeminiAgenticDisconnect";
 import { codexConnectionState, codexDetailStatus, codexModelObservationEnabled, selectCodexSession } from "../../infrastructure/codexSessionState";
 import type { ProviderDetailProps } from "./types";
 import {
@@ -95,6 +97,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const isMobile = useMediaQuery(useTheme().breakpoints.down("sm"));
   const codexLoginRef = useRef<{ manage: () => void } | null>(null);
   const codexLoginIntent = useRef<string | null>(null);
+  const geminiConnectRef = useRef<HTMLButtonElement>(null);
+  const handledDisconnectFocus = useRef(false);
   const [agenticLoginOpen, setAgenticLoginOpen] = useState(false);
 
   // Queries
@@ -135,6 +139,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   } = useGeminiEngines({
     enabled: providerKey.toLowerCase() === "gemini",
   });
+  const geminiDisconnect = useGeminiAgenticDisconnect(async () =>
+    (await refetchHealth({ throwOnError: true })).data,
+  );
+  const geminiObservationUnknown = providerKey === "gemini" && (
+    enginesError || geminiDisconnect.awaitingObservation || geminiDisconnect.needsCheck
+  );
 
   const useAgentic = Boolean(
     currentDbProvider?.use_agentic !== undefined
@@ -245,8 +255,10 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   } = useSelectableModels(
     { provider_id: currentDbProvider?.id, mode: activeTab || undefined },
     { enabled: Boolean(currentDbProvider?.id && activeTab) && (
-      providerKey !== "openai" || activeTab !== "agentic" ||
-      codexModelObservationEnabled(codexSession, codexObservation)
+      activeTab !== "agentic" || (
+        !geminiObservationUnknown &&
+        (providerKey !== "openai" || codexModelObservationEnabled(codexSession, codexObservation))
+      )
     ) },
   );
   const availableModels: SupportedModelDef[] = useMemo(() => {
@@ -358,9 +370,18 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
     isFetchingEngines ||
     modelsLoading ||
     modelsFetching ||
+    geminiDisconnect.isWorking ||
     codexObservation.isFetching ||
     updateProviderMutation.isPending ||
     syncModelsMutation.isPending;
+
+  useEffect(() => {
+    if (!geminiDisconnect.completed) handledDisconnectFocus.current = false;
+    if (geminiDisconnect.completed && !isBusy && !handledDisconnectFocus.current && geminiConnectRef.current) {
+      handledDisconnectFocus.current = true;
+      geminiConnectRef.current.focus();
+    }
+  }, [geminiDisconnect.completed, isBusy]);
 
   useEffect(() => {
     if (codexLoginIntent.current !== providerId) {
@@ -585,6 +606,8 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const defaultChannel = currentDbProvider?.default_mode ?? currentHealthProvider?.mode;
   const statusType = activeTab === "agentic" && providerKey === "openai"
     ? codexDetailStatus(codexSession)
+    : activeTab === "agentic" && geminiObservationUnknown
+      ? "unverified"
     : activeTab !== defaultChannel && activeTab === "agentic"
       ? getObservedSessionStatus(geminiEnginesData?.agentic)
       : currentHealthProvider?.status || "unconfigured";
@@ -602,12 +625,12 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
   const isAgenticSessionActive =
     providerKey === "openai"
       ? codexConnectionState(codexSession) === "connected"
-      : geminiEnginesData?.agentic?.available === true &&
+      : !geminiObservationUnknown && geminiEnginesData?.agentic?.available === true &&
         geminiEnginesData.agentic.authenticated === true;
   const isAgenticStatusKnown =
     providerKey === "openai"
       ? ["connected", "disconnected"].includes(codexConnectionState(codexSession))
-      : typeof geminiEnginesData?.agentic?.available === "boolean" &&
+      : !geminiObservationUnknown && typeof geminiEnginesData?.agentic?.available === "boolean" &&
         typeof geminiEnginesData.agentic.authenticated === "boolean";
   const agenticStatusLabel = t(
     !isAgenticStatusKnown
@@ -867,7 +890,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                       setSelectedTab("agentic");
                     }
                   }
-                : providerKey === "gemini"
+                : providerKey === "gemini" && !geminiDisconnect.needsCheck
                   ? () => setAgenticLoginOpen(true)
                   : undefined
             }
@@ -1669,14 +1692,30 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                   </PanelSubtitle>
                 </Box>
                 {providerKey === "gemini" && (
-                  <Button
-                    variant="contained"
-                    disabled={isBusy}
-                    onClick={() => setAgenticLoginOpen(true)}
-                    sx={{ width: { xs: "100%", sm: "auto" } }}
-                  >
-                    {t("ai_providers:agentic_login.manage")}
-                  </Button>
+                  <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
+                    <Button
+                      ref={geminiConnectRef}
+                      variant="contained"
+                      disabled={isBusy || geminiDisconnect.needsCheck}
+                      onClick={() => setAgenticLoginOpen(true)}
+                      sx={{ minHeight: 44, width: { xs: "100%", sm: "auto" } }}
+                    >
+                      {t("ai_providers:agentic_login.manage")}
+                    </Button>
+                    {(isAgenticSessionActive || geminiDisconnect.needsCheck) && (
+                      <Button
+                        variant={geminiDisconnect.needsCheck ? "outlined" : "contained"}
+                        color={geminiDisconnect.needsCheck ? "primary" : "error"}
+                        disabled={isBusy}
+                        onClick={geminiDisconnect.show}
+                        sx={{ minHeight: 44, width: { xs: "100%", sm: "auto" } }}
+                      >
+                        {t(geminiDisconnect.needsCheck
+                          ? "ai_providers:agentic_login.disconnect_check"
+                          : "ai_providers:agentic_login.disconnect")}
+                      </Button>
+                    )}
+                  </Box>
                 )}
               </PanelHeader>
 
@@ -1762,6 +1801,29 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
           key={providerId}
           onClose={() => setAgenticLoginOpen(false)}
         />
+      )}
+      {providerKey === "gemini" && activeTab === "agentic" && geminiDisconnect.open && (
+        <ConfirmDialog
+          open={geminiDisconnect.open}
+          onClose={geminiDisconnect.cancel}
+          onConfirm={geminiDisconnect.confirm}
+          title={t("ai_providers:agentic_login.disconnect")}
+          message={t("ai_providers:agentic_login.disconnect_confirm")}
+          isLoading={geminiDisconnect.isWorking}
+          confirmDisabled={!isAgenticSessionActive || isBusy}
+          additionalActions={geminiDisconnect.needsCheck && (
+            <Button onClick={geminiDisconnect.check} disabled={geminiDisconnect.isWorking || isFetchingHealth}>
+              {t("ai_providers:agentic_login.disconnect_check")}
+            </Button>
+          )}
+        >
+          {geminiDisconnect.error && <Alert severity="error" sx={{ mt: 2 }}>{geminiDisconnect.error}</Alert>}
+          {geminiDisconnect.needsCheck && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              {t("ai_providers:agentic_login.disconnect_check_help")}
+            </Typography>
+          )}
+        </ConfirmDialog>
       )}
       {currentDbProvider && (
         <SyncModelsModal

@@ -3,6 +3,7 @@ import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
 import { BUSINESS_ROUTE } from "../modules/business/constants/routes";
 import { NODIA_AI_ROUTE } from "../modules/nodiaAi/constants/routes";
 import { NODIA_TEACHER_ROUTE } from "../modules/teacher/constants/routes";
+import { NODIA_CV_ROUTE } from "../modules/nodiaCv/constants/routes";
 
 export interface AppRouteOption {
   value: string;
@@ -11,6 +12,7 @@ export interface AppRouteOption {
 }
 
 export const APP_AVAILABLE_ROUTES: AppRouteOption[] = [
+  { value: NODIA_CV_ROUTE, labelKey: "modules:routes.nodia_cv", defaultLabel: "Nodia CV (/nodia-cv)" },
   { value: NODIA_TEACHER_ROUTE, labelKey: "modules:routes.nodia_teacher", defaultLabel: "Nodia Teacher (/nodia-teacher)" },
   { value: NODIA_AI_ROUTE, labelKey: "modules:routes.nodia_ai", defaultLabel: "NodiaAI (/nodia-ai)" },
   {value:RENTAL_RESERVATIONS_ROUTE,labelKey:"modules:routes.rental_reservations",defaultLabel:"Reservas (/reservations)"},

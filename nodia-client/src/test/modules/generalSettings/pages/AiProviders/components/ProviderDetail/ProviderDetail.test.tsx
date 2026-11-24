@@ -1,6 +1,6 @@
 import i18n from "../../../../../../../translate";
 import useAuthStore from "../../../../../../../store/authStore";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,6 +14,7 @@ import ProviderDetail from "../../../../../../../modules/generalSettings/pages/A
 import * as aiServices from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/services";
 import * as codexServices from "../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession";
 import { sileo } from "sileo";
+import { AxiosError, AxiosHeaders } from "axios";
 
 vi.mock("../../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/codexSession", async (importOriginal) => ({
   ...await importOriginal<typeof codexServices>(),
@@ -34,7 +35,7 @@ vi.mock(
     createAiProvider: vi.fn(),
     updateAiProvider: vi.fn(),
     getAiProvidersHealth: vi.fn(),
-    disconnectGeminiWeb: vi.fn(),
+    disconnectGeminiAgentic: vi.fn(),
     getAiProviderEvents: vi.fn(),
     getSelectableModels: vi.fn(),
     getSupportedAiProviders: vi.fn(),
@@ -218,6 +219,85 @@ describe("ProviderDetail Component", () => {
       models: [],
     });
     vi.mocked(aiServices.getCurrentGeminiAgenticLogin).mockResolvedValue(null);
+  });
+  it("keeps Gemini connected if the user cancels the shared Agentic confirmation", async () => {
+    const user = userEvent.setup();
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={vi.fn()} />);
+    const disconnect = await screen.findByRole("button", { name: "Desconectar Gemini" });
+    await waitFor(() => expect(disconnect).toBeEnabled());
+    await user.click(disconnect);
+    const dialog = screen.getByRole("dialog", { name: "Desconectar Gemini" });
+    expect(dialog).toHaveTextContent(/todas las conexiones Gemini Agentic de este servidor/);
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(dialog).not.toBeInTheDocument());
+    expect(disconnect).toBeEnabled();
+    expect(aiServices.disconnectGeminiAgentic).not.toHaveBeenCalled();
+  });
+  it("updates observed Gemini status after confirmation and can connect another account", async () => {
+    const user = userEvent.setup();
+    vi.mocked(aiServices.disconnectGeminiAgentic).mockResolvedValue({ authenticated: false });
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={vi.fn()} />);
+    const disconnect = await screen.findByRole("button", { name: "Desconectar Gemini" });
+    await waitFor(() => expect(disconnect).toBeEnabled());
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
+      ...mockHealthData,
+      engines: {
+        active_engine: null,
+        agentic: { engine: "agentic", available: true, authenticated: false },
+      },
+      providers: mockHealthData.providers.map(provider => ({ ...provider, status: "expired" })),
+    });
+    await user.click(disconnect);
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(aiServices.disconnectGeminiAgentic).toHaveBeenCalledTimes(1));
+    expect(aiServices.disconnectGeminiAgentic).toHaveBeenCalledWith(useAuthStore.getState().sessionVersion);
+    expect(screen.queryByRole("button", { name: "Desconectar Gemini" })).not.toBeInTheDocument();
+    const connect = await screen.findByRole("button", { name: "Autenticar sesión Agentic" });
+    await waitFor(() => expect(connect).toBeEnabled());
+    await user.click(connect);
+    expect(await screen.findByRole("dialog", { name: "Iniciar sesión Gemini Agentic" })).toBeInTheDocument();
+    expect(sileo.success).toHaveBeenCalledWith({ title: "Sesión Gemini Agentic desconectada" });
+  });
+  it("checks a new observation after an unknown logout without replaying the request", async () => {
+    const user = userEvent.setup();
+    vi.mocked(aiServices.disconnectGeminiAgentic).mockRejectedValue(new AxiosError("Timeout"));
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={vi.fn()} />);
+    const disconnect = await screen.findByRole("button", { name: "Desconectar Gemini" });
+    await waitFor(() => expect(disconnect).toBeEnabled());
+    await user.click(disconnect);
+    const dialog = screen.getByRole("dialog", { name: "Desconectar Gemini" });
+    await user.click(within(dialog).getByRole("button", { name: "Confirmar" }));
+    const check = await within(dialog).findByRole("button", { name: "Comprobar sesión" });
+    expect(within(dialog).getByRole("button", { name: "Confirmar" })).toBeDisabled();
+    await waitFor(() => expect(check).toBeEnabled());
+    vi.mocked(aiServices.getAiProvidersHealth).mockResolvedValue({
+      ...mockHealthData,
+      engines: { active_engine: null, agentic: { engine: "agentic", available: true, authenticated: false } },
+    });
+    await user.click(check);
+    await waitFor(() => expect(dialog).not.toBeInTheDocument());
+    expect(aiServices.disconnectGeminiAgentic).toHaveBeenCalledTimes(1);
+  });
+  it("offers a localized explicit retry when the Gemini profile is busy", async () => {
+    const user = userEvent.setup();
+    const headers = new AxiosHeaders();
+    const config = { headers };
+    vi.mocked(aiServices.disconnectGeminiAgentic).mockRejectedValue(
+      new AxiosError("Conflict", undefined, config, undefined, {
+        status: 409, statusText: "Conflict", headers, config, data: { message: "ai_provider:gemini_logout_busy" },
+      }),
+    );
+    renderWithClient(<ProviderDetail providerId="prov-1" onBack={vi.fn()} />);
+    const disconnect = await screen.findByRole("button", { name: "Desconectar Gemini" });
+    await waitFor(() => expect(disconnect).toBeEnabled());
+    await user.click(disconnect);
+    const dialog = screen.getByRole("dialog", { name: "Desconectar Gemini" });
+    const confirm = within(dialog).getByRole("button", { name: "Confirmar" });
+    await user.click(confirm);
+    expect(await within(dialog).findByText(/Gemini Agentic está en uso/)).toBeInTheDocument();
+    expect(confirm).toBeEnabled();
+    expect(within(dialog).queryByRole("button", { name: "Comprobar sesión" })).not.toBeInTheDocument();
+    expect(aiServices.disconnectGeminiAgentic).toHaveBeenCalledTimes(1);
   });
   it("opens the independent Agentic authentication modal from the Gemini Agentic tab", async () => {
     const user = userEvent.setup();
@@ -428,8 +508,10 @@ describe("ProviderDetail Component", () => {
     const api = await screen.findByRole("tab", {name:/API key/});
     await waitFor(() => expect(api).toHaveAttribute("aria-selected","true"));
     expect(screen.queryByText("Disponible",{exact:true})).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Desconectar Gemini" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("tab", {name:/Agentic/}));
     expect(await screen.findByText("Disponible",{exact:true})).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Desconectar Gemini" })).toBeInTheDocument();
     await user.click(api);
     expect(screen.queryByText("Disponible",{exact:true})).not.toBeInTheDocument();
   });

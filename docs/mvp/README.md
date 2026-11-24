@@ -1,5 +1,36 @@
 # Especificación del MVP — Nodia
 
+**Nodia CV — piloto en VM y lectura externa, 2026-11-24.** CV-06
+recorrió el flujo con dos cuentas sintéticas y una inferencia API key
+real. Clásica y Compacta de la misma revisión coincidieron en 9 de 10
+comprobaciones del lector público de OneATS, sin postulaciones.
+[Plan113 §15](113-nodia-cv-implementation-plan.md#15-piloto-en-vm-y-lectura-externa-cv-06--2026-11-24) ·
+[Evidencia CV-06](../evidence/nodia-cv-pilot-vm-and-ats-20261124.md).
+
+**Nodia CV — PDF verificado y versiones, 2026-11-24.** CV-05 incorpora
+Clásica y Compacta en A4, lectura del archivo exacto, descarga y gestión
+de CV guardados. Se comprobó en Nest, PostgreSQL y Edge aislados.
+[Plan113 §14](113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) ·
+[Evidencia CV-05](../evidence/nodia-cv-pdf-versions-20261124.md).
+
+**Nodia CV — pantalla de generación y revisión, 2026-11-24.** CV-04
+integra el selector de IA compartido, oferta, recuperación, revisión
+privada y vista previa del contenido. El recorrido usó API key real desde
+el navegador en la VM aislada.
+[Plan113 §13](113-nodia-cv-implementation-plan.md#13-pantalla-de-generación-y-revisión-cv-04--2026-11-24).
+
+**Nodia CV — motor API key, 2026-11-24.** CV-03 produjo un borrador con una
+selección real de API key, un perfil sintético y una oferta sintética en una
+base aislada en la VM. [Plan113 §12](113-nodia-cv-implementation-plan.md#12-motor-de-generación-cv-03--2026-11-24).
+Al cierre de CV-03 quedaban pendientes Agentic, la pantalla, el PDF y las versiones.
+
+**Nodia CV — primer corte local, 2026-11-24.** Perfiles se verificó
+en Chromium contra Nest y PostgreSQL aislado. El ensayo de PDF pasó extracción y
+maquetación sintéticas en Windows y Linux. [Plan113](113-nodia-cv-implementation-plan.md)
+registra los contratos y el avance. La [guía UI](../features/nodia-cv/ui-design.md)
+define el selector, el editor y la aceptación visual. La importación
+en un ATS comercial queda pendiente.
+
 **Sets de mazos de Teacher — 2026-11-23.** La biblioteca agrupa mazos propios
 en Sets y ofrece la vista de lista o cuadrícula en mazos y tarjetas.
 [Plan112](112-teacher-flashcards-plan.md#sets-de-mazos--propuesta-de-interfaz).

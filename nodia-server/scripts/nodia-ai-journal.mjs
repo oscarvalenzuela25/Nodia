@@ -29,12 +29,22 @@ async function reconcile(store, configFile) {
     await db.connect();
     await db.query('BEGIN TRANSACTION READ ONLY');
     await db.query("SET LOCAL statement_timeout='5s'");
-    const tables = { conversation: 'nodia_ai_conversations', attachment: 'nodia_ai_attachments', preference: 'nodia_ai_preferences' };
+    const tables = {
+      conversation: 'nodia_ai_conversations',
+      attachment: 'nodia_ai_attachments',
+      preference: 'nodia_ai_preferences',
+      cv_profile: 'nodia_cv_profiles',
+      cv_version: 'nodia_cv_versions',
+    };
     result = await new ReconcileNodiaAiDeletionJournalUseCase().execute(pending, {
       async findExisting(kind, ids) {
-        // Three closed table choices, at most 10,000 IDs total, one set read per
-        // nonempty kind. No leading unresolved witness starves later entries.
-        const found = await db.query(`SELECT id::text AS id FROM ${tables[kind]} WHERE id=ANY($1::uuid[])`, [ids]);
+        const table = tables[kind];
+        if (!table) fail('reconciliation_invalid');
+        // A pre-CV database is not a witness that a CV deletion committed.
+        if ((kind === 'cv_profile' || kind === 'cv_version') &&
+          !(await db.query('SELECT to_regclass($1) IS NOT NULL AS present', ['public.' + table])).rows[0]?.present)
+          fail('cv_reconciliation_schema_missing');
+        const found = await db.query(`SELECT id::text AS id FROM public.${table} WHERE id=ANY($1::uuid[])`, [ids]);
         return found.rows.map(row => row.id);
       },
     });

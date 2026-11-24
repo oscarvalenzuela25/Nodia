@@ -9,8 +9,16 @@ export interface NodiaAiDeletionExistencePort {
 }
 const uuid = /^[a-f\d]{8}-[a-f\d]{4}-4[a-f\d]{3}-[89ab][a-f\d]{3}-[a-f\d]{12}$/u;
 const invalid = (): never => { throw Error('nodia_ai:recovery_reconciliation_invalid'); };
-const idOf = (resource: NodiaAiJournalResource): string => resource.kind === 'preference'
-  ? resource.preference_id : resource.kind === 'attachment' ? resource.attachment_id : resource.conversation_id;
+const resourceKinds = ['conversation', 'attachment', 'preference', 'cv_profile', 'cv_version'] as const;
+const idOf = (resource: NodiaAiJournalResource): string => {
+  switch (resource.kind) {
+    case 'conversation': return resource.conversation_id;
+    case 'attachment': return resource.attachment_id;
+    case 'preference': return resource.preference_id;
+    case 'cv_profile': return resource.profile_id;
+    case 'cv_version': return resource.version_id;
+  }
+};
 
 /** Reconciles every bounded pending witness. A present early record never starves
  * later committed removals; this rule performs no SQL writes or external ACK. */
@@ -25,7 +33,7 @@ export class ReconcileNodiaAiDeletionJournalUseCase {
       return journalResource(entry);
     });
     const existing = new Map<ResourceKind, Set<string>>();
-    for (const kind of ['conversation', 'attachment', 'preference'] as const) {
+    for (const kind of resourceKinds) {
       const ids = [...new Set(resources.filter(resource => resource.kind === kind).map(idOf))];
       if (!ids.length) continue;
       const requested = new Set(ids);

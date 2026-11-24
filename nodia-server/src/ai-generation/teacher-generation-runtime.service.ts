@@ -280,11 +280,11 @@ export class TeacherGenerationRuntimeService
       AND NOT EXISTS(SELECT 1 FROM teacher_generation_jobs active WHERE active.actor_id=j.actor_id AND active.state IN ('running','unknown') AND active.blocks_duplicate=true)
       AND NOT EXISTS(SELECT 1 FROM nodia_ai_jobs cj JOIN nodia_ai_conversations c ON c.id=cj.conversation_id WHERE c.owner_id=j.actor_id AND cj.state IN ('leased','unknown'))
       AND NOT EXISTS(SELECT 1 FROM ai_generation_operations o WHERE o.actor_id=j.actor_id
-        AND o.owner_kind='flashcard_library' AND o.acknowledged_at IS NULL)
+        AND o.owner_kind IN ('flashcard_library','cv') AND o.acknowledged_at IS NULL)
       AND ((SELECT count(*) FROM nodia_ai_jobs WHERE kind IN ('turn','execution') AND state='leased')
         +(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')
         +(SELECT count(*) FROM nodia_ai_runtime_slots slots JOIN ai_generation_operations o ON o.id=slots.generation_operation_id
-          WHERE slots.state='held' AND o.owner_kind='flashcard_library'))<$1
+          WHERE slots.state='held' AND o.owner_kind IN ('flashcard_library','cv')))<$1
       ORDER BY j.available_at,j.id FOR UPDATE OF s,j SKIP LOCKED LIMIT 1`,
       [this.policy.queue.foreground_workers, onlyJobId],
     );

@@ -17,8 +17,13 @@ function fixture() {
     interpretation_origin: 'user_reviewed', interpretation_reviewed: true, interpretation_revision: 2,
   });
   let bound = false, present = true, parentLifecycle = 'active', parentExpiry = new Date(now.getTime() + 86_400_000), pending = false;
-  const query = vi.fn(async (sql: string) => {
+  let cvSchema = { generations: false, profiles: false, versions: false, review: false };
+  const query = vi.fn(async (sql: string, _parameters?: unknown[]) => {
     if (sql.includes('clock_timestamp() AS now')) return [{ now }];
+    if (sql.includes("to_regclass('public.nodia_cv_generations')")) return [{ present: cvSchema.generations }];
+    if (sql.includes("to_regclass('public.nodia_cv_profiles')")) return [cvSchema];
+    if (sql.includes('FROM pg_attribute')) return [{ has_review: cvSchema.review }];
+    if (sql.includes("owner_kind='cv' AND acknowledged_at IS NULL")) return [{ present: false }];
     if (sql.startsWith('SELECT EXISTS')) return [{ exists: bound }];
     if (sql.startsWith('SELECT lifecycle,expires_at')) return [{ lifecycle: parentLifecycle, expires_at: parentExpiry }];
     if (sql.startsWith('SELECT count')) return [{ count: pending ? '1' : '0' }];
@@ -47,6 +52,17 @@ function fixture() {
     attachment, preferenceId, query, repository, cleanup, expire, input, manifest,
     subject: new PrepareNodiaAiRestoreUseCase(source, policy, expire, new ValidateNodiaAiRestoreUseCase(), attachments),
     setBound: () => { bound = true; }, setAbsent: () => { present = false; },
+    withCvTombstones: (revisionTables: 'present' | 'absent') => {
+      const profileId = randomUUID(), versionId = randomUUID();
+      cvSchema = { generations: true, profiles: true, versions: revisionTables === 'present', review: revisionTables === 'present' };
+      manifest.entries.push(
+        { kind: 'cv_profile', profile_id: profileId, sequence: 3, deleted_at: now.toISOString() },
+        { kind: 'cv_version', version_id: versionId, sequence: 4, deleted_at: now.toISOString() },
+      );
+      input.manifest = JSON.stringify(manifest);
+      input.journalHead = { sha256: createHash('sha256').update(input.manifest).digest('hex'), last_sequence: 4 };
+      return { profileId, versionId };
+    },
     setParentForPurge: (kind: 'expired' | 'expiring' | 'manifest') => {
       bound = true; pending = true;
       if (kind === 'expired') parentExpiry = now;
@@ -84,6 +100,34 @@ describe('PrepareNodiaAiRestoreUseCase independent resource privacy', () => {
     await expect(f.subject.execute(f.input)).resolves.toMatchObject({ attachment_tombstones_applied: 0, release_authorized: false });
     expect(f.cleanup).not.toHaveBeenCalled();
     expect(f.repository.findOne).toHaveBeenCalledWith({ where: { id: f.attachment.id, conversation_id: f.attachment.conversation_id, generation: f.attachment.generation }, lock: { mode: 'pessimistic_write' } });
+  });
+  it('applies only the signed CV IDs and keeps the existing prepare report contract', async () => {
+    const f = fixture();
+    const { profileId, versionId } = f.withCvTombstones('present');
+    await expect(f.subject.execute(f.input)).resolves.toEqual({
+      prepared: true, purged_chats: 0, deletion_entries: 4,
+      external_generations_requiring_inventory: 1,
+      attachment_tombstones_applied: 1, preference_tombstones_applied: 1,
+      dispatches: 0, release_authorized: false, next_action: 'reconcile_current_domain_and_native_runtimes',
+    });
+    const statements = f.query.mock.calls;
+    const retirement = statements.findIndex(([sql]) => sql.startsWith('UPDATE nodia_cv_generations'));
+    const purge = statements.findIndex(([sql]) => sql.startsWith('DELETE FROM nodia_cv_profiles'));
+    expect(retirement).toBeGreaterThan(-1);
+    expect(purge).toBeGreaterThan(retirement);
+    expect(statements[retirement][0]).toContain('review_revision=NULL');
+    expect(statements).toContainEqual(['DELETE FROM nodia_cv_profiles WHERE id=ANY($1::uuid[])', [[profileId]]]);
+    expect(statements).toContainEqual(['DELETE FROM nodia_cv_versions WHERE id=ANY($1::uuid[])', [[versionId]]]);
+    expect(statements.some(([sql]) => sql.includes('DELETE FROM nodia_cv_version_save_receipts'))).toBe(false);
+  });
+  it('retires drafts on pre-review schema and skips missing saved version tables', async () => {
+    const f = fixture();
+    f.withCvTombstones('absent');
+    await expect(f.subject.execute(f.input)).resolves.toMatchObject({ prepared: true, release_authorized: false, dispatches: 0 });
+    const retired = f.query.mock.calls.find(([sql]) => sql.startsWith('UPDATE nodia_cv_generations'));
+    expect(retired?.[0]).toContain('draft=NULL');
+    expect(retired?.[0]).not.toContain('review_revision');
+    expect(f.query.mock.calls.some(([sql]) => sql.startsWith('DELETE FROM nodia_cv_versions'))).toBe(false);
   });
   it.each(['expired', 'expiring', 'manifest'] as const)('defers bound file tombstones to ordinary whole-chat purge when parent is %s', async kind => {
     const f = fixture(); f.setParentForPurge(kind);
