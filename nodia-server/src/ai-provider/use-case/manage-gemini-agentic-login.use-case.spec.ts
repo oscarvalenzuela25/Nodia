@@ -2,12 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BadGatewayException, BadRequestException, ConflictException, NotFoundException, ServiceUnavailableException, UnprocessableEntityException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
-import { GeminiAgenticLogoutService } from '../../common/ai/gemini-agentic-logout.service.js';
-import type { GeminiDualEngineStatus } from '../../common/ai/gemini-engine-status.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
-import { AiProviderService } from '../ai-provider.service.js';
-import { GetAiProviderTopbarStatusUseCase } from './get-ai-provider-topbar-status.use-case.js';
 import { ManageGeminiAgenticLoginUseCase } from './manage-gemini-agentic-login.use-case.js';
 import { SubmitGeminiAgenticCodeDto } from '../dto/submit-gemini-agentic-code.dto.js';
 
@@ -27,10 +22,7 @@ describe('ManageGeminiAgenticLoginUseCase with real private transport', () => {
   let useCase: ManageGeminiAgenticLoginUseCase;
   let fetchMock: ReturnType<typeof vi.fn>;
   beforeEach(() => {
-    useCase = new ManageGeminiAgenticLoginUseCase(
-      new GeminiService(),
-      new GeminiAgenticLogoutService(),
-    );
+    useCase = new ManageGeminiAgenticLoginUseCase(new GeminiService());
     fetchMock = vi.fn().mockImplementation(async () => new Response(JSON.stringify(waiting), { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
     vi.stubEnv('NODE_ENV', 'production');
@@ -142,145 +134,5 @@ describe('ManageGeminiAgenticLoginUseCase with real private transport', () => {
     for (const code of ['short', '4/code\n/logout', 'x'.repeat(2049), null]) {
       expect((await validate(plainToInstance(SubmitGeminiAgenticCodeDto, { code }))).length).toBeGreaterThan(0);
     }
-  });
-});
-
-describe('Gemini Agentic logout with real private transport', () => {
-  const logout = new GeminiAgenticLogoutService();
-  const fetchMock = vi.fn();
-
-  beforeEach(() => {
-    fetchMock.mockReset();
-    vi.stubGlobal('fetch', fetchMock);
-  });
-  afterEach(() => vi.unstubAllGlobals());
-
-  it('disconnects with the server identities, without body or redirects', async () => {
-    fetchMock.mockResolvedValue(Response.json({ authenticated: false }));
-    await expect(logout.logout(actor)).resolves.toEqual({ authenticated: false });
-    expect(fetchMock).toHaveBeenCalledExactlyOnceWith(
-      'http://private-gemini:8000/agentic/auth/login/logout',
-      {
-        method: 'POST',
-        headers: {
-          'X-Nodia-Service-Token': 'a'.repeat(64),
-          'X-Nodia-Actor-Id': actor,
-        },
-        redirect: 'error',
-        signal: expect.any(AbortSignal),
-      },
-    );
-  });
-
-  it.each([
-    [200, 'null'],
-    [200, '{}'],
-    [200, '{"authenticated":true}'],
-    [200, '{"authenticated":"false"}'],
-    [200, '{"authenticated":false,"secret":"synthetic"}'],
-    [200, 'malformed'],
-    [202, '{"authenticated":false}'],
-    [204, null],
-  ])('requires a verified disconnect response for HTTP %s and body %s', async (status, body) => {
-    fetchMock.mockResolvedValue(new Response(body, { status }));
-    await expect(logout.logout(actor)).rejects.toMatchObject({
-      status: 502,
-      message: 'ai_provider:gemini_logout_unknown',
-    });
-    expect(fetchMock).toHaveBeenCalledOnce();
-  });
-
-  it.each([
-    [409, 'runtime_busy', 409, 'busy'],
-    [503, 'runtime_unconfigured', 503, 'unavailable'],
-    [503, 'agentic_logout_unavailable', 503, 'unavailable'],
-    [503, 'agentic_logout_outcome_unknown', 502, 'unknown'],
-    [404, '', 503, 'unavailable'],
-    [405, '', 503, 'unavailable'],
-    [500, '', 502, 'unknown'],
-    [504, '', 504, 'unknown'],
-  ])(
-    'maps HTTP %s, private code %s to a sanitized HTTP %s result (%s)',
-    async (status, code, publicStatus, reason) => {
-      const cancelled = vi.fn();
-      const body = new ReadableStream({ cancel: cancelled });
-      fetchMock.mockResolvedValue(new Response(body, {
-        status, headers: { 'X-Nodia-Error-Code': code },
-      }));
-      await expect(logout.logout(actor)).rejects.toMatchObject({
-        status: publicStatus,
-        message: `ai_provider:gemini_logout_${reason}`,
-      });
-      expect(cancelled).toHaveBeenCalledOnce();
-      expect(fetchMock).toHaveBeenCalledOnce();
-    },
-  );
-
-  it('reports a transport failure as unknown without retrying', async () => {
-    fetchMock.mockRejectedValue(new Error('synthetic transport error'));
-    await expect(logout.logout(actor)).rejects.toMatchObject({
-      status: 504,
-      message: 'ai_provider:gemini_logout_unknown',
-    });
-    expect(fetchMock).toHaveBeenCalledOnce();
-  });
-
-  it('bounds the verification body and closes an oversized stream', async () => {
-    const cancel = vi.fn();
-    const body = new ReadableStream({
-      start(controller) { controller.enqueue(new Uint8Array(257)); },
-      cancel,
-    });
-    fetchMock.mockResolvedValue(new Response(body));
-    await expect(logout.logout(actor)).rejects.toMatchObject({
-      status: 502,
-      message: 'ai_provider:gemini_logout_unknown',
-    });
-    expect(cancel).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledOnce();
-  });
-
-  it('discards a pre-logout observation and shares a fresh one after the logout', async () => {
-    const gemini = new GeminiService();
-    const geminiLogout = new GeminiAgenticLogoutService();
-    const providers = Object.create(AiProviderService.prototype) as AiProviderService;
-    const codex = Object.create(CodexRuntimeService.prototype) as CodexRuntimeService;
-    providers.findDefaultProviderStatus = vi.fn().mockResolvedValue({
-      id: '1', key: 'gemini', isActive: true, use_agentic: true,
-    });
-    const topbar = new GetAiProviderTopbarStatusUseCase(
-      providers,
-      gemini,
-      codex,
-      geminiLogout,
-    );
-
-    let finishOldStatus: (status: GeminiDualEngineStatus) => void = () => undefined;
-    let finishNewStatus: (status: GeminiDualEngineStatus) => void = () => undefined;
-    const observe = vi.spyOn(gemini, 'getDualEngineStatus')
-      .mockImplementationOnce(() => new Promise((resolve) => { finishOldStatus = resolve; }))
-      .mockImplementationOnce(() => new Promise((resolve) => { finishNewStatus = resolve; }))
-      .mockResolvedValue(null);
-
-    const oldRequest = topbar.execute();
-    await vi.waitFor(() => expect(observe).toHaveBeenCalledTimes(1));
-    fetchMock.mockResolvedValue(Response.json({ authenticated: false }));
-    await geminiLogout.logout(actor);
-
-    const newRequest = topbar.execute();
-    await vi.waitFor(() => expect(observe).toHaveBeenCalledTimes(2));
-    finishOldStatus({ active_engine: 'agentic', agentic: { available: true, authenticated: true } });
-    await expect(oldRequest).resolves.toMatchObject({ provider: { agentic: null } });
-
-    const parallelRequest = topbar.execute();
-    await vi.waitFor(() =>
-      expect(providers.findDefaultProviderStatus).toHaveBeenCalledTimes(3),
-    );
-    finishNewStatus({ active_engine: 'agentic', agentic: { available: true, authenticated: false } });
-    await expect(newRequest).resolves.toMatchObject({
-      provider: { agentic: { available: true, authenticated: false } },
-    });
-    expect(await parallelRequest).toEqual(await newRequest);
-    expect(observe).toHaveBeenCalledTimes(2);
   });
 });

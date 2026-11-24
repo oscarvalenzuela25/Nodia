@@ -36,8 +36,7 @@ let model = 'fixture-live-model',
 const actor = '9007199254740993'; // PostgreSQL users.id, preserved without Number coercion.
 let permissionAllowed = true,
   loginJob = null,
-  loginOwner = null,
-  agenticAuthenticated = true;
+  loginOwner = null;
 const invoiceResult = {
   code: 'POC-0710',
   total_amount: 7500,
@@ -57,7 +56,7 @@ const invoiceResult = {
 const agenticStatus = () => ({
   engine: 'agentic',
   available: true,
-  has_active_session: agenticAuthenticated,
+  has_active_session: true,
   models: [{ id: model, name: 'Synthetic live model' }],
   quota: usage,
   quota_source: 'agentic_cli',
@@ -144,19 +143,6 @@ try {
           'actor is derived from the authenticated session',
         );
         const parts = req.url.split('/');
-        if (parts[4] === 'logout') {
-          assert.equal(req.method, 'POST');
-          assert.deepEqual(body, []);
-          if (['running', 'waiting_code', 'verifying'].includes(loginJob?.state)) {
-            res.writeHead(409, { 'X-Nodia-Error-Code': 'runtime_busy' }).end();
-            return;
-          }
-          agenticAuthenticated = false;
-          res
-            .writeHead(200, { 'Content-Type': 'application/json' })
-            .end(JSON.stringify({ authenticated: false }));
-          return;
-        }
         if (parts[4] === 'start') {
           loginOwner = owner;
           loginJob = {
@@ -209,7 +195,7 @@ try {
               agentic: status,
             }
           : req.url === '/agentic/models'
-            ? { ...status, authenticated: agenticAuthenticated }
+            ? { ...status, authenticated: true }
             : req.url === '/agentic/analyze-invoice'
               ? invoiceResult
               : status;
@@ -240,7 +226,6 @@ try {
     { ModuleAccessGuard },
     { CheckModuleAccessUseCase },
     { ManageGeminiAgenticLoginUseCase },
-    { GeminiAgenticLogoutService },
   ] = await Promise.all([
     import('../dist/common/ai/gemini.service.js'),
     import('../dist/ai-provider/ai-provider.controller.js'),
@@ -260,7 +245,6 @@ try {
     import('../dist/authorization/module-access.guard.js'),
     import('../dist/authorization/use-case/check-module-access.use-case.js'),
     import('../dist/ai-provider/use-case/manage-gemini-agentic-login.use-case.js'),
-    import('../dist/common/ai/gemini-agentic-logout.service.js'),
   ]);
   const gemini = new GeminiService();
   if (live) {
@@ -349,7 +333,7 @@ try {
     ],
     [
       ManageGeminiAgenticLoginUseCase,
-      new ManageGeminiAgenticLoginUseCase(gemini, new GeminiAgenticLogoutService()),
+      new ManageGeminiAgenticLoginUseCase(gemini),
     ],
   ];
   const active = new Map(implementations);
@@ -641,62 +625,8 @@ try {
       assert(!JSON.stringify(result).includes('private'));
     }
   }
-  if (!live) {
-    const persisted = structuredClone(provider);
-    const beforeUpdates = updates;
-    for (const resource of ['ai-provider', 'ai-providers']) {
-      const loginBase = `${base}/${resource}/gemini-agentic-login`;
-      const disconnect = () =>
-        fetch(loginBase + '/logout', {
-          method: 'POST',
-          headers: {
-            ...headers,
-            'X-Nodia-Actor-Id': '0000',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ actor_id: 'untrusted', provider_id: '999' }),
-        });
-      const beforeDenied = upstreamCalls.length;
-      assert.equal(
-        (await fetch(loginBase + '/logout', { method: 'POST' })).status,
-        401,
-      );
-      permissionAllowed = false;
-      assert.equal((await disconnect()).status, 403);
-      assert.equal(upstreamCalls.length, beforeDenied);
-      permissionAllowed = true;
-
-      const startedLogin = await fetch(loginBase + '/start', {
-        method: 'POST',
-        headers,
-      });
-      assert.equal(startedLogin.status, 201);
-      const job = await startedLogin.json();
-      const busy = await disconnect();
-      assert.equal(busy.status, 409);
-      assert.equal(busy.headers.get('cache-control'), 'no-store');
-      assert.equal((await busy.json()).message, 'ai_provider:gemini_logout_busy');
-      assert.equal(
-        (await fetch(loginBase + `/${job.id}/cancel`, { method: 'POST', headers })).status,
-        201,
-      );
-
-      const beforeLogout = upstreamCalls.length;
-      const disconnected = await disconnect();
-      assert.equal(disconnected.status, 200);
-      assert.equal(disconnected.headers.get('cache-control'), 'no-store');
-      assert.deepEqual(await disconnected.json(), { authenticated: false });
-      assert.deepEqual(upstreamCalls.slice(beforeLogout), [
-        '/agentic/auth/login/logout',
-      ]);
-      const health = await get(`/${resource}/health`);
-      assert.equal(health.engines.agentic.authenticated, false);
-    }
-    assert.equal(updates, beforeUpdates);
-    assert.deepEqual(provider, persisted);
-  }
   console.log(
-    `Agentic HTTP integration passed (${live ? 'real CLI, synthetic documents' : 'isolated fixtures including scoped logout'}): aliases, auth, health, status, models, scoped sync, verify and analysis; retired Web absent; no production writes.`,
+    `Agentic HTTP integration passed (${live ? 'real CLI, synthetic documents' : 'isolated fixtures'}): aliases, auth, health, status, models, scoped sync, verify and analysis; retired Web absent; no production writes.`,
   );
 } finally {
   if (app) await app.close();

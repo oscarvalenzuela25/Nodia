@@ -571,13 +571,6 @@ approval:null y sin publicación o herramientas nuevas.
 
 [Producto draft revisión35](studies/README.md#alta-guiada-y-estado-agentic--candidato-local-2026-11-12) y [ficha revisión30](studies/features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): ayudas, idioma validado, selección visible/48px y explicación del catálogo sin esfuerzos; selección exacta, elegibilidad y autoridad conservadas. Cabecera observa cuenta Codex de forma acotada compartida, sin convertir ausencia/desconocido en disponibilidad. [Verificación local y diagnóstico productivo por alcance](../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin inferencia, despliegue, aprobación o publicación del lote.
 
-## Desconectar Gemini Agentic — 2026-11-24
-
-La [ficha candidata](general-settings/features/ai-provider-interface-and-module-access.md#desconectar-gemini-agentic--2026-11-24)
-describe el cierre manual de Gemini Agentic desde Ajustes IA y la confirmación
-del alcance compartido. La ficha sigue sin registrar ni publicar y la acción
-no pertenece al catálogo del asistente.
-
 ## Ajustes locales de proveedores y acceso — 2026-11-12
 
 [Ficha candidata](general-settings/features/ai-provider-interface-and-module-access.md): acciones contained, contexto de navegación del actor e identidad exacta NodiaAI, variantes Gemini con IDs reales/OCR independiente y preferencias API OpenAI xhigh/max; Ultra API no admitido. Super_admin conserva su bypass. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Draft/unregistered/approval:null, sin inferencia, despliegue o publicación de este lote. [verificación consolidada](../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12).
