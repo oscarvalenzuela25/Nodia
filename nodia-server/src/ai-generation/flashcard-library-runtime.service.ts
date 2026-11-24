@@ -204,7 +204,7 @@ export class FlashcardLibraryRuntimeService
            AND (part.kind='text' OR prior.id IS NULL OR prior.state='ready')
            AND NOT EXISTS (SELECT 1 FROM nodia_ai_runtime_slots s WHERE s.resource_key=part.resource_key AND s.state<>'free')
            AND NOT EXISTS (SELECT 1 FROM ai_generation_operations o WHERE o.actor_id=proposal.owner_user_id
-             AND o.owner_kind='flashcard_library' AND o.acknowledged_at IS NULL)
+             AND o.owner_kind IN ('flashcard_library','cv') AND o.acknowledged_at IS NULL)
            AND NOT EXISTS (SELECT 1 FROM teacher_generation_jobs j WHERE j.actor_id=proposal.owner_user_id
              AND j.state IN ('running','unknown') AND j.blocks_duplicate)
            AND NOT EXISTS (SELECT 1 FROM nodia_ai_jobs j JOIN nodia_ai_conversations c ON c.id=j.conversation_id
@@ -212,7 +212,7 @@ export class FlashcardLibraryRuntimeService
            AND ((SELECT count(*) FROM nodia_ai_jobs WHERE state='leased')
              +(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')
              +(SELECT count(*) FROM nodia_ai_runtime_slots s JOIN ai_generation_operations o ON o.id=s.generation_operation_id
-                WHERE s.state='held' AND o.owner_kind='flashcard_library'))<$2
+                WHERE s.state='held' AND o.owner_kind IN ('flashcard_library','cv')))<$2
          ORDER BY proposal.created_at,part.id LIMIT 1 FOR UPDATE OF proposal,part SKIP LOCKED`,
         [onlyId ?? null, this.policy.queue.foreground_workers],
       );

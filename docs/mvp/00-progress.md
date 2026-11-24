@@ -1,5 +1,49 @@
 # Progreso del MVP — Nodia
 
+**Desconexión de Gemini Agentic — 2026-11-24.** Ajustes IA incluye la
+confirmación de cierre de sesión compartida y el regreso al inicio de
+sesión de Google para cambiar de cuenta.
+[Contrato de proveedores](ai-provider-feature-contract.md#desconectar-gemini-agentic--2026-11-24).
+
+**Nodia CV — piloto CV-06 verificado en la VM aislada, 2026-11-24.**
+Alta del módulo, dos cuentas, generación API key y los dos PDF exactos
+en historial. OneATS público leyó los datos principales de ambas
+plantillas y dejó incompleta la ubicación. La restauración aislada
+confirmó que las bajas de CV se mantienen. Quedan pendientes CI por SHA
+y adopción en destino.
+[Plan113 §15](113-nodia-cv-implementation-plan.md#15-piloto-en-vm-y-lectura-externa-cv-06--2026-11-24) ·
+[Evidencia CV-06](../evidence/nodia-cv-pilot-vm-and-ats-20261124.md).
+
+**Nodia CV — CV-05 verificado, 2026-11-24.** Plantillas Clásica y
+Compacta, verificación de orden y contenido del PDF exacto, descarga y
+baja confirmada de versiones. Los laboratorios de Windows y Linux
+comprobaron el renderer. Edge y PostgreSQL verificaron el guardado y
+la recuperación de los bytes. CV-06 continúa con importación ATS
+autorizada, integración en destino y restauración.
+[Plan113 §14](113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) ·
+[Evidencia CV-05](../evidence/nodia-cv-pdf-versions-20261124.md).
+
+**Nodia CV — CV-04 verificado en navegador, 2026-11-24.** Oferta,
+selector, borrador y evidencia confirmada integrados. La VM aislada
+generó una vista previa con API key en un envío. La revisión temporal
+usa versión y conserva el borrador del modelo.
+[Plan113 §13](113-nodia-cv-implementation-plan.md#13-pantalla-de-generación-y-revisión-cv-04--2026-11-24) ·
+[Evidencia UI](../evidence/nodia-cv-generation-ui-20261124.md).
+
+**Nodia CV — CV-03 API key verificado en laboratorio, 2026-11-24.**
+Motor con hechos del perfil, citas de la oferta, selección exacta y
+recibo en el worker común. La VM aislada devolvió un borrador válido de
+OpenAI API key con un envío y cierre confirmado. Agentic sigue pendiente
+de transporte propio. [Plan113 §12](113-nodia-cv-implementation-plan.md#12-motor-de-generación-cv-03--2026-11-24).
+
+**Nodia CV — perfiles verificados localmente, 2026-11-24.** La rama
+`codex/nodia-cv` incluye el CRUD privado con idempotencia y revisiones,
+la ruta asignable y el editor nativo. Chromium verificó Perfiles contra
+Nest y PostgreSQL 16.15 aislados.
+[Plan113 §11](113-nodia-cv-implementation-plan.md#11-primer-corte-local--2026-11-24)
+registra el contrato y la [prueba de lectura PDF](../evidence/nodia-cv-pdf-spike-20261124.md).
+Generación, versiones y prueba en ATS comercial quedan pendientes.
+
 **Sets de mazos de Teacher — 2026-11-23.** Implementación local en
 `codex/teacher-calendar-activity-layout` del árbol de Sets con filtros,
 10 mazos por página, lista/cuadrícula y bajas confirmadas.

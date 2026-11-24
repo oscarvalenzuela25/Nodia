@@ -94,6 +94,30 @@ describe('external deletion journal and protected backup catalog', () => {
     f.advance(1); await f.store.confirmResources([f.resource]);
     expect(f.state().entries[0].confirmed_at).toBe(new Date(origin).toISOString());
   });
+  it('permits capture with pending CV witnesses and only exports them after SQL confirmation', async () => {
+    const f = await initialized();
+    const resources: NodiaAiJournalResource[] = [
+      { kind: 'cv_profile', profile_id: preference },
+      { kind: 'cv_version', version_id: preference },
+    ];
+    await f.store.recordResources({ deleted_at: f.now().toISOString(), resources });
+    await f.store.assertResourcesRecorded(resources);
+    const witness = await f.store.catalog.checkpoint();
+    await f.store.catalog.mutate(() => [{
+      backup_id: backup, object_key: `nodia-ai-recovery/lab/backups/${backup}.bin`,
+      captured_at: f.now().toISOString(), expires_at: new Date(origin + 7 * day).toISOString(),
+      encryption_key_id: 'a'.repeat(64), status: 'ready', cipher_bytes: 10,
+      cipher_sha256: 'b'.repeat(64), journal_sequence: witness.sequence, journal_sha256: witness.sha256,
+    }]);
+    await f.store.confirmResources([resources[0]]);
+    await expect(f.store.exportManifest(backup, f.now().toISOString())).rejects.toThrow('cv_deletions_unconfirmed');
+    expect(f.state().entries[1].confirmed_at).toBeNull();
+    await f.store.confirmResources([resources[1]]);
+    const exported = await f.store.exportManifest(backup, f.now().toISOString());
+    expect(JSON.parse(exported.manifest).entries).toEqual(resources.map((item, index) => ({
+      ...item, sequence: index + 1, deleted_at: f.now().toISOString(),
+    })));
+  });
   it('does not confirm a resource never durably recorded', async () => {
     const f = await initialized();
     await expect(f.store.confirmResources([f.resource])).rejects.toThrow('journal_uncovered');

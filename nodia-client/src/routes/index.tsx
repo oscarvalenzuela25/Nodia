@@ -12,6 +12,7 @@ import { PERSONAL_FINANCE_ROUTE } from "../modules/finances/constants/routes";
 import { RENTAL_RESERVATIONS_ROUTE } from "../modules/rentals/constants/routes";
 import { BUSINESS_ROUTE } from "../modules/business/constants/routes";
 import { NODIA_AI_ROUTE } from "../modules/nodiaAi/constants/routes";
+import { NODIA_CV_ROUTE } from "../modules/nodiaCv/constants/routes";
 import { NODIA_TEACHER_ROUTE, TEACHER_NEW_ROUTE, TEACHER_SESSION_ROUTE } from "../modules/teacher/constants/routes";
 import { ADMIN_ROUTES, LEGACY_MODULE_DESTINATIONS } from "./moduleDestinations";
 import LegacyModuleRedirect from "./LegacyModuleRedirect";
@@ -26,6 +27,7 @@ const NotificationSettings = lazyWithRetry(
   () => import("../modules/notifications/pages/NotificationSettings/NotificationSettings"),
 );
 const NodiaAI = lazyWithRetry(() => import("../modules/nodiaAi/pages/NodiaAI"));
+const NodiaCv = lazyWithRetry(() => import("../modules/nodiaCv/pages/NodiaCv"));
 const Teacher = lazyWithRetry(() => import("../modules/teacher/pages/Teacher"));
 const TeacherNew = lazyWithRetry(() => import("../modules/teacher/pages/TeacherNew"));
 const RentalReservations = lazyWithRetry(
@@ -115,6 +117,16 @@ const router = createBrowserRouter([
           <BaseLayout>
             <GuardStrict modulePath={NODIA_TEACHER_ROUTE}>
               {renderLazyPage(<TeacherNew />)}
+            </GuardStrict>
+          </BaseLayout>
+        ),
+      },
+      {
+        path: NODIA_CV_ROUTE,
+        element: (
+          <BaseLayout>
+            <GuardStrict modulePath={NODIA_CV_ROUTE}>
+              {renderLazyPage(<NodiaCv />)}
             </GuardStrict>
           </BaseLayout>
         ),

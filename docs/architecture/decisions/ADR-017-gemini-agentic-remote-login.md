@@ -36,7 +36,28 @@ El puente solo permite seleccionar el menú Google OAuth observado, responder co
 
 Cancelar, vencer el plazo o apagar el servicio termina y espera procesos propios antes de liberar admisión, incluso si el trabajo se cancela antes de empezar. Linux usa PTY/grupo de procesos; Windows usa ConPTY mediante `pywinpty==3.0.5` y el Job Object existente. Cuerpo privado de login hasta 8192 bytes/5 s y respuesta privada hasta 16384 bytes/5 s. Respuestas de login con `Cache-Control:no-store`.
 
-Si la sesión existente ya se verifica, finalizar sin iniciar otra autenticación ni cambiar cuenta. No añadir `/logout`: el comando del CLI puede purgar credenciales globales, por lo que cambiar cuenta requiere operación explícita y una decisión posterior. No modificar el catálogo, modelos, tablas o claves API.
+Si la sesión existente ya se verifica, finalizar sin iniciar otra autenticación ni cambiar cuenta. La implementación inicial aplazó el cierre de sesión porque el comando del CLI puede purgar tokens del almacén de credenciales. La ampliación del 2026-11-24 resuelve el cambio manual de cuenta con la operación acotada que sigue.
+
+### Desconexión manual del perfil compartido — 2026-11-24
+
+Ajustes IA confirma el cierre del perfil común de Gemini Agentic y permite
+volver al flujo Google existente. La ruta pasa por la sesión Nodia y el acceso
+al destino canónico `/ai-providers`. Server deriva el actor de esa sesión y
+lo envía con la credencial de servicio a la ruta privada. No se crea una
+herramienta de NodiaAI.
+
+El adaptador adquiere admisión exclusiva del perfil e invalida observaciones de
+la cuenta. El cierre se acota al archivo de credencial del perfil privado y
+requiere una respuesta no generativa del CLI exacto que confirme el cierre.
+Se conserva el ID de instalación, la configuración y los almacenes de Codex,
+Teacher y claves API. La orden global `/logout` queda fuera de esta operación.
+[Referencia del CLI de Antigravity](https://antigravity.google/docs/cli/reference/).
+
+Si el almacenamiento o la integridad del binario no se pueden verificar, la
+operación falla antes de borrar. Si se pierde la confirmación después de
+iniciar el cierre, la UI consulta salud a petición del usuario sin repetir la
+mutación. Consultar el [contrato funcional](../../mvp/ai-provider-feature-contract.md#desconectar-gemini-agentic--2026-11-24)
+para conocer el alcance de verificación y el entorno.
 
 ## Consecuencias
 

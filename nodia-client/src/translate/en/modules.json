@@ -153,6 +153,7 @@
   },
   "routes": {
     "nodia_teacher": "Nodia Teacher",
+    "nodia_cv": "Nodia CV",
     "nodia_ai": "NodiaAI",
     "home": "Home",
     "business": "Businesses",

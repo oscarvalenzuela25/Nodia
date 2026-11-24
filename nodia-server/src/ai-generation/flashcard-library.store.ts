@@ -1,3 +1,4 @@
+import { countQueuedCvGenerations } from './cv-generation-presence.js';
 import { randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
@@ -130,7 +131,8 @@ export class FlashcardLibraryStore {
       teacherError('flashcard_proposal_budget_exhausted', 429);
     if (
       capacity.pending >= 2 ||
-      capacity.global_waiting + budgetParts > this.policy.queue.waiting_global
+      capacity.global_waiting + budgetParts + (await countQueuedCvGenerations(manager)) >
+        this.policy.queue.waiting_global
     ) {
       teacherError('capacity_unavailable', 429);
     }

@@ -26,6 +26,15 @@ describe('ReconcileNodiaAiDeletionJournalUseCase', () => {
     expect(findExisting).toHaveBeenCalledTimes(3);
     expect(findExisting.mock.calls.map(([kind]) => kind)).toEqual(['conversation', 'attachment', 'preference']);
   });
+  it('reconciles CV profiles and versions separately and leaves a present profile pending', async () => {
+    const id = randomUUID();
+    const profile = { kind: 'cv_profile' as const, profile_id: id };
+    const version = { kind: 'cv_version' as const, version_id: id };
+    const findExisting = vi.fn(async (kind: string) => kind === 'cv_profile' ? [id] : []);
+    await expect(subject.execute([entry(profile), entry(version, 2)], { findExisting }))
+      .resolves.toEqual({ confirmed: [version], pending: 1 });
+    expect(findExisting.mock.calls).toEqual([['cv_profile', [id]], ['cv_version', [id]]]);
+  });
   it('does no data access for an empty pending set', async () => {
     const findExisting = vi.fn();
     await expect(subject.execute([], { findExisting })).resolves.toEqual({ confirmed: [], pending: 0 });

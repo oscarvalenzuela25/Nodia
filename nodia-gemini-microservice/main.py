@@ -37,7 +37,7 @@ from native_attempts import ReconcileAttempt, AcknowledgeAttempt
 from native_mcp_sessions import NativeMcpSessions, McpChatRequest, McpPoll, McpResult
 from analysis_observations import AnalysisObservations
 from attachment_inspector import AttachmentInspector, register_attachment_inspector_routes
-from schemas import (AgenticLoginJobResponse, AgenticLoginCode, AgenticStatusResponse,
+from schemas import (AgenticLoginJobResponse, AgenticLoginCode, AgenticLogoutResponse, AgenticStatusResponse,
                      AgenticModelsResponse, AnalysisOptions, EngineStatusResponse,
                      HealthResponse, InvoiceAnalysisResponse, NodiaActorId, RuntimeLimits)
 from service_auth import assert_service_auth_configured
@@ -133,6 +133,7 @@ def create_app(*, agentic_service: Any = None,
         configured_home = os.getenv("ANTIGRAVITY_CLI_HOME", "").strip()
         legacy_config = getattr(getattr(state.agentic, "runner", None), "config", None)
         physical_home = Path(configured_home) if configured_home else getattr(legacy_config, "home", None)
+        state.agentic_home = physical_home.resolve() if isinstance(physical_home, Path) else None
         state.profiles = ProfileAdmission(physical_home, STATE_DIR / "runtime_admission")
         state.manual_invoice_dispatches = ManualInvoiceDispatches(state.profiles, STATE_DIR / "manual_invoice_proofs")
         state.manual_invoice_generation = uuid4().hex
@@ -197,7 +198,9 @@ def create_app(*, agentic_service: Any = None,
         # Stable operational categories only; Server never needs the provider body.
         headers = dict(headers or {})
         if (code, status) in {("analysis_timeout", 504), ("provider_timeout", 504), ("agentic_timeout", 504), ("provider_response_error", 502), ("login_invalid_code", 422),
-                             ("runtime_busy", 409), ("native_proof_missing", 409), ("native_proof_mismatch", 409)}:
+                             ("runtime_busy", 409), ("native_proof_missing", 409), ("native_proof_mismatch", 409),
+                             ("runtime_unconfigured", 503), ("agentic_logout_unavailable", 503),
+                             ("agentic_logout_outcome_unknown", 503)}:
             headers["X-Nodia-Error-Code"] = code
         return JSONResponse({"code": code, "detail": detail,
                              "request_id": getattr(request.state, "request_id", None)},
@@ -277,6 +280,17 @@ def create_app(*, agentic_service: Any = None,
     async def current_agentic_login(actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
         job = application.state.agentic_login.status(None, actor)
         return job if job and job["state"] in ("running", "waiting_code", "verifying") else None
+
+    @application.post("/agentic/auth/login/logout", response_model=AgenticLogoutResponse)
+    async def logout_agentic(request: Request, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):
+        if await request.body():
+            raise ServiceError("invalid_request", "La desconexión no admite datos adicionales.", 422)
+        state = application.state
+        async with state.profiles.operation("agentic", purpose="logout"):
+            if state.agentic_home is None:
+                raise ServiceError("runtime_unconfigured", "El perfil del motor no está configurado.", 503)
+            await state.agentic.logout(state.agentic_home)
+        return AgenticLogoutResponse(authenticated=False)
 
     @application.get("/agentic/auth/login/{job_id}", response_model=AgenticLoginJobResponse)
     async def agentic_login_status(job_id: str, actor: Annotated[NodiaActorId, Header(alias="X-Nodia-Actor-Id")]):

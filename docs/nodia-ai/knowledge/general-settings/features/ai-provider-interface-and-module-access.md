@@ -4,7 +4,7 @@
   "document_id": "general-settings.ai-provider-interface-and-module-access",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 4,
+  "revision": 5,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -73,6 +73,16 @@
 ---
 
 # Interfaz de proveedores, variantes y acceso a NodiaAI
+
+## Desconectar Gemini Agentic — 2026-11-24
+
+En Ajustes IA, el panel Agentic de Gemini permite al usuario autorizado cerrar
+la sesión de Google compartida por las conexiones Gemini Agentic del servidor.
+El usuario confirma el alcance y puede volver a iniciar sesión con otra cuenta
+mediante el flujo seguro existente. Si el cierre queda incierto, puede
+comprobar la sesión antes de reintentar. Es una operación manual de Ajustes
+IA. La ficha conserva su estado candidato y el catálogo de herramientas es
+independiente. [Contrato de la operación](../../../../mvp/ai-provider-feature-contract.md#desconectar-gemini-agentic--2026-11-24).
 
 ## Preservación de opciones Codex — 2026-11-14
 

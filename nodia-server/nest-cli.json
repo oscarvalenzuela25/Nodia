@@ -44,6 +44,10 @@
       {
         "include": "nodia-ai/knowledge/**/*",
         "watchAssets": true
+      },
+      {
+        "include": "nodia-cv/pdf/assets/*",
+        "watchAssets": true
       }
     ]
   }

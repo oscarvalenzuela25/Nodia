@@ -41,6 +41,7 @@ export interface NodiaAiResourceDeletionManifest {
 export type NodiaAiValidatedDeletionManifest = NodiaAiDeletionManifest | NodiaAiResourceDeletionManifest;
 
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/iu;
+const cvUuid = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u;
 const maxManifestBytes = 8 * 1024 * 1024;
 const maxEntries = 10_000;
 const invalid = (): never => { throw Error('nodia_ai:restore_manifest_invalid'); };
@@ -91,20 +92,23 @@ export class ValidateNodiaAiRestoreUseCase {
         ? ['conversation_id', 'storage_generations']
         : kind === 'attachment'
           ? ['conversation_id', 'attachment_id', 'storage_generations']
-          : kind === 'preference' ? ['preference_id'] : null;
+          : kind === 'preference' ? ['preference_id']
+            : kind === 'cv_profile' ? ['profile_id']
+              : kind === 'cv_version' ? ['version_id'] : null;
       if (!fields) return invalid();
       const entry = closed(raw, ['sequence', 'deleted_at', ...fields, ...(manifest.schema_version === 2 ? ['kind'] : [])]);
       if (entry.sequence !== (manifest.first_sequence as number) + index) return invalid();
+      const idPattern = kind === 'cv_profile' || kind === 'cv_version' ? cvUuid : uuid;
       for (const field of fields.filter(field => field !== 'storage_generations'))
-        if (typeof entry[field] !== 'string' || !uuid.test(entry[field] as string)) return invalid();
-      if (kind !== 'preference' &&
+        if (typeof entry[field] !== 'string' || !idPattern.test(entry[field] as string)) return invalid();
+      if ((kind === 'conversation' || kind === 'attachment') &&
         (!Array.isArray(entry.storage_generations) || entry.storage_generations.length > policy.admission.attachments_per_chat ||
         entry.storage_generations.some(value => typeof value !== 'string' || !uuid.test(value)) ||
         new Set(entry.storage_generations).size !== entry.storage_generations.length)) return invalid();
       if (kind === 'attachment' && (entry.storage_generations as unknown[]).length !== 1) return invalid();
-      const identity = kind === 'conversation' ? `conversation:${String(entry.conversation_id)}`
-        : kind === 'attachment' ? `attachment:${String(entry.attachment_id)}:${String((entry.storage_generations as string[])[0])}`
-          : `preference:${String(entry.preference_id)}`;
+      const identity = kind === 'attachment'
+        ? `attachment:${String(entry.attachment_id)}:${String((entry.storage_generations as string[])[0])}`
+        : `${String(kind)}:${String(entry[fields[0]])}`;
       if (resources.has(identity)) return invalid();
       const deleted = date(entry.deleted_at);
       if (deleted < from || deleted > through) return invalid();

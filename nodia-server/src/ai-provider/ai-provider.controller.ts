@@ -4,6 +4,8 @@ import {
   Controller,
   Get,
   Header,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -119,6 +121,13 @@ export class AiProviderController {
   @Header('Cache-Control', 'no-store')
   startGeminiAgenticLogin(@Req() request: AuthRequest) {
     return this.manageGeminiAgenticLoginUseCase.start(request.auth.user.id);
+  }
+
+  @Post('gemini-agentic-login/logout')
+  @HttpCode(HttpStatus.OK)
+  @Header('Cache-Control', 'no-store')
+  logoutGeminiAgentic(@Req() request: AuthRequest) {
+    return this.manageGeminiAgenticLoginUseCase.logout(request.auth.user.id);
   }
 
   @Get('gemini-agentic-login/current')

@@ -571,6 +571,13 @@ approval:null y sin publicación o herramientas nuevas.
 
 [Producto draft revisión35](studies/README.md#alta-guiada-y-estado-agentic--candidato-local-2026-11-12) y [ficha revisión30](studies/features/session-setup-and-planning.md#alta-guiada-y-selección-ia-visible--candidato-local-2026-11-12): ayudas, idioma validado, selección visible/48px y explicación del catálogo sin esfuerzos; selección exacta, elegibilidad y autoridad conservadas. Cabecera observa cuenta Codex de forma acotada compartida, sin convertir ausencia/desconocido en disponibilidad. [Verificación local y diagnóstico productivo por alcance](../../mvp/96-nodia-teacher-implementation-plan.md#verificación-local-y-diagnóstico-de-producción--2026-11-13); sin inferencia, despliegue, aprobación o publicación del lote.
 
+## Desconectar Gemini Agentic — 2026-11-24
+
+La [ficha candidata](general-settings/features/ai-provider-interface-and-module-access.md#desconectar-gemini-agentic--2026-11-24)
+describe el cierre manual de Gemini Agentic desde Ajustes IA y la confirmación
+del alcance compartido. La ficha sigue sin registrar ni publicar y la acción
+no pertenece al catálogo del asistente.
+
 ## Ajustes locales de proveedores y acceso — 2026-11-12
 
 [Ficha candidata](general-settings/features/ai-provider-interface-and-module-access.md): acciones contained, contexto de navegación del actor e identidad exacta NodiaAI, variantes Gemini con IDs reales/OCR independiente y preferencias API OpenAI xhigh/max; Ultra API no admitido. Super_admin conserva su bypass. Backend comprobado por alcance; build/lint Client, ProviderDetail38/helper5 y QA visual correctos; suite global Client consolidada: 2812 casos/349 archivos, dos fixtures de Home corregidos y revalidados; ProviderDetail38 separado. Draft/unregistered/approval:null, sin inferencia, despliegue o publicación de este lote. [verificación consolidada](../../mvp/ai-provider-feature-contract.md#verificación-consolidada-de-preferencias-y-acceso--2026-11-12).
@@ -902,6 +909,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 
 | Producto | Carpeta documental elegida | Fuentes de partida | Fichas de contexto |
 |---|---|---|---|
+| Nodia CV (propuesto) | `nodia-cv/` | [Plan113](../../mvp/113-nodia-cv-implementation-plan.md), [guía UI](../../features/nodia-cv/ui-design.md) y [ADR119 propuesto](../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md) | [Producto](nodia-cv/README.md), [perfiles](nodia-cv/features/profiles.md) y [adaptación y versiones](nodia-cv/features/tailoring-and-verified-versions.md). Borradores que documentan Perfiles, API key, revisión, PDF e historial en la rama de CV. Integración conversacional sin registrar. |
 | Noticias | `news/` | [Plan105 §18](../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales) | [Producto](news/README.md), [lectura pública histórica](news/features/on-demand-reading.md) y [conexiones personales](news/features/personal-connections.md). Fichas draft/unregistered para documentación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
 | Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [Caja109](../../mvp/109-business-cash-ledger-plan.md), [Listas110](../../mvp/110-market-shopping-lists-plan.md) | [Producto](businesses/README.md) draft excluido. Secciones de consulta publicadas para [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) y [Listas de Market](businesses/features/market-shopping-lists.md). Las demás lecturas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) y [análisis C03](businesses/features/active-invoice-analysis.md) conservan sus alcances. |

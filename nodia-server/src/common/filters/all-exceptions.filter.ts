@@ -11,6 +11,45 @@ import { CodexOperationException } from '../ai/codex/codex-contract.js';
 import { GeminiUpstreamException } from '../ai/gemini-upstream.exception.js';
 import { randomUUID } from 'node:crypto';
 
+const nodiaCvErrors = new Set([
+  'auth:session_expired',
+  'auth:unauthorized',
+  'core:module_access_required',
+  'nodiaCv:invalid_profile_dates',
+  'nodiaCv:invalid_profile_entry',
+  'nodiaCv:profile_too_large',
+  'nodiaCv:profile_not_found',
+  'nodiaCv:stale_profile',
+  'nodiaCv:request_key_conflict',
+  'nodiaCv:request_closed',
+  'nodiaCv:generation_not_found',
+  'nodiaCv:generation_expired',
+  'nodiaCv:draft_not_ready',
+  'nodiaCv:stale_draft',
+  'nodiaCv:invalid_draft_review',
+  'nodiaCv:pdf_not_found',
+  'nodiaCv:pdf_stale',
+  'nodiaCv:pdf_busy',
+  'nodiaCv:pdf_timeout',
+  'nodiaCv:pdf_limits',
+  'nodiaCv:pdf_render_failed',
+  'nodiaCv:pdf_read_failed',
+  'nodiaCv:pdf_no_text',
+  'nodiaCv:pdf_layout_invalid',
+  'nodiaCv:pdf_text_mismatch',
+  'nodiaCv:pdf_integrity_failed',
+  'nodiaCv:version_not_found',
+  'nodiaCv:idempotency_conflict',
+  'nodiaCv:generation_invalid_input',
+  'nodiaCv:generation_input_too_large',
+  'nodiaCv:generation_queue_busy',
+  'nodiaCv:generation_selection_unqualified',
+  'nodiaCv:agentic_transport_unavailable',
+  'nodiaCv:configuration_unavailable',
+  'nodiaCv:invalid_cursor',
+  'nodiaCv:connection_catalog_too_large',
+]);
+
 const personalNewsErrors = new Set([
   'auth:session_expired',
   'auth:unauthorized',
@@ -34,6 +73,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+    if (/^\/api\/v1\/nodia-cv(?:\/|$)/iu.test(request.path)) {
+      this.nodiaCvError(exception, response);
+      return;
+    }
     if (/^\/api\/v1\/news\/personal(?:\/|$)/iu.test(request.path)) {
       this.personalNewsError(exception, response);
       return;
@@ -148,6 +191,31 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ...(exception.upstreamErrorCode ? { upstreamErrorCode: exception.upstreamErrorCode } : {}) }
         : {}),
     });
+  }
+
+  private nodiaCvError(exception: unknown, response: Response): void {
+    const http = exception instanceof HttpException ? exception : null;
+    const detail = http?.getResponse();
+    const record = detail && typeof detail === 'object' ? detail as Record<string, unknown> : null;
+    const raw = exception && typeof exception === 'object' ? exception as Record<string, unknown> : null;
+    const status = http?.getStatus() ?? (
+      raw?.type === 'entity.verify.failed' ? 400
+        : raw?.status === 400 || raw?.status === 413 || raw?.status === 415 ? raw.status : 500
+    );
+    const candidate = typeof detail === 'string' ? detail : record?.message;
+    const fallback = status === 413 ? 'nodiaCv:profile_too_large'
+      : status === 400 || status === 415 ? 'nodiaCv:invalid_input'
+      : status === 401 ? 'auth:session_expired'
+      : status === 403 ? 'core:module_access_required'
+      : status === 404 ? 'nodiaCv:profile_not_found'
+      : status === 429 ? 'nodiaCv:rate_limited' : 'nodiaCv:request_failed';
+    const message = typeof candidate === 'string' && nodiaCvErrors.has(candidate) ? candidate : fallback;
+    const field = (message === 'nodiaCv:invalid_profile_dates' || message === 'nodiaCv:invalid_profile_entry') &&
+      typeof record?.field === 'string' && /^[a-z_]+\.\d{1,2}\.[a-z_]+$/.test(record.field) ? record.field : undefined;
+
+    response.setHeader('Cache-Control', 'private, no-store');
+    this.logger.warn({ event: 'nodia_cv_http_error', status, code: message });
+    response.status(status).json({ statusCode: status, message, ...(field ? { field } : {}) });
   }
 
   private personalNewsError(exception: unknown, response: Response): void {
