@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
-import { GeminiAgenticLogoutService } from '../../common/ai/gemini-agentic-logout.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { AiProviderService } from '../ai-provider.service.js';
 
@@ -37,7 +36,6 @@ export class GetAiProviderTopbarStatusUseCase {
     private readonly providers: AiProviderService,
     private readonly gemini: GeminiService,
     private readonly codex: CodexRuntimeService,
-    private readonly geminiLogout: GeminiAgenticLogoutService,
   ) {}
 
   async execute(): Promise<AiProviderTopbarStatus> {
@@ -64,20 +62,12 @@ export class GetAiProviderTopbarStatusUseCase {
     id: string,
     key: string,
   ): Promise<AgenticStatus | null> {
-    const isGemini = key === 'gemini' || key === 'google';
-    const revision = isGemini ? this.geminiLogout.observationRevision : 0;
-    const identity = `${key}:${id}:${revision}`;
+    const identity = `${key}:${id}`;
     const pending = this.pendingObservations.get(identity);
     if (pending) return pending;
 
     // Concurrent Topbars share a bounded read of the same native profile.
-    const observation = this.observeAgentic(id, key)
-      .then((status) =>
-        isGemini && revision !== this.geminiLogout.observationRevision
-          ? null
-          : status,
-      )
-      .catch(() => null);
+    const observation = this.observeAgentic(id, key).catch(() => null);
     this.pendingObservations.set(identity, observation);
     try {
       return await observation;

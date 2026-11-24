@@ -40,7 +40,6 @@ import { GetAllAiProviderEventsUseCase } from './use-case/get-all-ai-provider-ev
 import { CreateAiProviderEventUseCase } from './use-case/create-ai-provider-event.use-case.js';
 
 import { GeminiModule } from '../common/ai/gemini.module.js';
-import { GeminiAgenticLogoutService } from '../common/ai/gemini-agentic-logout.service.js';
 import { TranslationModule } from '../translation/translation.module.js';
 import { CodexRuntimeModule } from '../common/ai/codex/codex-runtime.module.js';
 import { ManageCodexSessionUseCase } from './use-case/manage-codex-session.use-case.js';
@@ -85,7 +84,6 @@ import { ExecuteCodexInvoiceUseCase } from './use-case/execute-codex-invoice.use
     UpdateAiProviderCatalogUseCase,
     SyncAiProviderModelsUseCase,
     ManageGeminiAgenticLoginUseCase,
-    GeminiAgenticLogoutService,
     GetGeminiEnginesUseCase,
     // AiApiKey
     GetAllAiApiKeysUseCase,
