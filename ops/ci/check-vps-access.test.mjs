@@ -33,6 +33,18 @@ test('updated gateway status is explicitly typed while retaining compatibility w
     { ...status, application: { api_active: true, worker_active: 'true' } }]) assert.throws(() => verifyDeploymentStatus(value));
 });
 
+test('optional runtime attestation is separately typed without widening the exact Server identity', () => {
+  const status = deployed();
+  const proof = { schema_version: 1, source_sha: 'd'.repeat(40), source_tree_sha: 'c'.repeat(40),
+    image_id: 'sha256:' + 'a'.repeat(64) };
+  assert.deepEqual(verifyDeploymentStatus({ ...status, gemini_runtime: proof }), status.current);
+  for (const invalid of [null, [], {}, { ...proof, extra: true }, { ...proof, schema_version: true },
+    { ...proof, image_id: proof.image_id + '\n' }, { ...proof, source_tree_sha: 'c'.repeat(39) }]) {
+    assert.throws(() => verifyDeploymentStatus({ ...status, gemini_runtime: invalid }), /gemini_runtime_attestation_invalid/);
+  }
+  assert.throws(() => verifyDeploymentStatus({ ...status, gemini_runtime: proof, extra: true }));
+});
+
 test('invalid events, refs, destinations, key format and host pins fail before SSH', async () => {
   for (const change of [
     { GITHUB_EVENT_NAME: 'push' }, { GITHUB_EVENT_NAME: 'pull_request' },

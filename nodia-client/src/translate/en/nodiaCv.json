@@ -95,6 +95,73 @@
   "one_per_line": "Enter one item per line.",
   "month_hint": "Year and month (YYYY-MM).",
   "year_hint": "Four-digit year (YYYY).",
+  "field_help_label": "Help for {{field}}",
+  "field_help": {
+    "personal": {
+      "profile_name": "Choose a name that helps you tell this profile apart, such as “Senior Frontend Developer”.",
+      "full_name": "Enter your full name as you want it to appear on your CV.",
+      "professional_title": "Enter your specialty or the main role you are targeting, such as “Frontend Developer”.",
+      "second_title": "Add a relevant complementary specialty, such as “Full-stack Development”.",
+      "summary": "Summarize your experience, specialty and key strengths in one paragraph.",
+      "main_stack": "List the main technologies in your profile, one per line, such as React or TypeScript."
+    },
+    "contact": {
+      "location": "Enter the city and country you want to show on your CV.",
+      "email": "Enter the email address where you want to receive messages about job applications.",
+      "phone": "Enter the number where you can be reached, including the country dialing code.",
+      "linkedin_url": "Paste the full link to your public LinkedIn profile.",
+      "github_url": "Paste the full link to your GitHub profile.",
+      "portfolio_url": "Paste the link to the site where you showcase your projects or work."
+    },
+    "experiences": {
+      "company": "Enter the name of the company or organization where you worked.",
+      "position": "Enter the job title you held in this role.",
+      "location": "Enter the city and country where you worked, or “Remote” if applicable.",
+      "status": "Choose “Current” if you still hold the role, “Finished” if it ended, or “Unspecified” to omit it.",
+      "start_month": "Enter the year and month you started the job, for example 2024-06.",
+      "end_month": "Enter the year and month the job ended. Leave it blank if the role is current.",
+      "highlights": "Enter one responsibility, contribution or achievement per line. Include concrete results you can substantiate.",
+      "technologies": "List the technologies and tools you used in this job, one per line."
+    },
+    "projects": {
+      "name": "Enter the name you want to use for the project on your CV.",
+      "role": "Enter your role or the part of the project you worked on.",
+      "status": "Describe the project's status, such as “In development”, “Published” or “Finished”.",
+      "start_month": "Enter the year and month you started working on the project, for example 2025-02.",
+      "end_month": "Enter when the project ended. Leave it blank if the project is still underway.",
+      "url": "Paste a link others can open, such as a demo or public repository.",
+      "validation_context": "Describe the problem the project solves, who it serves and how you used or tested it.",
+      "contributions": "Describe what you did on the project, one contribution per line.",
+      "technologies": "List the languages, tools or services you used for the project, one per line."
+    },
+    "skill_areas": {
+      "name": "Name this group of skills, such as “Frontend” or “Databases”.",
+      "skills": "Enter one skill from this area per line, such as “Data modeling” or “PostgreSQL”."
+    },
+    "education": {
+      "title": "Enter the name of the degree, qualification or program you studied.",
+      "institution": "Enter the name of the institution where you studied.",
+      "start_year": "Enter the year you started your studies, for example 2020.",
+      "end_year": "Enter the year you finished your studies. Leave it blank if they are still in progress.",
+      "details": "Add a specialization, distinction or academic achievement relevant to your CV."
+    },
+    "certifications": {
+      "name": "Enter the name as it appears on the certificate.",
+      "issuer": "Enter the organization that issued the certification.",
+      "year": "Enter the year the certificate was issued.",
+      "credential_id": "Enter the credential code or number, if the issuer provided one.",
+      "verification_url": "Paste the link where the credential can be verified, if available."
+    },
+    "languages": {
+      "language": "Enter the language you want to include, such as English or Portuguese.",
+      "level": "Enter your actual proficiency. You can use a level such as B2 or a description such as “Native”.",
+      "usage": "Explain how you use the language, such as in meetings or when reading technical documentation."
+    },
+    "additional_sections": {
+      "title": "Name the extra section, such as “Volunteering” or “Publications”.",
+      "lines": "Add one item per line, with enough context for the reader to understand it."
+    }
+  },
   "move_up": "Move up",
   "move_down": "Move down",
   "remove_row": "Remove item",

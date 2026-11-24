@@ -22,6 +22,7 @@ import { useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import useAuth from "../../../../hooks/useAuth";
 import useGeneralSettingsStore from "../../../../store/generalSettings/generalSettingsStore";
+import { ProductHeading } from "../../../../theme/productBrand";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
 import { nodiaAiEligibilityReasonKey, nodiaAiRunErrorKey } from "../../infrastructure/eligibilityPresentation";
 import { useConversationDraft } from "../../infrastructure/useConversationDraft";
@@ -68,7 +69,6 @@ import {
   History,
   Messages,
   Page,
-  PageTitle,
   Workspace,
   Welcome,
 } from "./styles";
@@ -521,9 +521,7 @@ function ChatPage() {
     <Page aria-labelledby="nodia-ai-title" data-page-layout="conversation">
       <Header>
         <Box>
-          <PageTitle id="nodia-ai-title">
-            NodiaAI
-          </PageTitle>
+          <ProductHeading id="nodia-ai-title">{t("workspace.title")}</ProductHeading>
         </Box>
         <Actions>
           {!desktop && (

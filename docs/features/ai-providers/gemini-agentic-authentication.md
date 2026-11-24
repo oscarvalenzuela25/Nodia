@@ -2,18 +2,36 @@
 
 Fecha: 2026-10-07. Implementación autorizada y comprobada con pruebas Windows/Linux y enlace OAuth real Linux. Autorización con cuenta y persistencia del VPS pendientes; sin aprobación automática de producción.
 
-Nodia permite iniciar la sesión del CLI Agentic del servidor desde el navegador de otro equipo. Un Mac puede completar la autorización Google sin instalar Antigravity localmente. La sesión Web sigue siendo independiente. Esta funcionalidad no implementa OpenAI/Codex, que continúa en el [plan pendiente 33](../../mvp/33-chatgpt-integration-pending.md).
+Nodia permite iniciar la sesión del CLI Agentic del servidor desde el navegador de otro equipo. Un Mac puede completar la autorización Google sin instalar Antigravity localmente. Los modos operativos son Agentic y API key, según el [Plan90](../../mvp/90-agentic-api-only-web-retirement.md).
 
 ## Uso desde la aplicación
 
 1. Abrir **Ajustes Generales → Proveedores de IA** y entrar al detalle de una conexión Gemini con Agentic habilitado.
-2. Seleccionar **Token Plan (Agentic) → Autenticar sesión Agentic**.
+2. Seleccionar **Agentic → Autenticar sesión Agentic**.
 3. Pulsar **Conectar cuenta Google**. Si la sesión del servidor ya se verifica, el intento termina sin cambiar la cuenta.
 4. Si hace falta autenticarse, pulsar **Abrir inicio de sesión Google**, completar la autorización en Google y copiar el código que muestra el proveedor.
 5. Pegar ese código en Nodia y pulsar **Validar código**. El CLI del servidor lo intercambia; Nodia verifica la sesión antes de mostrar éxito.
 6. Sincronizar/configurar los modelos Agentic deseados. Autenticación no asigna modelos ni prueba una extracción.
 
-La sesión Agentic es **compartida por todas las conexiones Gemini del microservicio**. Elegir otra conexión cambia modelos/preferencias, no la cuenta ni la cuota. El modal informa esta condición. Actualmente cambiar de cuenta es una operación administrativa del CLI; el botón verifica una sesión ya válida y no cierra otras cuentas automáticamente.
+La sesión Agentic es **compartida por todas las conexiones Gemini del microservicio**. Cada conexión conserva sus preferencias de modelo y usa la cuenta y la cuota del perfil compartido. **Autenticar sesión Agentic** verifica la sesión existente si la cuenta ya está activa.
+
+## Estado de la desconexión — 2026-11-24
+
+La publicación de Nodia CV dejó **Desconectar Gemini** pendiente de una entrega
+coordinada. El CD del PR #102 detectó cambios en siete archivos operativos del
+adaptador Python y se detuvo con
+`unmanaged_runtime_change_requires_coordinated_rollout` antes de aplicar
+Server o Client. El PR #103 separó la desconexión de la promoción de Nodia CV.
+[Registro del CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45473004012/job/138725865846) ·
+[Plan113 §16](../../mvp/113-nodia-cv-implementation-plan.md#16-separación-del-despliegue-de-gemini--2026-11-24).
+
+El [candidato de laboratorio](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d)
+conserva el botón, el endpoint público y el cierre privado del perfil. La ruta
+privada toma la reserva del perfil compartido y verifica el cierre antes de
+permitir que la interfaz inicie una nueva autenticación. La entrega debe
+coordinar el adaptador, Server y Ajustes IA. El
+[procedimiento coordinado](../../../ops/production/ai-runtime/README.md#actualización-coordinada-del-adaptador-gemini--2026-11-24)
+acredita la imagen activa antes de que el CD entregue Node y Client.
 
 ## Estados y recuperación
 

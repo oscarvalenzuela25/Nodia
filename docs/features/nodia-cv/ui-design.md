@@ -18,8 +18,10 @@ usa tabla nativa en escritorio, tarjetas en móvil y un editor modal amplio.
   [Módulos](../../../nodia-client/src/modules/generalSettings/pages/Modules/CONTRACT.md)
   y administración de usuarios. El grupo de navegación cumple el
   [ADR092](../../architecture/decisions/ADR-092-stable-module-navigation-routes.md).
-- Cabecera compacta con título **Nodia CV** y las pestañas **Perfiles**,
-  **Generar CV** y **CV guardados**. La entrada inicial abre **Perfiles**.
+- Cabecera compacta con título **Nodia CV**, con la tipografía y el
+  degradado de producto compartidos con **Nodia IA** y **Nodia Teacher**.
+  Las pestañas son **Perfiles**, **Generar CV** y **CV guardados**. La
+  entrada inicial abre **Perfiles**.
   Una selección controla las pestañas, sus paneles y la navegación adaptable.
   Si a 320 px las etiquetas dejan de caber con objetivos de 44 px, usar un
   `SelectSingleInput` rotulado en `xs` y conservar las pestañas desde `sm`.
@@ -53,6 +55,9 @@ de ancho. Seguir [DESIGN §9–10](../../../nodia-client/DESIGN.md#9-lineamiento
    certificaciones e idiomas conforme al plan. Las secciones adicionales son
    opcionales. Las etiquetas identifican los campos aun cuando tienen valor.
    Formar el currículo con contenido presente y autorizado por la persona.
+   Cada campo tiene un icono de ayuda contextual en español e inglés,
+   disponible al pasar el puntero, recibir foco o tocarlo. La ayuda explica
+   qué escribir y conserva visibles las etiquetas y mensajes de validación.
 3. Mostrar experiencia y proyectos en tarjetas repetibles. Mantener una acción
    de agregar por grupo y el nombre de la fila editable visible en su cabecera.
    Dar nombre accesible a las acciones de quitar, por ejemplo **Quitar

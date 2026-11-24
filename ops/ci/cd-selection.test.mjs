@@ -48,6 +48,40 @@ test('actual runtime dependencies block coordinated rollout but prose and isolat
   assert.deepEqual(unmanagedRuntimePaths({ repo: f.repo, base, head }), ['nodia-gemini-microservice/requirements.txt','nodia-server/native/binding.gyp']);
 });
 
+test('only an exact attested Gemini tree at a reachable commit permits a coordinated runtime diff', t => {
+  const f = fixture(t);
+  f.write('nodia-gemini-microservice/main.py', 'original\n');
+  const base = f.commit();
+  f.write('nodia-gemini-microservice/main.py', 'reviewed candidate\n');
+  const runtime = f.commit();
+  f.write('nodia-server/src/gemini-client.ts');
+  const head = f.commit();
+  const tree = commit => f.git(['rev-parse', commit + ':nodia-gemini-microservice']);
+  const proof = { schema_version: 1, source_sha: runtime, source_tree_sha: tree(runtime), image_id: 'sha256:' + 'a'.repeat(64) };
+  const options = { repo: f.repo, head, clientBase: base, serverBase: base };
+  const plan = deploymentPlan({ ...options, geminiRuntime: proof });
+  assert.deepEqual(plan.gemini_runtime, proof);
+  assert.equal(plan.python_or_native_deployed, false);
+  assert.equal(plan.server_required, true);
+  assert.equal(plan.server_content_equivalence_allowed, false);
+
+  f.git(['checkout', '-q', '--detach', base]);
+  f.write('nodia-gemini-microservice/main.py', 'reviewed candidate\n');
+  f.write('unrelated-sibling-commit.txt');
+  const sibling = f.commit();
+  assert.equal(tree(sibling), tree(runtime));
+  for (const bad of [undefined, null, { ...proof, schema_version: '1' }, { ...proof, secret: 'hidden' },
+    { ...proof, image_id: proof.image_id + '\n' }, { ...proof, source_sha: 'f'.repeat(40) },
+    { ...proof, source_sha: sibling }, { ...proof, source_tree_sha: tree(base) },
+    { ...proof, source_sha: base, source_tree_sha: tree(base) }]) {
+    assert.throws(() => deploymentPlan({ ...options, geminiRuntime: bad }), /unmanaged_runtime_change_requires_coordinated_rollout/);
+  }
+  f.git(['checkout', '-q', '--detach', head]);
+  f.write('nodia-server/native/host.rs', 'new native host\n');
+  assert.throws(() => deploymentPlan({ ...options, head: f.commit(), geminiRuntime: proof }),
+    /unmanaged_runtime_change_requires_coordinated_rollout/);
+});
+
 test('content equivalence eligibility considers the complete deployed server backlog, including both rename paths', t => {
   const f = fixture(t), base = f.commit();
   f.write('docs/mvp/example.md'); f.write('nodia-client/src/chat.ts'); const client = f.commit();

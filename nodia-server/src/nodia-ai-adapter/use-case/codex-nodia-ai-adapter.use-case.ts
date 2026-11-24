@@ -1,5 +1,6 @@
 import { Inject, Injectable, Optional } from '@nestjs/common';
 import { createHash, randomBytes } from 'node:crypto';
+import { isAgenticModelAllowed } from '../../ai-provider/helpers/agentic-model-policy.helper.js';
 import { decodeCodexGeneratedImage } from '../../common/ai/codex/codex-generated-image.js';
 import { DataSource, type EntityManager } from 'typeorm';
 import {
@@ -337,6 +338,9 @@ export class CodexNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
         'adapter_connection_unavailable',
         'not_dispatched',
       );
+    const modeFields = object(row.fields)?.agentic;
+    if (!isAgenticModelAllowed(modeFields, selection.model_id))
+      throw new NodiaAiAdapterError('codex_model_unavailable', 'not_dispatched');
     return createHash('sha256')
       .update(
         JSON.stringify(
@@ -344,7 +348,7 @@ export class CodexNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
             connection_id: row.id,
             provider_key: row.provider_key,
             mode: selection.mode,
-            fields: object(row.fields)?.[selection.mode] ?? null,
+            fields: modeFields ?? null,
             updated_at: row.updated_at,
             enabled: true,
           }),

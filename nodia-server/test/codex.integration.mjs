@@ -153,10 +153,16 @@ try {
     const lease = await runtime.acquire('42');
     assert(lease.profile.rpc.alive);
     await assert.rejects(runtime.acquire('42'), (e) => e.getStatus() === 409);
-    assert.equal((await runtime.observe('42')).authenticated, false);
+    const occupied = await runtime.observe('42');
+    assert.equal(occupied.reason, 'codex_profile_busy');
+    assert.equal(occupied.authenticated, null);
+    assert.equal(
+      (await runtime.observe('42', undefined, lease.profile)).authenticated,
+      false,
+    );
     await assert.rejects(
-      runtime.listModels('42'),
-      (e) => e.getStatus() === 409,
+      runtime.listModels('42', undefined, lease.profile),
+      (e) => e.getStatus() === 409 && e.code === 'codex_session_required',
     );
     const other = await runtime.get('43');
     assert.notEqual(other.cwd, lease.profile.cwd);

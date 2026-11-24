@@ -177,6 +177,17 @@ function fixture() {
   };
 }
 
+describe('Codex Agentic catalog', () => {
+  it('rejects an excluded historical model before observing the native runtime', async () => {
+    const f = fixture();
+    Object.assign(f.row.fields.agentic, { allowed_model_ids: ['fixture-current-model'] });
+    await expect(f.adapter.observe(f.selection)).rejects.toMatchObject({
+      code: 'codex_model_unavailable', outcome: 'not_dispatched',
+    });
+    expect(f.runtime.observe).not.toHaveBeenCalled();
+  });
+});
+
 describe('Codex explicit image generation adapter lane', () => {
   const contentBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+X2ioAAAAASUVORK5CYII=';
   const generatedImage = () => ({ contentBase64, mediaType: 'image/png' as const,

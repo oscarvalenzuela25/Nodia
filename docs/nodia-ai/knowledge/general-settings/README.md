@@ -163,6 +163,12 @@ por alcance. Revisión31 draft/partial/unregistered/approval:null; aceptación
 humana con sesión real/dispositivo y adopción pendientes. La ficha nueva tiene
 path explícito para validación, sin binding, herramienta o publicación nuevos.
 
+## Catálogo Agentic por conexión — candidato local, 2026-11-24
+
+[La ficha candidata](features/ai-provider-interface-and-module-access.md#catálogo-agentic-por-conexión--2026-11-24)
+documenta los modelos admitidos por conexión, el reinicio de Gemini y
+la selección de Codex. API key mantiene su configuración independiente.
+
 ## Continuación de selectores — candidato local, 2026-11-14
 
 [Ficha de interfaz rev2](features/ai-provider-interface-and-module-access.md#continuación-local-selectores-agrupados--2026-11-14):

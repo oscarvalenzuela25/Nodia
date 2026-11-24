@@ -59,6 +59,15 @@ describe('GetSelectableModelsUseCase observed data', () => {
       }),
     ]);
   });
+  it('keeps the only allowed Gemini model available to choose without assigning it', async () => {
+    list.mockResolvedValue({ data: [{ ...provider, fields: { agentic: {
+      allowed_model_ids: ['fixture-new'], available_models: [], selected_model: null, model: 'live-model',
+    } } }] });
+    discovery.mockResolvedValue({ available: true, authenticated: true, models: [{ id: 'live-model' }, { id: 'fixture-new' }] });
+    const [result] = await useCase.execute({ mode: 'agentic' });
+    expect(result.selectedModel).toBeNull();
+    expect(result.models).toEqual([expect.objectContaining({ id: 'fixture-new', isCurrent: false })]);
+  });
   it('preserves explicit provider metadata without adding audio/video/reasoning', async () => {
     discovery.mockResolvedValue({
       available: true,

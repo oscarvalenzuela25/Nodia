@@ -130,6 +130,15 @@ Recuperar o reintentar conforme a [Plan113](../../../../mvp/113-nodia-cv-impleme
 y a la [guía UI](../../../../features/nodia-cv/ui-design.md). Las garantías de
 concurrencia y recuperación esperan sus pruebas.
 
+### Evaluación del cambio de interfaz — 2026-11-24
+
+El encabezado de Nodia CV comparte la identidad visual de Nodia IA y
+Nodia Teacher. La ayuda contextual de cada campo explica los datos y
+formatos del editor. Los campos, la validación y las operaciones que
+documenta la ficha conservan el mismo significado. El cambio es de
+presentación y no afecta el contexto operativo de NodiaAI.
+[Guía de interfaz](../../../../features/nodia-cv/ui-design.md#2-perfiles).
+
 ## Integración y evidencia
 
 - [ ] Contratos de lectura, escritura y asignación comprobados.

@@ -142,6 +142,36 @@ describe("SyncModelsModal Component", () => {
     expect(screen.getByRole("button", { name: "Guardar Modelos" })).toBeEnabled();
   });
 
+  it("keeps a reset curated Agentic connection unassigned until the user selects a model", async () => {
+    const model = { ...mockDiscovered.models[0], displayName: "Modelo autorizado" };
+    const provider = { ...mockProvider, default_mode: "agentic" as const, fields: {
+      agentic: { allowed_model_ids: [model.id], available_models: [] },
+      api_key: { selected_model: "fixture-api", available_models: [{ id: "fixture-api" }] },
+    } };
+    vi.mocked(aiServices.syncAiProviderModels).mockResolvedValue({ ...mockDiscovered, models: [model] });
+    const user = userEvent.setup();
+    renderWithClient(<SyncModelsModal open provider={provider} isOperational onClose={() => {}} />);
+
+    const activation = await screen.findByRole("checkbox", { name: model.displayName });
+    expect(activation).not.toBeChecked();
+    expect(screen.queryByText("3.8 Flash")).not.toBeInTheDocument();
+    const save = screen.getByRole("button", { name: "Guardar Modelos" });
+    expect(save).toBeDisabled();
+    await user.click(activation);
+    expect(save).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Seleccionar modelo por defecto..." }));
+    await user.click(screen.getAllByText(model.displayName).at(-1)!);
+    await user.click(save);
+
+    expect(aiServices.updateAiProvider).toHaveBeenCalledWith(provider.id, {
+      fields: expect.objectContaining({ agentic: expect.objectContaining({
+        available_models: [model], selected_model: model.id,
+      }) }),
+    });
+    const patch = vi.mocked(aiServices.updateAiProvider).mock.calls.at(-1)?.[1].fields;
+    expect(patch).not.toHaveProperty("api_key");
+  });
+
   it("submits curated models with primary and ocr selections", async () => {
     const handleClose = vi.fn();
     const handleSuccess = vi.fn();

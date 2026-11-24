@@ -108,6 +108,20 @@ describe('Codex provider use-case contracts', () => {
     ).rejects.toMatchObject({ status: 400 });
     expect(x.providers.mergeDiscoveredModels).not.toHaveBeenCalled();
   });
+  it('exposes a filtered discovery in settings and keeps empty matches unassigned', async () => {
+    const x = setup();
+    x.provider.fields.agentic = { allowed_model_ids: ['fixture-allowed'], selected_model: x.model.id };
+    const discovered = { ...x.model, id: 'fixture-allowed' };
+    x.codex.listModels.mockResolvedValueOnce([x.model, discovered]).mockResolvedValueOnce([x.model]);
+    const sync = new SyncAiProviderModelsUseCase(x.p, x.g, undefined, x.c);
+    await expect(sync.execute('42', { mode: 'agentic', persist: false })).resolves.toMatchObject({
+      models: [discovered], currentSelectedModel: null, isSelectedModelAvailable: false,
+    });
+    await expect(sync.execute('42', { mode: 'agentic' })).resolves.toMatchObject({
+      models: [], currentSelectedModel: null, isSelectedModelAvailable: false,
+    });
+    expect(x.providers.mergeDiscoveredModels).not.toHaveBeenCalled();
+  });
   it('returns live arbitrary efforts without inferring a capability from the model name', async () => {
     const x = setup();
     x.model.capabilities = [];
