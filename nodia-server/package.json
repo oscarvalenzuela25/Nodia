@@ -123,7 +123,7 @@
     "@nestjs/swagger": "^12.0.1",
     "@nestjs/throttler": "6.5.0",
     "@nestjs/typeorm": "^12.0.1",
-    "@openai/codex": "0.161.0",
+    "@openai/codex": "0.171.0",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "class-transformer": "^0.5.1",
