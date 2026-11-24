@@ -196,6 +196,7 @@ describe('Gemini Agentic logout with real private transport', () => {
     [503, 'agentic_logout_unavailable', 503, 'unavailable'],
     [503, 'agentic_logout_outcome_unknown', 502, 'unknown'],
     [404, '', 503, 'unavailable'],
+    [405, '', 503, 'unavailable'],
     [500, '', 502, 'unknown'],
     [504, '', 504, 'unknown'],
   ])(

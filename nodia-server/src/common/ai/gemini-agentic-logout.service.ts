@@ -60,7 +60,7 @@ export class GeminiAgenticLogoutService {
         throw new ConflictException('ai_provider:gemini_logout_busy');
       }
       if (
-        [401, 403, 404, 501].includes(response.status) ||
+        [401, 403, 404, 405, 501].includes(response.status) ||
         (response.status === 503 &&
           (code === 'runtime_unconfigured' || code === 'agentic_logout_unavailable'))
       ) {

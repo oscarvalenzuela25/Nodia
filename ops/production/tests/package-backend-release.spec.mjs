@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { inventory, normalizeProductionModes, safeRelative, verifySource } from '../package-backend-release.mjs';
+import { inventory, normalizeProductionModes, safeRelative, validateCompiledAssets, verifySource } from '../package-backend-release.mjs';
 
 const sha = value => createHash('sha256').update(value).digest('hex');
 const temporaryRoot = process.env.NODIA_PACKAGE_TEST_TEMP_ROOT
@@ -47,6 +47,57 @@ test('source refuses credential files even if included in a supplied manifest', 
   fs.writeFileSync(path.join(root, '.env'), 'SYNTHETIC_FIXTURE=not-a-secret');
   const { filename, sourceSha } = manifest(directory, root);
   assert.throws(() => verifySource(root, sourceSha, filename), /source_credentials_file_denied/);
+});
+test('compiled CV PDF assets require exact paths and bytes from the source archive', t => {
+  const { root } = fixture(t);
+  const server = path.join(root, 'nodia-server');
+  function write(name, bytes) {
+    const filename = path.join(root, name);
+    fs.mkdirSync(path.dirname(filename), { recursive: true });
+    fs.writeFileSync(filename, bytes);
+    return filename;
+  }
+  const compiled = (name, bytes) => write(`nodia-server/dist/${name}`, bytes);
+  for (const name of ['main.js', 'nodia-ai-worker.js', 'config/data-source.js']) {
+    compiled(name, '// fixture');
+  }
+  const schema = '{}';
+  write('docs/mvp/nodia-ai-v1-common-contracts.schema.json', schema);
+  compiled('nodia-ai-tools/config/common-schema.json', schema);
+  compiled('nodia-ai-context/config/knowledge-schema.json', schema);
+  compiled('nodia-ai-invoice-ocr/contracts/invoice-ocr.json', '{}');
+  const release = 'a'.repeat(64);
+  const catalog = 'fixture/1';
+  compiled('nodia-ai-context/config/knowledge-pin.json', JSON.stringify({
+    release_id: release, catalog_release: catalog, schema_sha256: sha(schema),
+  }));
+  compiled('nodia-ai/knowledge/manifest.json', JSON.stringify({
+    release_id: release, catalog_release: catalog, contract_schema_sha256: sha(schema), fragments: [],
+  }));
+  const policy = '{}\n';
+  const payload = { policyHash: sha(policy) };
+  const compiledPolicy = JSON.stringify({ ...payload, contentHash: sha(JSON.stringify(payload)) });
+  write('docs/mvp/nodia-ai-v1-runtime-policy.json', policy);
+  compiled('nodia-ai-runtime/config/runtime-policy.json', compiledPolicy);
+  compiled('nodia-ai-conversation/config/conversation-policy.json', compiledPolicy);
+
+  const assets = 'nodia-cv/pdf/assets';
+  const font = Buffer.from([0, 1, 2, 255]);
+  for (const name of ['DejaVuSans.ttf', 'DejaVuSans-Bold.ttf', 'LICENSE', 'PROVENANCE.txt']) {
+    write(`nodia-server/src/${assets}/${name}`, font);
+    compiled(`${assets}/${name}`, font);
+  }
+  assert.equal(validateCompiledAssets(server, root).knowledge_release_id, release);
+
+  compiled(`${assets}/DejaVuSans-Bold.ttf`, Buffer.from([0, 1, 3, 255]));
+  assert.throws(() => validateCompiledAssets(server, root), /compiled_cv_pdf_asset_mismatch/);
+  const filename = compiled(`${assets}/DejaVuSans-Bold.ttf`, font);
+  fs.unlinkSync(filename);
+  assert.throws(() => validateCompiledAssets(server, root), /compiled_cv_pdf_asset_missing/);
+  compiled(`${assets}/DejaVuSans-Bold.ttf`, font);
+
+  compiled(`${assets}/unexpected.ttf`, font);
+  assert.throws(() => validateCompiledAssets(server, root), /unrecognized_compiled_asset/);
 });
 test('package allows internal CLI symlinks and rejects an escaping link', t => {
   const { directory, root } = fixture(t);

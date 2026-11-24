@@ -113,6 +113,12 @@ export function verifySource(root, sourceSha, manifestFile, { afterBuild = false
 
 const runtimeScripts = ['render-codex-pdf.mjs', 'seed-core.mjs', 'nodia-ai-journal.mjs',
   'nodia-ai-backups.mjs', 'nodia-ai-backup-database.mjs', 'prepare-nodia-ai-restore.mjs'];
+const cvPdfAssets = new Set([
+  'nodia-cv/pdf/assets/DejaVuSans.ttf',
+  'nodia-cv/pdf/assets/DejaVuSans-Bold.ttf',
+  'nodia-cv/pdf/assets/LICENSE',
+  'nodia-cv/pdf/assets/PROVENANCE.txt',
+]);
 const requiredAssets = ['main.js', 'nodia-ai-worker.js', 'config/data-source.js',
   'nodia-ai-tools/config/common-schema.json', 'nodia-ai-context/config/knowledge-pin.json',
   'nodia-ai-context/config/knowledge-schema.json', 'nodia-ai-runtime/config/runtime-policy.json',
@@ -121,6 +127,13 @@ export function validateCompiledAssets(server, repository) {
   for (const relative of requiredAssets) {
     const filename = path.join(server, 'dist', relative);
     ensure(fs.statSync(filename).isFile() && !fs.lstatSync(filename).isSymbolicLink(), 'compiled_asset_missing');
+  }
+  for (const relative of cvPdfAssets) {
+    const original = path.join(server, 'src', relative);
+    const compiled = path.join(server, 'dist', relative);
+    ensure(fs.lstatSync(original, { throwIfNoEntry: false })?.isFile() &&
+      fs.lstatSync(compiled, { throwIfNoEntry: false })?.isFile(), 'compiled_cv_pdf_asset_missing');
+    ensure(fs.readFileSync(compiled).equals(fs.readFileSync(original)), 'compiled_cv_pdf_asset_mismatch');
   }
   const shared = fs.readFileSync(path.join(server, 'dist/nodia-ai-tools/config/common-schema.json'));
   ensure(shared.equals(fs.readFileSync(path.join(repository, 'docs/mvp/nodia-ai-v1-common-contracts.schema.json'))), 'compiled_common_schema_mismatch');
@@ -142,7 +155,7 @@ export function validateCompiledAssets(server, repository) {
   }
   for (const item of inventory(path.join(server, 'dist'), { source: true })) {
     ensure(item.path.endsWith('.js') || item.path.endsWith('.json') || item.path.endsWith('.map') || item.path.endsWith('.ts') ||
-      allowedMarkdown.has(`dist/${item.path}`), 'unrecognized_compiled_asset');
+      allowedMarkdown.has(`dist/${item.path}`) || cvPdfAssets.has(item.path), 'unrecognized_compiled_asset');
   }
   const policyBytes = fs.readFileSync(path.join(repository, 'docs/mvp/nodia-ai-v1-runtime-policy.json'));
   for (const relative of ['nodia-ai-runtime/config/runtime-policy.json', 'nodia-ai-conversation/config/conversation-policy.json']) {
