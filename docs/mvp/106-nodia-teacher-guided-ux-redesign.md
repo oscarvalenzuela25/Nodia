@@ -1071,6 +1071,15 @@ pendientes. [Ficha de lecciones y práctica](../nodia-ai/knowledge/studies/featu
 
 La entrada de Teacher conserva **Mis planes de estudio** como pestaña
 principal y suma **Calendario de estudio** en la propuesta del 2026-11-22.
+
+La idea inicial permitía elegir un plan y ver sus jornadas por semana.
+Cada jornada mostraba actividades, tiempo estimado y enlaces disponibles.
+El ejemplo era un plan de inglés de cuatro semanas con seguimiento por
+jornada y un recuento semanal y total. La duración y la cantidad de
+jornadas pertenecen al plan.
+
 El recorrido de revisión visual, la persistencia personal y el pegado se
-documentan en el [Plan111](111-teacher-study-calendar-plan.md). La primera
-implementación se inicia con el avance por actividad validado en el mockup.
+documentan en el [Plan111](111-teacher-study-calendar-plan.md). La gestión
+del calendario y el avance derivado de las marcas por actividad ya se
+verificaron localmente. Queda precisar la reprogramación de calendarios con
+avance y validar su adopción. [Gestión y verificación](111-teacher-study-calendar-plan.md#10-gestión-del-calendario-y-filtro-de-actividad).
