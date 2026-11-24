@@ -95,6 +95,73 @@
   "one_per_line": "Escribe un elemento por línea.",
   "month_hint": "Formato año y mes (AAAA-MM).",
   "year_hint": "Año de cuatro dígitos (AAAA).",
+  "field_help_label": "Ayuda sobre {{field}}",
+  "field_help": {
+    "personal": {
+      "profile_name": "Usa un nombre para distinguir este perfil de otros, como «Frontend Senior».",
+      "full_name": "Escribe el nombre y los apellidos tal como quieres que aparezcan en tu CV.",
+      "professional_title": "Escribe tu especialidad o el cargo principal al que apuntas, como «Desarrollador frontend».",
+      "second_title": "Agrega una especialidad complementaria si aporta a tu perfil, como «Desarrollo full stack».",
+      "summary": "Resume en un párrafo tu experiencia, tu especialidad y las fortalezas que quieres destacar.",
+      "main_stack": "Escribe las tecnologías principales de tu perfil, una por línea, como React o TypeScript."
+    },
+    "contact": {
+      "location": "Indica la ciudad y el país que quieres mostrar en el CV.",
+      "email": "Escribe el correo en el que quieres recibir mensajes sobre postulaciones.",
+      "phone": "Escribe el número en el que quieres recibir llamadas, incluido el prefijo del país.",
+      "linkedin_url": "Pega el enlace completo a tu perfil público de LinkedIn.",
+      "github_url": "Pega el enlace completo a tu perfil de GitHub.",
+      "portfolio_url": "Pega el enlace al sitio donde presentas tus proyectos o tu trabajo."
+    },
+    "experiences": {
+      "company": "Escribe el nombre de la empresa u organización donde trabajaste.",
+      "position": "Escribe el cargo que desempeñaste en esa experiencia.",
+      "location": "Indica la ciudad y el país del trabajo, o «Remoto» si corresponde.",
+      "status": "Elige «Actual» si sigues en ese cargo, «Finalizado» si terminaste o «Sin indicar» si prefieres omitirlo.",
+      "start_month": "Indica el año y mes en que comenzaste el trabajo, por ejemplo 2024-06.",
+      "end_month": "Indica el año y mes en que terminó el trabajo. Déjalo vacío si el cargo es actual.",
+      "highlights": "Escribe una responsabilidad, contribución o logro por línea. Incluye resultados concretos que puedas respaldar.",
+      "technologies": "Escribe las tecnologías y herramientas que usaste en ese trabajo, una por línea."
+    },
+    "projects": {
+      "name": "Escribe el nombre con el que quieres presentar el proyecto en tu CV.",
+      "role": "Indica tu rol o el área del proyecto en que participaste.",
+      "status": "Describe la situación del proyecto, como «En desarrollo», «Publicado» o «Finalizado».",
+      "start_month": "Indica el año y mes en que empezaste a trabajar en el proyecto, por ejemplo 2025-02.",
+      "end_month": "Indica cuándo terminó el proyecto. Déjalo vacío si todavía sigue en marcha.",
+      "url": "Pega un enlace que otras personas puedan abrir, como una demostración o un repositorio público.",
+      "validation_context": "Describe qué problema resuelve el proyecto, para quién lo hiciste y cómo lo usaste o probaste.",
+      "contributions": "Describe lo que hiciste en el proyecto, una contribución por línea.",
+      "technologies": "Escribe los lenguajes, herramientas o servicios que usaste en el proyecto, uno por línea."
+    },
+    "skill_areas": {
+      "name": "Pon un nombre al grupo de competencias, como «Frontend» o «Bases de datos».",
+      "skills": "Escribe una competencia de esta área por línea, como «Modelado de datos» o «PostgreSQL»."
+    },
+    "education": {
+      "title": "Escribe el nombre del título, grado o programa que cursaste.",
+      "institution": "Indica el nombre de la institución en la que estudiaste.",
+      "start_year": "Escribe el año en que comenzaste los estudios, por ejemplo 2020.",
+      "end_year": "Escribe el año en que terminaste los estudios. Déjalo vacío si siguen en curso.",
+      "details": "Agrega una especialidad, mención o logro académico relevante para tu CV."
+    },
+    "certifications": {
+      "name": "Escribe el nombre tal como aparece en el certificado.",
+      "issuer": "Indica la organización que emitió la certificación.",
+      "year": "Escribe el año en que se emitió el certificado.",
+      "credential_id": "Escribe el código o número de la credencial, si el emisor te lo entregó.",
+      "verification_url": "Pega el enlace donde se pueda verificar la credencial, si está disponible."
+    },
+    "languages": {
+      "language": "Escribe el idioma que quieres incluir, como inglés o portugués.",
+      "level": "Indica tu nivel real. Puedes usar un nivel como B2 o una descripción como «Nativo».",
+      "usage": "Explica cómo usas el idioma, como en reuniones o al leer documentación técnica."
+    },
+    "additional_sections": {
+      "title": "Pon un título a la sección extra, como «Voluntariado» o «Publicaciones».",
+      "lines": "Agrega un elemento de esta sección por línea, con el contexto que ayude a entenderlo."
+    }
+  },
   "move_up": "Subir",
   "move_down": "Bajar",
   "remove_row": "Quitar elemento",

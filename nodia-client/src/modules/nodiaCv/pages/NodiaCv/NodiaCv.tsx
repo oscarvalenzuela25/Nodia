@@ -14,6 +14,7 @@ import ConfirmDialog from "../../../../components/ConfirmDialog";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
+import { ProductHeading } from "../../../../theme/productBrand";
 import ProfileEditor from "../../components/ProfileEditor/ProfileEditor";
 import ProfilesList from "../../components/ProfilesList/ProfilesList";
 import CvGeneration from "../../components/CvGeneration/CvGeneration";
@@ -37,9 +38,14 @@ export default function NodiaCv() {
   const [denied, setDenied] = useState(false);
   const onDenial = useCallback(() => setDenied(true), []);
   return (
-    <Stack spacing={3} sx={{ minWidth: 0, width: "100%", maxWidth: "80rem", mx: "auto" }}>
+    <Stack
+      component="section"
+      aria-labelledby="nodia-cv-title"
+      spacing={3}
+      sx={{ minWidth: 0, width: "100%", maxWidth: "80rem", mx: "auto" }}
+    >
       <Stack spacing={0.75}>
-        <Typography component="h1" variant="h4" sx={{ fontWeight: 750 }}>{t("title")}</Typography>
+        <ProductHeading id="nodia-cv-title">{t("title")}</ProductHeading>
         <Typography color="text.secondary">{t("intro")}</Typography>
       </Stack>
       {denied ? <Alert severity="error">{t("access_lost")}</Alert> : <NodiaCvWorkspace onDenial={onDenial} />}

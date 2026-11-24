@@ -1,9 +1,10 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { Alert, Box, Button, IconButton, Paper, Stack, Tooltip, Typography } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 import ArrowUpwardOutlined from "@mui/icons-material/ArrowUpwardOutlined";
 import ArrowDownwardOutlined from "@mui/icons-material/ArrowDownwardOutlined";
+import HelpOutlineOutlined from "@mui/icons-material/HelpOutlineOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
 import { useTranslation } from "react-i18next";
 import { Controller, useFieldArray, useForm, type Control, type FieldPath } from "react-hook-form";
@@ -16,17 +17,64 @@ import { getServerErrorCode } from "../../../../config/axiosInstance";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
 import { profileEditorSchema, profileEditorValues, profileRowLimit, type ProfileForm, type ProfileInput, type ProfileRecord } from "../../infrastructure/profileSchema";
 import { profileWriteMayHaveCommitted } from "../../infrastructure/profiles";
-import { collections, contactFields, personalFields, type ProfileField } from "./profileFields";
+import { collections, contactFields, personalFields, type ProfileCollection, type ProfileField } from "./profileFields";
 
 type FormControl = Control<ProfileForm, unknown, ProfileInput>;
 const fieldGrid = { display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))" }, gap: 2 };
 const target = { minHeight: 44, minWidth: 44 };
 
-function ProfileInputField({ item, name, control, disabled, autoFocus }: {
+type ActiveProfileHelp = { id: string; activated: boolean };
+type ProfileHelp = {
+  active: ActiveProfileHelp | null;
+  setActive: Dispatch<SetStateAction<ActiveProfileHelp | null>>;
+};
+type ProfileFieldGroup = "personal" | "contact" | ProfileCollection;
+
+function ProfileInputField({ item, name, group, help, control, disabled, autoFocus }: {
   item: ProfileField; name: FieldPath<ProfileForm>; control: FormControl; disabled: boolean; autoFocus?: boolean;
+  group: ProfileFieldGroup; help: ProfileHelp;
 }) {
   const { t } = useTranslation("nodiaCv");
   const id = useId();
+  const helpId = `${id}-help`;
+  const label = t(`fields.${item.name}`);
+  const helpOpen = !disabled && help.active?.id === helpId;
+  const dismissHelp = (fromMouseLeave = false) => {
+    help.setActive(current => current?.id === helpId && !(fromMouseLeave && current.activated) ? null : current);
+  };
+  const helpButton = (
+    <IconButton
+      id={helpId}
+      type="button"
+      size="small"
+      aria-label={t("field_help_label", { field: label })}
+      aria-expanded={helpOpen}
+      disabled={disabled}
+      onClick={() => help.setActive(current => current?.id === helpId && current.activated
+        ? null
+        : { id: helpId, activated: true })}
+      onBlur={() => dismissHelp()}
+      sx={{ width: { xs: 44, sm: 28 }, height: { xs: 44, sm: 28 }, flexShrink: 0, color: "text.secondary" }}
+    >
+      <HelpOutlineOutlined sx={{ fontSize: 18 }} />
+    </IconButton>
+  );
+  const labelAdornment = disabled ? helpButton : (
+    <Tooltip
+      id={`${helpId}-description`}
+      title={t(`field_help.${group}.${item.name}`)}
+      open={helpOpen}
+      onOpen={() => help.setActive({ id: helpId, activated: false })}
+      // A tap also emits mouse events. Its help stays open until dismissed.
+      onClose={event => dismissHelp(event.type === "mouseleave")}
+      enterDelay={0}
+      describeChild
+      disableTouchListener
+      arrow
+    >
+      {helpButton}
+    </Tooltip>
+  );
   const multiline = item.kind === "area" || item.kind === "lines";
   const hint = item.kind === "lines" ? t("one_per_line")
     : item.kind === "month" ? t("month_hint")
@@ -37,15 +85,14 @@ function ProfileInputField({ item, name, control, disabled, autoFocus }: {
       <Controller name={name} control={control} render={({ field, fieldState }) => {
         const value = Array.isArray(field.value) ? field.value.join("\n") : typeof field.value === "string" ? field.value : "";
         const helperText = fieldState.error?.message ? t(fieldState.error.message) : hint;
-        const label = t(`fields.${item.name}`);
         return item.kind === "status" ? (
-          <SelectSingleInput id={id} label={label} value={value || "unspecified"} disabled={disabled} clearable={false}
+          <SelectSingleInput id={id} label={label} labelAdornment={labelAdornment} value={value || "unspecified"} disabled={disabled} clearable={false}
             onChange={next => field.onChange(next === "unspecified" ? "" : next)}
             error={Boolean(fieldState.error)} helperText={helperText}
             options={[{ value: "unspecified", label: t("status.unspecified") }, { value: "current", label: t("status.current") },
               { value: "finished", label: t("status.finished") }]} />
         ) : (
-          <TextInput id={id} name={field.name} label={label} value={value} onChange={field.onChange} onBlur={field.onBlur} autoFocus={autoFocus}
+          <TextInput id={id} name={field.name} label={label} labelAdornment={labelAdornment} value={value} onChange={field.onChange} onBlur={field.onBlur} autoFocus={autoFocus}
             disabled={disabled} required={item.required} type={type} multiline={multiline} minRows={multiline ? 2 : undefined}
             maxRows={multiline ? 6 : undefined} placeholder={item.kind === "month" ? "YYYY-MM" : item.kind === "year" ? "YYYY" : undefined}
             inputMode={item.kind === "year" ? "numeric" : undefined} error={Boolean(fieldState.error)} helperText={helperText} />
@@ -55,8 +102,8 @@ function ProfileInputField({ item, name, control, disabled, autoFocus }: {
   );
 }
 
-function ProfileCollectionEditor({ definition, control, disabled }: {
-  definition: (typeof collections)[number]; control: FormControl; disabled: boolean;
+function ProfileCollectionEditor({ definition, help, control, disabled }: {
+  definition: (typeof collections)[number]; help: ProfileHelp; control: FormControl; disabled: boolean;
 }) {
   const { t } = useTranslation("nodiaCv");
   const id = useId();
@@ -107,7 +154,7 @@ function ProfileCollectionEditor({ definition, control, disabled }: {
             <Box sx={fieldGrid}>
               {definition.fields.map(item => (
                 <ProfileInputField key={item.name} item={item} name={`${definition.name}.${index}.${item.name}` as FieldPath<ProfileForm>}
-                  control={control} disabled={disabled} />
+                  group={definition.name} help={help} control={control} disabled={disabled} />
               ))}
             </Box>
           </Paper>
@@ -138,11 +185,38 @@ export default function ProfileEditor({ title, values, editing, onClose, onSave,
   const [conflict, setConflict] = useState(false);
   const [reloading, setReloading] = useState(false);
   const [uncertain, setUncertain] = useState<{ input: ProfileInput; key: string }>();
+  const [activeHelp, setActiveHelp] = useState<ActiveProfileHelp | null>(null);
   const { handleSubmit, control, reset, setError, formState: { isDirty, isSubmitting, errors } } = useForm<ProfileForm, unknown, ProfileInput>({
     resolver: zodResolver(profileEditorSchema), defaultValues: values, mode: "onTouched",
   });
   const busy = isSubmitting || reloading;
   const disabled = busy || Boolean(uncertain);
+  const help: ProfileHelp = { active: activeHelp, setActive: setActiveHelp };
+
+  useEffect(() => {
+    const ownerDocument = editor.current?.ownerDocument;
+    if (!ownerDocument || !activeHelp || disabled) return;
+
+    const dismissOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      setActiveHelp(null);
+    };
+    const dismissOnOutsidePointer = (event: PointerEvent) => {
+      if (!(event.target instanceof Node)) return;
+      const trigger = ownerDocument.getElementById(activeHelp.id);
+      const tooltip = ownerDocument.getElementById(`${activeHelp.id}-description`);
+      if (trigger?.contains(event.target) || tooltip?.contains(event.target)) return;
+      setActiveHelp(null);
+    };
+    // Capture Escape before the surrounding modal interprets it as a close.
+    ownerDocument.addEventListener("keydown", dismissOnEscape, true);
+    ownerDocument.addEventListener("pointerdown", dismissOnOutsidePointer, true);
+    return () => {
+      ownerDocument.removeEventListener("keydown", dismissOnEscape, true);
+      ownerDocument.removeEventListener("pointerdown", dismissOnOutsidePointer, true);
+    };
+  }, [activeHelp, disabled]);
 
   const close = () => {
     if (inFlight.current) return;
@@ -156,6 +230,7 @@ export default function ProfileEditor({ title, values, editing, onClose, onSave,
     if (inFlight.current || discard || conflict) return;
     const intent = baseline ?? { requestKey: uncertain?.key ?? crypto.randomUUID() };
     inFlight.current = true;
+    setActiveHelp(null);
     setServerError("");
     try {
       await onSave(uncertain?.input ?? input, intent);
@@ -239,17 +314,17 @@ export default function ProfileEditor({ title, values, editing, onClose, onSave,
         {uncertain && <Alert severity="warning">{t("uncertain_create")}</Alert>}
         <Box sx={fieldGrid}>
           {personalFields.map(item => <ProfileInputField key={item.name} item={item} name={item.name as FieldPath<ProfileForm>}
-            control={control} disabled={disabled} autoFocus={!editing && item.name === "profile_name"} />)}
+            group="personal" help={help} control={control} disabled={disabled} autoFocus={!editing && item.name === "profile_name"} />)}
         </Box>
         <Stack component="section" spacing={1.5}>
           <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 700 }}>{t("sections.contact")}</Typography>
           <Box sx={fieldGrid}>
             {contactFields.map(item => <ProfileInputField key={item.name} item={item} name={`contact.${item.name}` as FieldPath<ProfileForm>}
-              control={control} disabled={disabled} />)}
+              group="contact" help={help} control={control} disabled={disabled} />)}
           </Box>
         </Stack>
         {collections.map(definition => <ProfileCollectionEditor key={definition.name} definition={definition}
-          control={control} disabled={disabled} />)}
+          help={help} control={control} disabled={disabled} />)}
       </Stack>
     </BaseModal>
   );
