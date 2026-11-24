@@ -19,7 +19,7 @@ vi.mock(
     getCurrentGeminiAgenticLogin: vi.fn(), startGeminiAgenticLogin: vi.fn(),
     getGeminiAgenticLoginStatus: vi.fn(), submitGeminiAgenticCode: vi.fn(), cancelGeminiAgenticLogin: vi.fn(),
     startGeminiLogin: vi.fn(),
-    disconnectGeminiWeb: vi.fn(),
+    disconnectGeminiAgentic: vi.fn(),
     getGeminiLoginStatus: vi.fn(),
     cancelGeminiLogin: vi.fn(),
     getGeminiLoginFrame: vi.fn().mockResolvedValue({ ready: false, frame_id: null, image: null, width: 1280, height: 850 }),

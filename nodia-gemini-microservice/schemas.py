@@ -35,6 +35,10 @@ class AgenticLoginCode(BaseModel):
     code: str = Field(pattern=r"^[A-Za-z0-9_./+~\-]{8,2048}$", max_length=2048)
 
 
+class AgenticLogoutResponse(BaseModel):
+    authenticated: Literal[False]
+
+
 class AgenticStatusResponse(BaseModel):
     engine: Literal["agentic"] = "agentic"
     available: bool

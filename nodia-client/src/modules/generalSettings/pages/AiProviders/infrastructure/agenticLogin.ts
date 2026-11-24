@@ -30,5 +30,6 @@ export const geminiAgenticCodeSchema = z.object({
 }).strict();
 export type GeminiAgenticCode = z.infer<typeof geminiAgenticCodeSchema>;
 export const currentGeminiAgenticLoginSchema = z.object({ job: geminiAgenticLoginSchema.nullable() }).strict();
+export const geminiAgenticLogoutSchema = z.object({ authenticated: z.literal(false) }).strict();
 export const agenticLoginIsActive = (job: GeminiAgenticLoginJob | null | undefined) =>
   Boolean(job && ["running", "waiting_code", "verifying"].includes(job.state));
