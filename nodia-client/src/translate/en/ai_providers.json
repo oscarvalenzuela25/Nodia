@@ -190,6 +190,7 @@
   "modal_sync_models": {
     "choose_reasoning": "Select reasoning...",
     "no_models_available": "The provider returned no available models.",
+    "no_allowed_models_available": "The provider catalog does not include any models permitted for this connection.",
     "title": "Sync & configure models",
     "subtitle": "Discover live models from the provider and select which ones to activate for the system.",
     "provider_badge_agentic": "Agentic",

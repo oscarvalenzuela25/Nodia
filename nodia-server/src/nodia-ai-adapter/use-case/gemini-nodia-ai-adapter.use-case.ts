@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { parseNativeTerminalProof } from '../native-terminal-proof.js';
 import { createHash } from 'node:crypto';
+import { isAgenticModelAllowed } from '../../ai-provider/helpers/agentic-model-policy.helper.js';
 import { imageSize } from 'image-size';
 import { DataSource, type EntityManager } from 'typeorm';
 import type { NodiaAiSelection } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
@@ -213,6 +214,8 @@ export class GeminiNodiaAiAdapterUseCase extends NodiaAiAdapterPort {
       );
     }
     const fields = record(row.fields);
+    if (!isAgenticModelAllowed(fields?.agentic, selection.model_id))
+      throw new NodiaAiAdapterError('model_unavailable', 'not_dispatched');
     return createHash('sha256')
       .update(
         JSON.stringify(

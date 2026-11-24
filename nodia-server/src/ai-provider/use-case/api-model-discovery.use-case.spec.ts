@@ -77,7 +77,8 @@ describe('API models discovered through use cases', () => {
   });
   it('discovers new versions dynamically without inventing capabilities, quota or selection', async () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation(models));
-    const { sync, service } = setup();
+    const { sync, service, provider } = setup();
+    Object.assign(provider.fields.agentic, { allowed_model_ids: ['fixture-agentic-only'] });
     const result = await sync.execute('42', {
       mode: 'api_key',
       persist: false,

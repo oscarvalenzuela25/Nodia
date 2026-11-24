@@ -20,12 +20,12 @@ temporal y leyó `model/list` por su transporte habitual. El catálogo devolvió
 `low`, `medium`, `high`, `xhigh`, `max` y `ultra`. El selector de Nodia
 usa esos metadatos y mantiene su selección guardada.
 
-Tras publicar Server, **Actualizar modelos** permite activar GPT-6.2-Sol
-para la conexión ChatGPT Agentic si el catálogo de su cuenta lo devuelve.
-La validación local cubre descubrimiento y transporte. La comprobación de
-inferencia con una cuenta, el guardado de la selección y la recalificación
-de capacidades ligadas al nuevo binario siguen pendientes. Teacher conserva
-su host nativo específico.
+La [configuración de las conexiones existentes](../../mvp/ai-provider-feature-contract.md#catálogos-de-agentic-por-conexión--2026-11-24)
+incorpora GPT-6.2-Sol a las opciones Agentic junto con GPT-6 Luna y
+GPT-6.1 Terra. **Actualizar modelos** consulta los metadatos de la cuenta.
+El descubrimiento y el transporte se verificaron localmente. La inferencia
+con una cuenta y la calificación de capacidades ligadas al nuevo binario
+siguen pendientes. Teacher conserva su host nativo específico.
 
 ### Actualización del catálogo solicitada — 2026-10-28
 

@@ -9,6 +9,7 @@ import { GeminiService } from '../../common/ai/gemini.service.js';
 import { MistralService } from '../../common/ai/mistral.service.js';
 import { ProviderService } from '../../provider/provider.service.js';
 import { AiProviderService } from '../../ai-provider/ai-provider.service.js';
+import { isAgenticModelAllowed, restrictAgenticModelFields } from '../../ai-provider/helpers/agentic-model-policy.helper.js';
 import { AnalyzeInvoiceDto } from '../dto/analyze-invoice.dto.js';
 import { AnalyzeInvoiceResponse } from '../types/invoice.types.js';
 import { canUseGemini, canUseMistral } from '../../config/envs.config.js';
@@ -221,9 +222,12 @@ export class AnalyzeInvoiceUseCase {
     // Scoped modes never inherit another channel's historical root preferences.
     const storedFields = configuredAiProvider?.fields ?? {};
     const hasScoped = Boolean(storedFields.agentic || storedFields.api_key);
-    const modeFields =
+    const storedModeFields =
       (effectiveMode ? storedFields[effectiveMode] : undefined) ??
       (hasScoped ? {} : storedFields);
+    const sessionMode = effectiveMode === 'agentic';
+    const modeFields = sessionMode && storedFields.agentic
+      ? restrictAgenticModelFields(storedModeFields) : storedModeFields;
     const defaultModel =
       modeFields?.selected_model || modeFields?.default_model;
     const ocrModel = modeFields?.ocr_focus_model || modeFields?.ocr_model;
@@ -235,7 +239,9 @@ export class AnalyzeInvoiceUseCase {
         : ocrModel && typeof ocrModel === 'string' && ocrModel.trim() !== ''
           ? ocrModel
           : defaultModel);
-    const sessionMode = effectiveMode === 'agentic';
+    if (sessionMode && typeof effectiveModel === 'string'
+      && !isAgenticModelAllowed(storedFields.agentic, effectiveModel))
+      throw new BadRequestException('ai_provider:invalid_models');
     const levels: unknown = modeFields?.thinking_levels;
     if (
       sessionMode &&

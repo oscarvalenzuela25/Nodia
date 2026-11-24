@@ -100,6 +100,46 @@ describe('SaveAiProviderConfigurationUseCase', () => {
     await f.uc.execute(f.existing.id, { name: 'Renamed' }, f.actor);
     expect(f.existing.fields).toEqual(previous);
   });
+  it('cleans excluded roles, legacy aliases and preferences without changing API configuration', async () => {
+    const f = fixture();
+    const apiFields = { selected_model: 'fixture-api', available_models: [{ id: 'fixture-api' }] };
+    f.existing.fields.api_key = apiFields;
+    f.existing.fields.agentic = {
+      allowed_model_ids: ['fixture-current'],
+      selected_model: 'fixture-retired',
+      ocr_focus_model: 'fixture-retired',
+      thinking_level: 'high',
+      thinking_levels: { 'fixture-current': 'medium', 'fixture-retired': 'high' },
+    };
+    await f.uc.execute(f.existing.id, {
+      fields: {
+        model: 'fixture-retired',
+        chat_model: 'fixture-current',
+        selected_model: 'fixture-retired',
+        agentic: {
+          model: 'fixture-current',
+          chat_model: 'fixture-retired',
+          available_models: [{ id: 'fixture-current' }, { id: 'fixture-retired' }],
+        },
+      },
+    }, f.actor);
+    expect(f.existing.fields).toMatchObject({ api_key: apiFields });
+    for (const key of ['model', 'chat_model', 'selected_model'])
+      expect(f.existing.fields).not.toHaveProperty(key);
+    expect(f.existing.fields.agentic).toEqual({
+      allowed_model_ids: ['fixture-current'],
+      available_models: [{ id: 'fixture-current' }],
+      thinking_levels: { 'fixture-current': 'medium' },
+    });
+  });
+  it('rejects a malformed restriction and cannot remove it by replacing the scope with null', async () => {
+    const f = fixture();
+    f.existing.fields.agentic.allowed_model_ids = ['fixture-current'];
+    for (const agentic of [null, { allowed_model_ids: ['duplicate', 'duplicate'] }]) {
+      await expect(f.uc.execute(f.existing.id, { fields: { agentic } }, f.actor)).rejects.toThrow('invalid_configuration');
+    }
+    expect(f.providerRepo.save).not.toHaveBeenCalled();
+  });
   it('uses only inherited manager and does not reset authority locks/timeouts', async () => {
     const f = fixture();
     await f.uc.execute(

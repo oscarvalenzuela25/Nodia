@@ -213,6 +213,13 @@ describe('Codex invoice extraction use case', () => {
     });
     expect(rpc.request).not.toHaveBeenCalled();
   });
+  it('rejects an excluded override even when the native catalog still contains it', async () => {
+    const acquire = vi.spyOn(runtime, 'acquire');
+    Object.assign(provider.fields.agentic, { allowed_model_ids: ['future-model'] });
+    await expect(useCase.execute('42', 'synthetic-model', png)).rejects.toThrow('invalid_models');
+    expect(acquire).not.toHaveBeenCalled();
+    expect(rpc.request).not.toHaveBeenCalled();
+  });
   it.each(['removed-model', 'API-UNCHANGED'])(
     'rejects selected model %s before inference without changing selection',
     async (model) => {

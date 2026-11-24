@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { AiProviderService } from '../ai-provider.service.js';
+import { isAgenticModelAllowed, restrictAgenticModelFields } from '../helpers/agentic-model-policy.helper.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
 import {
   codexError,
@@ -86,9 +87,18 @@ export class ExecuteCodexInvoiceUseCase {
       throw new BadRequestException(
         'El canal Codex no está habilitado para esta conexión.',
       );
-    const scoped = provider.fields?.agentic ?? {};
+    const storedAgentic = provider.fields?.agentic ?? {};
+    const scoped = restrictAgenticModelFields(storedAgentic);
     const selected = model ?? scoped.ocr_model ?? scoped.selected_model;
-    const levels = scoped.thinking_levels ?? {};
+    if (
+      typeof selected !== 'string' ||
+      !selected.trim() ||
+      selected.length > 128
+    )
+      throw new BadRequestException('Sin modelo asignado para Codex.');
+    if (!isAgenticModelAllowed(storedAgentic, selected))
+      throw new BadRequestException('ai_provider:invalid_models');
+    const levels = (scoped.thinking_levels as Record<string, unknown> | undefined) ?? {};
     const thinking = native
       ? (native.effortId ?? undefined)
       : (effort ??
@@ -96,12 +106,6 @@ export class ExecuteCodexInvoiceUseCase {
           ? levels[selected]
           : scoped.thinking_level) ??
         undefined);
-    if (
-      typeof selected !== 'string' ||
-      !selected.trim() ||
-      selected.length > 128
-    )
-      throw new BadRequestException('Sin modelo asignado para Codex.');
     if (
       thinking !== undefined &&
       (typeof thinking !== 'string' ||

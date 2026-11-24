@@ -447,7 +447,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/ai-provider/use-case/get-ai-providers-health.use-case.ts",
-          "sha256": "d61b45c455d989b07a99e8867c4a1c93b7c6b2fc05d99f2b8f8a47c2ceed960a"
+          "sha256": "e5948a99c6e160700f97422771147c622ecbeedeecddfafd27bc24120853ca55"
         },
         {
           "path": "nodia-server/src/common/ai/codex/codex-runtime.service.ts",
@@ -5791,7 +5791,7 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/ai-provider/use-case/execute-codex-invoice.use-case.ts",
-          "sha256": "6339f2d557b7b3c073c391ea15b0888500f84d03101ecbe2fcd776778c628837"
+          "sha256": "64f422304378f118a8378607b41698223e0e13350615e7319e80bf732804ddda"
         },
         {
           "path": "nodia-server/src/common/ai/api-invoice-contract.ts",
