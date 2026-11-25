@@ -52,6 +52,12 @@ const operationMissing = { code: 1, body: { schema_version: 1, status: 'failed',
 const geminiProof = { schema_version: 1, source_sha: next, source_tree_sha: '1'.repeat(40), image_id: 'sha256:' + '2'.repeat(64) };
 const observedGemini = (source = old, hash = oldTree, proof = geminiProof) => ({ code: 0, body: {
   ...ready(source, hash), ...(proof === null ? {} : { gemini_runtime: proof }) } });
+const codexCv = { schema_version: 1, source_sha: next, source_tree_sha: '3'.repeat(40),
+  binary_sha512: '4'.repeat(128), catalog_sha512: '5'.repeat(128), manifest_sha256: '6'.repeat(64) };
+const geminiCv = { ...geminiProof, manifest_sha256: '7'.repeat(64), runtime_hash: '8'.repeat(64),
+  policy_hash: '9'.repeat(64) };
+const cvProofs = { gemini_runtime: geminiProof, codex_cv_runtime: codexCv, gemini_cv_sdk: geminiCv };
+const observedCv = (source = old, hash = oldTree, proofs = cvProofs) => ({ code: 0, body: { ...ready(source, hash), ...proofs } });
 
 test('baseline forwards only the typed and live optional Gemini proof from the restricted status', async () => {
   const calls = [];
@@ -60,6 +66,12 @@ test('baseline forwards only the typed and live optional Gemini proof from the r
   assert.deepEqual(calls, ['status']);
   assert.deepEqual(baseline.current, ready().current);
   assert.deepEqual(baseline.gemini_runtime, geminiProof);
+});
+
+test('restricted baseline carries both live CV proofs beside the Gemini image and Node package', async () => {
+  const baseline = await readBackend(environment, { sshOptions: { expectedFingerprint }, send: async () => observedCv() });
+  assert.deepEqual(baseline.current, ready().current);
+  for (const [name, proof] of Object.entries(cvProofs)) assert.deepEqual(baseline[name], proof);
 });
 
 test('coordinated backend checks exact runtime before submit and after commit without retrying drift', async t => {
@@ -92,6 +104,31 @@ test('coordinated backend checks exact runtime before submit and after commit wi
       assert.equal(Object.hasOwn(state, 'gemini_runtime'), false);
     }
     if (effect.startsWith('complete')) assert.equal(calls[calls.indexOf('ci') + 1], 'status');
+  });
+});
+
+test('independent Codex CV or Gemini SDK drift blocks a new backend effect and existing-operation reconciliation', async t => {
+  const plan = { ...options.plan, ...cvProofs };
+  const uploaded = { code: 0, body: { schema_version: 1, status: 'uploaded', artifact_id: artifact.id,
+    artifact_zip_sha256: artifact.digest.slice(7), bytes: 123, deployment_requested: false } };
+  const committed = { code: 0, body: operation('complete') };
+  const changedCodex = { ...cvProofs, codex_cv_runtime: { ...codexCv, binary_sha512: 'e'.repeat(128) } };
+  const changedGemini = { ...cvProofs, gemini_cv_sdk: { ...geminiCv, policy_hash: 'f'.repeat(64) } };
+  const cases = [
+    [[operationMissing, observedCv(old, oldTree, changedCodex)], 0, /codex_cv_runtime_attestation_changed/],
+    [[operationMissing, observedCv(), uploaded, observedCv(old, oldTree, changedGemini)], 1, /gemini_cv_sdk_attestation_changed/],
+    [[committed, observedCv(next, tree, changedCodex)], 0, /codex_cv_runtime_attestation_changed/],
+    [[committed, observedCv(next, tree, changedGemini)], 0, /gemini_cv_sdk_attestation_changed/],
+  ];
+  for (const [replies, uploads, error] of cases) await t.test(String(error), async () => {
+    const calls = [];
+    await assert.rejects(deployBackend({ ...options, plan, send: async (_, command) => {
+      calls.push(command);
+      return replies.shift();
+    } }), error);
+    assert.equal(calls.filter(command => command.startsWith('upload ')).length, uploads);
+    assert.ok(calls.every(command => !command.startsWith('deploy ')));
+    assert.deepEqual(replies, []);
   });
 });
 function statusOnlySend(body = ready()) {

@@ -45,6 +45,24 @@ test('optional runtime attestation is separately typed without widening the exac
   assert.throws(() => verifyDeploymentStatus({ ...status, gemini_runtime: proof, extra: true }));
 });
 
+test('CV proofs have separate strict schemas and the SDK identifies the running Gemini image', () => {
+  const status = deployed();
+  const git = { schema_version: 1, source_sha: 'd'.repeat(40), source_tree_sha: 'c'.repeat(40) };
+  const gemini = { ...git, image_id: 'sha256:' + 'a'.repeat(64) };
+  const sdk = { ...gemini, manifest_sha256: 'b'.repeat(64), runtime_hash: 'd'.repeat(64), policy_hash: 'e'.repeat(64) };
+  const codex = { ...git, binary_sha512: 'c'.repeat(128), catalog_sha512: 'd'.repeat(128), manifest_sha256: 'e'.repeat(64) };
+  const observed = { ...status, gemini_runtime: gemini, gemini_cv_sdk: sdk, codex_cv_runtime: codex };
+  assert.deepEqual(verifyDeploymentStatus(observed), status.current);
+  assert.deepEqual(verifyDeploymentStatus({ ...status, codex_cv_runtime: codex }), status.current);
+  assert.throws(() => verifyDeploymentStatus({ ...status, gemini_cv_sdk: sdk }), /gemini_cv_sdk_attestation_image_mismatch/);
+  assert.throws(() => verifyDeploymentStatus({ ...observed, gemini_cv_sdk: { ...sdk, source_sha: 'f'.repeat(40) } }),
+    /gemini_cv_sdk_attestation_image_mismatch/);
+  assert.throws(() => verifyDeploymentStatus({ ...observed, gemini_cv_sdk: { ...sdk, extra: 'private' } }),
+    /gemini_cv_sdk_attestation_invalid/);
+  assert.throws(() => verifyDeploymentStatus({ ...observed, codex_cv_runtime: { ...codex, catalog_sha512: 'd'.repeat(127) } }),
+    /codex_cv_runtime_attestation_invalid/);
+});
+
 test('invalid events, refs, destinations, key format and host pins fail before SSH', async () => {
   for (const change of [
     { GITHUB_EVENT_NAME: 'push' }, { GITHUB_EVENT_NAME: 'pull_request' },

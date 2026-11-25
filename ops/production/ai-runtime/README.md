@@ -1,5 +1,60 @@
 # Login de Codex y Antigravity en el VPS
 
+## Acreditación productiva de Nodia CV Agentic — 2026-11-25
+
+La entrega del [Plan113](../../../docs/mvp/113-nodia-cv-implementation-plan.md#6-preparar-la-entrega-y-verificar-adopción)
+mantiene dos acreditaciones independientes del backend y del historial
+de la VM. El estado restringido del VPS muestra `codex_cv_runtime`
+para el binario registrado y `gemini_cv_sdk` para el SDK y la sesión
+del contenedor acreditado por `gemini_runtime`.
+
+1. Empaquetar [los operadores de CV](upgrade-cv-operators.py) y [el
+   adaptador Gemini](rollout-gemini.py) desde la fuente revisada de
+   la promoción. Añadir el binario Codex CV de perfil `release` y su
+   manifiesto. Transferir los paquetes públicos con sus hashes
+   independientes a una carpeta nueva del operador en el VPS.
+2. Leer el release actual por SSH restringido. El comando `inspect`
+   del instalador de operadores verifica el release, los assets
+   instalados, el inventario y las unidades activas. `install --execute`
+   exige la huella devuelta, obtiene los locks de instalación y CD,
+   y conserva los archivos originales. Instalar los operadores
+   compatibles no reinicia la aplicación.
+3. Preparar [el host Codex CV](prepare-codex-cv-runtime.py) con su
+   manifiesto y la selección explícita. La prueba usa el CLI oficial
+   instalado y el binario exacto en aislamiento, sin usar la sesión.
+   Activar la extensión de API y worker en la ventana con drenaje.
+   Verificar el registro `73`, los hashes y el estado de ambos procesos.
+4. Preparar la imagen Gemini con el SDK fijado en el paquete,
+   autenticar la sesión privada del SDK por el flujo oficial en una
+   terminal interactiva y activar la imagen con un modelo y esfuerzo
+   explícitos. Se conserva la sesión CLI y el contenedor anterior.
+   La observación de catálogo del SDK acredita la nueva generación
+   del contenedor.
+5. Constatar ambos recibos desde el comando restringido `status`.
+   La promoción a master conserva los commits fuente y sus árboles
+   exactos. El CD coteja las acreditaciones antes del upload y del
+   envío, al confirmar Server y justo antes de Pages.
+
+El paquete Gemini de CV se crea con `package --cv-sdk-archive ARCHIVO`.
+En el VPS, `prepare-cv` construye la imagen y devuelve `gemini_cv_sdk_prepared`.
+`login-cv` requiere una terminal privada y una redirección OAuth de loopback.
+Usar el puerto de `redirect_uri` que muestra la terminal y abrir un túnel SSH
+local para ese puerto antes de abrir la URL de Google. Tras
+`gemini_cv_sdk_login_complete`, ejecutar `activate` con el release de
+`prepare-cv` y los argumentos `--model-id` y `--effort-id`. Los tres comandos
+requieren `--execute` y el mismo hash del manifiesto.
+
+Revisar el registro raíz de la fase y los originales si el instalador
+devuelve un fallo después de una escritura. En una activación Codex
+completada, el comando `rollback` requiere el mismo release y una
+nueva comprobación de drenaje. Una generación nueva del contenedor
+Gemini exige volver a acreditar su identidad antes de promover.
+
+El chequeo local de capacidad de Codex y la observación autenticada
+de Gemini acreditan la instalación. La prueba de generación de CV
+se califica por separado para la conexión, el modelo, el esfuerzo y
+la sesión de cada entorno.
+
 ## Actualización coordinada del adaptador Gemini — 2026-11-24
 
 El [operador de rollout](rollout-gemini.py) prepara una imagen de Antigravity

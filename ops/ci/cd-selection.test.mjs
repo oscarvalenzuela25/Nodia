@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { selectChecks, unmanagedRuntimePaths, ancestor, deploymentPlan, serverContentEquivalenceAllowed } from './cd-selection.mjs';
 
@@ -80,6 +81,75 @@ test('only an exact attested Gemini tree at a reachable commit permits a coordin
   f.write('nodia-server/native/host.rs', 'new native host\n');
   assert.throws(() => deploymentPlan({ ...options, head: f.commit(), geminiRuntime: proof }),
     /unmanaged_runtime_change_requires_coordinated_rollout/);
+});
+
+test('the reviewed Codex CV tree and matching Gemini SDK are required even after the backend commits', t => {
+  const f = fixture(t);
+  const native = 'nodia-server/native/teacher-codex-host', gemini = 'nodia-gemini-microservice';
+  const checkout = fileURLToPath(new URL('../..', import.meta.url));
+  const source = (...args) => execFileSync('git', ['-C', checkout, ...args]);
+  f.write(gemini + '/main.py', 'old adapter\n');
+  const base = f.commit();
+  // Copy the review's exact tracked hosts, including the shared Teacher inputs.
+  for (const name of source('ls-tree', '-r', '--name-only', '-z', 'HEAD', native).toString().split('\0').filter(Boolean)) {
+    f.write(name, source('show', 'HEAD:' + name));
+  }
+  f.write(gemini + '/main.py', 'reviewed adapter\n');
+  const prepared = f.commit();
+  f.write('nodia-server/src/cv.ts', 'CV application bytes\n');
+  const head = f.commit();
+  const identity = directory => ({ schema_version: 1, source_sha: prepared,
+    source_tree_sha: f.git(['rev-parse', prepared + ':' + directory]) });
+  const geminiRuntime = { ...identity(gemini), image_id: 'sha256:' + 'a'.repeat(64) };
+  const geminiCvSdk = { ...geminiRuntime, manifest_sha256: 'b'.repeat(64), runtime_hash: 'c'.repeat(64),
+    policy_hash: 'd'.repeat(64) };
+  const codexCvRuntime = { ...identity(native), binary_sha512: 'd'.repeat(128), catalog_sha512: 'e'.repeat(128),
+    manifest_sha256: 'f'.repeat(64) };
+  const complete = { repo: f.repo, head, clientBase: base, serverBase: base,
+    geminiRuntime, geminiCvSdk, codexCvRuntime, cvAdoptionSource: head };
+  assert.equal(codexCvRuntime.source_tree_sha, '174765ff83c3820b01d4a8741f702472c0b466d6');
+  for (const [clientBase, serverBase] of [[base, base], [base, head], [prepared, head]]) {
+    const plan = deploymentPlan({ ...complete, serverBase, clientBase });
+    assert.deepEqual(plan.gemini_runtime, geminiRuntime);
+    assert.deepEqual(plan.gemini_cv_sdk, geminiCvSdk);
+    assert.deepEqual(plan.codex_cv_runtime, codexCvRuntime);
+    for (const partial of [{ geminiRuntime: undefined }, { geminiCvSdk: undefined }, { codexCvRuntime: undefined },
+      { geminiCvSdk: { ...geminiCvSdk, image_id: 'sha256:' + 'b'.repeat(64) } },
+      { codexCvRuntime: { ...codexCvRuntime, source_sha: base } }]) {
+      assert.throws(() => deploymentPlan({ ...complete, serverBase, clientBase, ...partial }), /unmanaged_runtime_change_requires_coordinated_rollout/);
+    }
+  }
+  f.write('nodia-server/src/cv.ts', 'later application bytes\n');
+  f.write('nodia-client/src/cv.ts', 'later Pages bytes\n');
+  const ordinary = f.commit();
+  const adoptedBaselines = { repo: f.repo, clientBase: head, serverBase: head, cvAdoptionSource: head };
+  const ordinaryPlan = deploymentPlan({ ...adoptedBaselines, head: ordinary });
+  assert.equal(ordinaryPlan.server_required, true);
+  assert.equal(ordinaryPlan.client_required, true);
+  for (const name of ['codex_cv_runtime', 'gemini_runtime', 'gemini_cv_sdk']) assert.equal(Object.hasOwn(ordinaryPlan, name), false);
+
+  f.write(gemini + '/main.py', 'later Gemini runtime bytes\n');
+  const changedGemini = f.commit();
+  const nextGemini = { ...geminiRuntime, source_sha: changedGemini,
+    source_tree_sha: f.git(['rev-parse', changedGemini + ':' + gemini]) };
+  const nextSdk = { ...geminiCvSdk, ...nextGemini };
+  const geminiOnly = { ...adoptedBaselines, head: changedGemini, geminiRuntime: nextGemini };
+  assert.throws(() => deploymentPlan(geminiOnly), /unmanaged_runtime_change_requires_coordinated_rollout/);
+  const geminiPlan = deploymentPlan({ ...geminiOnly, geminiCvSdk: nextSdk });
+  assert.deepEqual(geminiPlan.gemini_runtime, nextGemini);
+  assert.deepEqual(geminiPlan.gemini_cv_sdk, nextSdk);
+  assert.equal(Object.hasOwn(geminiPlan, 'codex_cv_runtime'), false);
+
+  f.git(['checkout', '-q', '--detach', head]);
+  f.write(native + '/src/native.rs', 'arbitrary shared Teacher changes\n');
+  const unreviewed = f.commit();
+  assert.throws(() => deploymentPlan({ ...complete, head: unreviewed,
+    codexCvRuntime: { ...codexCvRuntime, source_sha: unreviewed,
+      source_tree_sha: f.git(['rev-parse', unreviewed + ':' + native]) } }),
+  /unmanaged_runtime_change_requires_coordinated_rollout/);
+  f.git(['checkout', '-q', '--detach', head]);
+  f.write('nodia-server/native/another-host/src/main.rs', 'unrelated native host\n');
+  assert.throws(() => deploymentPlan({ ...complete, head: f.commit() }), /unmanaged_runtime_change_requires_coordinated_rollout/);
 });
 
 test('content equivalence eligibility considers the complete deployed server backlog, including both rename paths', t => {

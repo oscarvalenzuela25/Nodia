@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { withSshFiles, verifyDeploymentStatus } from './check-vps-access.mjs';
 import { CdRejected, isHex, isSha, numeric, outputs, requireCd, safeFailure, writeState, ZIP_LIMIT } from './cd-github.mjs';
 import { uploadArtifact, uploadId, uploadIdentity } from './cd-upload.mjs';
-import { isGeminiRuntimeProof, sameGeminiRuntimeProof } from './gemini-runtime-proof.mjs';
+import { requireRuntimeProofMatch, runtimeProofValidators } from './runtime-attestations.mjs';
 
 const uploadRejectionCodes = new Set(['incoming_quota_reached_operator_cleanup_required',
   'insufficient_upload_headroom', 'prior_update_requires_reconciliation',
@@ -54,18 +54,15 @@ export function requireReady(body) {
   catch { throw new CdRejected('deployment_gateway_not_ready'); }
   return current;
 }
-export function requireGeminiRuntimeMatch(expected, observed) {
-  if (expected === undefined) return {};
-  requireCd(sameGeminiRuntimeProof(expected, observed), 'gemini_runtime_attestation_changed');
-  return { gemini_runtime: observed };
-}
 export async function readBackend(environment = process.env, { send = sshCommand, sshOptions = {} } = {}) {
   return withSshFiles(environment, async session => {
     const result = await send(session, 'status');
     requireCd(result.code === 0, 'backend_status_failed');
-    return { schema_version: 1, status: 'baseline_verified', current: requireReady(result.body),
-      source_sha: result.body.current.source_sha, deployment_requested: false,
-      ...(result.body.gemini_runtime ? { gemini_runtime: result.body.gemini_runtime } : {}) };
+    const current = requireReady(result.body);
+    return { schema_version: 1, status: 'baseline_verified', current,
+      source_sha: current.source_sha, deployment_requested: false,
+      ...Object.fromEntries(Object.keys(runtimeProofValidators).filter(key => Object.hasOwn(result.body, key))
+        .map(key => [key, result.body[key]])) };
   }, { ...sshOptions, allowedEvents: ['push', 'workflow_dispatch'] });
 }
 export function operationId(artifact, ci) {
@@ -93,8 +90,7 @@ export async function deployBackend({ environment = process.env, plan, artifact,
     Number.isSafeInteger(zipBytes) && zipBytes > 0 && zipBytes <= ZIP_LIMIT, 'backend_deploy_input_invalid');
   const id = operationId(artifact, ci);
   const protocol = plan.server_upload_protocol_version ?? 2;
-  const expectedGemini = plan.gemini_runtime;
-  requireCd(expectedGemini === undefined || isGeminiRuntimeProof(expectedGemini), 'gemini_runtime_attestation_invalid');
+  const expectedRuntime = requireRuntimeProofMatch(plan, plan);
   requireCd([1, 2].includes(protocol), 'upload_protocol_upgrade_required');
   let uploadProof = {};
   const record = value => { if (stateFile) writeState(stateFile, { operation_id: id, automatic_retry_allowed: false, ...uploadProof, ...value }); };
@@ -105,7 +101,7 @@ export async function deployBackend({ environment = process.env, plan, artifact,
       const status = await send(session, 'status');
       requireCd(status.code === 0, 'backend_status_failed');
       const current = requireReady(status.body);
-      const runtime = requireGeminiRuntimeMatch(expectedGemini, status.body.gemini_runtime);
+      const runtime = requireRuntimeProofMatch(expectedRuntime, status.body);
       if (current.source_sha === ci.source_sha) {
         requireCd(current.release_id === candidateRelease && current.package_tree_sha256 === candidateTree,
           'backend_current_artifact_mismatch');
@@ -118,7 +114,7 @@ export async function deployBackend({ environment = process.env, plan, artifact,
       if (plan.server_content_equivalence_allowed === true && candidateTree === current.package_tree_sha256) {
         const result = { status: 'content_unchanged', source_sha: current.source_sha,
           release_id: current.release_id, package_tree_sha256: current.package_tree_sha256,
-          candidate_source_sha: ci.source_sha, deployment_requested: false, deployment_performed: false };
+          candidate_source_sha: ci.source_sha, deployment_requested: false, deployment_performed: false, ...runtime };
         record(result);
         return result;
       }
@@ -145,13 +141,13 @@ export async function deployBackend({ environment = process.env, plan, artifact,
       record({ status: 'upload_verified', deployment_requested: false });
       // A long transfer must not submit an application attempt for a superseded master.
       await revalidate();
-      if (expectedGemini) {
+      if (Object.keys(expectedRuntime).length) {
         const fresh = await send(session, 'status');
         requireCd(fresh.code === 0, 'backend_status_failed');
         const deployed = requireReady(fresh.body);
         requireCd(deployed.release_id === expectedRelease && deployed.package_tree_sha256 === expectedTree &&
           deployed.source_sha === plan.server_base, 'backend_changed_after_plan');
-        requireGeminiRuntimeMatch(expectedGemini, fresh.body.gemini_runtime);
+        requireRuntimeProofMatch(expectedRuntime, fresh.body);
       }
       record({ status: 'deployment_requested', deployment_requested: true });
       const accepted = await send(session, `deploy ${id} ${artifact.id} ${artifact.digest.slice(7)} ${ci.run_id} ${ci.run_attempt} ${ci.source_sha} ${expectedRelease} ${expectedTree}`);
@@ -171,16 +167,21 @@ export async function deployBackend({ environment = process.env, plan, artifact,
       if (body.phase === 'complete') {
         requireCd(body.deployment_performed === true, 'backend_complete_receipt_invalid');
         const final = await send(session, 'status');
-        const deployed = final.code === 0 ? requireReady(final.body) : null;
+        const applicationStatus = final.body && Object.fromEntries(Object.entries(final.body)
+          .filter(([key]) => !Object.hasOwn(runtimeProofValidators, key)));
+        const deployed = final.code === 0 ? requireReady(applicationStatus) : null;
         requireCd(deployed?.source_sha === ci.source_sha && deployed.release_id === candidateRelease &&
           deployed.package_tree_sha256 === candidateTree, 'backend_final_version_mismatch');
         const committed = { status: 'complete', deployment_requested: true, deployment_performed: true, source_sha: ci.source_sha };
-        if (expectedGemini && !sameGeminiRuntimeProof(expectedGemini, final.body.gemini_runtime)) {
-          // Node already committed. Preserve that fact without allowing Pages to publish.
+        let runtime;
+        try {
+          requireReady(final.body);
+          runtime = requireRuntimeProofMatch(expectedRuntime, final.body);
+        } catch (error) {
+          // Node already committed. Preserve that fact before rejecting runtime drift.
           record(committed);
-          throw new CdRejected('gemini_runtime_attestation_changed');
+          throw error;
         }
-        const runtime = requireGeminiRuntimeMatch(expectedGemini, final.body.gemini_runtime);
         record({ ...committed, ...runtime });
         return { status: 'complete', source_sha: ci.source_sha, operation_id: id, deployment_performed: true, ...runtime };
       }

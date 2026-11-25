@@ -684,6 +684,12 @@ requiere la atestación productiva del host Codex CV y la preparación
 del SDK restringido de Gemini en el VPS.
 [Evidencia del paso 6](../evidence/nodia-cv-agentic-delivery-20261125.md).
 
+El cierre productivo utiliza el
+[runbook de acreditación de CV](../../ops/production/ai-runtime/README.md#acreditación-productiva-de-nodia-cv-agentic--2026-11-25).
+El PR de promoción queda sujeto a lectura positiva de ambos recibos en
+el VPS y al CD por SHA. El paquete Codex y la imagen con SDK de Gemini
+se prueban por separado antes de la ventana de activación.
+
 - [x] Ejecutar en Server `npm test -- src/nodia-cv`, `npm run lint`,
   `npm run build`, `npm run knowledge:check` y la integración
   `npm run test:nodia-cv:generations` sobre PostgreSQL aislado. Correr

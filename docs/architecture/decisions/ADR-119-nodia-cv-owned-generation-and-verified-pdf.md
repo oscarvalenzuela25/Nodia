@@ -67,6 +67,16 @@ después del commit de CV. Al recuperar, el cierre local se acredita
 por ese intento. Las calificaciones de CV se emiten por conexión,
 modelo, esfuerzo, sesión y runtime observados.
 
+La promoción productiva exige acreditaciones separadas. El host Codex
+CV conserva su binario, manifiesto y catálogo de CLI fijados y se
+registra como extensión de API y worker. Su recibo acredita únicamente
+el árbol nativo compartido revisado para esta entrega. Gemini acredita
+el árbol de imagen y, por separado, el SDK restringido y su sesión
+privada. El receptor obtiene las pruebas del estado instalado. El CD
+las vuelve a comprobar antes de escribir, al confirmar el backend y
+antes de publicar Client. La autenticación y el catálogo siguen sujetos
+a la prueba generativa exacta de CV en cada entorno.
+
 ## Consecuencias
 
 - La cuenta puede repetir el proceso, reutilizar perfiles y reabrir el PDF exacto sin pagar otra inferencia.

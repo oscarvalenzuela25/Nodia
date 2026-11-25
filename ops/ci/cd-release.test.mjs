@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { confirmPublishedClient, confirmedEquivalentBackend, preflightClient, updateServer, updateClient, releaseSummary } from './cd-release.mjs';
+import { confirmPublishedClient, confirmedEquivalentBackend, preflightClient, updateServer, updateClient,
+  verifyRuntimesBeforePages, releaseSummary } from './cd-release.mjs';
 import { CdRejected, safeFailure } from './cd-github.mjs';
 
 function fixture(t) {
@@ -23,11 +24,17 @@ test('Pages cannot access credentials or make requests until backend completion 
     await assert.rejects(updateClient(f.environment),/backend_must_be_confirmed_before_pages/);
   }
 });
-test('Pages requires the post-apply backend proof for the same coordinated Gemini image', async t => {
+test('Pages requires live Codex CV and Gemini proofs for the exact backend after applying', async t => {
   const f = clientCandidate(t);
   const proof = { schema_version: 1, source_sha: f.plan.source_sha,
     source_tree_sha: 'b'.repeat(40), image_id: 'sha256:' + 'c'.repeat(64) };
   f.plan.gemini_runtime = proof;
+  const codex = { schema_version: 1, source_sha: f.plan.source_sha, source_tree_sha: 'd'.repeat(40),
+    binary_sha512: 'e'.repeat(128), catalog_sha512: 'f'.repeat(128), manifest_sha256: 'a'.repeat(64) };
+  const sdk = { ...proof, manifest_sha256: 'b'.repeat(64), runtime_hash: 'c'.repeat(64), policy_hash: 'd'.repeat(64) };
+  const runtimes = { gemini_runtime: proof, codex_cv_runtime: codex, gemini_cv_sdk: sdk };
+  Object.assign(f.plan, runtimes);
+  const current = Object.assign(f.plan.artifacts.server.result, { source_sha: f.plan.source_sha });
   f.write('release-plan.json', f.plan);
   await preflightClient(f.environment, f);
   const result = { status: 'complete', source_sha: f.plan.source_sha };
@@ -40,7 +47,27 @@ test('Pages requires the post-apply backend proof for the same coordinated Gemin
       /gemini_runtime_attestation_changed/);
   }
   assert.equal(published, 0);
-  f.write('backend-result.json', { ...result, gemini_runtime: proof });
+  f.write('backend-result.json', { ...result, ...runtimes });
+  await assert.rejects(updateClient(f.environment, { api: f.api, verify: f.verify, publish, confirm }),
+    /runtime_proof_required_before_pages/);
+  const verifyLive = read => verifyRuntimesBeforePages(f.environment, { api: f.api, read });
+  await assert.rejects(verifyLive(async () => ({ current, ...runtimes, gemini_cv_sdk: {
+    ...sdk, runtime_hash: 'f'.repeat(64) } })), /gemini_cv_sdk_attestation_changed/);
+  await assert.rejects(verifyLive(async () => ({ ...runtimes, current: { ...current,
+    package_tree_sha256: 'f'.repeat(64) } })), /backend_changed_before_pages/);
+  assert.equal(published, 0);
+  const verified = await verifyLive(async () => ({ current, ...runtimes }));
+  for (const [key, value] of [['ci_run_attempt', '2'], ['codex_cv_runtime', { ...codex, binary_sha512: 'a'.repeat(128) }]]) {
+    f.write('pages-runtime-proof.json', { ...verified, [key]: value });
+    await assert.rejects(updateClient(f.environment, { api: f.api, verify: f.verify, publish, confirm }),
+      /runtime_proof_required_before_pages|codex_cv_runtime_attestation_changed/);
+  }
+  f.write('pages-runtime-proof.json', verified);
+  await assert.rejects(verifyLive(async () => ({ current, ...runtimes, gemini_cv_sdk: null })),
+    /gemini_cv_sdk_attestation_changed/);
+  await assert.rejects(updateClient(f.environment, { api: f.api, verify: f.verify, publish, confirm }),
+    /runtime_proof_required_before_pages/);
+  await verifyLive(async () => ({ current, ...runtimes }));
   await updateClient(f.environment, { api: f.api, verify: f.verify, publish, confirm });
   assert.equal(published, 1);
 });

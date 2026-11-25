@@ -61,6 +61,34 @@ test('malformed evidence and malicious values cannot prevent or contaminate the 
   assert.doesNotMatch(JSON.stringify(receipt), /private_secret|private token|remote\.invalid|private-marker|private-deployment-id|trace/);
 });
 
+test('delivery receipt carries the exact runtime checks from the latest required stage', t => {
+  const f = fixture(t);
+  const source = f.environment.CI_SOURCE_SHA;
+  const identity = { schema_version: 1, source_sha: source, source_tree_sha: 'b'.repeat(40) };
+  const gemini = { ...identity, image_id: 'sha256:' + 'c'.repeat(64) };
+  const sdk = { ...gemini, runtime_hash: 'd'.repeat(64), policy_hash: 'e'.repeat(64), manifest_sha256: 'f'.repeat(64) };
+  const codex = { ...identity, binary_sha512: 'a'.repeat(128), catalog_sha512: 'b'.repeat(128), manifest_sha256: 'c'.repeat(64) };
+  const runtimes = { gemini_runtime: gemini, gemini_cv_sdk: sdk, codex_cv_runtime: codex };
+  const plan = { source_sha: source, ci: { run_id: '50', run_attempt: '1' }, ...runtimes };
+  const recordedRuntimes = () => {
+    const receipt = deliveryReceipt(f.directory, f.environment);
+    assert.equal(receipt.backend.status, 'complete');
+    return Object.fromEntries(Object.keys(runtimes).filter(key => Object.hasOwn(receipt, key)).map(key => [key, receipt[key]]));
+  };
+  f.write('backend-result.json', { status: 'complete', source_sha: source, ...runtimes });
+  f.write('release-plan.json', { ...plan, client_required: false });
+  assert.deepEqual(recordedRuntimes(), runtimes);
+  f.write('release-plan.json', { ...plan, client_required: true });
+  assert.deepEqual(recordedRuntimes(), {});
+  const live = { status: 'runtime_verified_before_pages', source_sha: source, ci_run_id: '50', ci_run_attempt: '1', ...runtimes };
+  f.write('pages-runtime-proof.json', { ...live, ci_run_attempt: '2' });
+  assert.deepEqual(recordedRuntimes(), {});
+  f.write('pages-runtime-proof.json', { ...live, gemini_cv_sdk: { ...sdk, headers: 'private' } });
+  assert.deepEqual(recordedRuntimes(), {});
+  f.write('pages-runtime-proof.json', live);
+  assert.deepEqual(recordedRuntimes(), runtimes);
+});
+
 test('public asset verification receipts retain the published identity and only safe diagnostics', t => {
   const f = fixture(t), deployment = '11111111-1111-1111-1111-111111111111';
   for (const [resource, attempts, included] of [['/', 25, true], ['https://private.invalid/token', 999, false]]) {

@@ -57,6 +57,13 @@ TEACHER_RUNTIME_TEMPLATE = b'[Service]\nEnvironmentFile=/etc/nodia/teacher-runti
 TEACHER_RUNTIME_NAME = '72-teacher-runtime.conf'
 TEACHER_ENVIRONMENT = Path('/etc/nodia/teacher-runtime.env')
 TEACHER_HOST_ROOT = Path('/usr/local/lib/nodia/teacher-runtime')
+CODEX_CV_RUNTIME_TEMPLATE = b'[Service]\nEnvironmentFile=/etc/nodia/codex-cv-runtime.env\n'
+CODEX_CV_RUNTIME_NAME = '73-codex-cv-runtime.conf'
+CODEX_CV_ENVIRONMENT = Path('/etc/nodia/codex-cv-runtime.env')
+CODEX_CV_ROOT = LIB / 'codex-cv-runtime'
+CODEX_CV_ACTIVE = CODEX_CV_ROOT / 'active.json'
+CODEX_CV_CLI = Path('node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex')
+CODEX_CV_VARIABLES = (b'NODIA_CODEX_CV_HOST', b'NODIA_CODEX_CV_HOST_SHA512', b'NODIA_CODEX_CV_CATALOG_SHA512')
 
 
 def teacher_runtime_descriptor():
@@ -85,18 +92,80 @@ def teacher_runtime_descriptor():
     return {'environment_sha256': hashlib.sha256(raw).hexdigest(), 'binary_sha512': digest}
 
 
+def validate_codex_cv_proof(value):
+    patterns = {'source_sha': '[a-f0-9]{40}', 'source_tree_sha': '[a-f0-9]{40}',
+                'binary_sha512': '[a-f0-9]{128}', 'catalog_sha512': '[a-f0-9]{128}',
+                'manifest_sha256': '[a-f0-9]{64}'}
+    if (type(value) is not dict or set(value) != {'schema_version', *patterns}
+            or type(value['schema_version']) is not int or value['schema_version'] != 1
+            or not all(type(value[key]) is str and re.fullmatch(pattern, value[key])
+                       for key, pattern in patterns.items())):
+        raise ValueError('codex_cv_runtime_attestation_invalid')
+    return value
+
+
+def codex_cv_host_path(proof):
+    return CODEX_CV_ROOT / ('host-' + validate_codex_cv_proof(proof)['binary_sha512'])
+
+
+def codex_cv_environment_bytes(proof):
+    target = codex_cv_host_path(proof)
+    values = (os.fsencode(target), proof['binary_sha512'].encode(), proof['catalog_sha512'].encode())
+    return b''.join(key + b'=' + value + b'\n' for key, value in zip(CODEX_CV_VARIABLES, values))
+
+
+def codex_cv_checked_file(path, mode, maximum):
+    for parent in reversed(path.parents):
+        protected(parent, directory=True)
+    size = protected(path, mode=mode).st_size
+    if not 0 < size <= maximum:
+        raise ValueError('codex_cv_runtime_file_size_invalid')
+    return path
+
+
+def codex_cv_executable(proof, path, hash_key):
+    checked = codex_cv_checked_file(path, 0o755, 1024 ** 3)
+    with checked.open('rb') as stream:
+        actual = hashlib.file_digest(stream, 'sha512').hexdigest()
+    if actual != proof[hash_key]:
+        raise ValueError('codex_cv_runtime_binary_changed')
+    return checked
+
+
+def codex_cv_installed_host(proof):
+    target = codex_cv_host_path(proof)
+    manifest = codex_cv_checked_file(target.with_suffix('.manifest.json'), 0o644, 128 * 1024)
+    if sha_file(manifest) != proof['manifest_sha256']:
+        raise ValueError('codex_cv_runtime_manifest_changed')
+    return codex_cv_executable(proof, target, 'binary_sha512')
+
+
+def codex_cv_runtime_descriptor():
+    receipt = codex_cv_checked_file(CODEX_CV_ACTIVE, 0o644, 4096)
+    proof = validate_codex_cv_proof(unique_json(receipt.read_bytes()))
+    env = codex_cv_checked_file(CODEX_CV_ENVIRONMENT, 0o644, 1024)
+    if env.read_bytes() != codex_cv_environment_bytes(proof):
+        raise ValueError('codex_cv_runtime_environment_changed')
+    codex_cv_installed_host(proof)
+    return proof
+
+
 def ai_runtime_registry(value):
-    """Exact base extensions, optionally the separately pinned Teacher host."""
+    """Exact base extensions and independently pinned optional hosts."""
+    hashes = dict(AI_RUNTIME_HASHES)
     expected = {'schema_version': 1, 'purpose': 'nodia_ai_runtime_consumers',
-                'units': {name: AI_RUNTIME_HASHES for name in SERVICES}}
+                'units': {name: hashes for name in SERVICES}}
     if type(value) is dict and 'teacher_host' in value:
         host = value['teacher_host']
         if (type(host) is not dict or set(host) != {'environment_sha256', 'binary_sha512'}
                 or not isinstance(host['environment_sha256'], str) or not HEX.fullmatch(host['environment_sha256'])
                 or not isinstance(host['binary_sha512'], str) or not re.fullmatch('[a-f0-9]{128}', host['binary_sha512'])):
             raise ValueError('ai_runtime_registry_invalid')
-        hashes = {**AI_RUNTIME_HASHES, TEACHER_RUNTIME_NAME: hashlib.sha256(TEACHER_RUNTIME_TEMPLATE).hexdigest()}
-        expected = {**expected, 'units': {name: hashes for name in SERVICES}, 'teacher_host': host}
+        hashes[TEACHER_RUNTIME_NAME] = hashlib.sha256(TEACHER_RUNTIME_TEMPLATE).hexdigest()
+        expected['teacher_host'] = host
+    if type(value) is dict and 'codex_cv_runtime' in value:
+        expected['codex_cv_runtime'] = validate_codex_cv_proof(value['codex_cv_runtime'])
+        hashes[CODEX_CV_RUNTIME_NAME] = hashlib.sha256(CODEX_CV_RUNTIME_TEMPLATE).hexdigest()
     if type(value) is not dict or type(value.get('schema_version')) is not int or value != expected:
         raise ValueError('ai_runtime_registry_invalid')
     return value
@@ -125,6 +194,29 @@ def unique_json(raw):
         return result
     return json.loads(raw, object_pairs_hook=pairs,
                       parse_constant=lambda _: (_ for _ in ()).throw(ValueError('invalid_json_number')))
+
+
+def registered_ai_runtimes():
+    if not (AI_CONSUMERS.exists() or AI_CONSUMERS.is_symlink()):
+        return None, None
+    for parent in reversed(AI_CONSUMERS.parents):
+        protected(parent, directory=True)
+    info = protected(AI_CONSUMERS, mode=0o600)
+    if not 0 < info.st_size <= 16384:
+        raise ValueError('ai_runtime_registry_size_invalid')
+    raw = AI_CONSUMERS.read_bytes()
+    return ai_runtime_registry(unique_json(raw)), hashlib.sha256(raw).hexdigest()
+
+
+def codex_cv_process_environment(pid, expected):
+    with (Path('/proc') / pid / 'environ').open('rb') as stream:
+        raw = stream.read(1024 * 1024 + 1)
+    if len(raw) > 1024 * 1024 or not raw.endswith(b'\0'):
+        raise ValueError('codex_cv_consumer_environment_invalid')
+    selected = sorted(entry for entry in raw.split(b'\0')
+                      if entry.partition(b'=')[0] in CODEX_CV_VARIABLES)
+    if selected != sorted(expected.splitlines()):
+        raise ValueError('codex_cv_consumer_environment_changed')
 
 
 def sha_file(path):
@@ -212,24 +304,20 @@ class Host:
         self.must(reviewed is None or reviewed == digest, 'installed_service_changed_or_overridden')
         previous = self.service_unit_snapshots.setdefault(unit, digest)
         self.must(previous == digest, 'installed_service_changed_during_update')
-        registry = None
-        if AI_CONSUMERS.exists() or AI_CONSUMERS.is_symlink():
-            for parent in reversed(AI_CONSUMERS.parents):
-                protected(parent, directory=True)
-            info = protected(AI_CONSUMERS, mode=0o600)
-            self.must(0 < info.st_size <= 16384, 'ai_runtime_registry_size_invalid')
-            raw = AI_CONSUMERS.read_bytes()
-            registered = ai_runtime_registry(unique_json(raw))
+        registered, registry = registered_ai_runtimes()
+        if registered is not None:
             if 'teacher_host' in registered:
                 self.must(teacher_runtime_descriptor() == registered['teacher_host'], 'teacher_runtime_changed')
-            registry = hashlib.sha256(raw).hexdigest()
+            if 'codex_cv_runtime' in registered:
+                self.must(codex_cv_runtime_descriptor() == registered['codex_cv_runtime'], 'codex_cv_runtime_changed')
         if not self.runtime_registry_seen:
             self.runtime_registry_snapshot = registry
             self.runtime_registry_seen = True
         self.must(registry == self.runtime_registry_snapshot, 'ai_runtime_registry_changed_during_update')
         parent = SYSTEMD_UNITS / (unit + '.d')
         expected = registered['units'][unit] if registry is not None else {}
-        templates = {**AI_RUNTIME_TEMPLATES, TEACHER_RUNTIME_NAME: TEACHER_RUNTIME_TEMPLATE}
+        templates = {**AI_RUNTIME_TEMPLATES, TEACHER_RUNTIME_NAME: TEACHER_RUNTIME_TEMPLATE,
+                     CODEX_CV_RUNTIME_NAME: CODEX_CV_RUNTIME_TEMPLATE}
         paths = [parent / name for name in expected]
         self.must(state.get('DropInPaths') == ' '.join(str(path) for path in paths),
                   'installed_service_changed_or_overridden')
@@ -244,6 +332,29 @@ class Host:
             info = protected(path, mode=0o644)
             self.must(info.st_size == len(templates[path.name])
                       and sha_file(path) == expected[path.name], 'ai_runtime_dropin_changed')
+
+    def codex_cv_attestation(self, release):
+        registered, registry = registered_ai_runtimes()
+        proof = None if registered is None else registered.get('codex_cv_runtime')
+        if proof is None:
+            paths = (CODEX_CV_ACTIVE, CODEX_CV_ENVIRONMENT,
+                     *(SYSTEMD_UNITS / (unit + '.d') / CODEX_CV_RUNTIME_NAME for unit in SERVICES))
+            self.must(not any(path.exists() or path.is_symlink() for path in paths), 'codex_cv_runtime_partial')
+            return None
+        self.must(CURRENT.is_symlink() and CURRENT.resolve(strict=True) == release
+                  and release.parent == RELEASES, 'codex_cv_consumer_release_changed')
+        states = {unit: self.show(unit) for unit in SERVICES}
+        self.verify_writers(release)
+        codex_cv_executable(proof, release / CODEX_CV_CLI, 'catalog_sha512')
+        for unit, before in states.items():
+            pid = before.get('MainPID', '')
+            self.must(pid.isdigit() and int(pid) > 1 and before.get('InvocationID'), 'codex_cv_consumer_identity_invalid')
+            codex_cv_process_environment(pid, codex_cv_environment_bytes(proof))
+            after = self.show(unit)
+            self.must(before == after and after.get('ActiveState') == 'active', 'codex_cv_consumer_changed')
+        self.must(registered_ai_runtimes() == (registered, registry)
+                  and CURRENT.resolve(strict=True) == release, 'codex_cv_runtime_changed')
+        return proof
 
     def begin(self, request, state):
         protected(STATE, directory=True)
@@ -555,6 +666,10 @@ class Host:
                 os.chmod(temporary, 0o755)
                 os.rename(temporary, self.candidate)
                 self.stage.verify_tree(self.candidate, plan)
+        registry, fingerprint = registered_ai_runtimes()
+        self.must(fingerprint == self.runtime_registry_snapshot, 'ai_runtime_registry_changed_during_update')
+        if registry is not None and 'codex_cv_runtime' in registry:
+            codex_cv_executable(registry['codex_cv_runtime'], self.candidate / CODEX_CV_CLI, 'catalog_sha512')
         self.metadata = metadata
         self.must(self.node_action('inspect').get('read_only') is True, 'database_preflight_not_read_only')
         self.probe_candidate()
