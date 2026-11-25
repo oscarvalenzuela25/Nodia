@@ -476,7 +476,7 @@ describe("manual point of sale checkout controls", () => {
     expect(within(payment).queryByText("Producto de prueba")).not.toBeInTheDocument();
     expect(within(payment).queryByRole("spinbutton")).not.toBeInTheDocument();
     expect(within(payment).getAllByRole("button")).toHaveLength(5);
-    const total = within(payment).getByRole("heading", { name: "Total CLP" });
+    const total = within(payment).getByRole("heading", { name: /^Total$/ });
     const methods = within(payment).getByRole("group", { name: "Medio de pago" });
     const checkout = within(payment).getByRole("button", { name: "Confirmar venta" });
     expect(total.compareDocumentPosition(methods) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

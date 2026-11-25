@@ -32,7 +32,7 @@ export default function QuantityStepper({ name, quantity, inputValue, disabled, 
   return <Stepper role="group" aria-label={t("business:pos.quantity_for", { name })}>
     <Typography component="label" htmlFor={id} sx={visuallyHidden}>{t("business:pos.quantity")}</Typography>
     <Box component="span" id={descriptionId} sx={visuallyHidden}>{name}</Box>
-    <ControlRow>
+    <ControlRow sx={{ "--pos-quantity-chars": Math.min(14, Math.max(2, raw.length)) }}>
       <StepButton type="button" variant="outlined" color="inherit" aria-label={t("business:pos.decrease_quantity", { name })} disabled={blocked || decrementDisabled || quantity === 0} onClick={onDecrement}><RemoveRounded /></StepButton>
       <InputArea><TextInput id={id} type="text" inputMode="decimal" value={raw} disabled={blocked} error={invalid}
         aria-describedby={descriptionId} onFocus={(event) => event.currentTarget.select()}
