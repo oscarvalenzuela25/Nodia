@@ -28,6 +28,18 @@ describe("shared catalog variant options", () => {
     expect(modelOptionComplete(option, { ...current, effort_id: "precise" })).toBe(false);
   });
 
+  it.each(["Extra", "Extra High", "Xhigh"])("groups a reported %s and sends its exact xhigh option", label => {
+    const high = { model_id: "fixture-gemini-high", label: "Fixture Gemini (High)", efforts: [{ effort_id: "high", label: "High" }] };
+    const extra = { model_id: "fixture-gemini-xhigh", label: `Fixture Gemini (${label})`, efforts: [{ effort_id: "xhigh", label: "Extra" }] };
+    const selection = { model_id: high.model_id, effort_id: "high" };
+    const [option] = catalogModelOptions([high, extra], true, selection);
+    expect(option.label).toBe("Fixture Gemini");
+    expect(modelOptionEfforts(option)).toEqual([...high.efforts, ...extra.efforts]);
+    expect(chooseModelEffort(option, selection, "xhigh")).toEqual({ model_id: extra.model_id, effort_id: "xhigh" });
+    expect(catalogModelOptions([high, { ...extra, efforts: [] }], true, selection)).toHaveLength(2);
+    expect(catalogModelOptions([high, { ...extra, model_id: "fixture-gemini-extra" }], true, selection)).toHaveLength(2);
+  });
+
   it("preserves historical contradictions and opts out for other providers or modes", () => {
     expect(catalogModelOptions(models, true, { ...current, effort_id: "precise" }).map(item => item.label)).toEqual(models.map(item => item.label));
     expect(catalogModelOptions(models, false, current).map(item => item.value)).toEqual(models.map(item => item.model_id));

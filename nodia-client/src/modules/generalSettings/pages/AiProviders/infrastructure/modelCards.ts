@@ -1,3 +1,5 @@
+import { modelVariantLabel } from "../../../../../utils/modelVariantOptions";
+
 /** Presentation-only grouping of catalog variants. Executable IDs stay literal. */
 type DisplayModel = { id: string; displayName?: string; name?: string };
 export type ModelCardVariant<T> = { model: T; effort: string };
@@ -16,8 +18,20 @@ type Selection = {
   thinkingLevels?: Record<string, unknown>;
 };
 
-/** Gemini's three configurable preferences; not evidence of inference support. */
-const variantPreferences = new Set(["low", "medium", "high"]);
+const geminiAgenticEffortOrder = ["low", "medium", "high", "xhigh"];
+
+export function isGeminiAgenticExtraVariant(model: DisplayModel) {
+  return model.id.length > "-xhigh".length && model.id.endsWith("-xhigh")
+    && modelVariantLabel(model.displayName || model.name || model.id)?.effort === "xhigh";
+}
+
+export function compareGeminiAgenticEfforts(left: string, right: string) {
+  return geminiAgenticEffortOrder.indexOf(left) - geminiAgenticEffortOrder.indexOf(right);
+}
+
+export function geminiAgenticEffortTranslation(effort: string) {
+  return effort === "xhigh" ? "ai_providers:detail.level_extra" : `ai_providers:detail.level_${effort}`;
+}
 
 export function providerModelCards<T extends DisplayModel>(
   models: T[],
@@ -29,14 +43,14 @@ export function providerModelCards<T extends DisplayModel>(
   if (!groupGeminiVariants) return models.map(flat);
   const groups = new Map<string, { label: string; variants: ModelCardVariant<T>[] }>();
   for (const model of models) {
-    const match = /^(\S(?:.*\S)?) \(([^()]+)\)$/.exec(label(model));
-    if (!match) continue;
-    const effort = match[2].toLowerCase();
-    if (!variantPreferences.has(effort) || !model.id.endsWith(`-${effort}`)) continue;
+    const variant = modelVariantLabel(label(model));
+    if (!variant) continue;
+    const { effort } = variant;
+    if (!geminiAgenticEffortOrder.includes(effort) || !model.id.endsWith(`-${effort}`)) continue;
     const baseId = model.id.slice(0, -effort.length - 1);
     if (!baseId) continue;
-    const key = JSON.stringify([baseId, match[1]]);
-    const group = groups.get(key) ?? { label: match[1], variants: [] };
+    const key = JSON.stringify([baseId, variant.label]);
+    const group = groups.get(key) ?? { label: variant.label, variants: [] };
     group.variants.push({ model, effort });
     groups.set(key, group);
   }

@@ -18,6 +18,7 @@ import type { GeminiExecutionEngine } from '../../common/ai/ai.types.js';
 import { ExecuteCodexInvoiceUseCase } from '../../ai-provider/use-case/execute-codex-invoice.use-case.js';
 import type { AnalysisProgress } from '../../common/ai/analysis-progress.js';
 import { isApiThinkingLevel, type ApiThinkingLevel } from '../../common/ai/api-reasoning.js';
+import { isGeminiAgenticEffort } from '../../common/ai/agentic-reasoning.js';
 import { invoiceAnalysisResponse } from '../invoice-analysis-response.js';
 import { InvoiceService } from '../invoice.service.js';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
@@ -269,20 +270,18 @@ export class AnalyzeInvoiceUseCase {
             ? levelMap[effectiveModel]
             : modeFields?.thinking_level
           : undefined;
+    const validGeminiEffort = isGeminiAgenticEffort(resolvedLevel, effectiveModel);
     if (
       engineKey === 'gemini' &&
       sessionMode &&
       resolvedLevel != null &&
-      !['low', 'medium', 'high'].includes(resolvedLevel as string)
+      !validGeminiEffort
     ) {
       throw new BadRequestException(
         'El nivel de razonamiento configurado es inválido.',
       );
     }
-    const effectiveThinkingLevel =
-      resolvedLevel == null
-        ? undefined
-        : (resolvedLevel as 'low' | 'medium' | 'high');
+    const effectiveThinkingLevel = validGeminiEffort ? resolvedLevel : undefined;
     // Preserve the legacy boolean only until an explicit level preference exists.
     const effectiveExtendedThinking =
       effectiveMode === 'agentic'
@@ -305,7 +304,9 @@ export class AnalyzeInvoiceUseCase {
       dto.thinking_level !== undefined &&
       !(effectiveMode === 'api_key'
         ? isApiThinkingLevel(engineKey, dto.thinking_level)
-        : ['low', 'medium', 'high'].includes(dto.thinking_level))
+        : engineKey === 'gemini' && sessionMode
+          ? validGeminiEffort
+          : ['low', 'medium', 'high'].includes(dto.thinking_level))
     )
       throw new BadRequestException('Opciones de análisis inválidas.');
     if (codex && (!configuredAiProvider?.id || !this.executeCodexInvoice))

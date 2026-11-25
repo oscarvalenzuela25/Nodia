@@ -1,6 +1,6 @@
 """Stable response contracts for the private HTTP adapter."""
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, get_args
 from datetime import date
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
@@ -103,6 +103,10 @@ class InvoiceAnalysisResponse(BaseModel):
     data: InvoiceData
 
 
+GeminiAgenticEffort = Literal["low", "medium", "high", "xhigh"]
+GEMINI_AGENTIC_EFFORTS = get_args(GeminiAgenticEffort)
+
+
 class AnalysisOptions(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     engine: Literal["agentic"] = "agentic"
@@ -110,7 +114,7 @@ class AnalysisOptions(BaseModel):
     provider_tax: int | None = Field(default=None, ge=0, le=100)
     model: str = Field(min_length=1, max_length=128)
     extended_thinking: bool | None = None
-    thinking_level: Literal["low", "medium", "high"] | None = None
+    thinking_level: GeminiAgenticEffort | None = None
 
 
 class RuntimeLimits(BaseModel):

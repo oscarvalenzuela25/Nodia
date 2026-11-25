@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { modelCardContains, modelCardEffort, openAiApiReasoningPreferences, providerModelCards } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/modelCards";
+import { compareGeminiAgenticEfforts, modelCardContains, modelCardEffort, openAiApiReasoningPreferences, providerModelCards } from "../../../../../../modules/generalSettings/pages/AiProviders/infrastructure/modelCards";
 
 const models = ["high", "medium", "low"].map(effort => ({
   id: `fixture-future-family-${effort}`, displayName: `Fixture Future Family (${effort.toUpperCase()})`,
@@ -26,6 +26,17 @@ describe("provider model cards", () => {
     expect(cards[0].model).toBe(models[1]);
     expect(modelCardContains(cards[0], models[0].id)).toBe(true);
     expect(modelCardContains(cards[0], "retired-fixture")).toBe(false);
+  });
+  it("places an exact Extra variant after High and leaves other families at their reported levels", () => {
+    const extra = { id: "fixture-future-family-xhigh", displayName: "Fixture Future Family (Extra)", supportedReasoningEfforts: ["xhigh"] };
+    const second = ["high", "medium", "low"].map(effort => ({
+      id: `fixture-other-family-${effort}`, displayName: `Other Fixture (${effort})`, supportedReasoningEfforts: [effort],
+    }));
+    const [firstCard, secondCard] = providerModelCards([extra, ...models, ...second], true, selected);
+    expect(firstCard.variants.map(item => item.effort).sort(compareGeminiAgenticEfforts)).toEqual(["low", "medium", "high", "xhigh"]);
+    expect(modelCardEffort(firstCard, "xhigh")?.model).toBe(extra);
+    expect(modelCardEffort(secondCard, "xhigh")).toBeUndefined();
+    expect(providerModelCards([...models, { ...extra, id: "fixture-future-family-extra" }], true, selected)).toHaveLength(2);
   });
   it("keeps one card and exposes contradictory selected or OCR tuples without repairing them", () => {
     const input = { ...selected, ocrModel: models[1].id, thinkingLevel: "medium",

@@ -20,7 +20,7 @@ from agentic_progress import NativeFileCliProgress
 from native_cli_diagnostics import capture_cli_log_diagnostic, capture_plain_gate_diagnostic
 from native_execution_agents import NATIVE_READER_AGENT, prepare_native_reader_agent, verify_native_reader_agent
 from invoice_parser import build_invoice_prompt, clean_and_parse_invoice_json
-from schemas import InvoiceAnalysisResponse
+from schemas import GEMINI_AGENTIC_EFFORTS, InvoiceAnalysisResponse
 from service_errors import InvalidExtraction, ServiceError
 
 
@@ -326,7 +326,8 @@ class AntigravityAgentService:
             raise ServiceError("agentic_unavailable", "Antigravity CLI no está disponible.")
         if getattr(getattr(self.runner, "config", None), "version", None) != "1.3.1":
             raise ServiceError("agentic_cli_incompatible", "La versión del CLI no está verificada para analizar facturas.", 409)
-        if extended_thinking or thinking_level not in (None, "low", "medium", "high"):
+        if (extended_thinking or (thinking_level is not None and thinking_level not in GEMINI_AGENTIC_EFFORTS)
+                or (thinking_level == "xhigh" and (not model or not model.endswith("-xhigh") or model == "-xhigh"))):
             raise ServiceError("agentic_invalid_option", "Opciones agénticas incompatibles.", 422)
         if self._analysis_lock.locked():
             raise ServiceError("agentic_busy", "El motor agéntico está ocupado.", 503)
