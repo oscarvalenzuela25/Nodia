@@ -75,7 +75,10 @@ function agenticFixture() {
       policyHash: 'a'.repeat(64),
       runtimeHash: 'b'.repeat(64),
     },
-  } as const as NonNullable<CvAgenticObservation>;
+  } as const as Extract<
+    NonNullable<CvAgenticObservation>,
+    { transport: { status: 'available' } }
+  >;
   const observe = vi.fn(async () => observation);
   const matchesConfiguration = vi.fn().mockResolvedValue(true);
   return {
@@ -225,6 +228,77 @@ describe('Nodia CV selection', () => {
     expect(f.resolveConfiguration).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ['agentic_connection_unavailable', 'configuration_unavailable', false],
+    ['codex_runtime_unavailable', 'codex_runtime_unavailable', null],
+    ['codex_timeout', 'codex_runtime_unavailable', null],
+    ['codex_session_required', 'codex_session_required', null],
+    ['codex_session_unverified', 'codex_session_unverified', null],
+    ['codex_profile_busy', 'codex_profile_busy', null],
+    ['codex_usage_unavailable', 'codex_usage_unavailable', null],
+    ['codex_model_not_allowed', 'codex_model_unavailable', false],
+    ['codex_model_unavailable', 'codex_model_unavailable', false],
+    ['codex_effort_unavailable', 'codex_effort_unavailable', false],
+  ] as const)(
+    'reports %s from the current observation without checking qualifications',
+    async (status, reason, configured) => {
+      const f = agenticFixture();
+      await expect(
+        f.selectionService.eligibility(f.manager, f.requested, {
+          selection: {
+            selection: f.requested,
+            status,
+            qualified: false,
+            checkedAt: null,
+          },
+          transport: { status: 'unobserved' },
+        }),
+      ).resolves.toEqual({
+        selection: f.requested,
+        configured,
+        qualified: false,
+        eligible: false,
+        reason_code: reason,
+        checked_at: null,
+      });
+      expect(f.query).not.toHaveBeenCalled();
+      expect(f.resolveConfiguration).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    [{ status: 'host_unavailable' }, 'agentic_transport_unavailable', null],
+    [
+      { status: 'selection_unsupported', reason: 'codex_model_incompatible' },
+      'codex_model_unavailable',
+      false,
+    ],
+    [
+      { status: 'selection_unsupported', reason: 'codex_effort_unavailable' },
+      'codex_effort_unavailable',
+      false,
+    ],
+  ] as const)(
+    'reports the restricted host preflight independently of a connected account (%s)',
+    async (transport, reason, configured) => {
+      const f = agenticFixture();
+      await expect(
+        f.selectionService.eligibility(f.manager, f.requested, {
+          selection: f.observation.selection,
+          transport,
+        }),
+      ).resolves.toMatchObject({
+        configured,
+        qualified: false,
+        eligible: false,
+        reason_code: reason,
+        checked_at: null,
+      });
+      expect(f.query).not.toHaveBeenCalled();
+      expect(f.resolveConfiguration).not.toHaveBeenCalled();
+    },
+  );
+
   it('rejects an observation from a different effort or a changed configuration before checking qualifications', async () => {
     const f = agenticFixture();
     await expect(
@@ -293,6 +367,18 @@ describe('Nodia CV selection', () => {
       can_use_agentic: true,
       fields: {
         private_value: 'fixture-never-return',
+        agentic: {
+          allowed_model_ids: ['discovered-model'],
+          available_models: [
+            {
+              id: 'discovered-model',
+              displayName: 'Discovered model',
+              supportedReasoningEfforts: ['low', 'high'],
+            },
+            { id: 'excluded-model' },
+          ],
+          selected_model: 'excluded-model',
+        },
         api_key: {
           selected_model: selection.model_id,
           available_models: [
@@ -301,7 +387,12 @@ describe('Nodia CV selection', () => {
         },
       },
     };
-    list.mockResolvedValue([row, { ...row, id: '9007199254740994' }]);
+    const geminiRow = {
+      ...row,
+      id: '9007199254740994',
+      provider_key: 'gemini',
+    };
+    list.mockResolvedValue([row, geminiRow]);
     const page = await selectionService.catalog(manager);
     expect(page.items).toHaveLength(1);
     expect(page.next_cursor).toBe(selection.connection_id);
@@ -311,13 +402,43 @@ describe('Nodia CV selection', () => {
         cv_transport: 'available',
         models: [{ model_id: selection.model_id }],
       },
-      { mode: 'agentic', cv_transport: 'unsupported', models: [] },
+      {
+        mode: 'agentic',
+        cv_transport: 'available',
+        configured_selection: null,
+        models: [
+          {
+            model_id: 'discovered-model',
+            label: 'Discovered model',
+            efforts: [
+              { effort_id: 'low', label: 'low' },
+              { effort_id: 'high', label: 'high' },
+            ],
+          },
+        ],
+      },
     ]);
     expect(JSON.stringify(page)).not.toContain('fixture-never-return');
+    expect(JSON.stringify(page)).not.toContain('excluded-model');
 
     await expect(
       selectionService.catalog(manager, '9223372036854775808'),
     ).rejects.toThrow('nodiaCv:invalid_cursor');
     expect(list).toHaveBeenCalledTimes(1);
+
+    list.mockResolvedValueOnce([geminiRow]);
+    await expect(
+      selectionService.catalog(manager, selection.connection_id),
+    ).resolves.toMatchObject({
+      items: [
+        {
+          provider_key: 'gemini',
+          modes: [
+            { mode: 'api_key', cv_transport: 'available' },
+            { mode: 'agentic', cv_transport: 'unsupported' },
+          ],
+        },
+      ],
+    });
   });
 });

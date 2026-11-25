@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { NodiaAiConnection, NodiaAiMode, NodiaAiSelection } from "../../modules/nodiaAi/infrastructure/types";
 import { catalogModelOptions, chooseModelEffort, modelOptionComplete, modelOptionEfforts, modelOptionFor } from "../../utils/modelVariantOptions";
 import ComposerSelectionPopover, { type ComposerSelectionField } from "./ComposerSelectionPopover";
-import { DraftActions } from "./styles";
+import { DraftActions, SelectionActionAlert } from "./styles";
 import type { AiComposerSelectorProps } from "./types";
 
 const sameSelection = (left: NodiaAiSelection | null, right: NodiaAiSelection | null) =>
@@ -154,15 +154,15 @@ function SelectionEditor<Connection extends NodiaAiConnection>({
     {dirty && <Typography role="status" variant="caption" color="text.primary" sx={{ px: 1, overflowWrap: "anywhere" }}>
       {labels.unsaved}
     </Typography>}
-    {error && <Alert severity="error" action={<Button type="button" color="inherit" disabled={busy} onClick={onRetry}>{t("retry")}</Button>}>{error}</Alert>}
+    {error && <SelectionActionAlert severity="error" action={<Button type="button" color="inherit" disabled={busy} onClick={onRetry}>{t("retry")}</Button>}>{error}</SelectionActionAlert>}
     {noConnections && <Alert severity="info">{labels.noConnections}</Alert>}
     {missing && <Alert severity="warning">{labels.selectionMissing}</Alert>}
     {modeBlock ? <Alert severity="info">{modeBlock.message}</Alert>
       : configurationDisabled && <Alert severity="warning">{t("configuration.mode_disabled")}</Alert>}
-    {dirty && eligibilityError && <Alert severity="error" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("retry")}</Button>}>{eligibilityError}</Alert>}
-    {unavailable && <Alert severity="info" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("configuration.check_again")}</Button>}>
+    {dirty && eligibilityError && <SelectionActionAlert severity="error" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("retry")}</Button>}>{eligibilityError}</SelectionActionAlert>}
+    {unavailable && <SelectionActionAlert severity="info" action={<Button type="button" color="inherit" disabled={disabled} onClick={onRetryEligibility}>{t("configuration.check_again")}</Button>}>
       {labels.unavailableReason(exactEligibility.reason)}
-    </Alert>}
+    </SelectionActionAlert>}
   </>;
   const actions = dirty && <DraftActions>
     <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>

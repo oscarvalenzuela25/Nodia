@@ -6,6 +6,7 @@ import useAuthStore, { hasActiveSession } from "../../../store/authStore";
 import { notifyHttpError } from "../../../config/httpFeedback";
 import i18n from "../../../translate";
 import {
+  cvEligibilityQueryKey,
   cvGenerationQueryKey,
   readCvGeneration,
   recoverCvGeneration,
@@ -37,6 +38,7 @@ export function cvHttpStatus(error: unknown) {
 export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   const queryClient = useQueryClient();
   const { scope } = useProfileScope();
+  const actorId = scope[1];
   const [tracked, setTracked] = useState<CvGenerationView | null>(null);
   const [prior, setPrior] = useState<CvGenerationView | null>(null);
   const [closedUnknown, setClosedUnknown] = useState<ReadonlySet<string>>(() => new Set());
@@ -70,7 +72,7 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     };
   }, []);
 
-  useEffect(() => discardOtherCvReceipt(scope[1]), [scope[1]]);
+  useEffect(() => discardOtherCvReceipt(actorId), [actorId]);
 
   const known = status.data ?? tracked?.receipt ?? null;
   const deadlines = [known?.expires_at, prior?.receipt.expires_at].flatMap((value) =>
@@ -144,6 +146,17 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     } catch (error) {
       if (!sameActor()) return;
       setAdmissionError(error);
+      const message: unknown = isAxiosError(error) ? error.response?.data?.message : null;
+      if (intent.input.selection.mode === "agentic" && (
+        message === "nodiaCv:generation_selection_unqualified" ||
+        message === "nodiaCv:configuration_unavailable" ||
+        message === "nodiaCv:agentic_transport_unavailable"
+      )) {
+        void queryClient.invalidateQueries({
+          queryKey: cvEligibilityQueryKey(scope, intent.input.selection),
+          exact: true,
+        });
+      }
       if (profileWriteMayHaveCommitted(error)) setUncertain({ intent, receiptMissing: false });
       else if (!uncertain) {
         if (scope[1] && tracked) rememberCvReceipt(scope[1], tracked.intent.request_key);

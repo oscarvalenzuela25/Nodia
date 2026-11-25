@@ -61,16 +61,20 @@ export const cvEligibilitySchema = z
       "configuration_unavailable",
       "qualification_required",
       "agentic_transport_unavailable",
+      "codex_runtime_unavailable",
+      "codex_session_required",
+      "codex_session_unverified",
+      "codex_model_unavailable",
+      "codex_effort_unavailable",
+      "codex_profile_busy",
+      "codex_usage_unavailable",
     ]),
     checked_at: z.iso.datetime().nullable(),
   })
-  .refine(
-    (result) =>
-      result.eligible ===
-      (result.qualified &&
-        result.configured === true &&
-        result.reason_code === "qualified" &&
-        result.checked_at !== null),
+  .refine((result) =>
+    result.reason_code === "qualified"
+      ? result.eligible && result.qualified && result.configured === true && result.checked_at !== null
+      : !result.eligible && !result.qualified,
   );
 
 const fact = z.object({

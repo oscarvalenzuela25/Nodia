@@ -1,5 +1,5 @@
 import { alpha, styled } from "@mui/material/styles";
-import { Button, Popover } from "@mui/material";
+import { Alert, Button, Popover } from "@mui/material";
 
 export const SelectionPanel = styled("div")(({ theme }) => ({
   display: "flex", flexDirection: "column", gap: theme.spacing(1), width: "100%", minWidth: 0,
@@ -46,6 +46,22 @@ export const SelectionBar = styled("div")(({ theme }) => ({
   minWidth: 0,
   flex: "1 1 32rem",
   "& > .MuiAlert-root": { flexBasis: "100%", minWidth: 0 },
+}));
+
+export const SelectionActionAlert = styled(Alert)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    display: "grid",
+    gridTemplateColumns: "auto minmax(0, 1fr)",
+    alignItems: "start",
+    "& .MuiAlert-icon": { gridArea: "1 / 1" },
+    "& .MuiAlert-message": { gridArea: "1 / 2", minWidth: 0, overflowWrap: "anywhere" },
+    "& .MuiAlert-action": {
+      gridArea: "2 / 1 / 3 / -1",
+      margin: 0,
+      padding: 0,
+      "& > button": { width: "100%", minHeight: 44 },
+    },
+  },
 }));
 
 export const Selector = styled("div")(({ theme }) => ({

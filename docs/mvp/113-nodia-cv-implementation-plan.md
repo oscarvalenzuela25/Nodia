@@ -508,8 +508,8 @@ Esta promoción usa la protección de CD existente.
 
 ## 17. Continuación de CV-03 — generación Agentic — 2026-11-25
 
-**Estado: paso 3 validado en PostgreSQL aislado con datos sintéticos.** Rama
-`codex/nodia-cv-agentic`, basada en `development`.
+**Estado: host, borrador real y selector verificados en el piloto aislado
+de la VM.** Rama `codex/nodia-cv-agentic`, basada en `development`.
 El entregable inicial es un borrador válido desde **Generar CV** en la VM
 con **ChatGPT / Agentic / GPT-6.2 Sol / Alto** (`gpt-6.2-sol`, `high`).
 Después, verificar Gemini Agentic de forma independiente con un modelo
@@ -628,14 +628,20 @@ y la calificación real corresponden al paso 4.
 
 #### 4. Calificar Codex con una generación real y conectar la UI
 
-- [ ] Ejecutar el probe administrativo de CV en la VM con perfil y
+El piloto instaló el host restringido, admitió una sola intención real
+con la sesión existente y activó el selector tras verificar el borrador,
+el cierre, el ACK y ambas plantillas. La selección exacta en Alto quedó
+calificada y en Medio sigue requiriendo evidencia propia.
+[Evidencia del paso 4](../evidence/nodia-cv-agentic-baseline-vm-20261125.md#paso-4-borrador-real-y-selector-en-el-piloto-aislado-de-la-vm).
+
+- [x] Ejecutar el probe administrativo de CV en la VM con perfil y
   oferta sintéticos. Incluir un requisito respaldado y otro ausente.
   Comprobar un intercambio Agentic, respuesta estructurada válida,
   evidencia literal, brecha visible, cierre nativo, persistencia y ACK.
   La calificación se habilita únicamente al verificar el recibo exacto de
   CV, asociado a esa combinación y entorno. Probar que el cambio de
   nivel o sesión vuelve a pedir calificación para la nueva selección.
-- [ ] Usar el popover actual de `CvModelSelector`. Mostrar estados
+- [x] Usar el popover actual de `CvModelSelector`. Mostrar estados
   distintos para runtime ausente, sesión pendiente, modelo o esfuerzo
   ausente, selección sin calificar y selección elegible. Mantener
   **Aplicar configuración** y **Generar borrador** sujetos a la respuesta

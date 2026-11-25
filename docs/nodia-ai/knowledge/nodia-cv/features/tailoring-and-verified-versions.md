@@ -4,11 +4,11 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 5,
+  "revision": 6,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. Host, cola y recuperación Codex Agentic validados con datos sintéticos en PostgreSQL aislado, pendientes de adopción, calificación y activación."
+    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado habilitó Codex Agentic GPT-6.2 Sol en Alto tras un borrador real con perfil y oferta sintéticos."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -33,7 +33,7 @@
   "verification": {
     "checked_on": "2026-11-25",
     "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md"],
-    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. PostgreSQL aislado verificó un intercambio por intención Agentic y recuperación sin reenviar. La calificación real sigue pendiente."
+    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó un intercambio real, el ACK exacto y la extracción de texto en ambas plantillas."
   },
   "approval": null
 }
@@ -58,11 +58,11 @@ describen el flujo implementado y los pendientes de aceptación.
 
 ## Agentic previsto
 
-El transporte Codex, la cola y la recuperación pasaron pruebas sintéticas.
-Agentic sigue pendiente de activación en **Generar CV**. El selector puede
-mostrar modelos configurados. La habilitación requiere adoptar el host y
-una generación calificada de CV con la misma conexión, modo, modelo,
-esfuerzo y sesión. La recuperación consulta el recibo sin reenviar.
+El piloto aislado de la VM habilitó GPT-6.2 Sol en Alto en **Generar CV**.
+El selector exige una calificación válida de CV para la misma conexión,
+modo, modelo, esfuerzo y sesión. Las demás selecciones muestran su propio
+estado. La generación también exige perfil guardado y oferta. La
+recuperación consulta el recibo sin reenviar.
 [Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 
 ## Solicitudes en lenguaje natural

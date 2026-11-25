@@ -161,3 +161,50 @@ La VM mantiene su release y esquema operativos. El paso 4 debe adoptar
 el host y el Server con la migración, ejecutar el probe con una cuenta
 real y habilitar la selección en la interfaz según el recibo. El paso 3
 no lanzó inferencias reales ni cambió la configuración de la cuenta.
+
+## Paso 4. Borrador real y selector en el piloto aislado de la VM
+
+El host Linux `nodia-cv-codex-host-cee7aca95a10ef68` se instaló en un
+montaje SquashFS de sólo lectura. Sin red, el ejecutable instalado confirmó
+`gpt-6.2-sol / high` con la entrada exacta del CLI `0.171.0`. El piloto
+usa la misma sesión Codex de la conexión OpenAI `1`, por el llavero de
+la VM y el lease del perfil. La política de la conexión de origen se leyó
+en una transacción de sólo lectura. Los dos actores de Nodia, el perfil y
+la oferta del piloto fueron sintéticos.
+
+PostgreSQL 16 del piloto aplicó las 81 migraciones. Su base y su puerto
+de loopback son independientes del Server operativo. El Server del
+piloto se empaquetó con SHA-256
+`3f351d8d18ad407abe5d9d1cc343a5cbe56bb47706306e9d57fe1194f01e584d`.
+El [script de prueba y verificación](../../nodia-server/scripts/qualify-nodia-cv-agentic.mjs)
+usó una sola clave de solicitud. El worker de CV ejecutó la generación
+`70c880bb-263d-419c-848f-e151f2056821` con el host instalado.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Selección inicial | OpenAI conexión `1`, Agentic, GPT-6.2 Sol, Alto. Metadata y host disponibles, sin calificación previa. |
+| Borrador | `ready`. TypeScript respaldado por el perfil y Kubernetes visible como brecha. |
+| Cierre | Un intercambio reservado e iniciado. Fase `closed`, resultado `completed`, grupo de proceso cerrado, ACK persistido y slot libre. |
+| Recibo | `a654812d-682e-49b3-8064-83f2bb0915be`. SHA-256 de la respuesta `98f664dc64ffcec11449a93d4b6710d32e8c3e0353616a868a0f5a4938b73f9a`. |
+| PDF Clásica | Una página. Extracción verificada con PDF.js. SHA-256 `571f05e8c5884d51ec9e260e2d0ac6d07add7f3c0d236742c20acd22853df5c4`. |
+| PDF Compacta | Una página. Extracción verificada con PDF.js. SHA-256 `712b7e321439a2df1a74ed145291460f2ee2180e4dc45af6f6ba943703567777`. |
+| Elegibilidad | Alto devuelve `qualified`. Medio devuelve `qualification_required` en la misma conexión, sesión y modelo. |
+
+El cliente se activó después de comprobar el recibo, el borrador y
+ambos PDF. La vista está en el piloto de la VM, con un túnel local en
+`http://127.0.0.1:5186/nodia-cv`. El cliente final tiene SHA-256
+`153fdd313c4fcb2336750c28c98b72f21e510ab39e247624f33c8ff5a010e7f4`.
+En Edge, Medio mostró el motivo y bloqueó **Aplicar configuración**.
+En Alto, **Aplicar configuración** habilitó **Generar borrador** con
+el perfil y la oferta de prueba. Escape y Aplicar devolvieron el foco
+al selector. El formulario conservó el texto. A 320 px, el mensaje
+dispuso de 178 px y el reintento de un control de 44 px en la fila
+inferior. A 1280 px se verificó el mismo estado de disponibilidad.
+Pasaron 139 pruebas focales de Server, 41 de Client y la compilación de ambos.
+
+La prueba produjo un borrador real con la intención de calificación
+y renderizó ambas plantillas en memoria. Después de comprobar el
+selector, el piloto conservó una operación, un intercambio y cero
+pendientes. El recorrido ordinario con otra intención y guardado de
+versiones queda pendiente.
+[Plan113 §17](../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).

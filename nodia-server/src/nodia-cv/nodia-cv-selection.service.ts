@@ -9,6 +9,7 @@ import {
 import { createHash } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import type { AiSelection } from '../ai-generation/ai-selection.js';
+import { restrictAgenticModelFields } from '../ai-provider/helpers/agentic-model-policy.helper.js';
 import {
   ApiNodiaAiCredentialsService,
   type NodiaAiApiConfiguration,
@@ -16,6 +17,7 @@ import {
 import { NodiaAiAdapterError } from '../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import { NodiaAiConnectionsService } from '../nodia-ai-conversation/nodia-ai-connections.service.js';
 import {
+  configurationRecord,
   NODIA_AI_CONNECTION_PAGE_UTF8_BYTES,
   projectNodiaAiConnection,
 } from '../nodia-ai-conversation/use-case/list-nodia-ai-connections.use-case.js';
@@ -41,6 +43,13 @@ export type CvAgenticObservation = Awaited<
 
 type CvEligibilityCode =
   | 'agentic_transport_unavailable'
+  | 'codex_runtime_unavailable'
+  | 'codex_session_required'
+  | 'codex_session_unverified'
+  | 'codex_model_unavailable'
+  | 'codex_effort_unavailable'
+  | 'codex_profile_busy'
+  | 'codex_usage_unavailable'
   | 'configuration_unavailable'
   | 'qualification_required'
   | 'qualified';
@@ -52,6 +61,34 @@ export interface CvSelectionEligibility {
   eligible: boolean;
   reason_code: CvEligibilityCode;
   checked_at: Date | null;
+}
+
+function agenticBlockReason(
+  observation: CvAgenticObservation,
+): CvEligibilityCode {
+  if (!observation || observation.transport.status === 'host_unavailable')
+    return 'agentic_transport_unavailable';
+  if (observation.transport.status === 'selection_unsupported')
+    return observation.transport.reason === 'codex_effort_unavailable'
+      ? 'codex_effort_unavailable'
+      : 'codex_model_unavailable';
+  switch (observation.selection.status) {
+    case 'codex_session_required':
+    case 'codex_session_unverified':
+    case 'codex_effort_unavailable':
+    case 'codex_profile_busy':
+    case 'codex_usage_unavailable':
+      return observation.selection.status;
+    case 'codex_model_not_allowed':
+    case 'codex_model_unavailable':
+      return 'codex_model_unavailable';
+    case 'codex_protocol_invalid':
+    case 'codex_timeout':
+    case 'codex_runtime_unavailable':
+      return 'codex_runtime_unavailable';
+    default:
+      return 'configuration_unavailable';
+  }
 }
 
 @Injectable()
@@ -211,14 +248,21 @@ export class NodiaCvSelectionService {
         error instanceof ServiceUnavailableException;
       if (!unavailable && !(error instanceof UnprocessableEntityException))
         throw error;
+      const reason =
+        requested.mode === 'agentic'
+          ? agenticBlockReason(observation)
+          : 'configuration_unavailable';
       return {
         selection: requested,
-        configured: unavailable ? null : false,
+        configured:
+          reason === 'configuration_unavailable' ||
+          reason === 'codex_model_unavailable' ||
+          reason === 'codex_effort_unavailable'
+            ? false
+            : null,
         qualified: false,
         eligible: false,
-        reason_code: unavailable
-          ? 'agentic_transport_unavailable'
-          : 'configuration_unavailable',
+        reason_code: reason,
         checked_at: null,
       };
     }
@@ -251,14 +295,27 @@ export class NodiaCvSelectionService {
     // Reserve response envelope overhead and preserve whole connections when paginating.
     let bytes = 4096;
     for (const row of rows.slice(0, limit)) {
-      const connection = projectNodiaAiConnection(row);
+      const fields = configurationRecord(row.fields);
+      const connection = projectNodiaAiConnection({
+        ...row,
+        fields:
+          row.provider_key === 'openai'
+            ? {
+                ...fields,
+                agentic: restrictAgenticModelFields(
+                  configurationRecord(fields.agentic),
+                ),
+              }
+            : fields,
+      });
       const item = {
         ...connection,
         modes: connection.modes.map((mode) => ({
           ...mode,
+          // This advertises the eligibility route. Execution needs current scoped proof.
           cv_transport:
-            mode.mode === 'api_key' &&
-            ['gemini', 'openai'].includes(row.provider_key)
+            row.provider_key === 'openai' ||
+            (mode.mode === 'api_key' && row.provider_key === 'gemini')
               ? ('available' as const)
               : ('unsupported' as const),
         })),

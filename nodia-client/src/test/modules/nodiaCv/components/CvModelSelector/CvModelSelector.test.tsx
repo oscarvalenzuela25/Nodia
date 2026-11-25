@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import CvModelSelector, { type CvModelConnection, type CvModelSelectorProps } from "../../../../../modules/nodiaCv/components/CvModelSelector";
@@ -72,5 +72,79 @@ describe("CvModelSelector", () => {
     rerender(<CvModelSelector {...settings} eligibility={{ selection: next, eligible: true, reason_code: "qualified" }} />);
     await user.click(screen.getByRole("button", { name: action("apply") }));
     expect(settings.onApply).toHaveBeenCalledExactlyOnceWith(next);
+  });
+
+  it("shows each Agentic gate and accepts only the verified model and reasoning tuple", async () => {
+    const user = userEvent.setup();
+    const exact: NodiaAiSelection = { ...applied, mode: "agentic", model_id: "fixture-codex", effort_id: "high" };
+    const settings = props();
+    const agenticConnections: CvModelConnection[] = [{
+      ...connections[0],
+      provider_key: "openai",
+      modes: [
+        connections[0].modes[0],
+        {
+          ...mode,
+          mode: "agentic",
+          cv_transport: "available",
+          configured_selection: null,
+          models: [{ model_id: exact.model_id, label: "Fixture Codex", efforts: [
+            { effort_id: "medium", label: "Medium" },
+            { effort_id: "high", label: "High" },
+          ] }],
+        },
+      ],
+    }];
+    const view = { ...settings, connections: agenticConnections };
+    const { rerender } = render(<CvModelSelector {...view} />);
+    await user.click(screen.getByRole("button", { name: cv("title") }));
+    await user.click(screen.getByRole("button", { name: action("mode") }));
+    await user.click(screen.getByRole("option", { name: i18n.t("nodiaAi:modes.agentic") }));
+    await user.click(screen.getByRole("button", { name: action("model") }));
+    await user.click(screen.getByRole("option", { name: "Fixture Codex" }));
+    await user.click(screen.getByRole("button", { name: action("effort") }));
+    await user.click(screen.getByRole("option", { name: i18n.t("nodiaAi:effort_levels.high") }));
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(exact);
+
+    const staleSelection = { ...exact, effort_id: "medium" };
+    rerender(<CvModelSelector {...view} eligibility={{ selection: staleSelection, eligible: true, reason_code: "qualified" }} />);
+    expect(screen.getByRole("button", { name: action("apply") })).toBeDisabled();
+
+    for (const [reason_code, label] of [
+      ["codex_runtime_unavailable", "codex_runtime_unavailable"],
+      ["agentic_transport_unavailable", "agentic_host_unavailable"],
+      ["codex_session_required", "codex_session_required"],
+      ["codex_session_unverified", "codex_session_unverified"],
+      ["codex_model_unavailable", "codex_model_unavailable"],
+      ["codex_effort_unavailable", "codex_effort_unavailable"],
+      ["codex_profile_busy", "codex_profile_busy"],
+      ["codex_usage_unavailable", "codex_usage_unavailable"],
+      ["qualification_required", "qualification_required"],
+    ] as const) {
+      rerender(<CvModelSelector {...view} eligibility={{ selection: exact, eligible: false, reason_code }} />);
+      expect(screen.getByText(cv(label))).toBeVisible();
+      expect(screen.getByRole("button", { name: action("apply") })).toBeDisabled();
+    }
+    await user.click(screen.getByRole("button", { name: action("check_again") }));
+    expect(settings.onRetryEligibility).toHaveBeenCalledTimes(1);
+    expect(settings.onSelectionChange).toHaveBeenLastCalledWith(exact);
+
+    const eligibility = { selection: exact, eligible: true, reason_code: "qualified" as const };
+    rerender(<CvModelSelector {...view} eligibility={eligibility} eligibilityBusy />);
+    expect(screen.getByRole("button", { name: action("apply") })).toBeDisabled();
+    rerender(<CvModelSelector {...view} eligibility={eligibility} />);
+    await user.click(screen.getByRole("button", { name: action("apply") }));
+    expect(settings.onApply).toHaveBeenCalledExactlyOnceWith(exact);
+
+    rerender(<CvModelSelector {...view} selection={exact} eligibility={eligibility} />);
+    const trigger = screen.getByRole("button", { name: cv("title") });
+    await waitFor(() => expect(trigger).toHaveFocus());
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("dialog", { name: cv("title") })).toBeVisible();
+    await user.keyboard("{Escape}");
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog", { name: cv("title") })).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+    });
   });
 });
