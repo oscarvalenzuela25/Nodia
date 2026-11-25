@@ -37,8 +37,12 @@ def inspect(directory: Path, *arguments: str) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--profile", choices=("dev", "release"), required=True)
+    parser.add_argument("--lane", choices=("teacher", "cv"), default="teacher")
     arguments = parser.parse_args()
     output = (ROOT / ".cache" / "artifacts" / arguments.profile).resolve()
+    cv = arguments.lane == "cv"
+    if cv:
+        output = (ROOT / ".cache" / "artifacts" / "cv" / arguments.profile).resolve()
     if not output.is_relative_to(ROOT):
         raise RuntimeError("Artifact directory escaped the host workspace")
     output.mkdir(parents=True, exist_ok=True)
@@ -53,7 +57,12 @@ def main() -> None:
     ])
     staging = output / "staging-host"
     checksum = digest(staging)
-    filename = "nodia-teacher-codex-host-" + checksum[:16]
+    capabilities = json.loads(inspect(output, "env", "-i", "/artifact/staging-host", "--capabilities"))
+    expected = ("nodia-cv-codex-host/1", "cv-tailoring/1") if cv else ("nodia-teacher-codex-host/1", "teacher-text/1")
+    if (capabilities.get("protocol"), capabilities.get("purpose")) != expected:
+        staging.unlink()
+        raise RuntimeError("Rebuild the selected host lane before packaging")
+    filename = "nodia-" + arguments.lane + "-codex-host-" + checksum[:16]
     artifact = output / filename
     if artifact.exists():
         if digest(artifact) != checksum:
@@ -61,7 +70,6 @@ def main() -> None:
         staging.unlink()
     else:
         staging.rename(artifact)
-    capabilities = json.loads(inspect(output, "env", "-i", f"/artifact/{filename}", "--capabilities"))
     if capabilities.get("source_commit") != COMMIT or capabilities.get("compiled_native") is not True:
         raise RuntimeError("Artifact does not contain the pinned native host")
     if capabilities.get("tools") != [] or capabilities.get("attachments") != []:
@@ -83,7 +91,7 @@ def main() -> None:
         if path.is_file() and not ({".cache", "target"} & set(path.relative_to(ROOT).parts))
     }
     manifest = {
-        "schema": "nodia-teacher-codex-host-artifact/1",
+        "schema": "nodia-" + arguments.lane + "-codex-host-artifact/1",
         "artifact": {"filename": filename, "sha256": checksum, "bytes": artifact.stat().st_size,
                      "cargo_profile": arguments.profile, "stripped": True, "architecture": "linux-x86_64",
                      "maximum_glibc_symbol": ".".join(map(str, max(glibc_versions))),
@@ -96,12 +104,17 @@ def main() -> None:
         "capabilities": capabilities,
         "qualification": "not_qualified_for_any_real_selection",
     }
+    if cv:
+        with artifact.open("rb") as source:
+            manifest["artifact"]["sha512"] = hashlib.file_digest(source, "sha512").hexdigest()
+        manifest["source"]["sdk_model_metadata_release"] = "0.171.0"
     manifest_path = output / (filename + ".manifest.json")
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     print(json.dumps({"artifact": str(artifact), "manifest": str(manifest_path),
                       "sha256": checksum, "bytes": artifact.stat().st_size,
                       "maximum_glibc_symbol": manifest["artifact"]["maximum_glibc_symbol"],
-                      "runtime_libraries": libraries, "profile": arguments.profile}))
+                      "runtime_libraries": libraries, "profile": arguments.profile,
+                      **({"sha512": manifest["artifact"]["sha512"]} if cv else {})}))
 
 
 if __name__ == "__main__":

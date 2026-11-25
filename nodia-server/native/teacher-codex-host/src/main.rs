@@ -23,16 +23,47 @@ fn main() {
 }
 
 fn run(args: Vec<String>) -> Result<(), &'static str> {
-    if args.len() != 4
-        || args[0] != "--config-json"
-        || args[2] != "--workspace"
-        || args[1].len() > 32_768
+    #[cfg(feature = "cv")]
+    if let [check, model_id, effort_json, flag, metadata] = args.as_slice()
+        && check == "--check-model"
+        && flag == "--model-metadata-json"
+    {
+        let effort_id: Option<String> =
+            serde_json::from_str(effort_json).map_err(|_| "invalid_effort")?;
+        native::cv_model_catalog(metadata, model_id, effort_id.as_deref())?;
+        return emit(&json!({"model_id": model_id, "effort_id": effort_id}));
+    }
+    let [
+        config_flag,
+        config_json,
+        workspace_flag,
+        workspace_path,
+        rest @ ..,
+    ] = args.as_slice()
+    else {
+        return Err("invalid_arguments");
+    };
+    if config_flag != "--config-json"
+        || workspace_flag != "--workspace"
+        || config_json.len() > 32_768
     {
         return Err("invalid_arguments");
     }
+    #[cfg(feature = "cv")]
+    let [catalog_flag, metadata] = rest else {
+        return Err("invalid_arguments");
+    };
+    #[cfg(feature = "cv")]
+    if catalog_flag != "--model-metadata-json" {
+        return Err("invalid_arguments");
+    }
+    #[cfg(not(feature = "cv"))]
+    if !rest.is_empty() {
+        return Err("invalid_arguments");
+    }
     let trusted: serde_json::Value =
-        serde_json::from_str(&args[1]).map_err(|_| "invalid_configuration")?;
-    let workspace = PathBuf::from(&args[3]);
+        serde_json::from_str(config_json).map_err(|_| "invalid_configuration")?;
+    let workspace = PathBuf::from(workspace_path);
     let profile = PathBuf::from(std::env::var_os("CODEX_HOME").ok_or("profile_unavailable")?);
     for path in [&workspace, &profile] {
         let metadata = std::fs::symlink_metadata(path).map_err(|_| "profile_unavailable")?;
@@ -55,6 +86,9 @@ fn run(args: Vec<String>) -> Result<(), &'static str> {
     #[cfg(feature = "codex")]
     {
         native::validate_configuration(&trusted)?;
+        #[cfg(feature = "cv")]
+        let catalog =
+            native::cv_model_catalog(metadata, &request.model_id, request.effort_id.as_deref())?;
         let runtime = tokio::runtime::Builder::new_multi_thread()
             .worker_threads(2)
             .thread_stack_size(8 * 1024 * 1024)
@@ -64,12 +98,19 @@ fn run(args: Vec<String>) -> Result<(), &'static str> {
         let binding = request.binding_hash();
         let config = runtime.block_on(async {
             let remaining = request.remaining();
-            tokio::time::timeout(
+            let config = tokio::time::timeout(
                 remaining,
                 native::configuration(&request, trusted, &profile, &workspace),
             )
             .await
-            .map_err(|_| "deadline_exceeded")?
+            .map_err(|_| "deadline_exceeded")??;
+            #[cfg(feature = "cv")]
+            let config = {
+                let mut config = config;
+                config.model_catalog = Some(catalog);
+                config
+            };
+            Ok::<_, &'static str>(config)
         })?;
         let nonce = uuid::Uuid::new_v4().to_string();
         emit(

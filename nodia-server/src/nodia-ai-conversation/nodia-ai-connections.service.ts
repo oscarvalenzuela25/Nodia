@@ -27,7 +27,7 @@ export class NodiaAiConnectionsService {
       `SELECT p.id::text, COALESCE(NULLIF(p.name,''),c.name) AS label,
        c.key AS provider_key,p.is_active,p.is_default,p.default_mode,c.is_active AS catalog_active,
        p.use_api_key,p.use_agentic,
-       c.can_use_api_key,c.can_use_agentic,p.fields
+       c.can_use_api_key,c.can_use_agentic,p.fields,p.updated_at AS configuration_updated_at
        FROM ai_providers p JOIN ai_provider_catalog c ON c.id=p.catalog_id
        WHERE ($1::bigint IS NULL OR p.id>$1::bigint) ORDER BY p.id ASC LIMIT $2`,
       [after, limit + 1],

@@ -6,12 +6,13 @@ import { fileURLToPath } from 'node:url';
 import { verifyArtifact } from './artifact-release.mjs';
 import { CdRejected, extractOriginalZip, githubClient, isHex, isSha, numeric, outputs, requireCd, safeFailure, selectArtifact, writeState } from './cd-github.mjs';
 import { deploymentPlan, unmanagedRuntimeError, unmanagedRuntimePaths } from './cd-selection.mjs';
-import { deployBackend, readBackend, requireGeminiRuntimeMatch } from './cd-vps.mjs';
+import { deployBackend, readBackend } from './cd-vps.mjs';
 import { preflightPages, publishPages } from './cd-pages.mjs';
 import { pwaVerificationDetails, verifyPublishedPwaAssets } from './pwa-assets.mjs';
 import { inventory } from '../production/package-backend-release.mjs';
 import { deliveryReceipt } from './delivery-receipt.mjs';
 import { migrationRehearsalRequired, requireMigrationProof } from './migration-gate.mjs';
+import { requireRuntimeProofMatch } from './runtime-attestations.mjs';
 
 function workspace(environment) {
   const output = path.resolve(environment.CD_WORKSPACE ?? '');
@@ -39,7 +40,8 @@ export async function prepareRelease(environment = process.env, { api = githubCl
   let plan;
   try {
     plan = deploymentPlan({ repo: root, head: ci.source_sha, clientBase: client.source_sha,
-      serverBase: server.source_sha, forceClient: client.config_changed, geminiRuntime: server.gemini_runtime });
+      serverBase: server.source_sha, forceClient: client.config_changed, geminiRuntime: server.gemini_runtime,
+      codexCvRuntime: server.codex_cv_runtime, geminiCvSdk: server.gemini_cv_sdk });
   } catch (error) {
     if (error instanceof CdRejected && error.message === unmanagedRuntimeError) {
       const unmanaged = unmanagedRuntimePaths({ repo: root, base: server.source_sha, head: ci.source_sha });
@@ -150,7 +152,7 @@ export async function updateServer(environment = process.env, { api, read = read
     const baseline = await read(environment);
     requireCd(baseline.source_sha === plan.server_base, 'backend_changed_after_plan');
     result = { status: 'not_required', source_sha: baseline.source_sha, deployment_requested: false,
-      ...requireGeminiRuntimeMatch(plan.gemini_runtime, baseline.gemini_runtime) };
+      ...requireRuntimeProofMatch(plan, baseline) };
   } else {
     const artifact = plan.artifacts.server;
     result = await deploy({ environment, plan, artifact, zipFile: artifact.zip_file, zipBytes: artifact.zip_bytes, ci: plan.ci,
@@ -180,16 +182,61 @@ export async function confirmPublishedClient({ result, directory, stateFile, ver
   writeState(stateFile, confirmed);
   return confirmed;
 }
+function requireBackendForPages(plan, backend) {
+  requireCd(plan.server_required ? (['complete', 'already_current'].includes(backend.status) && backend.source_sha === plan.source_sha ||
+    confirmedEquivalentBackend(plan, backend)) :
+    backend.status === 'not_required', 'backend_must_be_confirmed_before_pages');
+  return requireRuntimeProofMatch(plan, backend);
+}
+
+function requirePagesBackendIdentity(plan, backend, observed) {
+  const expected = ['complete', 'already_current'].includes(backend.status)
+    ? plan.artifacts?.server?.result : plan.server_baseline;
+  requireCd(observed && expected && observed.source_sha === backend.source_sha && observed.source_sha === expected.source_sha &&
+    observed.release_id === expected.release_id && observed.package_tree_sha256 === expected.package_tree_sha256,
+  'backend_changed_before_pages');
+  return observed;
+}
+
+function runtimePagesIdentity(plan) {
+  return { schema_version: 1, status: 'runtime_verified_before_pages', source_sha: plan.source_sha,
+    ci_run_id: plan.ci.run_id, ci_run_attempt: plan.ci.run_attempt, deployment_requested: false };
+}
+
+export async function verifyRuntimesBeforePages(environment = process.env, { read = readBackend, api } = {}) {
+  context(environment);
+  const { output } = workspace(environment);
+  const plan = JSON.parse(fs.readFileSync(path.join(output, 'release-plan.json'), 'utf8'));
+  const backend = JSON.parse(fs.readFileSync(path.join(output, 'backend-result.json'), 'utf8'));
+  const expected = requireBackendForPages(plan, backend);
+  if (!plan.client_required || !Object.keys(expected).length) return { status: 'not_required', deployment_requested: false };
+  const filename = path.join(output, 'pages-runtime-proof.json');
+  fs.rmSync(filename, { force: true });
+  api ??= githubClient(environment);
+  await api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha);
+  const status = await read(environment); // Restricted read-only SSH in a step without Pages credentials.
+  const current = requirePagesBackendIdentity(plan, backend, status.current);
+  const proof = { ...runtimePagesIdentity(plan), current, ...requireRuntimeProofMatch(expected, status) };
+  writeState(filename, proof);
+  return proof;
+}
+
 export async function updateClient(environment = process.env, { api, verify = verifyArtifact,
   publish = publishPages, confirm = confirmPublishedClient } = {}) {
   context(environment);
   const { root, output } = workspace(environment);
   const plan = JSON.parse(fs.readFileSync(path.join(output, 'release-plan.json'), 'utf8'));
   const backend = JSON.parse(fs.readFileSync(path.join(output, 'backend-result.json'), 'utf8'));
-  requireCd(plan.server_required ? (['complete', 'already_current'].includes(backend.status) && backend.source_sha === plan.source_sha ||
-    confirmedEquivalentBackend(plan, backend)) :
-    backend.status === 'not_required', 'backend_must_be_confirmed_before_pages');
-  requireGeminiRuntimeMatch(plan.gemini_runtime, backend.gemini_runtime);
+  const expected = requireBackendForPages(plan, backend);
+  if (plan.client_required && Object.keys(expected).length) {
+    const filename = path.join(output, 'pages-runtime-proof.json');
+    requireCd(fs.existsSync(filename), 'runtime_proof_required_before_pages');
+    const proof = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    requireCd(Object.entries(runtimePagesIdentity(plan)).every(([key, value]) => proof[key] === value),
+      'runtime_proof_required_before_pages');
+    requirePagesBackendIdentity(plan, backend, proof.current);
+    requireRuntimeProofMatch(expected, proof);
+  }
   requireClientPreflight(output, plan);
   api ??= githubClient(environment);
   const revalidate = () => api.gate(plan.ci.run_id, plan.ci.run_attempt, plan.source_sha);
@@ -246,7 +293,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   try {
     const command = process.argv[2];
     const operation = { prepare: prepareRelease, 'preflight-client': preflightClient,
-      backend: updateServer, client: updateClient, summary: releaseSummary }[command];
+      backend: updateServer, 'preflight-runtimes': verifyRuntimesBeforePages,
+      client: updateClient, summary: releaseSummary }[command];
     requireCd(operation, 'release_command_invalid');
     console.log(JSON.stringify(await operation()));
   } catch (error) {

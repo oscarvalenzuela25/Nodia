@@ -14,8 +14,9 @@ loader = unittest.TestLoader()
 suite = unittest.TestSuite(loader.discover(directory, pattern=pattern) for pattern in
                            ('test_backend_update*.py', 'test_deploy_receiver.py', 'test_archive_completed_backend_upload.py',
                             'test_refresh_deploy_gateway.py', 'test_backend_upload.py', 'test_refresh_upload_transport.py',
-                            'test_ai_runtime_updater.py', 'test_teacher_runtime.py', 'test_rollout_gemini.py',
-                            'test_teacher_operator_upgrade.py', 'test_activate_teacher_window.py',
+                            'test_ai_runtime_updater.py', 'test_codex_cv_runtime.py', 'test_teacher_runtime.py', 'test_rollout_gemini.py',
+                            'test_gemini_cv_sdk_rollout.py', 'test_teacher_operator_upgrade.py',
+                            'test_upgrade_cv_operators.py', 'test_activate_teacher_window.py',
                             'test_capture_teacher_backup.py', 'test_refresh_post_migration_cd.py',
                             'test_post_migration_reconciliation_helper.py', 'test_refresh_backup_request_cd.py',
                             'test_refresh_backup_failure_recovery.py'))

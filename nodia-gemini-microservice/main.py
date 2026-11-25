@@ -31,7 +31,8 @@ from native_context_budget import ContextMeasureRequest, ContextMeasurement, mea
 from invoice_mcp_contract import register_invoice_mcp_contract_routes
 from native_invoice_analysis import NativeInvoiceAnalysis, register_native_invoice_routes
 from native_image_generation import NativeImageGeneration, register_native_image_routes
-from native_teacher_text import TeacherNativeText, register_teacher_text_routes
+from native_teacher_text import TeacherNativeText, register_teacher_text_routes, register_cv_text_routes
+from teacher_text_contract import CV_CONTRACT
 from teacher_sdk_runtime import create_teacher_sdk_runtime
 from native_attempts import ReconcileAttempt, AcknowledgeAttempt
 from native_mcp_sessions import NativeMcpSessions, McpChatRequest, McpPoll, McpResult
@@ -148,6 +149,8 @@ def create_app(*, agentic_service: Any = None,
         state.image_generation = NativeImageGeneration(state.chat)
         state.teacher_text = TeacherNativeText(state.agentic, state.profiles,
             backend=state.teacher_backend, transport=teacher_transport)
+        state.cv_text = TeacherNativeText(state.agentic, state.profiles,
+            backend=state.teacher_backend, transport=teacher_transport, contract=CV_CONTRACT)
         state.durable_login = DurableLoginRequests(STATE_DIR / "login_requests", state.profiles)
         state.mcp = NativeMcpSessions(state.chat)
         state.chat.mcp_sessions = state.mcp
@@ -167,6 +170,7 @@ def create_app(*, agentic_service: Any = None,
             yield
         finally:
             try:
+                await state.cv_text.close()
                 await state.teacher_text.close()
                 await state.mcp.close()
                 await state.durable_login.close()
@@ -186,6 +190,7 @@ def create_app(*, agentic_service: Any = None,
     register_native_invoice_routes(application)
     register_native_image_routes(application)
     register_teacher_text_routes(application)
+    register_cv_text_routes(application)
 
     async def durable_job(engine: str, job_id: str, actor: str, action: str, payload: dict | None = None):
         job = await application.state.durable_login.legacy(engine, job_id, actor, action, payload)

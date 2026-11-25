@@ -39,6 +39,7 @@ WRITERS = (('api_active', 'nodia-api.service', 'dist/main.js'),
 # Reviewed and recorded in production-ai-login-live-20261112-r01.json.
 GEMINI_HOST_SHA256 = 'dbfabae8443c7db29b6c3da27f8b25f5313214dc430b2c8de2acd7cf0a3e8a51'
 GEMINI_UNIT_SHA256 = 'a9fe8902d34e6fdaefc543f8a1148b6926aba874f9a1c4f4aafca45fc6a66aa8'
+GEMINI_CV_SDK_PROOF_SHA256 = '4b40c185953e8eb0738dfb89755c88dbc3b8dd983cb9fff6c4055ad136a979ed'
 
 
 def require(condition, code):
@@ -348,6 +349,51 @@ def gemini_runtime_attestation():
     return record
 
 
+def cv_runtime_proof(record, fields, error):
+    patterns = {'source_sha': r'[a-f0-9]{40}', 'source_tree_sha': r'[a-f0-9]{40}', **fields}
+    require(isinstance(record, dict) and set(record) == {'schema_version', *patterns} and
+            type(record['schema_version']) is int and record['schema_version'] == 1 and
+            all(isinstance(record[name], str) and re.fullmatch(pattern, record[name])
+                for name, pattern in patterns.items()), error)
+    return record
+
+
+def codex_cv_runtime_attestation(service_guard, release):
+    verify = getattr(service_guard, 'codex_cv_attestation', None)
+    if verify is None:
+        return None  # Older installed updater policy has no CV runtime.
+    require(callable(verify), 'codex_cv_runtime_attestation_invalid')
+    record = verify(release)
+    if record is None:
+        return None
+    return cv_runtime_proof(record, {'binary_sha512': r'[a-f0-9]{128}', 'catalog_sha512': r'[a-f0-9]{128}',
+                                      'manifest_sha256': r'[a-f0-9]{64}'}, 'codex_cv_runtime_attestation_invalid')
+
+
+def gemini_cv_sdk_attestation(runtime):
+    if runtime is None:
+        return None
+    helper = LIB / 'ai-runtime/gemini-sdk-proof.py'
+    try:
+        helper.lstat()
+    except FileNotFoundError:
+        return None
+    source = pinned_gemini_file(helper, GEMINI_CV_SDK_PROOF_SHA256)
+    policy = {'__file__': str(helper), '__name__': 'nodia_receiver_gemini_sdk_proof'}
+    exec(compile(source, str(helper), 'exec'), policy)
+    verify = policy.get('cv_sdk_attestation')
+    require(callable(verify), 'gemini_cv_sdk_attestation_invalid')
+    record = verify(runtime)
+    if record is None:
+        return None
+    cv_runtime_proof(record, {'image_id': r'sha256:[a-f0-9]{64}', 'manifest_sha256': r'[a-f0-9]{64}',
+                              'runtime_hash': r'[a-f0-9]{64}', 'policy_hash': r'[a-f0-9]{64}'},
+                     'gemini_cv_sdk_attestation_invalid')
+    require(all(record[key] == runtime[key] for key in ('source_sha', 'source_tree_sha', 'image_id')),
+            'gemini_cv_sdk_attestation_image_mismatch')
+    return record
+
+
 def deployment_status(*, reconciliation_override=None):
     current = Path('/opt/nodia/current')
     require(current.is_symlink() and current.lstat().st_uid == current.lstat().st_gid == 0,
@@ -412,6 +458,16 @@ def deployment_status(*, reconciliation_override=None):
         runtime = None
     if runtime is not None:
         response['gemini_runtime'] = runtime
+    if not unresolved and all(application.values()):
+        # Return only active receipts with live policy and process evidence.
+        for key, attestation in (('codex_cv_runtime', lambda: codex_cv_runtime_attestation(service_guard, release)),
+                                 ('gemini_cv_sdk', lambda: gemini_cv_sdk_attestation(runtime))):
+            try:
+                proof = attestation()
+            except (OSError, RuntimeError, ValueError, subprocess.SubprocessError):
+                proof = None
+            if proof is not None:
+                response[key] = proof
     return response
 
 

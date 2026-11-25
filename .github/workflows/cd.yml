@@ -132,6 +132,16 @@ jobs:
           VPS_USER: ${{ vars.VPS_USER }}
           VPS_KNOWN_HOSTS: ${{ vars.VPS_KNOWN_HOSTS }}
         run: node ops/ci/cd-release.mjs backend
+      - name: Recheck coordinated runtimes through restricted SSH before Pages
+        if: steps.plan.outputs.client_required == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_PORT: ${{ vars.VPS_PORT }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_KNOWN_HOSTS: ${{ vars.VPS_KNOWN_HOSTS }}
+        run: node ops/ci/cd-release.mjs preflight-runtimes
       - name: Publish verified static frontend assets through Pages API
         env:
           GITHUB_TOKEN: ${{ github.token }}

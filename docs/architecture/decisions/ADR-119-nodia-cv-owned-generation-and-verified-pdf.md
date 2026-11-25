@@ -58,6 +58,25 @@ El lector de manifiestos y el reconciliador requieren la ampliación
 antes de habilitar el escritor en un entorno protegido.
 [Runbook del journal](../../../ops/nodia-ai-backups/journal.md).
 
+El carril Gemini Agentic del piloto reutiliza el SDK restringido y
+la admisión del perfil físico. El contrato privado `cv-agentic-text/1`
+vincula al dueño CV, su perfil y la generación al hash de la petición
+nativa. PostgreSQL fija el hash junto al presupuesto antes de despachar.
+El adaptador mantiene la reserva hasta confirmar el recibo exacto
+después del commit de CV. Al recuperar, el cierre local se acredita
+por ese intento. Las calificaciones de CV se emiten por conexión,
+modelo, esfuerzo, sesión y runtime observados.
+
+La promoción productiva exige acreditaciones separadas. El host Codex
+CV conserva su binario, manifiesto y catálogo de CLI fijados y se
+registra como extensión de API y worker. Su recibo acredita únicamente
+el árbol nativo compartido revisado para esta entrega. Gemini acredita
+el árbol de imagen y, por separado, el SDK restringido y su sesión
+privada. El receptor obtiene las pruebas del estado instalado. El CD
+las vuelve a comprobar antes de escribir, al confirmar el backend y
+antes de publicar Client. La autenticación y el catálogo siguen sujetos
+a la prueba generativa exacta de CV en cada entorno.
+
 ## Consecuencias
 
 - La cuenta puede repetir el proceso, reutilizar perfiles y reabrir el PDF exacto sin pagar otra inferencia.

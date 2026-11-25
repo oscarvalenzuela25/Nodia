@@ -322,6 +322,53 @@ class RootStateTests(PipeFixture, unittest.TestCase):
             observed.side_effect = ValueError('gemini_runtime_service_unverified')
             self.assertEqual(receiver.deployment_status(), verified)
 
+    def test_cd_exposes_codex_cv_metadata_only_from_the_checked_application_guard(self):
+        fixture = self.application_fixture(True)
+        proof = {'schema_version': 1, 'source_sha': 'a' * 40, 'source_tree_sha': 'b' * 40,
+                 'binary_sha512': 'c' * 128, 'catalog_sha512': 'd' * 128, 'manifest_sha256': 'e' * 64}
+
+        def checked_release(release):
+            self.assertEqual(release, fixture.release)
+            return proof
+
+        self.assertIsNone(receiver.codex_cv_runtime_attestation(types.SimpleNamespace(), fixture.release))
+        guard = types.SimpleNamespace(codex_cv_attestation=checked_release)
+        self.assertEqual(receiver.codex_cv_runtime_attestation(guard, fixture.release), proof)
+        for changes in ({'schema_version': True}, {'catalog_sha512': 'a' * 127}, {'extra': 'private'}):
+            with self.subTest(changes=changes), self.assertRaisesRegex(ValueError, 'codex_cv_runtime_attestation_invalid'):
+                malformed = types.SimpleNamespace(codex_cv_attestation=lambda _: {**proof, **changes})
+                receiver.codex_cv_runtime_attestation(malformed, fixture.release)
+
+    def test_gemini_sdk_requires_pinned_verifier_and_same_image_and_source_as_the_live_runtime(self):
+        temporary = tempfile.TemporaryDirectory(dir='/root', prefix='nodia-cv-sdk-proof-test-')
+        self.addCleanup(temporary.cleanup)
+        library = Path(temporary.name)
+        helper = library / 'ai-runtime/gemini-sdk-proof.py'
+        helper.parent.mkdir()
+        image = {'schema_version': 1, 'source_sha': 'a' * 40, 'source_tree_sha': 'b' * 40,
+                 'image_id': 'sha256:' + 'c' * 64}
+        proof = {**image, 'manifest_sha256': 'd' * 64, 'runtime_hash': 'e' * 64, 'policy_hash': 'f' * 64}
+
+        def verified_helper(record):
+            raw = f'def cv_sdk_attestation(runtime):\n    return {record!r}\n'.encode('ascii')
+            helper.write_bytes(raw)
+            helper.chmod(0o644)
+            return patch.object(receiver, 'GEMINI_CV_SDK_PROOF_SHA256', hashlib.sha256(raw).hexdigest())
+
+        with patch.object(receiver, 'LIB', library):
+            self.assertIsNone(receiver.gemini_cv_sdk_attestation(image))
+            with verified_helper(proof):
+                self.assertIsNone(receiver.gemini_cv_sdk_attestation(None))
+                self.assertEqual(receiver.gemini_cv_sdk_attestation(image), proof)
+                with self.assertRaisesRegex(ValueError, 'gemini_cv_sdk_attestation_image_mismatch'):
+                    receiver.gemini_cv_sdk_attestation({**image, 'source_sha': 'f' * 40})
+                helper.write_bytes(helper.read_bytes() + b'# changed')
+                with self.assertRaisesRegex(ValueError, 'gemini_runtime_host_file_changed'):
+                    receiver.gemini_cv_sdk_attestation(image)
+            with verified_helper({**proof, 'extra': 'private'}):
+                with self.assertRaisesRegex(ValueError, 'gemini_cv_sdk_attestation_invalid'):
+                    receiver.gemini_cv_sdk_attestation(image)
+
     def test_runtime_attestation_requires_exact_protected_inputs_and_the_live_container_policy(self):
         temporary = tempfile.TemporaryDirectory(dir='/root', prefix='nodia-gemini-proof-test-')
         self.addCleanup(temporary.cleanup)

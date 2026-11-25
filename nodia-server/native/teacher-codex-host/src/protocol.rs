@@ -9,7 +9,10 @@ pub const PROVIDER_ID: &str = "nodia_codex";
 pub const MAX_PROMPT: usize = 131_072;
 pub const MAX_RESULT: usize = 32_768;
 pub const MAX_FRAME: usize = 800_000;
+#[cfg(not(feature = "cv"))]
 pub const POLICY: &str = "teacher-text/1;tool-policy=empty;isolation=isolated;environments=empty;dynamic-tools=empty;attachments=empty;extensions=response-firewall;one-turn;retries=0;prompt=131072;result=32768";
+#[cfg(feature = "cv")]
+pub const POLICY: &str = "cv-tailoring/1;tool-policy=empty;isolation=isolated;environments=empty;dynamic-tools=empty;attachments=empty;extensions=response-firewall;one-turn;retries=0;prompt=131072;result=32768;catalog=verified-codex-cli-0.171.0-exact";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -77,7 +80,12 @@ pub fn hash(bytes: &[u8]) -> String {
 }
 
 pub fn capabilities() -> Value {
-    json!({"protocol":"nodia-teacher-codex-host/1", "purpose":"teacher-text/1",
+    let (protocol, purpose) = if cfg!(feature = "cv") {
+        ("nodia-cv-codex-host/1", "cv-tailoring/1")
+    } else {
+        ("nodia-teacher-codex-host/1", "teacher-text/1")
+    };
+    json!({"protocol":protocol, "purpose":purpose,
         "source_commit":SOURCE_COMMIT, "policy_hash":hash(POLICY.as_bytes()),
         "compiled_native":cfg!(feature="codex"), "provider_id":PROVIDER_ID,
         "tools":[], "attachments":[], "maximum_prompt_utf8_bytes":MAX_PROMPT,

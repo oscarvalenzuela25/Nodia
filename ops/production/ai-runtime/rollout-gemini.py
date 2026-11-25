@@ -1,4 +1,4 @@
-"""Package and activate a reviewed Gemini adapter without changing its private profile."""
+"""Package and activate a reviewed Gemini adapter and its optional CV SDK."""
 import argparse
 from contextlib import ExitStack
 import hashlib
@@ -23,6 +23,12 @@ UPDATES = Path('/var/lib/nodia-updates')
 RECEIVER = 'deploy-backend-receiver.py'
 OPERATOR = 'rollout-gemini.py'
 ARCHIVE = 'native-context.tar.gz'
+SDK_ARCHIVE = 'gemini-sdk-runtime.tar.gz'
+SDK_PROOF = 'gemini-sdk-proof.py'
+SDK_STAGER = 'gemini-sdk-rollout.py'
+SDK_ARCHIVE_SHA256 = 'a1ba5d679baf96b28c1e0755d0fef362dd4f8dc021a3ef824c9b26cd4f6bd1a6'
+SDK_FILES = {SDK_ARCHIVE, SDK_PROOF, SDK_STAGER}
+SDK_ARCHIVE_LIMIT = 60 * 1024 ** 2
 ATTESTATION = STATE / 'gemini-rollout-current.json'
 CURRENT = Path('/opt/nodia/current')
 INSTALL_LOCK = Path('/var/lib/nodia-backend-setup/installation.lock')
@@ -69,7 +75,7 @@ def read_input(path, maximum):
     return data
 
 
-def package(output):
+def package(output, cv_sdk_archive=None):
     repo = Path(__file__).resolve().parents[3]
     output = output.resolve()
     require(any(output.is_relative_to(repo / name) for name in ('.tmp', 'output'))
@@ -77,6 +83,8 @@ def package(output):
     git = lambda *args: subprocess.check_output(['git', '-C', str(repo), *args])
     tracked = ('nodia-gemini-microservice', 'ops/production/' + RECEIVER,
                'ops/production/ai-runtime/' + OPERATOR)
+    if cv_sdk_archive is not None:
+        tracked += tuple('ops/production/ai-runtime/' + name for name in (SDK_PROOF, SDK_STAGER))
     require(not git('status', '--porcelain', '--', *tracked).strip(), 'rollout_sources_must_be_committed')
     source = git('rev-parse', 'HEAD').decode().strip()
     tree = git('rev-parse', source + ':nodia-gemini-microservice').decode().strip()
@@ -84,7 +92,12 @@ def package(output):
     files = {ARCHIVE: git('archive', '--format=tar.gz', source + ':nodia-gemini-microservice'),
              RECEIVER: git('show', source + ':' + tracked[1]),
              OPERATOR: git('show', source + ':' + tracked[2])}
-    manifest = encoded({'schema_version': 1, 'source_sha': source, 'source_tree_sha': tree,
+    if cv_sdk_archive is not None:
+        files[SDK_ARCHIVE] = read_input(cv_sdk_archive, SDK_ARCHIVE_LIMIT)
+        require(sha(files[SDK_ARCHIVE]) == SDK_ARCHIVE_SHA256, 'gemini_cv_public_package_unverified')
+        for name, path in zip((SDK_PROOF, SDK_STAGER), tracked[3:], strict=True):
+            files[name] = git('show', source + ':' + path)
+    manifest = encoded({'schema_version': 2 if cv_sdk_archive is not None else 1, 'source_sha': source, 'source_tree_sha': tree,
                         'files': {name: sha(raw) for name, raw in files.items()}})
     output.mkdir(mode=0o700, parents=True)
     for name, raw in {**files, 'manifest.json': manifest}.items():
@@ -99,16 +112,103 @@ def verify_bundle(bundle, expected):
     require(HEX.fullmatch(expected or '') and sha(raw) == expected, 'reviewed_gemini_manifest_required')
     data = unique_json(raw)
     require(type(data) is dict and set(data) == {'schema_version', 'source_sha', 'source_tree_sha', 'files'}
-            and type(data['schema_version']) is int and data['schema_version'] == 1
-            and type(data['files']) is dict and set(data['files']) == {RECEIVER, ARCHIVE, OPERATOR},
+            and type(data['schema_version']) is int and data['schema_version'] in (1, 2)
+            and type(data['files']) is dict,
             'rollout_manifest_invalid')
+    expected_names = {RECEIVER, ARCHIVE, OPERATOR}
+    if data['schema_version'] == 2:
+        expected_names |= SDK_FILES
+    require(set(data['files']) == expected_names, 'rollout_manifest_invalid')
     native_source(data['source_sha'], data['source_tree_sha'])
-    files = {name: read_input(bundle / name, 12 * 1024 ** 2 if name == ARCHIVE else 128 * 1024)
+    limits = {ARCHIVE: 12 * 1024 ** 2, SDK_ARCHIVE: SDK_ARCHIVE_LIMIT}
+    files = {name: read_input(bundle / name, limits.get(name, 128 * 1024))
              for name in data['files']}
     require(all(sha(content) == data['files'][name] for name, content in files.items()), 'rollout_bundle_hash_mismatch')
     require(read_input(Path(__file__), 128 * 1024) == files[OPERATOR], 'executed_operator_differs_from_bundle')
     compile(files[RECEIVER], str(LIB / RECEIVER), 'exec')
+    if data['schema_version'] == 2:
+        require(sha(files[SDK_ARCHIVE]) == SDK_ARCHIVE_SHA256, 'gemini_cv_public_package_unverified')
+        proof_pins = re.findall(rb"^GEMINI_CV_SDK_PROOF_SHA256 = '([a-f0-9]{64})'$",
+                                files[RECEIVER], re.MULTILINE)
+        require(proof_pins == [sha(files[SDK_PROOF]).encode()], 'gemini_cv_receiver_proof_pin_mismatch')
+        for name in (SDK_PROOF, SDK_STAGER):
+            compile(files[name], str(RUNTIME / name), 'exec')
     return data, files
+
+
+def reviewed_module(name, raw):
+    from types import ModuleType
+    module = ModuleType(name.removesuffix('.py').replace('-', '_'))
+    module.__file__ = str(RUNTIME / name)
+    exec(compile(raw, module.__file__, 'exec'), vars(module))
+    return module
+
+
+def sdk_staging(manifest, files, gemini):
+    require(manifest.get('schema_version') == 2, 'gemini_cv_sdk_bundle_required')
+    tree = manifest['source_tree_sha']
+    return (reviewed_module(SDK_STAGER, files[SDK_STAGER]), reviewed_module(SDK_PROOF, files[SDK_PROOF]),
+            STATE / ('gemini-cv-prepared-' + tree), gemini.STATE / ('cv-sdk-auth-' + tree))
+
+
+def sdk_preparation(manifest, proof, record, digest):
+    value = proof.unique_json(proof.protected_file(record / 'prepared.json', 8192))
+    require(type(value) is dict and set(value) == {'schema_version', 'manifest_sha256', 'source_tree_sha',
+            'source_sha', 'image_id', 'base_image_id', 'current', 'previous_image'}
+            and value['schema_version'] == 1 and value['manifest_sha256'] == digest
+            and value['source_tree_sha'] == manifest['source_tree_sha'] and value['source_sha'] == manifest['source_sha']
+            and type(value['current']) is dict and RELEASE.fullmatch(value['current'].get('release_id', ''))
+            and all(isinstance(value[key], str) and IMAGE.fullmatch(value[key])
+                    for key in ('image_id', 'base_image_id', 'previous_image'))
+            and value['image_id'] not in (value['base_image_id'], value['previous_image']),
+            'gemini_cv_preparation_changed')
+    return value
+
+
+def stage_cv(bundle, digest, expected_release=None):
+    require(sys.platform == 'linux' and os.geteuid() == 0, 'linux_root_required')
+    os.umask(0o077)
+    manifest, files = verify_bundle(bundle, digest)
+    updater = installed_module(LIB / 'update-backend.py')
+    for directory in (STATE, UPDATES, LIB, RUNTIME):
+        updater.protected(directory, directory=True)
+    gemini = installed_module(RUNTIME / 'gemini-host.py')
+    preparer = installed_module(RUNTIME / 'prepare-ai-runtime.py')
+    stager, proof, record, stage = sdk_staging(manifest, files, gemini)
+    if expected_release is None:
+        with stager.lock(record):
+            prepared = sdk_preparation(manifest, proof, record, digest)
+            require(CURRENT.resolve(strict=True).name == prepared['current']['release_id']
+                    and gemini.image_id() == prepared['previous_image'],
+                    'current_runtime_changed_before_gemini_cv_login')
+            return stager.login(preparer, record, prepared, stage, proof)
+    require(RELEASE.fullmatch(expected_release), 'expected_backend_release_required')
+    stager.absent(proof.PROFILE, 'gemini_cv_profile_already_exists')
+    stager.absent(proof.RECORD, 'gemini_cv_proof_already_exists')
+    stager.absent(RUNTIME / SDK_PROOF, 'gemini_cv_proof_helper_already_exists')
+    stager.absent(stage, 'gemini_cv_stage_not_fresh')
+    receiver = installed_module(LIB / RECEIVER)
+    initial = receiver.deployment_status()
+    require(CURRENT.resolve(strict=True).name == expected_release
+            and initial.get('current', {}).get('release_id') == expected_release
+            and initial.get('blocked') is False
+            and initial.get('application') == {'api_active': True, 'worker_active': True},
+            'unexpected_current_backend_release')
+    old_image = gemini.image_id()
+    policy = installed_module(LIB / 'backend_update.py')
+    host = updater.Host(policy, None, {})
+    record.mkdir(mode=0o700)
+    with stager.lock(record):
+        base_image = build_image(preparer, host, record, files[ARCHIVE], manifest['source_sha'])
+        image = stager.build_image(preparer, record, base_image, files[SDK_ARCHIVE], proof)
+        require(receiver.deployment_status() == initial and gemini.image_id() == old_image,
+                'current_runtime_changed_during_gemini_cv_preparation')
+        binding = {'schema_version': 1, 'manifest_sha256': digest, 'source_sha': manifest['source_sha'],
+                   'source_tree_sha': manifest['source_tree_sha'], 'image_id': image, 'base_image_id': base_image,
+                   'current': initial['current'], 'previous_image': old_image}
+        stager.write_once(record / 'prepared.json', binding)
+    return {'status': 'gemini_cv_sdk_prepared', 'current': initial['current'], 'image_id': image,
+            'login_requested': False, 'model_inference_requested': False}
 
 
 def installed_module(path):
@@ -195,12 +295,18 @@ def drain(host):
         time.sleep(1)
 
 
-def activate(bundle, digest, expected_release):
+def activate(bundle, digest, expected_release, model_id=None, effort_id=None):
     import fcntl
     require(sys.platform == 'linux' and os.geteuid() == 0, 'linux_root_required')
     require(RELEASE.fullmatch(expected_release or ''), 'expected_backend_release_required')
     os.umask(0o077)
     manifest, files = verify_bundle(bundle, digest)
+    cv_sdk = manifest.get('schema_version') == 2
+    if cv_sdk:
+        require(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}', model_id or '')
+                and re.fullmatch(r'[a-z][a-z0-9_-]{0,31}', effort_id or ''), 'gemini_cv_exact_selection_required')
+    else:
+        require(model_id is None and effort_id is None, 'gemini_cv_sdk_bundle_required')
     updater = installed_module(LIB / 'update-backend.py')
     for path in (STATE, UPDATES, LIB, RUNTIME):
         updater.protected(path, directory=True)
@@ -235,6 +341,13 @@ def activate(bundle, digest, expected_release):
         updater.protected(ATTESTATION, mode=0o600)
         previous_attestation = read_input(ATTESTATION, 16384)
         require(initial.get('gemini_runtime') == unique_json(previous_attestation), 'previous_gemini_receipt_unverified')
+    if cv_sdk:
+        stager, proof, prepared_record, stage = sdk_staging(manifest, files, gemini)
+        stager.absent(proof.RECORD, 'gemini_cv_proof_already_exists')
+        stager.absent(RUNTIME / SDK_PROOF, 'gemini_cv_proof_helper_already_exists')
+    else:
+        sdk_record = STATE / 'gemini-cv-sdk-current.json'
+        require(not sdk_record.exists() and not sdk_record.is_symlink(), 'existing_gemini_cv_requires_sdk_rollout')
     tree = manifest['source_tree_sha']
     record = STATE / ('gemini-rollout-' + tree)
     record.mkdir(mode=0o700)
@@ -245,8 +358,21 @@ def activate(bundle, digest, expected_release):
     host.request = {'operation_id': tree[:32]}
     phase = 'build'
     try:
-        image = build_image(preparer, host, record, files[ARCHIVE], manifest['source_sha'])
+        if not cv_sdk:
+            image = build_image(preparer, host, record, files[ARCHIVE], manifest['source_sha'])
+        phase = 'preflight'
         with ExitStack() as locks:
+            if cv_sdk:
+                locks.enter_context(stager.lock(prepared_record))
+                prepared = sdk_preparation(manifest, proof, prepared_record, digest)
+                require(prepared['current'] == initial['current'], 'backend_changed_since_gemini_cv_preparation')
+                image = prepared['image_id']
+                epoch = stager.verify_profile(preparer, prepared_record, prepared, stage, proof)
+                stager.absent(proof.RECORD, 'gemini_cv_proof_already_exists')
+                stager.absent(RUNTIME / SDK_PROOF, 'gemini_cv_proof_helper_already_exists')
+                phase = 'observe_staged_sdk'
+                stager.preflight_selection(preparer, prepared, record, stage, proof, model_id, effort_id, epoch)
+                phase = 'preflight'
             for path in (UPDATES / 'receiver.lock', INSTALL_LOCK):
                 require(updater.protected(path, mode=0o600).st_size == 0, 'invalid_gemini_rollout_lock')
                 stream = locks.enter_context(path.open('r+b'))
@@ -258,6 +384,9 @@ def activate(bundle, digest, expected_release):
             pinned_assets(updater, receiver_settings)
             old_image = gemini.image_id()
             require(image != old_image, 'gemini_candidate_already_active')
+            if cv_sdk:
+                require(old_image == prepared['previous_image'], 'gemini_changed_since_cv_preparation')
+                stager.image_layers(preparer, image)
             verify_running_image(old_image)
             for unit in settings['service_hashes']:
                 host.service_overrides(unit, host.show(unit))
@@ -282,6 +411,9 @@ def activate(bundle, digest, expected_release):
             require(stopped is not None, 'gemini_container_missing_after_stop')
             gemini.validate_existing(stopped, old_image)
             retained = 'nodia-gemini-before-' + tree[:12]
+            if cv_sdk:
+                phase = 'publish_sdk_profile'
+                stager.publish_profile(stage, proof, epoch)
             phase = 'switch_image'
             host.command(['/usr/bin/docker', 'rename', gemini.NAME, retained])
             updater.atomic_write(gemini.CONFIG, encoded({'schema_version': 1, 'source_sha': manifest['source_sha'],
@@ -291,6 +423,13 @@ def activate(bundle, digest, expected_release):
             verify_running_image(image)
             verify_logout_contract(gemini)
             require(CURRENT.resolve(strict=True) == current, 'backend_changed_during_gemini_rollout')
+            attestation = {'schema_version': 1, 'image_id': image, 'source_sha': manifest['source_sha'],
+                           'source_tree_sha': manifest['source_tree_sha']}
+            if cv_sdk:
+                phase = 'observe_sdk'
+                sdk_attestation = proof.capture_attestation(attestation, model_id, effort_id)
+                require(sdk_attestation['epoch_sha256'] == epoch, 'gemini_cv_published_session_changed')
+                updater.atomic_write(record / 'gemini-cv-sdk-observation.json', encoded(sdk_attestation))
             phase = 'restore_consumers'
             host.command(['/usr/bin/systemctl', 'start', *updater.SERVICES], 220)
             activation.http_smoke()
@@ -298,8 +437,9 @@ def activate(bundle, digest, expected_release):
             host.maintenance(False)
             host.restore_timers(timers)
             phase = 'attest'
-            attestation = {'schema_version': 1, 'image_id': image, 'source_sha': manifest['source_sha'],
-                           'source_tree_sha': manifest['source_tree_sha']}
+            if cv_sdk:
+                updater.atomic_write(RUNTIME / SDK_PROOF, files[SDK_PROOF], 0o644)
+                updater.atomic_write(proof.RECORD, encoded(sdk_attestation))
             updater.atomic_write(ATTESTATION, encoded(attestation))
             receiver_settings['assets'][RECEIVER] = sha(files[RECEIVER])
             updater.atomic_write(LIB / RECEIVER, files[RECEIVER], 0o644)
@@ -311,6 +451,9 @@ def activate(bundle, digest, expected_release):
             receipt = {'status': 'gemini_runtime_ready_for_cd', 'gemini_runtime': attestation,
                        'current': after['current'], 'previous_container_retained': retained,
                        'logout_requested': False, 'model_inference_requested': False}
+            if cv_sdk:
+                require(after.get('gemini_cv_sdk') == sdk_attestation['receipt'], 'active_gemini_cv_receipt_unverified')
+                receipt['gemini_cv_sdk'] = sdk_attestation['receipt']
             updater.atomic_write(record / 'complete.json', encoded(receipt))
             return receipt
     except BaseException:
@@ -324,16 +467,27 @@ def main():
     sub = parser.add_subparsers(dest='action', required=True)
     staging = sub.add_parser('package')
     staging.add_argument('--output', type=Path, required=True)
+    staging.add_argument('--cv-sdk-archive', type=Path)
+    prepare = sub.add_parser('prepare-cv')
+    login = sub.add_parser('login-cv')
     apply = sub.add_parser('activate')
-    apply.add_argument('--execute', action='store_true')
-    apply.add_argument('--bundle', type=Path, required=True)
-    apply.add_argument('--manifest-sha256', required=True)
-    apply.add_argument('--expected-backend-release', required=True)
+    for action in (prepare, login, apply):
+        action.add_argument('--execute', action='store_true')
+        action.add_argument('--bundle', type=Path, required=True)
+        action.add_argument('--manifest-sha256', required=True)
+    for action in (prepare, apply):
+        action.add_argument('--expected-backend-release', required=True)
+    apply.add_argument('--model-id')
+    apply.add_argument('--effort-id')
     args = parser.parse_args()
     if args.action == 'package':
-        print(json.dumps(package(args.output)))
+        print(json.dumps(package(args.output, args.cv_sdk_archive)))
     elif args.execute:
-        print(json.dumps(activate(args.bundle, args.manifest_sha256, args.expected_backend_release)))
+        if args.action == 'activate':
+            result = activate(args.bundle, args.manifest_sha256, args.expected_backend_release, args.model_id, args.effort_id)
+        else:
+            result = stage_cv(args.bundle, args.manifest_sha256, getattr(args, 'expected_backend_release', None))
+        print(json.dumps(result))
     else:
         print('{"status":"inert","production_writes":0}')
 

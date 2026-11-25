@@ -353,6 +353,11 @@ class ProfileAdmission:
             self._held.discard(identity)
             self._owners.pop(identity, None)
 
+    def reconcile_dispatch_if_owned(self, engine: str, operation: dict[str, str]) -> None:
+        """An idempotent ACK may release only its own durable or in-memory fence."""
+        if self._operations.get(engine) == operation or self.read_dispatch_marker(engine) == operation:
+            self.reconcile_dispatch(engine, operation)
+
     def quarantine(self, engine: str) -> None:
         identity = self.identity(engine)
         if identity is not None:

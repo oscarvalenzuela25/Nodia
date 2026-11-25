@@ -29,7 +29,9 @@ def register(*, lock_held=False):
     safe = load('safe', LIB / 'ai-runtime/codex-provision.py')
     settings = host_module.unique_json(safe.read_regular(STATE / 'settings.json', 0o600))
     if not all(hasattr(host_module, name) for name in (
-            'AI_RUNTIME_HASHES', 'TEACHER_RUNTIME_NAME', 'TEACHER_RUNTIME_TEMPLATE', 'teacher_runtime_descriptor')):
+            'AI_RUNTIME_HASHES', 'TEACHER_RUNTIME_NAME', 'TEACHER_RUNTIME_TEMPLATE', 'teacher_runtime_descriptor',
+            'CODEX_CV_ACTIVE', 'CODEX_CV_ENVIRONMENT', 'CODEX_CV_RUNTIME_NAME',
+            'CODEX_CV_RUNTIME_TEMPLATE', 'codex_cv_runtime_descriptor')):
         raise RuntimeError('compatible_updater_required')
     for name in ('update-backend.py', 'backend_update.py'):
         if host_module.sha_file(LIB / name) != settings['assets'][name]:
@@ -48,8 +50,14 @@ def register(*, lock_held=False):
         if any(path.exists() or path.is_symlink() for path in optional):
             value['teacher_host'] = host_module.teacher_runtime_descriptor()
             templates[host_module.TEACHER_RUNTIME_NAME] = host_module.TEACHER_RUNTIME_TEMPLATE
-            hashes = {name: hashlib.sha256(raw).hexdigest() for name, raw in templates.items()}
-            value['units'] = {name: hashes for name in host_module.SERVICES}
+        cv = (host_module.CODEX_CV_ACTIVE, host_module.CODEX_CV_ENVIRONMENT,
+              *(host_module.SYSTEMD_UNITS / (name + '.d') / host_module.CODEX_CV_RUNTIME_NAME
+                for name in host_module.SERVICES))
+        if any(path.exists() or path.is_symlink() for path in cv):
+            value['codex_cv_runtime'] = host_module.codex_cv_runtime_descriptor()
+            templates[host_module.CODEX_CV_RUNTIME_NAME] = host_module.CODEX_CV_RUNTIME_TEMPLATE
+        hashes = {name: hashlib.sha256(raw).hexdigest() for name, raw in templates.items()}
+        value['units'] = {name: hashes for name in host_module.SERVICES}
         host_module.ai_runtime_registry(value)
         host = host_module.Host(policy, None, settings)
         for name in host_module.SERVICES:
@@ -70,9 +78,11 @@ def register(*, lock_held=False):
             previous_raw = safe.read_regular(host_module.AI_CONSUMERS, 0o600)
             previous = host_module.ai_runtime_registry(host_module.unique_json(previous_raw))
             if previous_raw != raw:
-                if 'teacher_host' in previous or 'teacher_host' not in value:
+                current_lanes = set(previous) & {'teacher_host', 'codex_cv_runtime'}
+                requested_lanes = set(value) & {'teacher_host', 'codex_cv_runtime'}
+                if not current_lanes < requested_lanes or any(previous[key] != value[key] for key in current_lanes):
                     raise RuntimeError('runtime_consumer_replacement_not_allowed')
-                # Only the additive Teacher extension; never overwrite another host or remove a lane.
+                # Never overwrite an existing host or remove a lane.
                 host_module.atomic_write(host_module.AI_CONSUMERS, raw)
         else:
             safe.install_file(host_module.AI_CONSUMERS, raw, 0o600)

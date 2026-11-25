@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { pathToFileURL } from 'node:url';
-import { isGeminiRuntimeProof } from './gemini-runtime-proof.mjs';
+import { geminiSdkMatchesImage, runtimeProofValidators } from './runtime-attestations.mjs';
 
 const execute = promisify(execFile);
 const recordedFingerprint = 'SHA256:9uAxNDxAxuRpicxnP+w4C5bJGHCi/hmnOpBIo2xrXKU';
@@ -61,10 +61,13 @@ export function verifyIdentity(body) {
 export function verifyDeploymentStatus(body) {
   const expectedKeys = ['application', 'blocked', 'current', 'deployment_implemented', 'deployment_requested',
     'forced_command', 'privileged_helper_enabled', 'schema_version', 'status', 'user'];
-  if (body && Object.hasOwn(body, 'gemini_runtime')) {
-    requireValue(isGeminiRuntimeProof(body.gemini_runtime), 'gemini_runtime_attestation_invalid');
-    expectedKeys.push('gemini_runtime');
+  for (const [key, valid] of Object.entries(runtimeProofValidators)) {
+    if (!body || !Object.hasOwn(body, key)) continue;
+    requireValue(valid(body[key]), key + '_attestation_invalid');
+    expectedKeys.push(key);
   }
+  requireValue(!body || !Object.hasOwn(body, 'gemini_cv_sdk') ||
+    geminiSdkMatchesImage(body.gemini_cv_sdk, body.gemini_runtime), 'gemini_cv_sdk_attestation_image_mismatch');
   const current = body?.current;
   requireValue(body && Object.keys(body).sort().join(',') === expectedKeys.sort().join(',') && body.schema_version === 1 &&
     body.status === 'deployment_ready' && body.user === 'nodia-deploy' && body.forced_command === true &&

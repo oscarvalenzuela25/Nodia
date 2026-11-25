@@ -4,11 +4,11 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 3,
+  "revision": 8,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. Lectura pública OneATS verificada para ambos PDF EN del piloto. Agentic y adopción en destino pendientes."
+    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado verificó generación Agentic y una versión guardada con GPT-6.2 Sol en Alto y Gemini 4 Hydrogen en Alto."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -31,9 +31,9 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-24",
-    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md"],
-    "notes": "La VM aislada completó el flujo con una API key real y dos cuentas sintéticas. OneATS público coincidió en 9 de 10 comprobaciones en ambos PDF EN. El restore aislado preservó las bajas."
+    "checked_on": "2026-11-25",
+    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md"],
+    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó generación, revisión de ambas plantillas, guardado, reapertura y descarga en ambas selecciones."
   },
   "approval": null
 }
@@ -55,6 +55,18 @@ el alcance comprobado. El [Plan113](../../../../mvp/113-nodia-cv-implementation-
 la [guía UI](../../../../features/nodia-cv/ui-design.md) y el
 [ADR119 propuesto](../../../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md)
 describen el flujo implementado y los pendientes de aceptación.
+
+## Agentic en el piloto de la VM
+
+El piloto aislado de la VM habilitó GPT-6.2 Sol en Alto y Gemini 4
+Hydrogen en Alto en **Generar CV**.
+El selector exige una calificación válida de CV para la misma conexión,
+modo, modelo, esfuerzo y sesión. Gemini muestra las combinaciones que
+cuentan con un recibo de CV para la configuración guardada y revalida
+la sesión al aplicarlas. La generación exige perfil guardado y oferta.
+La recuperación consulta el recibo sin reenviar.
+[Recorrido ordinario comprobado](../../../../evidence/nodia-cv-agentic-delivery-20261125.md).
+[Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 
 ## Solicitudes en lenguaje natural
 

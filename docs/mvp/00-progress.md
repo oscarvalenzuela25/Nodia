@@ -11,6 +11,18 @@ OCR y filtro por stock máximo. PostgreSQL 16 aislado verificó la migración y
 los efectos transaccionales. La activación operativa y el retiro de la
 columna anterior quedan en [Plan94 §47](94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
 
+**Nodia CV Agentic — piloto en VM del 2026-11-25.** La sesión existente
+de cada proveedor generó un borrador sintético con GPT-6.2 Sol en Alto
+y Gemini 4 Hydrogen en Alto, respectivamente. Cada prueba cerró un
+intercambio, confirmó el recibo y verificó el texto de ambas plantillas.
+El selector de Gemini en CV publica únicamente Hydrogen en Alto.
+El recorrido ordinario guardó, reabrió y descargó una versión por
+proveedor en el piloto. La promoción requiere preparar y acreditar
+los runtimes nativos en el VPS.
+[Evidencia de entrega](../evidence/nodia-cv-agentic-delivery-20261125.md) ·
+[Plan113 §17](113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25) ·
+[Evidencia](../evidence/nodia-cv-agentic-baseline-vm-20261125.md).
+
 **Desconexión de Gemini Agentic — 2026-11-24.** La implementación
 validada en laboratorio queda en
 [`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d).

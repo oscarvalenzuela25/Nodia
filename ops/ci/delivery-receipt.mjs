@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { isHex, isSha, numeric, repository } from './cd-github.mjs';
 import { pwaVerificationDetails } from './pwa-assets.mjs';
-import { sameGeminiRuntimeProof } from './gemini-runtime-proof.mjs';
+import { requireRuntimeProofMatch } from './runtime-attestations.mjs';
 
 const statusValues = new Set(['baseline_verified', 'prepared', 'preflight_started', 'preflight_verified', 'not_required', 'already_current', 'content_unchanged',
   'upload_requested', 'upload_rejected', 'upload_receiving', 'upload_open_requested', 'upload_verified', 'deployment_requested', 'submitted', 'complete', 'failed', 'unknown',
@@ -30,7 +30,10 @@ const fixedErrors = new Set(['cd_failed_inspect_private_state', 'pages_response_
   'upload_chunk_digest_invalid', 'upload_chunk_size_invalid', 'upload_not_receiving', 'upload_not_complete',
   'upload_finalization_requires_reconciliation', 'upload_transport_refresh_requires_reconciliation',
   'unmanaged_runtime_change_requires_coordinated_rollout', 'gemini_runtime_attestation_invalid',
-  'gemini_runtime_attestation_changed',
+  'gemini_runtime_attestation_changed', 'codex_cv_runtime_attestation_invalid', 'codex_cv_runtime_attestation_changed',
+  'gemini_cv_sdk_attestation_invalid', 'gemini_cv_sdk_attestation_changed', 'gemini_cv_sdk_attestation_image_mismatch',
+  'runtime_proof_required_before_pages',
+  'backend_changed_before_pages',
   'existing_backend_operation_requires_reconciliation',
   'prior_update_requires_reconciliation', 'upload_already_recorded_no_automatic_replay',
   'prior_cd_run_requires_operator_reconciliation', 'prior_cd_pages_outcome_requires_reconciliation',
@@ -111,7 +114,18 @@ export function deliveryReceipt(directory, environment = process.env) {
   const pagesState = read('pages-state.json'), clientResult = read('client-result.json');
   const preflightState = read('pages-preflight-state.json'), preflightResult = read('client-preflight.json');
   const failure = read('failure.json');
-  const verifiedGemini = sameGeminiRuntimeProof(plan?.gemini_runtime, backendResult?.gemini_runtime);
+  let runtime = {};
+  try {
+    const checked = requireRuntimeProofMatch(plan ?? {}, backendResult);
+    if (plan?.client_required && Object.keys(checked).length) {
+      const live = read('pages-runtime-proof.json');
+      if (live?.status === 'runtime_verified_before_pages' && live.source_sha === plan.source_sha &&
+          live.ci_run_id === plan.ci?.run_id && live.ci_run_attempt === plan.ci?.run_attempt) {
+        runtime = requireRuntimeProofMatch(checked, live);
+      }
+    } else runtime = checked;
+  }
+  catch { /* Runtime drift cannot become verified delivery evidence. */ }
   return { schema_version: 1, repository, source_sha: isSha(plan?.source_sha) ? plan.source_sha :
     isSha(environment.CI_SOURCE_SHA) ? environment.CI_SOURCE_SHA : null,
   ci: { run_id: numeric(environment.CI_RUN_ID) ? environment.CI_RUN_ID : null,
@@ -123,7 +137,7 @@ export function deliveryReceipt(directory, environment = process.env) {
   artifacts: { client: artifact(plan?.artifacts?.client), server: artifact(plan?.artifacts?.server) },
   preflight: state(preflightResult ?? preflightState),
   backend: state(backendResult ? { ...backendState, ...backendResult } : backendState),
-  ...(verifiedGemini ? { gemini_runtime: backendResult.gemini_runtime } : {}),
+  ...runtime,
   client: state(clientResult ? { ...pagesState, ...clientResult } : pagesState ?? preflightResult ?? preflightState),
   failure: failure ? { status: 'failed', error_code: receiptError(failure.error_code), automatic_retry_allowed: false } : null,
   unavailable_sources: unavailable, automatic_retry_allowed: false };

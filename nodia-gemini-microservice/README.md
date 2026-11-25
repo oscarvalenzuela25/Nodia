@@ -54,6 +54,7 @@ The browser profile mount and web-reasoning overlay are retired. Do not delete t
 | Native MCP | `POST /nodia-ai/agentic/mcp/start`; `/nodia-ai/agentic/attempts/{attempt_id}/mcp/events`, `/results`, `/cancel`, `/attest` |
 | Reconciliation/ACK | `POST /nodia-ai/agentic/attempts/{attempt_id}/reconcile`, `/acknowledge` |
 | Common OCR and image contracts | `POST /nodia-ai/invoice-analysis/contract`, `/nodia-ai/agentic/invoice/turn`, `/nodia-ai/agentic/image/turn` |
+| Nodia CV restricted text | `POST /cv/agentic-text/observe`, `/start`, `/status`, `/reconcile`, `/ack` |
 | Binary inspection/progress | `POST /attachments/inspect`; `GET /analysis-observations/{identifier}` |
 
 `/engines/status` contains `status`, `default_engine: agentic` and `agentic`, without a Web object. Unknown quotas/model/session evidence remain unknown. `/ready` requires observed Agentic availability and session; it does not generate an inference. New Web engines are rejected before dispatch; `/web/*`, `/auth/*` and the old Web `/models` endpoint are absent. Historical Web proof/journal records remain parseable for forensic reading; new arms and login starts accept only Agentic.
@@ -63,6 +64,8 @@ The browser profile mount and web-reasoning overlay are retired. Do not delete t
 One physical profile owns chat, OCR, login, model discovery and metadata observation. Keep one worker. A connection ID never multiplies capacity. Profile admission is exclusive for execution; bounded observations serialize without creating inference retries.
 
 Arm the exact attempt marker before dispatch. Timeout/cancellation/invalid output may leave an uncertain result. Do not replay it, clear a marker by TTL, or infer native process closure from an HTTP cancellation. Reconcile by exact resource/session/attempt identity and emit terminal proof only after actual closure; acknowledge after SQL commit. Historical unbound markers cannot be released by an unrelated receipt.
+
+Nodia CV uses `cv-agentic-text/1` with independent owner, attempt and acknowledgment journals on the same physical profile gate as Teacher. The restricted SDK host requires the verified SDK files mounted at `NODIA_TEACHER_SDK_ROOT`, their manifest digest in `NODIA_TEACHER_SDK_MANIFEST_SHA256`, delegated process containment and the SDK's own authenticated session. CV commands bind the SQL owner digest to the exact request. Reconciliation verifies that binding and process closure, and ACK retires the operation and attempt identifiers before removing its temporary data. The native journals retain hashes and closure metadata, while prompt and response text stay ephemeral.
 
 Durable login preserves actor/provider/request ownership, deadlines and cancellation tombstones. The Linux host helper delegates only the current container's cgroup at `/run/nodia-login-cgroups`, with a root-owned readonly attestation `/run/nodia-login-containment.json`. The adapter requires kernel-empty proof before publishing a terminal state, including supervisor crashes and descendants that create new sessions. Never mount the Docker socket, host-wide cgroups or privileged container capabilities. `session_state` journals must survive API restart; no code, authorization URL or token is written there.
 
