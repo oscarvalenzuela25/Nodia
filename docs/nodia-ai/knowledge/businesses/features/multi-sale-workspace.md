@@ -248,6 +248,10 @@ stock sigue condicionado a una venta confirmada y al control habilitado en
 el producto. NodiaAI conserva las lecturas de ventas y reportes.
 [Plan94 §48](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
+La presentación compacta alinea cantidad, subtotal y acción de quitar en
+cada fila. El ajuste visual conserva las operaciones del carrito y sus
+importes, por lo que no afecta el contexto de NodiaAI.
+
 ## Producto manual: regla posterior del 2026-11-06
 
 [Plan94 §35](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#35-precios-independientes-calculadora-local-y-vinculación-ocr-revisada--2026-11-06) y la [nueva ficha candidata](product-price-calculator-and-invoice-binding.md) sustituyen la derivación bidireccional de costos/venta descrita en los cortesR14 inferiores. Venta queda independiente; el porcentaje no persiste y sólo Aplicar utiliza la sugerencia local sobre bruto. El vínculo neto/bruto por IVA se conserva. Los contratos del POS manual, recibos y precios por partida no se amplían; NodiaAI sigue sólo lectura en ventas. Implementación local y comprobaciones en la [evidencia consolidada](../../../../evidence/business-product-pricing-20261106-r01.json); ServerR11/ClientR28 adoptados y verificados, con R10fallido conservado como historia. Historia/aprobaciones no se reescriben.

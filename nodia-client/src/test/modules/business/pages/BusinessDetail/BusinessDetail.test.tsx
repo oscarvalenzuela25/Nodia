@@ -173,6 +173,7 @@ describe("BusinessDetail Page", () => {
 
     const title = await screen.findByRole("heading", { level: 1, name: "Panadería Central" });
     expect(title).toBeVisible();
+    expect(title).not.toHaveStyle({ position: "absolute" });
     expect(screen.queryByRole("link", { name: i18n.t("business:title") })).not.toBeInTheDocument();
 
     const expand = screen.getByRole("button", { name: i18n.t("business:detail_header_expand") });
@@ -310,9 +311,11 @@ describe("BusinessDetail Page", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("collapses only the business header while keeping the selected POS and its mounted draft unchanged", async () => {
+  it("keeps the POS title accessible without layout space and toggles business details without remounting the draft", async () => {
     const user = userEvent.setup();
     renderWithClient(<BusinessDetail />, "/business/biz-123?section=pos");
+    const businessTitle = await screen.findByRole("heading", { level: 1, name: "Panadería Central" });
+    expect(businessTitle).toHaveStyle({ position: "absolute", width: "1px", height: "1px" });
     const collapseLabel = i18n.t("business:detail_header_collapse");
     const expandLabel = i18n.t("business:detail_header_expand");
     const toggle = await screen.findByRole("button", { name: expandLabel });

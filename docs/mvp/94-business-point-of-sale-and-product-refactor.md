@@ -1805,3 +1805,27 @@ con carga circular, cambio de cantidad, scroll transparente, recuperación de
 carritos y vistas entre 320 y 1600 px, con transporte sintético. Las pruebas
 de Client cubrieron además el alta desde el lector, el orden después de
 revisar catálogo y el contraste del cobro en los dos modos de Nodia.
+
+### Anotaciones visuales del cobro en POS
+
+En Punto de venta, el título del negocio queda disponible para lectores de
+pantalla y se retira del flujo visual. Las demás pestañas conservan su
+encabezado. El panel se ensancha en escritorio y muestra **Total** como
+etiqueta. Desde 21 rem de ancho del panel, **Nueva venta**, **Medio de pago**
+y sus opciones usan 20, 20 y 18 px respectivamente. La etiqueta **Total**
+usa 28 px y su importe 32 px. **Confirmar venta** ocupa todo el ancho, con
+texto de 20 px y altura mínima de 56 px. En escritorio, el panel puede llegar
+a 24 rem. Desde 23 rem de ancho del panel, el relleno y la separación interior
+aumentan. La etiqueta **Total** y su importe usan 30 y 36 px, los medios de
+pago tienen botones de al menos 56 px y **Confirmar venta** llega a 60 px.
+En tamaños menores, la tipografía se adapta al espacio. Es un cambio de presentación del POS nativo sin
+impacto sobre los contratos de negocio ni el contexto publicado de NodiaAI.
+
+### Filas compactas del carrito
+
+Cuando el listado tiene ancho suficiente, cada producto ocupa una sola fila
+con miniatura, nombre y precio unitario a la izquierda. Los botones `−` y `+`,
+la cantidad editable, el subtotal y la X quedan alineados a la derecha.
+En pantallas estrechas, con texto ampliado o al editar el precio, la fila
+se organiza en bloques. Los controles conservan un área táctil de 44 px.
+La lista mantiene su desplazamiento vertical propio con pista transparente.

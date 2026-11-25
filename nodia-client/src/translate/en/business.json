@@ -867,6 +867,7 @@
     "payment_other": "Other",
     "payment_description": "Optional payment method description",
     "total": "Total CLP",
+    "checkout_total": "Total",
     "informative_payment": "The method is informational. Recording a sale does not collect or verify payment.",
     "save_draft": "Save draft",
     "complete": "Confirm sale",
