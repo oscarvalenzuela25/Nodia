@@ -4,11 +4,11 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 7,
+  "revision": 8,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado habilitó GPT-6.2 Sol en Alto y Gemini 4 Hydrogen en Alto tras sendos borradores Agentic con perfil y oferta sintéticos."
+    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado verificó generación Agentic y una versión guardada con GPT-6.2 Sol en Alto y Gemini 4 Hydrogen en Alto."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -32,8 +32,8 @@
   ],
   "verification": {
     "checked_on": "2026-11-25",
-    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md"],
-    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó un intercambio real por proveedor, los ACK exactos y la extracción de texto en ambas plantillas."
+    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md"],
+    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó generación, revisión de ambas plantillas, guardado, reapertura y descarga en ambas selecciones."
   },
   "approval": null
 }
@@ -65,6 +65,7 @@ modo, modelo, esfuerzo y sesión. Gemini muestra las combinaciones que
 cuentan con un recibo de CV para la configuración guardada y revalida
 la sesión al aplicarlas. La generación exige perfil guardado y oferta.
 La recuperación consulta el recibo sin reenviar.
+[Recorrido ordinario comprobado](../../../../evidence/nodia-cv-agentic-delivery-20261125.md).
 [Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 
 ## Solicitudes en lenguaje natural

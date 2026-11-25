@@ -16,6 +16,10 @@ de cada proveedor generó un borrador sintético con GPT-6.2 Sol en Alto
 y Gemini 4 Hydrogen en Alto, respectivamente. Cada prueba cerró un
 intercambio, confirmó el recibo y verificó el texto de ambas plantillas.
 El selector de Gemini en CV publica únicamente Hydrogen en Alto.
+El recorrido ordinario guardó, reabrió y descargó una versión por
+proveedor en el piloto. La promoción requiere preparar y acreditar
+los runtimes nativos en el VPS.
+[Evidencia de entrega](../evidence/nodia-cv-agentic-delivery-20261125.md) ·
 [Plan113 §17](113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25) ·
 [Evidencia](../evidence/nodia-cv-agentic-baseline-vm-20261125.md).
 

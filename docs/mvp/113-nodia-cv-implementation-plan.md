@@ -649,7 +649,7 @@ calificada y en Medio sigue requiriendo evidencia propia.
   feedback ES/EN conserva perfil, oferta, foco y evaluación al reintentar
   o cancelar. El cambio de modelo durante una lectura ignora resultados
   anteriores. Verificar teclado, foco, 320 px y escritorio.
-- [ ] Completar el recorrido de usuario con una intención nueva tras la
+- [x] Completar el recorrido de usuario con una intención nueva tras la
   calificación. Verificar borrador, preview, revisión y render de Clásica
   y Compacta con texto extraído. Reabrir o descargar el PDF guardado por
   acción explícita y comprobar el mismo hash. Registrar la lectura ATS
@@ -678,14 +678,20 @@ de GPT-6.2 Sol en Alto conservó su calificación.
 
 #### 6. Preparar la entrega y verificar adopción
 
-- [ ] Ejecutar en Server `npm test -- src/nodia-cv`, `npm run lint`,
+El piloto verificó las dos selecciones Agentic desde **Generar borrador**
+hasta reabrir y descargar sendas versiones guardadas. La promoción
+requiere la atestación productiva del host Codex CV y la preparación
+del SDK restringido de Gemini en el VPS.
+[Evidencia del paso 6](../evidence/nodia-cv-agentic-delivery-20261125.md).
+
+- [x] Ejecutar en Server `npm test -- src/nodia-cv`, `npm run lint`,
   `npm run build`, `npm run knowledge:check` y la integración
   `npm run test:nodia-cv:generations` sobre PostgreSQL aislado. Correr
   `npm run test:nodia-cv:pdf-versions` para el recorrido de artefactos.
   En Client ejecutar `npm run typecheck`, `npm run lint`, las pruebas
   focales de CV y el build. Si cambia el adaptador Gemini, ejecutar
   `run_tests.py` en su entorno aislado.
-- [ ] Completar las celdas aplicables del [Plan91](91-ai-provider-onboarding-verification.md#matriz-de-aceptación)
+- [x] Completar las celdas aplicables del [Plan91](91-ai-provider-onboarding-verification.md#matriz-de-aceptación)
   y registrar SHA, entorno, tupla, código terminal y alcance en
   `docs/evidence/`. Matriz mínima para ambos carriles: sin perfil,
   usuario ajeno, revocación, selección inválida, sesión ausente, cuota,
@@ -701,7 +707,7 @@ de GPT-6.2 Sol en Alto conservó su calificación.
   antes de activar el carril. Pasar CI/CD y comprobar en destino el
   selector y el resultado del smoke autorizado. Actualizar progreso,
   [pendientes](TODO.md#cola-actual) y
-  [ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md#agentic-previsto)
+  [ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md#agentic-en-el-piloto-de-la-vm)
   con evidencia real y estado por proveedor.
 
 El primer cambio de código corresponde al paso 2, después de completar
