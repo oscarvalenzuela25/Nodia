@@ -531,6 +531,15 @@ prompt, esquema, verificador de evidencia, worker, ledger con
 
 #### 1. Confirmar la línea base y elegir el transporte de Codex
 
+**Línea base del 2026-11-25.** La VM mostró `gpt-6.2-sol` y `high` en
+el catálogo de Codex `0.171.0` aislado. La conexión configurada del
+laboratorio sigue con `codex_session_required` y su API usa `0.161.0`.
+El servicio de CV compilado reprodujo `agentic_transport_unavailable`
+con cero despachos. La evidencia incluye el mapa de fronteras y el CHECK
+de descriptor que requiere una extensión para CV. Retomar la observación
+autenticada al preparar el runtime y la sesión de la VM.
+[Evidencia del paso 1](../evidence/nodia-cv-agentic-baseline-vm-20261125.md).
+
 Desde la raíz de la rama, una vez instaladas las dependencias bloqueadas:
 
 ```sh
@@ -538,7 +547,7 @@ git status --short --branch
 npm --prefix nodia-server test -- src/nodia-cv/nodia-cv-selection.service.spec.ts src/nodia-cv/engine/engine.spec.ts
 ```
 
-- [ ] Revisar `nodia-cv-selection.service.ts`, `nodia-cv-generation.worker.ts`,
+- [x] Revisar `nodia-cv-selection.service.ts`, `nodia-cv-generation.worker.ts`,
   `nodia-cv-generation.store.ts` y la migración `179398`. Trazar en una
   tabla qué pieza resuelve configuración, admisión, despacho, conciliación
   y ACK para API key. Identificar las columnas y restricciones Agentic ya
