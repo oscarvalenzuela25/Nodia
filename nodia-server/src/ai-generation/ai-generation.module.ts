@@ -16,6 +16,9 @@ import { CodexTeacherTextTransport } from './codex-teacher-text-transport.js';
 import { CODEX_TEACHER_TEXT_TRANSPORT } from './agentic-text-contract.js';
 import { RouteTextGenerationService } from './route-text-generation.service.js';
 import { TeacherModelObservationService } from './teacher-model-observation.service.js';
+import { FlashcardLibraryStore } from './flashcard-library.store.js';
+import { FlashcardLibraryRuntimeService } from './flashcard-library-runtime.service.js';
+import { FlashcardLibraryTransport } from './flashcard-library-transport.service.js';
 
 @Global()
 @Module({imports:[AuthorizationModule,NodiaAiRuntimePolicyModule,CodexRuntimeModule],providers:[
@@ -23,6 +26,10 @@ import { TeacherModelObservationService } from './teacher-model-observation.serv
   NodiaAiAdapterTransport,GeminiTeacherTextTransport,CodexTeacherTextTransport,
   {provide:CODEX_TEACHER_TEXT_TRANSPORT,useExisting:CodexTeacherTextTransport},TeacherAgenticTextService,RouteTextGenerationService,
   {provide:AiGenerationPort,useExisting:RouteTextGenerationService},GenerationWorkerSourceRegistry,TeacherGenerationRuntimeService,
+  FlashcardLibraryStore,FlashcardLibraryRuntimeService,FlashcardLibraryTransport,
   {provide:TEACHER_GENERATION_PORT,useExisting:TeacherGenerationRuntimeService},
-],exports:[TEACHER_GENERATION_PORT,AiGenerationPort,TeacherGenerationRuntimeService,GenerationWorkerSourceRegistry]})
+],exports:[
+  TEACHER_GENERATION_PORT,AiGenerationPort,TeacherGenerationRuntimeService,GenerationWorkerSourceRegistry,
+  FlashcardLibraryStore,FlashcardLibraryTransport,ApiNodiaAiCredentialsService,ApiTextGenerationService,NodiaAiConnectionsService,
+]})
 export class AiGenerationModule {}

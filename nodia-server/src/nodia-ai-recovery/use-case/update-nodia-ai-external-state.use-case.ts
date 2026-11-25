@@ -46,6 +46,16 @@ function resource(input: unknown): NodiaAiJournalResource {
     if (typeof value.preference_id !== 'string' || !uuid.test(value.preference_id)) return fail('resource_invalid');
     return { kind: 'preference', preference_id: value.preference_id };
   }
+  if (raw?.kind === 'cv_profile') {
+    const value = closed(raw, ['kind', 'profile_id']);
+    if (typeof value.profile_id !== 'string' || !uuid.test(value.profile_id)) return fail('resource_invalid');
+    return { kind: 'cv_profile', profile_id: value.profile_id };
+  }
+  if (raw?.kind === 'cv_version') {
+    const value = closed(raw, ['kind', 'version_id']);
+    if (typeof value.version_id !== 'string' || !uuid.test(value.version_id)) return fail('resource_invalid');
+    return { kind: 'cv_version', version_id: value.version_id };
+  }
   if (raw?.kind !== 'attachment' && raw?.kind !== 'conversation') return fail('resource_invalid');
   const value = closed(raw, raw.kind === 'attachment' ? ['kind', 'conversation_id', 'attachment_id', 'storage_generations'] : ['kind', 'conversation_id', 'storage_generations']);
   if (typeof value.conversation_id !== 'string' || !uuid.test(value.conversation_id) ||
@@ -66,13 +76,19 @@ export function journalResource(entry: ExternalDeletionEntry): NodiaAiJournalRes
 }
 const identity = (value: NodiaAiJournalResource): string => {
   const normalized = resource(value);
-  return normalized.kind === 'conversation' ? `conversation:${normalized.conversation_id}`
-    : normalized.kind === 'attachment' ? `attachment:${normalized.attachment_id}:${normalized.storage_generations[0]}`
-      : `preference:${normalized.preference_id}`;
+  switch (normalized.kind) {
+    case 'conversation': return `conversation:${normalized.conversation_id}`;
+    case 'attachment': return `attachment:${normalized.attachment_id}:${normalized.storage_generations[0]}`;
+    case 'preference': return `preference:${normalized.preference_id}`;
+    case 'cv_profile': return `cv_profile:${normalized.profile_id}`;
+    case 'cv_version': return `cv_version:${normalized.version_id}`;
+  }
 };
 const covers = (recorded: NodiaAiJournalResource, requested: NodiaAiJournalResource): boolean =>
-  identity(recorded) === identity(requested) && (recorded.kind === 'preference' || requested.kind === 'preference' ||
+  identity(recorded) === identity(requested) && (!('storage_generations' in recorded) || !('storage_generations' in requested) ||
     (recorded.conversation_id === requested.conversation_id && requested.storage_generations.every(id => recorded.storage_generations.includes(id))));
+const isCvEntry = (entry: ExternalDeletionEntry): boolean => entry.kind === 'cv_profile' || entry.kind === 'cv_version';
+const blocksBackup = (entry: ExternalDeletionEntry): boolean => entry.confirmed_at === null && !isCvEntry(entry);
 
 /** Single bounded external CAS state. No SQL transaction or local mutex is required.
  * All callbacks are pure and replayable only after a definite CAS conflict. */
@@ -88,13 +104,13 @@ export class UpdateNodiaAiExternalStateUseCase implements NodiaAiDeletionJournal
       mutate: async update => { await this.mutate(state => {
         const next = update(structuredClone(state.backups));
         if (state.closed_at !== null && next.some(backup => !state.backups.some(old => old.backup_id === backup.backup_id))) fail('journal_closed');
-        if (next.some(backup => !state.backups.some(old => old.backup_id === backup.backup_id)) && state.entries.some(entry => entry.confirmed_at === null)) fail('unconfirmed_deletions');
+        if (next.some(backup => !state.backups.some(old => old.backup_id === backup.backup_id)) && state.entries.some(blocksBackup)) fail('unconfirmed_deletions');
         state.backups = next;
       }); },
       checkpoint: async () => {
         const value = await this.snapshot();
         if (value.state.closed_at !== null) return fail('journal_closed');
-        if (value.state.entries.some(entry => entry.confirmed_at === null)) return fail('unconfirmed_deletions');
+        if (value.state.entries.some(blocksBackup)) return fail('unconfirmed_deletions');
         return { sequence: value.state.last_sequence, sha256: digest(value.bytes), coverage_from: value.state.coverage_from };
       },
     };
@@ -251,6 +267,10 @@ export class UpdateNodiaAiExternalStateUseCase implements NodiaAiDeletionJournal
     await this.mutate(() => {});
     const snapshot = await this.snapshot();
     if (snapshot.state.closed_at !== null) fail('journal_closed');
+    // A mutable profile can change or lose authority before its prepared SQL delete.
+    // Use current-domain reconciliation to attest absence before exporting a CV tombstone.
+    if (snapshot.state.entries.some(entry => isCvEntry(entry) && entry.confirmed_at === null))
+      fail('cv_deletions_unconfirmed');
     const backup = snapshot.state.backups.find(entry => entry.backup_id === backupId);
     const now = this.now().getTime();
     if (!backup || backup.status !== 'ready' || timestamp(backup.expires_at) <= now ||

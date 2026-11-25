@@ -15,6 +15,7 @@ import { VerifyIaProvidersResponse } from '../types/invoice.types.js';
 import { AiProviderService } from '../../ai-provider/ai-provider.service.js';
 import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { observedModels } from '../../ai-provider/helpers/model-observation.helper.js';
+import { filterAgenticModels, restrictAgenticModelFields } from '../../ai-provider/helpers/agentic-model-policy.helper.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
 type ConnectionChannel = 'api_key' | 'agentic';
 interface ResolvedModeData {
@@ -171,9 +172,12 @@ export class VerifyIaProvidersUseCase {
                   execution,
                 );
           if (credCheck.valid) {
+            const liveModels = candidateMode === 'agentic' && credCheck.models
+              ? filterAgenticModels(prov.fields?.agentic, credCheck.models)
+              : credCheck.models;
             const match = (selection: string) => {
               const matches =
-                credCheck.models?.filter(
+                liveModels?.filter(
                   (model) =>
                     model.id === selection ||
                     (!(provKey === 'openai' && candidateMode === 'agentic') &&
@@ -318,7 +322,9 @@ export class VerifyIaProvidersUseCase {
   ): ResolvedModeData | null {
     const fields = prov.fields || {};
     const hasScoped = Boolean(fields.agentic || fields.api_key);
-    const modeFields = fields[mode] ?? (hasScoped ? {} : fields);
+    const storedModeFields = fields[mode] ?? (hasScoped ? {} : fields);
+    const modeFields = mode === 'agentic' && fields.agentic
+      ? restrictAgenticModelFields(storedModeFields) : storedModeFields;
     // Buscar modelo default del modo
     const rawSelectedModel =
       modeFields?.selected_model ||

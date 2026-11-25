@@ -4,7 +4,7 @@
   "document_id": "general-settings.ai-provider-interface-and-module-access",
   "product_id": "general-settings",
   "kind": "feature",
-  "revision": 4,
+  "revision": 5,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -56,6 +56,18 @@
     {
       "path": "nodia-server/src/ai-provider/helpers/model-observation.helper.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/ai-provider/helpers/agentic-model-policy.helper.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/migrations/1794010000000-CurateExistingAgenticModelCatalogs.ts",
+      "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/migrations/1794020000000-ExpandGeminiAgenticModelCatalog.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
@@ -73,6 +85,27 @@
 ---
 
 # Interfaz de proveedores, variantes y acceso a NodiaAI
+
+## Gemini 4 en el selector Agentic — 2026-11-24
+
+Ajustes puede mostrar Neon, Carbon e Hydrogen cuando la sesión Gemini
+descubre sus IDs permitidos. Las variantes forman una opción por familia.
+Extra se presenta cuando el catálogo incluye la variante exacta `xhigh`.
+Al cambiar el razonamiento, Nodia usa el ID de esa variante. Activar una
+familia es independiente de asignarle el rol principal o de OCR.
+[Contrato de conexiones](../../../../mvp/ai-provider-feature-contract.md#gemini-4-en-el-selector-agentic--2026-11-24).
+
+## Catálogo Agentic por conexión — 2026-11-24
+
+Ajustes permite sincronizar los modelos Agentic publicados por el proveedor
+que admite la conexión. El usuario activa modelos y asigna roles principales
+y OCR. Gemini comienza con Hydrogen disponible para activar y sin asignación.
+Codex conserva los tres modelos configurados y las asignaciones a esos IDs.
+La configuración API key usa el catálogo de su propia cuenta.
+
+La restricción aplica a nuevas selecciones. El historial conserva el modelo
+original. La configuración y la presencia en catálogo se verifican por
+separado de la inferencia. [Contrato de conexiones](../../../../mvp/ai-provider-feature-contract.md#catálogos-de-agentic-por-conexión--2026-11-24).
 
 ## Preservación de opciones Codex — 2026-11-14
 

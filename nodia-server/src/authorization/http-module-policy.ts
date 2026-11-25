@@ -1,3 +1,5 @@
+import { NODIA_CV_CONTROLLER, NODIA_CV_ROUTE } from '../nodia-cv/types/nodia-cv-profile.types.js';
+
 export type HttpModulePolicy = {
   routes: readonly string[];
   match: 'all' | 'any';
@@ -17,6 +19,27 @@ const personalNewsOperations = new Set([
   'POST connections/:provider/test',
   'POST connections/:provider/refresh',
   'DELETE connections/:provider',
+]);
+
+const nodiaCvOperations = new Set([
+  'GET profiles',
+  'GET profiles/:id',
+  'POST profiles',
+  'PUT profiles/:id',
+  'DELETE profiles/:id',
+  'GET ai-selection/catalog',
+  'GET ai-selection/eligibility',
+  'POST generations',
+  'GET generations/:id',
+  'GET generations/requests/:key',
+  'PUT drafts/:id',
+  'POST drafts/:id/pdf',
+  'GET drafts/:id/pdf/:artifactId',
+  'GET versions',
+  'POST versions',
+  'GET versions/:id',
+  'DELETE versions/:id',
+  'GET versions/:id/pdf',
 ]);
 
 const ownWebPushOperations = new Set([
@@ -105,6 +128,12 @@ function policyForPath(
     normalize(handlerPaths[0]) === 'refresh'
   ) {
     return { routes: [], match: 'all' };
+  }
+  if (path === NODIA_CV_CONTROLLER) {
+    return handlerPaths.length === 1 &&
+      nodiaCvOperations.has(`${method} ${normalize(handlerPaths[0])}`)
+      ? { routes: [NODIA_CV_ROUTE], match: 'all' }
+      : undefined;
   }
   if (path === 'teacher' || path.startsWith('teacher/')) {
     return { routes: ['/nodia-teacher'], match: 'all' };

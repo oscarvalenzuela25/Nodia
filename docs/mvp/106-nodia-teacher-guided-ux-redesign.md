@@ -979,3 +979,107 @@ siguen vigentes. Las fichas conservan su estado candidato.
 
 [Experiencia guiada](../nodia-ai/knowledge/studies/features/guided-setup-and-study-experience.md#edición-enfocada-de-la-propuesta--2026-11-20) ·
 [Preparación y planificación](../nodia-ai/knowledge/studies/features/session-setup-and-planning.md#edición-enfocada-de-la-propuesta--2026-11-20).
+
+## 22. Piloto de fragmentos interactivos — 2026-11-22
+
+El usuario pidió probar dos fragmentos de su captura dentro de un plan de
+inglés ya creado. La vista previa de desarrollo se acota
+a esa lección. El objetivo es comprobar si la comparación y las fichas
+ayudan a distinguir las dos vocales y seguir el orden del deletreo.
+
+### Recorrido del piloto
+
+1. Abrir el plan existente desde **Mis planes** y entrar a la lección con
+   los dos tópicos. En Client con Vite en desarrollo, añadir
+   `studyFragments=1` a la consulta de la URL de esa sesión.
+2. En **Letras, sonidos y palabras**, comparar **sit** /sɪt/ con **seat**
+   /siːt/ lado a lado. Frente a la pregunta de qué palabra contiene /iː/,
+   elegir una opción y recibir una explicación que permita volver a probar.
+3. En **Deletrear sin omitir caracteres**, recorrer las seis fichas de
+   **BEE–22**. Revelar por separado **bee**, **ee**, **ee**, **hyphen**,
+   **two** y **two**, incluidos el guion y ambos caracteres repetidos.
+   La pregunta de repaso pide identificar el carácter que sigue a la
+   segunda E.
+4. Volver a la lectura del tópico para guardar el punto o pedir una
+   aclaración con las acciones habituales.
+
+### Alcance, contrato y verificación
+
+El [recorrido manual de Client](../../nodia-client/src/test/manual/teacher/README.md)
+también reproduce los dos tópicos en un plan sintético ya aceptado.
+Sirve para verificar los controles con los ejemplos de la captura. La
+prueba con el plan de la persona requiere una sesión autorizada en el
+entorno que contiene el material original.
+
+La vista previa se agrega a la lectura online de Teacher y usa el material
+existente. Se activa sólo en Vite DEV y cuando los dos títulos exactos y
+sus ejemplos coinciden inequívocamente en la misma lección. Retirar el
+parámetro devuelve la lectura a su presentación habitual. Se conservan
+la versión de contenido, los IDs de bloque, el Markdown original y las
+anclas de selección conforme al
+[contrato de material](97-nodia-teacher-technical-contracts.md#35-esquemas-json-mantenidos-por-server)
+y al [recorrido de aclaraciones](#18-lectura-y-aclaraciones-por-tópico--2026-11-17).
+
+El estado de las fichas y la corrección son locales a la vista del
+contenido. La autoevaluación es textual y su feedback cubre reconocer
+la vocal y recordar la posición del guion. El puntaje y la evidencia de
+aprendizaje siguen sujetos al contrato de evaluación. Abrir la vista
+previa, responder y revelar fichas producen cero solicitudes de
+generación y cero escrituras. Los permisos de lectura y las acciones
+de Teacher conservan sus contratos. [Política de evaluación](97-nodia-teacher-technical-contracts.md#4-política-de-evaluación-concreta).
+
+- [x] Crear la rama aislada `codex/teacher-study-fragment-pilot` a
+  partir de `origin/development`.
+- [x] Implementar los dos fragmentos en la vista previa acotada.
+- [x] Comprobar localmente elección, reintento, revelado con teclado,
+  presentación adaptable y recuperación de la vista habitual al quitar
+  el parámetro, con un plan sintético ya aceptado.
+- [ ] Abrir el plan original con una sesión autorizada y recoger la
+  evaluación del usuario antes de ampliar el alcance.
+
+### Verificación local
+
+El recorrido manual abrió una lección del plan sintético ya aceptado en
+los componentes de Teacher. En español y tema oscuro, las seis fichas
+ocuparon una fila a 1270 px CSS. A 320 px de viewport quedaron en dos
+filas de tres, con controles de 53 × 77 px y ancho de contenido de
+310 px sin desbordamiento horizontal. El cambio de ancho conservó las
+respuestas y las fichas reveladas.
+
+Se comprobaron respuestas incorrectas y corrección en ambos ejercicios.
+La segunda E conservó su propio control y se revelaron el guion y el
+segundo 2. Tab mostró un foco visible, y Enter y Espacio activaron los
+controles. A 320 px también se revisaron los rótulos en inglés y tema
+claro. Al quitar el parámetro quedaron el Markdown, los tres controles
+de marcador y los tres de aclaración. El piloto permanece disponible en
+Client de desarrollo. La prueba autenticada con el material original
+y la aceptación del usuario siguen pendientes.
+
+En la suite general pasaron 3441 de 3442 pruebas. La prueba de
+revalidación del editor de Reservas excedió el tiempo límite. Pasaron
+343 pruebas en la repetición focal de Teacher y Reservas, incluida
+esa revalidación. También pasaron tipado, lint, compilación y
+`knowledge:check`. El artefacto de producción excluye la activación
+del piloto y el plan de prueba.
+
+El impacto se limita a la presentación y el repaso local del material.
+La ficha candidata documenta cómo interpretar su feedback. La revisión
+del piloto y su posible incorporación a otras lecciones son decisiones
+pendientes. [Ficha de lecciones y práctica](../nodia-ai/knowledge/studies/features/lessons-practice-and-review.md#piloto-de-fragmentos-interactivos--2026-11-22).
+
+## 23. Propuesta de Calendario de estudio
+
+La entrada de Teacher conserva **Mis planes de estudio** como pestaña
+principal y suma **Calendario de estudio** en la propuesta del 2026-11-22.
+
+La idea inicial permitía elegir un plan y ver sus jornadas por semana.
+Cada jornada mostraba actividades, tiempo estimado y enlaces disponibles.
+El ejemplo era un plan de inglés de cuatro semanas con seguimiento por
+jornada y un recuento semanal y total. La duración y la cantidad de
+jornadas pertenecen al plan.
+
+El recorrido de revisión visual, la persistencia personal y el pegado se
+documentan en el [Plan111](111-teacher-study-calendar-plan.md). La gestión
+del calendario y el avance derivado de las marcas por actividad ya se
+verificaron localmente. Queda precisar la reprogramación de calendarios con
+avance y validar su adopción. [Gestión y verificación](111-teacher-study-calendar-plan.md#10-gestión-del-calendario-y-filtro-de-actividad).

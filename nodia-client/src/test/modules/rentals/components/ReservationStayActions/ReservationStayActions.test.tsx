@@ -37,11 +37,30 @@ it("a planned readiness never authorizes entry, and an inapplicable command rema
     />,
   );
   expect(
-    screen.getByRole("button", { name: i18n.t("core:confirm") }),
+    screen.getByRole("button", { name: i18n.t("rental:start_stay") }),
   ).toBeDisabled();
   await userEvent.click(
     screen.getByRole("button", { name: i18n.t("core:cancel") }),
   );
   expect(close).toHaveBeenCalledOnce();
+  expect(ui.execute).not.toHaveBeenCalled();
+});
+
+it("explains the scheduled checkout when it is too early to complete the stay", () => {
+  render(
+    <ReservationStayActions
+      open
+      property={property}
+      reservation={{
+        ...reservation,
+        status: "in_progress",
+        check_out_at: "2099-01-01T18:00:00Z",
+      }}
+      command="complete"
+      onClose={vi.fn()}
+    />,
+  );
+  expect(screen.getByText(i18n.t("rental:stay_action_too_early"))).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: i18n.t("rental:complete_stay") })).toBeDisabled();
   expect(ui.execute).not.toHaveBeenCalled();
 });

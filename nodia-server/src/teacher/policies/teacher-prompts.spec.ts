@@ -12,6 +12,7 @@ describe('Teacher prompt snapshots', () => {
       'written_feedback',
       'learning_packet',
       'contextual_reply',
+      'flashcard_text',
     ] as const) {
       const snapshot = promptSnapshot(purpose, {});
       expect(snapshot.template_version).toBe('teacher-text/2');

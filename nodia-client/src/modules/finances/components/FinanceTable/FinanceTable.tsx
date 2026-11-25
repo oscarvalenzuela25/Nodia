@@ -32,6 +32,7 @@ import InputSearch from "../../../../components/inputs/InputSearch";
 import type { FinancePage } from "../../types";
 import {
   ScrollContainer,
+  TableHeading,
   TablePanel,
   TableTopBar,
   ResponsivePagination,
@@ -62,6 +63,7 @@ export interface FinanceTableProps<
   search: string;
   onSearchChange: (search: string) => void;
   onCreate: () => void;
+  createLabelKey?: string;
   onEdit: (record: T) => void;
   onToggle: (record: T) => void;
   onDelete?: (record: T) => void;
@@ -79,6 +81,7 @@ export interface FinanceTableProps<
   onRetry: () => void;
   disabled?: boolean;
   titleKey?: string;
+  headingAction?: ReactNode;
 }
 
 const FinanceTable = <
@@ -89,6 +92,7 @@ const FinanceTable = <
   search,
   onSearchChange,
   onCreate,
+  createLabelKey = "finance:create",
   onEdit,
   onToggle,
   onDelete,
@@ -106,10 +110,12 @@ const FinanceTable = <
   onRetry,
   disabled = false,
   titleKey,
+  headingAction,
 }: FinanceTableProps<T>) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const headingId = useId();
   const menuId = useId();
   const [action, setAction] = useState<{
     anchor: HTMLButtonElement;
@@ -134,11 +140,14 @@ const FinanceTable = <
   };
 
   return (
-    <Box>
+    <Box sx={{ minWidth: 0 }}>
       {titleKey && (
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          {t(titleKey)}
-        </Typography>
+        <TableHeading>
+          <Typography id={headingId} component="h2" variant="h6">
+            {t(titleKey)}
+          </Typography>
+          {headingAction}
+        </TableHeading>
       )}
       <TableTopBar>
         <Box sx={{ width: { xs: "100%", sm: 360 } }}>
@@ -157,7 +166,7 @@ const FinanceTable = <
           onClick={onCreate}
           disabled={busy}
         >
-          {t("finance:create")}
+          {t(createLabelKey)}
         </CreateButton>
       </TableTopBar>
       {isError && (
@@ -215,7 +224,12 @@ const FinanceTable = <
                 ))}
             </Box>
           ) : (
-            <ScrollContainer>
+            <ScrollContainer
+              tabIndex={0}
+              role="region"
+              aria-labelledby={titleKey ? headingId : undefined}
+              aria-label={titleKey ? undefined : t("finance:records")}
+            >
               <Table
                 sx={{ minWidth: 650 }}
                 aria-label={t(titleKey ?? "finance:records")}

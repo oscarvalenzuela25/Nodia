@@ -90,6 +90,27 @@ export const ValueContainer = styled(Box)({
   overflow: "hidden",
 });
 
+export const ClearSelectionSlot = styled("span", {
+  shouldForwardProp: (prop) => prop !== "fullSize",
+})<{ fullSize: boolean }>(({ fullSize }) => {
+  const size = fullSize ? 44 : 24;
+  return {
+    position: "relative",
+    // Reserve only inline space for the clear button.
+    inlineSize: size,
+    blockSize: 0,
+    "& > .MuiIconButton-root": {
+      position: "absolute",
+      insetBlockStart: 0,
+      insetInlineStart: 0,
+      transform: "translateY(-50%)",
+      inlineSize: "100%",
+      blockSize: size,
+      padding: 0,
+    },
+  };
+});
+
 export const SelectedText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   fontSize: "0.875rem",

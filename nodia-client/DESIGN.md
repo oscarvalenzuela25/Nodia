@@ -405,6 +405,8 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
   - `padding: theme.spacing(2, 4)` (16px vertical/32px lateral) en `md`+.
   - Ajuste solicitado el2026-11-14: sólo el contenedor completo de página reduce el padding vertical. Mantener padding interno de paneles/modales y reserva inferior de MobileBottomNav/safe area.
 - **Prohibición de Doble Padding**: Las páginas hijas (`src/modules/*/pages/*`) **nunca deben declarar su propio padding exterior** sobre `ContainerPage` o el nodo raíz, ya que esto duplicaría el padding (llegando a 64px de espacio desperdiciado en móviles). Toda página hereda el padding responsivo provisto por `PageContent` en `BaseLayout`.
+
+- **Aviso de conexión**: Se muestra debajo de la barra superior y dentro de la columna principal. Su margen sigue el de `PageContent`; el menú lateral abierto o contraído define el ancho disponible. En `xs` el texto se apila sobre la acción de reintento, de al menos 44px.
 - **Paneles anidados compactos**: el padding exterior de `PageContent` no define el padding de cada tarjeta. En `xs`, usar `12px` a `16px` internos según densidad; evitar acumular varios marcos con padding de `24px`/`32px`. Conservar separación legible y controles táctiles de `44px`; compactar espacios, no los objetivos de interacción. Referencia: listado/detalle de AiProviders.
 - **Detalle móvil**: evitar repetir la cabecera completa del listado; conservar nombre, Volver y las acciones de la instancia. Si las pestañas se apilan, usar orientación vertical real para semántica y teclado, conservando selección y configuración al redimensionar.
 - **Gaps Verticales y Horizontales en Móvil**:
@@ -417,6 +419,7 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
 
 - **Espaciado Vertical**: Entre campos de formulario contiguos se debe mantener una separación estándar de `16px` a `20px` (`gap: 2` a `2.5`).
 - **Ancho Completo**: Todos los inputs (`TextInput`, `SelectSingleInput`, `SelectMultipleInput`, `TranslationInput`) deben configurarse con `fullWidth` dentro de sus contenedores móviles.
+- **Limpiar selector individual**: La X se centra en el campo, ocupa espacio horizontal y conserva la altura del selector al aparecer o desaparecer. La opción táctil conserva un área de 44 px y al borrar devuelve el foco al selector.
 - **Acciones junto a texto**: TextInput admite `endAdornment` y una descripción externa enlazada mediante `aria-describedby`. En una fila con botón de envío, ubicar etiqueta/ayuda fuera de la fila para centrar botón y campo, sin offsets; en xs apilar y ocupar todo el ancho. Ojito accesible con etiqueta ES/EN/aria-pressed y mouseDown preventDefault conserva borrador/foco al alternar tipo. Referencia verificada: GeminiLoginViewer,44px,600/1280px centrados y320/390px sin overflow.
 - **Stock de Producto**: desde `sm`, el borde inferior del campo Stock coincide con el de la tarjeta **Usar stock**. La ayuda y los errores ocupan una fila debajo del campo. En `xs`, los controles se apilan con 16 px de separación.
 - **Fechas nativas**: el indicador de calendario debe usar el mismo color del texto del input en ambos temas, preservando el selector nativo y su accesibilidad. Referencia: TextInput con currentColor y colorScheme.
@@ -538,7 +541,7 @@ Corte histórico R15: Definir tu plan explicó Guardar/Enviar/Proponer mediante 
 
 ### 9.13 Tabla provisional de factura y selección IA — 2026-11-16
 
-El control opcional de stock de [Plan94 §45](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto)
+El control opcional de stock de [Plan94 §47](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto)
 concentra el ajuste en una columna **Stock** junto a **Alias comercial**.
 Con el control apagado se muestra un guion. Al encenderlo desde el lápiz,
 el campo se precarga con la cantidad extraída y toma el modo **Sumar**.
@@ -917,7 +920,7 @@ transparente y foco visible. El último agregado queda primero y restablece el
 scroll del listado, mientras que la edición de cantidad conserva la posición.
 Las imágenes, el subtotal, la disponibilidad observada y el editor de precio
 siguen en la misma fila. La distribución interna responde al ancho de la lista
-y la escala de texto. [Plan94 §46](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
+y la escala de texto. [Plan94 §48](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 ### 10.12 Sesión Codex consultada por intención — 2026-11-01
 

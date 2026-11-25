@@ -135,13 +135,13 @@ const products: ProductEntity[] = Array.from({ length: 28 }, (_, i) => ({
   alias: i === 0 ? "Café de barrio QA" : null,
   cost_price: 1000,
   cost_price_tax: 1190,
-  sale_price: 1500,
+  sale_price: i === 2 ? 0 : 1500,
   barcode: String(100000 + i).padStart(8, "0"),
   has_stock: i === 26 ? false : i === 25 ? null : true,
   track_stock: i === 0 || i === 2,
   offer_price: i === 0 ? 2000 : null,
   is_offer_enabled: i === 0,
-  effective_price: i === 0 ? "2000" : "1500",
+  effective_price: i === 0 ? "2000" : i === 2 ? "0" : "1500",
   price_source: i === 0 ? "offer" : "regular",
   version: 1,
   stock: i === 0 ? 0 : i === 2 ? 2.5 : 5,
@@ -259,19 +259,25 @@ mainInstance.defaults.adapter = async (request) => {
   }
   if (url.endsWith("/business/" + business.id)) return response(business);
   const list = <
-    T extends { is_active?: boolean; name?: string; code?: string | null },
+    T extends { is_active?: boolean; name?: string; code?: string | null; barcode?: string | null },
   >(
     records: T[],
   ) => {
     let data = params.get("empty") === "1" ? [] : records;
     if (typeof q.is_active_eq === "boolean")
       data = data.filter((r) => r.is_active === q.is_active_eq);
-    if (q.name_cont || q.code_cont)
-      data = data.filter((r) =>
-        (r.name ?? r.code ?? "")
-          .toLowerCase()
-          .includes(String(q.name_cont || q.code_cont).toLowerCase()),
-      );
+    for (const field of ["name", "code", "barcode"] as const) {
+      const substring = q[`${field}_cont`];
+      const exact = q[`${field}_eq`];
+      const presence = q[`${field}_presence`];
+      if (typeof substring === "string") {
+        data = data.filter((r) => r[field]?.toLowerCase().includes(substring.toLowerCase()));
+      }
+      if (typeof exact === "string") data = data.filter((r) => r[field] === exact);
+      if (presence === "present" || presence === "missing") {
+        data = data.filter((r) => Boolean(r[field]?.trim()) === (presence === "present"));
+      }
+    }
     const page = Number(request.params?.page ?? 1),
       limit = Number(request.params?.limit ?? 25);
     return response({

@@ -52,11 +52,14 @@ export async function readAnchor(
   m: EntityManager,
   sessionId: string,
   data: Record<string, unknown>,
+  requireCurrent = false,
 ): Promise<string> {
   const [row]: { public_blocks: { id: string; body_markdown: string }[] }[] =
     await m.query(
-      'SELECT public_blocks FROM teacher_content_versions WHERE session_id=$1 AND id=$2',
-      [sessionId, requireUuid(data.content_version_id)],
+      `SELECT public_blocks FROM teacher_content_versions WHERE session_id=$1 AND id=$2
+       AND (NOT $3::boolean OR (publication_state='current' AND plan_revision_id=
+         (SELECT current_plan_revision_id FROM teacher_sessions WHERE id=$1)))`,
+      [sessionId, requireUuid(data.content_version_id), requireCurrent],
     );
   const block = row?.public_blocks.find((b) => b.id === data.block_id);
   if (

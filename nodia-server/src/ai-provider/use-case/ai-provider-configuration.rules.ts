@@ -3,8 +3,18 @@ import type { CreateAiProviderDto } from '../dto/create-ai-provider.dto.js';
 import type { UpdateAiProviderDto } from '../dto/update-ai-provider.dto.js';
 import type { AiProvider } from '../entities/ai-provider.entity.js';
 import type { AiProviderCatalog } from '../entities/ai-provider-catalog.entity.js';
+import {
+  allowedAgenticModelIds,
+  parseAgenticAllowedModelIds,
+  restrictAgenticModelFields,
+} from '../helpers/agentic-model-policy.helper.js';
 import { getSupportedProviderByKey } from '../helpers/supported-providers.helper.js';
 const modes = ['api_key', 'agentic'] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 /** Retired channels cannot be reintroduced through arbitrary configuration JSON. */
 function validateFields(value: Record<string, unknown> | undefined): void {
   if (!value) return;
@@ -14,6 +24,22 @@ function validateFields(value: Record<string, unknown> | undefined): void {
     )
   )
     throw new BadRequestException('ai_provider:retired_mode');
+  const agentic = value.agentic;
+  if (isRecord(agentic) && Object.hasOwn(agentic, 'allowed_model_ids')
+    && !parseAgenticAllowedModelIds(agentic.allowed_model_ids))
+    throw new BadRequestException('ai_provider:invalid_configuration');
+}
+
+function restrictConfiguredModels(
+  fields: Record<string, unknown>,
+  mode: Partial<AiProvider>['default_mode'],
+): Record<string, unknown> {
+  const agentic = fields.agentic;
+  if (!isRecord(agentic)) return fields;
+  const allowed = allowedAgenticModelIds(agentic);
+  if (!allowed) return fields;
+  const result = mode === 'api_key' ? fields : restrictAgenticModelFields(fields, allowed);
+  return { ...result, agentic: restrictAgenticModelFields(agentic, allowed) };
 }
 export function validateAiProviderCatalogPolicy(
   _key: string,
@@ -87,6 +113,7 @@ export function resolveAiProviderCreate(
     is_default: dto.is_default ?? existingCount === 0,
   };
   validateChannels(result, catalog);
+  result.fields = restrictConfiguredModels(fields, result.default_mode);
   return result;
 }
 export function resolveAiProviderUpdate(
@@ -110,6 +137,9 @@ export function resolveAiProviderUpdate(
   };
   if (dto.fields !== undefined) {
     const previous: Record<string, unknown> = { ...existing.fields };
+    if (allowedAgenticModelIds(previous.agentic) && Object.hasOwn(dto.fields, 'agentic')
+      && !isRecord(dto.fields.agentic))
+      throw new BadRequestException('ai_provider:invalid_configuration');
     const hasScoped = modes.some((mode) => previous[mode]);
     const introduces = modes.some((mode) => dto.fields?.[mode]);
     const original = existing.default_mode;
@@ -117,6 +147,9 @@ export function resolveAiProviderUpdate(
       const legacy: Record<string, unknown> = {};
       for (const key of [
         'selected_model',
+        'model',
+        'chat_model',
+        'default_model',
         'ocr_model',
         'ocr_focus_model',
         'thinking_level',
@@ -154,7 +187,10 @@ export function resolveAiProviderUpdate(
         fields[mode] = merged;
       }
     }
-    result.fields = fields;
+    result.fields = restrictConfiguredModels(
+      fields,
+      result.default_mode === undefined ? existing.default_mode : result.default_mode,
+    );
   }
   validateChannels({ ...existing, ...result }, catalog);
   return result;

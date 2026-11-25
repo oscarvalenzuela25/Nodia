@@ -44,7 +44,10 @@ const definitions: readonly [BusinessReadOperation, string, string, string][] =
       'products_list',
       'Products',
       'List',
-      'List products with typed filters. Stock is operational only with track_stock enabled. has_stock is a former availability classification.',
+      'List catalog products and selling prices for an accessible business, with code, name, provider, stock and price-variation filters. ' +
+        'Productos del catálogo del negocio, listado con nombre, precio de venta regular y precio vigente con oferta. ' +
+        'Resolve the business with nodia_businesses_list if needed, filter by q.business_id_eq and check meta.total_pages for a complete list. ' +
+        'Stock is operational only with track_stock enabled. has_stock is a former availability classification.',
     ],
     [
       'product_logs_get',

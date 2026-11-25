@@ -22,6 +22,36 @@ Las siete escrituras masivas/importación quedan fuera de v1 por decisión expre
 
 El [JSON de 156 candidatos](nodia-ai-v1-tool-catalog.json), sus conteos y sus evidencias conservan el corte histórico. Las operaciones semánticas posteriores se declaran en [extensiones del catálogo](nodia-ai-v1-tool-catalog.extensions.json). La auditoría actual fusiona una copia sólo en memoria: rechaza nombres duplicados, handlers desconocidos o excluidos y cobertura no recíproca; no reescribe el baseline ni sus cifras. Los totales actuales de la auditoría se calculan desde la unión, separados de los conteos históricos conservados.
 
+### Calendarios y tarjetas de Teacher
+
+El catálogo `nodia-ai-teacher-study/1` activa en la rama
+`codex/teacher-study-calendar` siete consultas y trece preparaciones de
+cambios. El [contrato de publicación de Teacher](../../nodia-server/config/nodia-ai-teacher-publication.json)
+las vincula al destino
+canónico `/nodia-teacher`. Las lecturas se limitan al propietario y
+exponen páginas de calendarios, categorías, jornadas, actividades,
+mazos y tarjetas. Las fuentes de calendario se entregan como texto y
+enlace HTTPS. La biblioteca entrega la etiqueta de la fuente y el
+lado de la imagen, cuando corresponde.
+
+Los cambios propuestos pasan por la confirmación humana común de
+NodiaAI. Teacher revalida destino y datos pertinentes y aplica el
+efecto local con su comprobante en la misma transacción. El contrato
+de alta de un calendario admite el plan v1. Las jornadas conservan
+su cálculo de avance desde las actividades. El catálogo permite
+alta de mazos e importación de tarjetas en lote y registro de repaso.
+La generación, el almacenamiento de imágenes y las citas estructuradas
+utilizan los flujos propios de Teacher.
+
+La aprobación del 2026-11-23 cubre la revisión 5 de Calendario de estudio
+y la revisión 6 de Tarjetas de repaso. El compilador publica las secciones
+vinculadas en el registro, sujetas al acceso a Teacher.
+[Ficha de Calendario](../nodia-ai/knowledge/studies/features/study-calendar.md#operaciones-desde-nodiaai) ·
+[Ficha de Tarjetas](../nodia-ai/knowledge/studies/features/flashcards.md#operaciones-desde-nodiaai) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md) ·
+[Contrato AI-06](52-nodia-ai-ai06-knowledge-publication-contract.md) ·
+[Verificación local](../evidence/nodia-ai-teacher-catalog-20261123.md).
+
 El catálogo `nodia-ai-business-pos/5` incorpora seis consultas de solo
 lectura para [Listas de Market](110-market-shopping-lists-plan.md#11-consultas-de-listas-de-market-en-nodiaai--2026-11-19)
 y [Caja](109-business-cash-ledger-plan.md#19-consultas-de-caja-en-nodiaai--2026-11-19).
@@ -32,6 +62,51 @@ por negocio al ejecutar los lectores nativos.
 `nodia_invoices_ocr` deriva semánticamente del OCR de Productos identificado por `InvoiceController.analyze`; no añade un handler HTTP ni invoca su endpoint legacy. `backendBindings:[]` hace explícita esa separación. Su [contrato cerrado](../../nodia-server/src/nodia-ai-invoice-ocr/contracts/invoice-ocr.json) contiene `prepare/request/read`; la etapa OCR durable reutiliza el núcleo después del terminal/ACK de planificación, sin HTTP arbitrario, defaults del caso de uso legacy o escrituras comerciales implícitas. La cobertura del handler sólo añade esta procedencia semántica y conserva la asociación histórica de C03.
 
 El flag `published:false` de la extensión no concede ni retira autoridad de ejecución: la publicación efectiva procede exclusivamente del registro explícito y del conocimiento aprobado compilado. La extensión es un insumo de auditoría, sin permisos adicionales; no sustituye elegibilidad actual, autoridad por chat/negocio/archivo o confirmación humana para los efectos de Productos. La [ficha aprobada del recorrido](../nodia-ai/knowledge/nodia-ai/features/invoice-ocr-product-comparison.md) y su evidencia mantienen separados aprobación, implementación local, publicación y aceptación real.
+
+### Descubrimiento de Productos y precios — 2026-11-21
+
+El catálogo candidato `nodia-ai-business-pos/6` identifica en español el
+listado del catálogo y su precio de venta. `nodia_products_list` ya estaba
+publicada en el release anterior, donde la búsqueda «listado de los
+productos con su precio» no la encontraba. El buscador conserva coincidencias
+literales y admite términos completos sin acentos ni conectores habituales.
+Agentic y API key reciben la descripción y una indicación para seleccionar
+la lectura cuando aparece en el índice autorizado. Si falta identificar el
+negocio, el turno puede incluir la búsqueda de negocios cuando esté disponible.
+Las coincidencias ambiguas requieren una aclaración.
+
+Para un negocio identificado, `q.business_id_eq` acota la consulta.
+`sale_price` indica el precio regular en CLP y `effective_price` el precio
+vigente según la oferta habilitada. `measurement_unit` informa la unidad y
+`meta.total_pages` indica si quedan páginas. Se consultan activos por defecto
+y Server filtra los negocios según la autoridad vigente. El contrato de
+lectura y la [ficha aprobada de Productos](../nodia-ai/knowledge/businesses/features/products.md#lecturas-disponibles-en-ai-15)
+conservan su revisión.
+
+La [regresión del gateway compilado](../../nodia-server/test/nodia-ai-business-reads.integration.mjs)
+sobre PostgreSQL aislado cubre el índice de Agentic y API key, el descubrimiento
+en español, los precios normales y de oferta, el cero, la paginación y el acceso
+del propietario y colaborador. También verifica que los negocios ajenos
+quedan fuera y que la revocación se aplica al recuperar un resultado previo.
+La prueba usa sesiones de laboratorio, sin llamadas a proveedores.
+
+### Lectura de catálogo en Gemini Agentic — 2026-11-21
+
+Una solicitud inequívoca de productos con precios puede usar
+`product_catalog_reads` cuando la selección Gemini Agentic tiene MCP
+observado y el actor está autorizado para ambas lecturas publicadas.
+El perfil incluye `nodia_businesses_list` y `nodia_products_list`: el
+modelo resuelve el negocio por nombre y obtiene sus precios en la misma
+generación. Empieza en la página 1 con el límite predeterminado. Si
+`meta.page < meta.total_pages`, conserva los filtros y el límite al
+avanzar a la siguiente página. Con la última página en memoria, responde
+con los precios vigentes y muestra los regulares cuando hay oferta.
+En este perfil, Gemini recibe todas las filas con su nombre, unidad,
+precios y origen del precio, además de los metadatos de la página.
+El gateway valida y registra el resultado completo antes de preparar
+esa vista. Solicitudes mixtas o que requieren otras capacidades siguen el
+descubrimiento automático. La selección del perfil no sustituye la
+autorización vigente del negocio en cada consulta. [Evidencia de la VM](../evidence/nodia-ai-gemini-products-recovery-20261121.md).
 
 ## Cómo conoce NodiaAI los productos
 

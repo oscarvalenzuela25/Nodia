@@ -1,5 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { describe, expect, it, vi } from "vitest";
 import { ProductMobileCard, ProviderMobileCard, InvoiceMobileCard } from "../../../../../modules/business/components/BusinessMobileCards/BusinessMobileCards";
 import type { ProductEntity, ProductLogEntity } from "../../../../../modules/business/infrastructure/types";
@@ -27,6 +28,7 @@ describe("ProductMobileCard image access with the real MobileRecordCard", () => 
     const card = screen.getByRole("article", { name: product.name });
     expect(within(card).getByRole("heading", { name: product.name })).toBeInTheDocument();
     expect(within(card).getByText(product.code!)).toBeInTheDocument();
+    expect(within(card).getByRole("img", { name: i18n.t("business:product_barcode_present") })).toBeInTheDocument();
     expect(within(card).queryByText(product.barcode!)).not.toBeInTheDocument();
     expect(within(card).queryByText("0")).not.toBeInTheDocument();
     expect(within(card).queryByText(/oferta|alternativo/i)).not.toBeInTheDocument();
@@ -78,10 +80,41 @@ describe("ProductMobileCard image access with the real MobileRecordCard", () => 
     expect(screen.getByText(i18n.t("business:product_offer_price", { price: "$0 x unidad" }))).toBeInTheDocument();
     expect(screen.getByText(i18n.t("business:product_regular_price", { price: "$1.547 x unidad" }))).toBeInTheDocument();
     expect(screen.queryByText(i18n.t("business:pos.alternate_price"))).not.toBeInTheDocument();
+    expect(getComputedStyle(screen.getByRole("article", { name: product.name })).backgroundImage).not.toContain("linear-gradient");
   });
+
+  it.each([
+    { mode: "light", tint: "rgba(255, 205, 210, 0.08)" },
+    { mode: "dark", tint: "rgba(128, 19, 19, 0.12)" },
+  ] as const)("marks a zero sale price in $mode and omits availability from both cards", ({ mode, tint }) => {
+    const theme = createTheme({ palette: { mode, error: { main: "#808080" } } });
+    render(
+      <ThemeProvider theme={theme}>
+        <ProductMobileCard
+          product={{ ...product, sale_price: 0, offer_price: 500, is_offer_enabled: true }}
+          historical={{ ...historical, sale_price: 0 }}
+          expanded
+          disabled={false}
+          formatDate={formatDate}
+          {...callbacks()}
+        />
+      </ThemeProvider>,
+    );
+    const current = screen.getByRole("article", { name: product.name });
+    const previous = screen.getByRole("article", { name: `${i18n.t("business:historical_badge")} · ${historical.name}` });
+
+    expect(getComputedStyle(current).backgroundImage).toContain(tint);
+    expect(current).toHaveStyle({ backgroundColor: theme.palette.background.paper });
+    expect(getComputedStyle(previous).backgroundImage).not.toContain("linear-gradient");
+    expect(within(current).getByText(i18n.t("business:product_regular_price", { price: "$0 x unidad" }))).toBeInTheDocument();
+    expect(within(current).queryByText(i18n.t("business:pos.availability"))).not.toBeInTheDocument();
+    expect(within(previous).queryByText(i18n.t("business:pos.availability"))).not.toBeInTheDocument();
+  });
+
   it("keeps a product without supplier code identifiable by its name and displays its measurement", () => {
-    render(<ProductMobileCard product={{ ...product, code: null, measurement_unit: "bundle" }} expanded={false} disabled={false} formatDate={formatDate} {...callbacks()} />);
+    render(<ProductMobileCard product={{ ...product, code: null, barcode: null, measurement_unit: "bundle" }} expanded={false} disabled={false} formatDate={formatDate} {...callbacks()} />);
     expect(screen.getByRole("heading", { name: product.name })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: i18n.t("business:product_barcode_missing") })).toBeInTheDocument();
     expect(screen.getByText("$1.547 x atado")).toBeInTheDocument();
     expect(screen.getAllByText("—").length).toBeGreaterThan(0);
   });
@@ -108,6 +141,6 @@ describe("Supplier OCR and optional invoice folio on mobile", () => {
   it("keeps an invoice without a folio identifiable and editable", () => {
     render(<InvoiceMobileCard invoice={{ id: "invoice", business_id: "business", code: null, total_amount: 0, path_storage: "", created_at: "", is_active: true }}
       disabled={false} formatDate={formatDate} onPreview={vi.fn()} onCopy={vi.fn()} onEdit={vi.fn()} />);
-    expect(screen.getByRole("heading", { name: i18n.t("business:invoice_without_code") })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: i18n.t("business:invoice_without_code") })).toHaveTextContent(/^-$/);
   });
 });

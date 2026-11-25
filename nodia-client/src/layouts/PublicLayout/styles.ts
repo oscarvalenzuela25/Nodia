@@ -7,6 +7,16 @@ export const PublicLayoutRoot = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   position: "relative",
   width: "100%",
+  "&:has(> [data-connection-notice])": {
+    minHeight: "100dvh",
+    "& > header": {
+      position: "static",
+      alignSelf: "flex-end",
+      marginBlockStart: theme.spacing(2),
+      marginInlineEnd: theme.spacing(3),
+    },
+    "& > [data-public-content] > main": { minHeight: 0, flexGrow: 1 },
+  },
 }));
 
 export const ControlsWrapper = styled("header")(({ theme }) => ({

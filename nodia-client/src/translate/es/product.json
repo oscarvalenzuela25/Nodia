@@ -47,7 +47,7 @@
     "bundle": "atado"
   },
   "bulk_create_unknown": "No pudimos confirmar si los productos nuevos se guardaron. Conservamos las filas y bloqueamos repetir la creación. Revisa el catálogo manualmente para comprobar qué se guardó antes de cerrar y volver a importar.",
-  "table_show_additional_columns": "Mostrar estado y última actualización",
-  "table_hide_additional_columns": "Ocultar estado y última actualización",
+  "table_show_additional_columns": "Mostrar última actualización y estado",
+  "table_hide_additional_columns": "Ocultar última actualización y estado",
   "profit_percentage_retired": "El margen guardado ya no se admite. Actualice el formulario y vuelva a revisar el precio de venta."
 }

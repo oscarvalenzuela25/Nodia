@@ -246,7 +246,7 @@ nuevo incrementa esa misma fila. Los botones de cantidad y la edición del
 campo mantienen el orden, que se restaura con el borrador. El descuento de
 stock sigue condicionado a una venta confirmada y al control habilitado en
 el producto. NodiaAI conserva las lecturas de ventas y reportes.
-[Plan94 §46](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
+[Plan94 §48](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 ## Producto manual: regla posterior del 2026-11-06
 

@@ -4,12 +4,13 @@ import useAuth from "../../../hooks/useAuth";
 import { getProviders, getInvoices } from "./services";
 
 const useSearch = () => {
-  const [search, setSearch] = useState("");
+  const [input, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const trimmedInput = input.trim();
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    const timer = setTimeout(() => setDebouncedSearch(trimmedInput), 300);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [trimmedInput]);
   return { search: debouncedSearch, setSearch };
 };
 

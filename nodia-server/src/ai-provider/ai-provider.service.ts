@@ -25,6 +25,7 @@ import {
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
 import { TranslationService } from '../translation/translation.service.js';
 import { decryptSecret } from './helpers/ai-key-crypto.helper.js';
+import { refreshAgenticModelMetadata } from './helpers/agentic-model-policy.helper.js';
 import { sanitizeProviderFields } from './helpers/supported-providers.helper.js';
 import { resolveAiProviderUpdate } from './use-case/ai-provider-configuration.rules.js';
 import type { DiscoveredModelInfo } from './use-case/sync-ai-provider-models.use-case.js';
@@ -404,8 +405,11 @@ export class AiProviderService {
         where: { id },
         relations: { catalog: true },
       });
+      const availableModels = mode === 'agentic'
+        ? refreshAgenticModelMetadata(current.fields?.agentic, models)
+        : models;
       const resolved = resolveAiProviderUpdate(
-        { fields: { [mode]: { available_models: models } } },
+        { fields: { [mode]: { available_models: availableModels } } },
         current,
         current.catalog ?? null,
       );

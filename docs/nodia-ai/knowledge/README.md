@@ -6,7 +6,55 @@ La [ficha candidata de stock](businesses/features/product-stock-tracking.md)
 enlaza la implementación local del control por producto, ajustes de
 Facturas OCR, descuento al confirmar en POS y filtro por saldo. Las escrituras
 corresponden a los flujos nativos de Negocios. La revisión 4 de las lecturas
-de catálogo e historial admite los saldos decimales. [Plan94 §45](../../mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto).
+de catálogo e historial admite los saldos decimales. [Plan94 §47](../../mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
+
+El [contexto candidato de Sets](studies/features/flashcard-sets.md)
+describe la agrupación y gestión nativas de mazos en Teacher.
+
+## Calendarios y tarjetas de Teacher en NodiaAI
+
+El usuario aprobó las revisiones 5 de Calendario de estudio y 6 de
+Tarjetas de repaso. El catálogo `nodia-ai-teacher-study/1` activa en la
+rama de Teacher las consultas propias y las preparaciones de cambios con
+confirmación humana.
+[Ficha de Calendario](studies/features/study-calendar.md#operaciones-desde-nodiaai) ·
+[Ficha de Tarjetas](studies/features/flashcards.md#operaciones-desde-nodiaai) ·
+[Aprobación](../../evidence/nodia-ai-teacher-catalog-approval-20261123.md).
+
+## Tarjetas de repaso de Teacher — primer corte local del 2026-11-22
+
+El [Plan112](../../mvp/112-teacher-flashcards-plan.md) y la
+[ficha de tarjetas](studies/features/flashcards.md) describen la biblioteca
+personal de mazos, tarjetas con imagen privada y repaso móvil. La
+continuación agrega [importación JSON y propuestas de texto desde citas](../../mvp/112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto).
+Las [propuestas de biblioteca](../../mvp/112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca)
+incluyen texto e imagen con vista previa. La calificación de la
+generación por proveedor real sigue pendiente.
+
+## Calendario de estudio de Teacher — propuesta del 2026-11-22
+
+El diseño, los datos, el pegado y la gestión del estado del calendario
+personal se describen en la ficha y el plan.
+[Ficha de Calendario](studies/features/study-calendar.md) ·
+[Plan111](../../mvp/111-teacher-study-calendar-plan.md).
+
+## Catálogo de Productos y precios — 2026-11-21
+
+El [catálogo40](../../mvp/40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21)
+describe la mejora de descubrimiento en español de
+[`nodia_products_list`](businesses/features/products.md#lecturas-disponibles-en-ai-15).
+La consulta utiliza precios del catálogo actual y el ámbito autorizado de
+Negocios. Los resultados paginados incluyen el precio regular, el vigente y
+la unidad. La revisión firmada de Productos sigue vigente.
+
+Gemini Agentic usa el [perfil de consulta de catálogo](../../mvp/40-nodia-ai-tool-catalog-v1.md#lectura-de-catálogo-en-gemini-agentic--2026-11-21)
+para solicitudes inequívocas de productos y precios con ambas lecturas
+autorizadas. El perfil indica que, si la primera página trae todo el
+catálogo, el modelo debe responder con esa lectura. Para un catálogo de
+varias páginas, conserva el filtro de negocio y el límite. Gemini recibe
+todas las filas con nombre, unidad, precios y origen del precio, junto con
+la paginación. La revisión firmada de Productos conserva su contrato de
+lectura y el alcance por negocio.
 
 ## Punto de lectura de Teacher sin conexión — 2026-11-21
 
@@ -862,6 +910,7 @@ Todos los productos/módulos actuales pertenecen al alcance funcional confirmado
 
 | Producto | Carpeta documental elegida | Fuentes de partida | Fichas de contexto |
 |---|---|---|---|
+| Nodia CV (propuesto) | `nodia-cv/` | [Plan113](../../mvp/113-nodia-cv-implementation-plan.md), [guía UI](../../features/nodia-cv/ui-design.md) y [ADR119 propuesto](../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md) | [Producto](nodia-cv/README.md), [perfiles](nodia-cv/features/profiles.md) y [adaptación y versiones](nodia-cv/features/tailoring-and-verified-versions.md). Borradores que documentan Perfiles, API key, revisión, PDF e historial en la rama de CV. Integración conversacional sin registrar. |
 | Noticias | `news/` | [Plan105 §18](../../mvp/105-on-demand-tech-news.md#18-plan-de-noticias-personales) | [Producto](news/README.md), [lectura pública histórica](news/features/on-demand-reading.md) y [conexiones personales](news/features/personal-connections.md). Fichas draft/unregistered para documentación |
 | Nodia Teacher en Estudios | `studies/` | [Especificación95](../../mvp/95-studies-adaptive-learning.md), [plan96](../../mvp/96-nodia-teacher-implementation-plan.md), [upgrade101 en revisión](../../mvp/101-nodia-teacher-adaptive-upgrade-plan.md) y [ADR098 propuesto](../../architecture/decisions/ADR-098-teacher-learning-evidence-and-adaptive-progression.md) | [Producto](studies/README.md), cuatro funciones base parciales y seis nuevas planned; fichas draft/unregistered, sin publicación. Evidencia/gates de V1 no acreditan el upgrade |
 | Negocios | `businesses/` | [PRD](../../features/businesses/01-prd.md), [inventario de endpoints](../../mvp/39-nodia-ai-current-capabilities-inventory.md), [Caja109](../../mvp/109-business-cash-ledger-plan.md), [Listas110](../../mvp/110-market-shopping-lists-plan.md) | [Producto](businesses/README.md) draft excluido. Secciones de consulta publicadas para [Caja](businesses/features/cash-ledger-and-invoice-expenses.md) y [Listas de Market](businesses/features/market-shopping-lists.md). Las demás lecturas, [preparadores de efectos](businesses/features/confirmed-business-effects.md) y [análisis C03](businesses/features/active-invoice-analysis.md) conservan sus alcances. |

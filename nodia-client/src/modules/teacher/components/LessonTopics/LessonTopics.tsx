@@ -3,9 +3,12 @@ import { Alert, Button, Stack, Typography } from "@mui/material";
 import BookmarkBorderOutlined from "@mui/icons-material/BookmarkBorderOutlined";
 import BookmarkAddedOutlined from "@mui/icons-material/BookmarkAddedOutlined";
 import ChatBubbleOutlineOutlined from "@mui/icons-material/ChatBubbleOutlineOutlined";
+import NoteAddOutlined from "@mui/icons-material/NoteAddOutlined";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router";
 import BlockLearningTools from "../AdaptiveWorkspace/BlockLearningTools";
 import LessonMarkdown from "../LessonMarkdown";
+import { findStudyFragments, SpellingSequence, VowelComparison } from "../StudyFragmentPilot";
 import type { AdaptivePanelProps } from "../AdaptiveWorkspace/types";
 import type { LessonInteraction } from "../../infrastructure/learningSchemas";
 import { parseStudyPractice } from "../../infrastructure/studyPractice";
@@ -14,21 +17,27 @@ import { readTopicSelection } from "./selection";
 import { Topic, TopicActions, TopicColumns, TopicHeader, TopicText } from "./styles";
 
 type TopicBlock = { id: string; title: string; kind?: string; body_markdown: string };
+export type LessonFlashcardSelection = { sessionId: string; contentVersionId: string; blockId: string; quote: string };
 type Props = Omit<AdaptivePanelProps, "visible" | "onPractice"> & {
   blocks: TopicBlock[];
   contentVersionId: string;
   history?: LessonInteraction[];
   savedBlockId: string | null;
   onSaveReadingPoint: (blockId: string) => Promise<unknown>;
+  onCreateFlashcard?: (selection: LessonFlashcardSelection) => void;
+  flashcardEditorOpen?: boolean;
 };
 type OpenPanel = { scope: string; blockId: string; anchor: string | null; range?: Range };
 type Selected = NonNullable<ReturnType<typeof readTopicSelection>> & { scope: string };
 
-export default function LessonTopics({ blocks, ...props }: Props) {
+export default function LessonTopics({ blocks, flashcardEditorOpen, ...props }: Props) {
   const { t } = useTranslation();
+  const { search } = useLocation();
   const lesson = useRef<HTMLDivElement>(null);
   const triggers = useRef(new Map<string, HTMLButtonElement>());
   const pressedSelection = useRef<Selected | null>(null);
+  const flashcardTrigger = useRef<HTMLButtonElement>(null);
+  const pressedFlashcardSelection = useRef<Selected | null>(null);
   const intent = useRef(0);
   const [selection, setSelection] = useState<Selected | null>(null);
   const [panels, setPanels] = useState<Record<string, OpenPanel>>({});
@@ -37,18 +46,24 @@ export default function LessonTopics({ blocks, ...props }: Props) {
   const [loading, setLoading] = useState<OpenPanel | null>(null);
   const [failed, setFailed] = useState<OpenPanel | null>(null);
   const topics = useMemo(() => blocks.map(block => ({ block, practice: parseStudyPractice(block.body_markdown, block.kind) })), [blocks]);
+  const studyFragments = useMemo(() => import.meta.env.DEV && new URLSearchParams(search).get("studyFragments") === "1"
+    ? findStudyFragments(blocks) : null, [blocks, search]);
   const scope = JSON.stringify([props.session.id, props.contentVersionId]);
   const open = activePanel?.scope === scope ? activePanel : null;
   const finalActive = props.session.active_attempts.some(attempt => attempt.scope === "section_final" && attempt.state === "in_progress");
 
   useEffect(() => {
+    if (flashcardEditorOpen) return;
     const updateSelection = () => {
-      const current = readTopicSelection(window.getSelection(), lesson.current);
-      setSelection(current && { ...current, scope });
+      const browserSelection = window.getSelection();
+      const current = readTopicSelection(browserSelection, lesson.current);
+      if (current) setSelection({ ...current, scope });
+      else if (!browserSelection?.isCollapsed || (document.activeElement !== flashcardTrigger.current
+        && pressedFlashcardSelection.current?.scope !== scope)) setSelection(null);
     };
     document.addEventListener("selectionchange", updateSelection);
     return () => document.removeEventListener("selectionchange", updateSelection);
-  }, [scope]);
+  }, [scope, flashcardEditorOpen]);
   useEffect(() => () => { ++intent.current; }, [scope]);
   useEffect(() => {
     if (!open?.range || !open.range.startContainer.isConnected || typeof Highlight === "undefined" || !CSS.highlights) return;
@@ -93,7 +108,9 @@ export default function LessonTopics({ blocks, ...props }: Props) {
       const retained = panels[key];
       const current = open?.blockId === block.id;
       const candidate = selection?.scope === scope && selection.blockId === block.id && selection.range.startContainer.isConnected
+        && selection.range.endContainer.isConnected
         && block.body_markdown.includes(selection.text) ? selection : null;
+      const createFlashcard = candidate && !finalActive ? props.onCreateFlashcard : undefined;
       const loadingThisTopic = loading?.scope === scope && loading.blockId === block.id;
       const failure = failed?.scope === scope && failed.blockId === block.id ? failed : null;
       const triggerHidden = current && retained && (!candidate || candidate.text === retained.anchor);
@@ -103,11 +120,14 @@ export default function LessonTopics({ blocks, ...props }: Props) {
         onSave={() => props.onSaveReadingPoint(block.id)}>
         <TopicColumns data-clarification-open={current && Loaded && retained ? true : undefined}>
           <Stack sx={{ gap: 1.5, minWidth: 0 }}>
+            {import.meta.env.DEV && studyFragments?.vowels === block.id && <VowelComparison key={scope} />}
+            {import.meta.env.DEV && studyFragments?.spelling === block.id && <SpellingSequence key={scope} />}
             {practice.mainMarkdown && <TopicText data-lesson-topic-text={block.id}><LessonMarkdown text={practice.mainMarkdown} /></TopicText>}
             <BlockLearningTools session={props.session} busy={props.busy} command={props.command} onResult={props.onResult}
               history={props.history} contentVersionId={props.contentVersionId} block={block} practice={practice} />
-            <TopicActions sx={{ display: triggerHidden ? "none" : undefined }}>
+            <TopicActions sx={{ display: triggerHidden && !createFlashcard ? "none" : undefined }}>
               <Button ref={node => { if (node) triggers.current.set(block.id, node); else triggers.current.delete(block.id); }}
+                sx={{ display: triggerHidden ? "none" : undefined }}
                 variant={candidate && !current ? "contained" : "outlined"} startIcon={<ChatBubbleOutlineOutlined />}
                 aria-expanded={Boolean(current && retained)} loading={loadingThisTopic} disabled={props.busy}
                 onPointerDown={event => {
@@ -127,6 +147,29 @@ export default function LessonTopics({ blocks, ...props }: Props) {
                 }}>
                 {t(failure ? "teacher:adaptive.retry_clarification" : "teacher:topic.clarify")}
               </Button>
+              {createFlashcard && <Button ref={flashcardTrigger} variant="outlined" startIcon={<NoteAddOutlined />}
+                sx={{ minHeight: 44 }}
+                aria-haspopup="dialog" disabled={props.busy}
+                onPointerDown={event => {
+                  pressedFlashcardSelection.current = candidate;
+                  if (event.pointerType === "mouse") event.preventDefault();
+                }}
+                onPointerCancel={() => { pressedFlashcardSelection.current = null; }}
+                onPointerLeave={event => {
+                  if (event.pointerType === "mouse") pressedFlashcardSelection.current = null;
+                }}
+                onClick={event => {
+                  const captured = pressedFlashcardSelection.current;
+                  const selected = event.detail && captured?.scope === scope && captured.blockId === block.id ? captured : candidate;
+                  pressedFlashcardSelection.current = null;
+                  if (!selected) return;
+                  event.currentTarget.focus({ preventScroll: true });
+                  createFlashcard({
+                    sessionId: props.session.id, contentVersionId: props.contentVersionId, blockId: block.id, quote: selected.text,
+                  });
+                }}>
+                {t("teacher:flashcards.create_from_selection")}
+              </Button>}
             </TopicActions>
             {failure && <Alert severity="error">{t("teacher:adaptive.load_failed")}</Alert>}
           </Stack>

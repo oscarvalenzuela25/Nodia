@@ -8,7 +8,7 @@
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Productos, Facturas OCR y POS implementados localmente según Plan94 §45. El corte operativo y el retiro físico de la clasificación anterior están pendientes."
+    "notes": "Productos, Facturas OCR y POS implementados localmente según Plan94 §47. El corte operativo y el retiro físico de la clasificación anterior están pendientes."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
@@ -18,7 +18,7 @@
       "kind": "specification"
     },
     {
-      "path": "docs/architecture/decisions/ADR-116-optional-product-stock.md",
+      "path": "docs/architecture/decisions/ADR-120-optional-product-stock.md",
       "kind": "specification"
     },
     {
@@ -42,7 +42,7 @@
 # Control opcional de stock — contexto funcional candidato
 
 [Producto Negocios](../README.md) ·
-[Plan94 §45](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto).
+[Plan94 §47](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
 
 ## Qué resuelve y qué significa
 

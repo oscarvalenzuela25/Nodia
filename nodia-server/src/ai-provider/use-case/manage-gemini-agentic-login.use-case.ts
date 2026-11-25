@@ -1,11 +1,15 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { GeminiService } from '../../common/ai/gemini.service.js';
+import { GeminiAgenticLogoutService } from '../../common/ai/gemini-agentic-logout.service.js';
 import type { SubmitGeminiAgenticCodeDto } from '../dto/submit-gemini-agentic-code.dto.js';
 
 @Injectable()
 export class ManageGeminiAgenticLoginUseCase {
   private readonly logger = new Logger(ManageGeminiAgenticLoginUseCase.name);
-  constructor(private readonly geminiService: GeminiService) {}
+  constructor(
+    private readonly geminiService: GeminiService,
+    private readonly geminiLogout: GeminiAgenticLogoutService,
+  ) {}
 
   private validateJobId(jobId: string): void {
     if (!/^[0-9a-f]{32}$/.test(jobId)) {
@@ -17,6 +21,10 @@ export class ManageGeminiAgenticLoginUseCase {
     const job = await this.geminiService.agenticLoginRequest('POST', '/start', actorUserId);
     this.logger.log(`Agentic login started: actor=${actorUserId}`);
     return job;
+  }
+
+  logout(actorUserId: string) {
+    return this.geminiLogout.logout(actorUserId);
   }
 
   async current(actorUserId: string) {

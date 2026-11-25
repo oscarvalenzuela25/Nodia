@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 export const CardRoot = styled("article")(({ theme }) => ({
-  padding: theme.spacing(2), borderRadius: theme.spacing(2), background: theme.palette.background.paper,
+  padding: theme.spacing(2), borderRadius: theme.spacing(2), backgroundColor: theme.palette.background.paper,
   border: `1px solid ${theme.palette.divider}`,
   boxShadow: `0 2px 6px ${theme.palette.action.hover}`,
 }));

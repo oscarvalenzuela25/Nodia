@@ -53,9 +53,11 @@ export class NodiaAiExecutionService {
          AND j.available_at<=clock_timestamp() AND j.deadline_at>clock_timestamp()
          AND j.available_at+$3*interval '1 second'>clock_timestamp()
          AND c.expires_at>clock_timestamp() AND c.lifecycle='active'
-           AND ((SELECT count(*) FROM nodia_ai_jobs a WHERE a.state='leased')${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')" : ''})<$1
+           AND ((SELECT count(*) FROM nodia_ai_jobs a WHERE a.state='leased')
+                ${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state='running')+(SELECT count(*) FROM nodia_ai_runtime_slots s JOIN ai_generation_operations o ON o.id=s.generation_operation_id WHERE s.state='held' AND o.owner_kind IN ('flashcard_library','cv'))" : ''})<$1
            AND ((SELECT count(*) FROM nodia_ai_jobs a JOIN nodia_ai_conversations ac ON ac.id=a.conversation_id
-                WHERE a.state IN ('leased','unknown') AND ac.owner_id=c.owner_id)${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state IN ('running','unknown') AND blocks_duplicate=true AND actor_id=c.owner_id)" : ''})<$2
+                WHERE a.state IN ('leased','unknown') AND ac.owner_id=c.owner_id)
+                ${teacher ? "+(SELECT count(*) FROM teacher_generation_jobs WHERE state IN ('running','unknown') AND blocks_duplicate=true AND actor_id=c.owner_id)+(SELECT count(*) FROM ai_generation_operations o WHERE o.owner_kind IN ('flashcard_library','cv') AND o.acknowledged_at IS NULL AND o.actor_id=c.owner_id)" : ''})<$2
        ORDER BY j.available_at,j.id LIMIT 1`,
       [globalLimit, ownerLimit, waitSeconds],
     );

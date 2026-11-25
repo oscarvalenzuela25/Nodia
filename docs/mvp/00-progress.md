@@ -3,13 +3,145 @@
 **Punto de venta y búsqueda de Productos — 2026-11-25.** Client implementa
 el diseño aprobado del POS con carritos laterales, cobro compacto y el último
 producto agregado al inicio de su carrito. La cabecera y la búsqueda de
-Productos se incluyen en la entrega local. [Plan94 §46](94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
+Productos se incluyen en la entrega local. [Plan94 §48](94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 **Stock opcional de Negocios — 2026-11-25.** Client y Server implementan
 seguimiento por producto, descuento al confirmar en POS, ajuste en Facturas
 OCR y filtro por stock máximo. PostgreSQL 16 aislado verificó la migración y
 los efectos transaccionales. La activación operativa y el retiro de la
-columna anterior quedan en [Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto).
+columna anterior quedan en [Plan94 §47](94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
+
+**Desconexión de Gemini Agentic — 2026-11-24.** La implementación
+validada en laboratorio queda en
+[`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d).
+Su publicación requiere una entrega coordinada del adaptador y Ajustes IA.
+
+**Nodia CV — piloto CV-06 verificado en la VM aislada, 2026-11-24.**
+Alta del módulo, dos cuentas, generación API key y los dos PDF exactos
+en historial. OneATS público leyó los datos principales de ambas
+plantillas y dejó incompleta la ubicación. La restauración aislada
+confirmó que las bajas de CV se mantienen. Quedan pendientes CI por SHA
+y adopción en destino.
+[Plan113 §15](113-nodia-cv-implementation-plan.md#15-piloto-en-vm-y-lectura-externa-cv-06--2026-11-24) ·
+[Evidencia CV-06](../evidence/nodia-cv-pilot-vm-and-ats-20261124.md).
+
+**Nodia CV — CV-05 verificado, 2026-11-24.** Plantillas Clásica y
+Compacta, verificación de orden y contenido del PDF exacto, descarga y
+baja confirmada de versiones. Los laboratorios de Windows y Linux
+comprobaron el renderer. Edge y PostgreSQL verificaron el guardado y
+la recuperación de los bytes. CV-06 continúa con importación ATS
+autorizada, integración en destino y restauración.
+[Plan113 §14](113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) ·
+[Evidencia CV-05](../evidence/nodia-cv-pdf-versions-20261124.md).
+
+**Nodia CV — CV-04 verificado en navegador, 2026-11-24.** Oferta,
+selector, borrador y evidencia confirmada integrados. La VM aislada
+generó una vista previa con API key en un envío. La revisión temporal
+usa versión y conserva el borrador del modelo.
+[Plan113 §13](113-nodia-cv-implementation-plan.md#13-pantalla-de-generación-y-revisión-cv-04--2026-11-24) ·
+[Evidencia UI](../evidence/nodia-cv-generation-ui-20261124.md).
+
+**Nodia CV — CV-03 API key verificado en laboratorio, 2026-11-24.**
+Motor con hechos del perfil, citas de la oferta, selección exacta y
+recibo en el worker común. La VM aislada devolvió un borrador válido de
+OpenAI API key con un envío y cierre confirmado. Agentic sigue pendiente
+de transporte propio. [Plan113 §12](113-nodia-cv-implementation-plan.md#12-motor-de-generación-cv-03--2026-11-24).
+
+**Nodia CV — perfiles verificados localmente, 2026-11-24.** La rama
+`codex/nodia-cv` incluye el CRUD privado con idempotencia y revisiones,
+la ruta asignable y el editor nativo. Chromium verificó Perfiles contra
+Nest y PostgreSQL 16.15 aislados.
+[Plan113 §11](113-nodia-cv-implementation-plan.md#11-primer-corte-local--2026-11-24)
+registra el contrato y la [prueba de lectura PDF](../evidence/nodia-cv-pdf-spike-20261124.md).
+Generación, versiones y prueba en ATS comercial quedan pendientes.
+
+**Sets de mazos de Teacher — 2026-11-23.** Implementación local en
+`codex/teacher-calendar-activity-layout` del árbol de Sets con filtros,
+10 mazos por página, lista/cuadrícula y bajas confirmadas.
+[Plan112](112-teacher-flashcards-plan.md#sets-de-mazos--propuesta-de-interfaz).
+
+**CRUD de Teacher en NodiaAI — 2026-11-23.** La rama
+`codex/teacher-study-calendar` activa siete lecturas y trece preparaciones
+de cambios en `nodia-ai-teacher-study/1` con la aprobación de Calendario
+revisión 5 y Tarjetas de repaso revisión 6. PostgreSQL aislado verificó la
+composición, la confirmación, el comprobante, el avance derivado y el ámbito
+por cuenta. La adopción en el entorno de destino queda pendiente.
+[Catálogo40](40-nodia-ai-tool-catalog-v1.md#calendarios-y-tarjetas-de-teacher) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md) ·
+[Verificación](../evidence/nodia-ai-teacher-catalog-20261123.md).
+
+**Propuestas de tarjetas con imagen — 2026-11-23.** Teacher prepara
+una tarjeta desde apuntes o citas y ofrece regenerar el texto, la
+imagen o ambos desde el menú. Cada resultado se revisa antes de
+incorporarlo al editor. PostgreSQL y Chromium verificaron el
+recorrido con respuestas interceptadas. El carril de biblioteca
+requiere una selección API key. La imagen se habilita con una
+calificación propia por selección. Se aplicaron las dos migraciones
+y se reiniciaron el API y el Worker locales. La instancia local
+permanece sin conexiones de IA operativas.
+[Plan112](112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca).
+
+**Autoría de tarjetas de Teacher — 2026-11-23.** El pegado de JSON v1
+tiene formatos de una tarjeta y de mazo, vista previa, selección y
+guardado atómico, con categoría opcional. Las citas permiten preparar
+una propuesta de pregunta y respuesta. Las tarjetas con cita accesible
+permiten regenerar texto desde su menú. Las pruebas de integración
+usaron Chromium y PostgreSQL aislado, con transporte de prueba para
+la generación. La instancia local tiene aplicadas ambas migraciones.
+Quedan pendientes la inferencia real por selección, los apuntes
+independientes y las imágenes generadas.
+[Plan112](112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto).
+
+**Tarjetas de repaso de Teacher — 2026-11-22.** La rama
+`codex/teacher-study-calendar` incorpora mazos, creación manual,
+imágenes privadas, edición, eliminación y repaso de una tarjeta a
+la vez. El recorrido de lección guarda la cita y conserva el cursor.
+Client y Server compilaron. Chromium con Nest y PostgreSQL aislado
+verificó el primer corte en escritorio y a 320 px. La migración está
+aplicada en la instancia local. El siguiente corte requiere definir
+y calificar el propósito de generación y regeneración.
+[Plan112](112-teacher-flashcards-plan.md#primer-corte-nativo).
+
+**Calendario de estudio de Teacher — 2026-11-22.** La rama
+`codex/teacher-study-calendar` incorpora la pestaña y el avance derivado
+de las marcas por actividad. Chromium verificó el pegado, la finalización
+y la reapertura tras recargar con Nest y PostgreSQL 16.15 aislados.
+[Plan111 §8](111-teacher-study-calendar-plan.md#8-primer-corte-de-implementación).
+La instancia local incluye gestión desde el menú de cada calendario y
+filtros combinables de estado y categoría.
+[Plan111 §10](111-teacher-study-calendar-plan.md#10-gestión-del-calendario-y-filtro-de-actividad).
+
+**Teacher, piloto de fragmentos interactivos — 2026-11-22.** La comparación
+de **sit** y **seat** y las fichas de **BEE–22** están disponibles en
+desarrollo. El navegador verificó ambos ejercicios en un plan sintético
+ya aceptado, con teclado, escritorio y móvil. Queda pendiente probar la
+lección original con la cuenta autorizada del usuario.
+[Plan106 §22](106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22).
+
+**Aviso de venta y consulta de precios en NodiaAI — 2026-11-21.** La rama
+`codex/fixes-pos-nodia-ai` incorpora el cierre local del aviso de venta y
+corrige el descubrimiento en español del listado de productos y sus precios.
+Chromium verificó el aviso en cuatro anchos y dos idiomas. En la VM, el
+gateway compilado verificó precios de catálogo, paginado y alcance por
+negocio en PostgreSQL 16 aislado. OpenAI API key completó un turno con
+el modelo configurado y once precios cotejados con el catálogo del negocio.
+[Evidencia de API key](../evidence/nodia-ai-products-real-api-20261121.md).
+Codex Agentic resolvió el negocio por nombre y respondió con los once
+precios. Gemini Agentic completó el `tools/list` de descubrimiento y agotó
+el tiempo antes de consultar. [Evidencia de Agentic](../evidence/nodia-ai-products-agentic-20261121.md).
+Gemini Agentic ya verificó la misma consulta sin ID con un perfil de
+lectura acotado. El candidato aislado en la VM resolvió el negocio por
+nombre y devolvió los once precios con una sola lectura de Productos.
+El perfil avanza de página sólo cuando quedan registros y entrega al
+modelo una vista acotada a los precios. [Diagnóstico y verificación](../evidence/nodia-ai-gemini-products-recovery-20261121.md#relecturas-del-catálogo-completo).
+[Plan94 §47](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
+y [catálogo40](40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21).
+
+**Horarios de Proveedores y Web Push — 2026-11-21.** El lote PWA-004 se
+publicó en Server y Client. Pasaron CI, el ensayo de las cuatro migraciones
+y CD. El smoke confirmó los módulos de Notificaciones y la protección de la
+configuración Web Push. La entrega real en producción sigue pendiente de
+verificación. [Plan103 §6.8](103-pwa-progressive-implementation-plan.md#68-publicación-de-proveedores-y-web-push--2026-11-21).
 
 **Experiencia del lector offline de Teacher — 2026-11-21.** En producción
 se sirven la presentación formateada, la acción persistente para abrir la

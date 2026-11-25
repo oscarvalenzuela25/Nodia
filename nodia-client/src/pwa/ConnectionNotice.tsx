@@ -6,7 +6,13 @@ import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
 import { retryConnection, useConnectionStatus } from "./useConnectionStatus";
 
-export default function ConnectionNotice({ inDialog = false }: { inDialog?: boolean }) {
+type Props = {
+  inDialog?: boolean;
+  inRecovery?: boolean;
+  allowRetry?: boolean;
+};
+
+export default function ConnectionNotice({ inDialog = false, inRecovery = false, allowRetry = true }: Props) {
   const { t } = useTranslation("core");
   const { status, checking } = useConnectionStatus();
   const offline = status === "offline";
@@ -19,18 +25,23 @@ export default function ConnectionNotice({ inDialog = false }: { inDialog?: bool
         {status !== "available" ? `${title}. ${description}` : ""}
       </Box>
       {status !== "available" && (
-        <Alert severity={offline ? "warning" : "error"} role="none" sx={{
-          ...(inDialog ? { mb: 2 } : { mx: { xs: 2, sm: 3, md: 4 }, mt: 2 }),
+        <Alert data-connection-notice severity={offline ? "warning" : "error"} role="none" sx={{
+          ...(inDialog || inRecovery ? { mb: 2 } : { mx: { xs: 2, sm: 3, md: 4 }, mt: 2 }),
+          flexShrink: 0,
+          minWidth: 0,
+          "& .MuiAlert-icon": { flexShrink: 0 },
           "& .MuiAlert-message": { width: "100%", minWidth: 0 },
         }}>
           <Stack direction={{ xs: "column", sm: "row" }} sx={{
             gap: 1, alignItems: { sm: "center" }, justifyContent: "space-between",
           }}>
-            <Box><strong>{title}</strong><div>{description}</div></Box>
-            <Button variant="outlined" loading={checking} sx={{ minHeight: 44, flexShrink: 0 }}
-              onClick={() => { void retryConnection(); }}>
-              {t("connection_retry")}
-            </Button>
+            <Box sx={{ minWidth: 0, overflowWrap: "anywhere" }}><strong>{title}</strong><div>{description}</div></Box>
+            {allowRetry && (
+              <Button variant="outlined" loading={checking} sx={{ minHeight: 44, flexShrink: 0 }}
+                onClick={() => { void retryConnection(); }}>
+                {t("connection_retry")}
+              </Button>
+            )}
           </Stack>
         </Alert>
       )}

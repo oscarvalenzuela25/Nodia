@@ -204,6 +204,8 @@ export interface GetProductsParams {
     code_cont?: string;
     code_eq?: string;
     code_in?: string[];
+    barcode_cont?: string;
+    barcode_eq?: string;
     name_cont?: string;
     name_in?: string[];
     is_active_eq?: boolean;

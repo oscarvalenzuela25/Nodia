@@ -1,6 +1,6 @@
 import type { AiApiKeyEntity, CreateAiApiKeyPayload, UpdateAiApiKeyPayload, GetAiApiKeysParams } from "./types";
 import { mainInstance } from "../../../../../config/api";
-import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema } from "./agenticLogin";
+import { currentGeminiAgenticLoginSchema, geminiAgenticLoginSchema, geminiAgenticLogoutSchema } from "./agenticLogin";
 import { codexSessionSchema } from "./codexSession";
 import type {
   GetSelectableModelsParams,
@@ -42,6 +42,14 @@ export const submitGeminiAgenticCode = async ({ id, code }: { id: string; code: 
 export const cancelGeminiAgenticLogin = async (id: string) => {
   const { data } = await mainInstance.post<unknown>(getEndpoint(`/ai-providers/gemini-agentic-login/${id}/cancel`));
   return geminiAgenticLoginSchema.parse(data);
+};
+export const disconnectGeminiAgentic = async (sessionVersion: number) => {
+  const { data } = await mainInstance.post<unknown>(
+    getEndpoint("/ai-providers/gemini-agentic-login/logout"),
+    undefined,
+    { expectedAuthSessionVersion: sessionVersion, retryUnauthorized: false },
+  );
+  return geminiAgenticLogoutSchema.parse(data);
 };
 
 export const getAiProviderCatalog = async (): Promise<AiProviderCatalogEntity[]> => {

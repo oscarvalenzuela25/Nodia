@@ -6,6 +6,16 @@ import { TeacherController } from './teacher.controller.js';
 import { TeacherLearningController } from './teacher-learning.controller.js';
 import { TeacherEnrichmentController } from './teacher-enrichment.controller.js';
 import { TeacherRequestsController } from './teacher-requests.controller.js';
+import { TeacherCalendarController } from './teacher-calendar.controller.js';
+import { TeacherCalendarStore } from './teacher-calendar.store.js';
+import { TeacherCalendarUseCase } from './use-case/teacher-calendar.use-case.js';
+import { TeacherFlashcardsController } from './teacher-flashcards.controller.js';
+import { TeacherFlashcardGenerationController } from './teacher-flashcard-generation.controller.js';
+import { TeacherFlashcardLibraryController } from './teacher-flashcard-library.controller.js';
+import { TeacherFlashcardsStore } from './teacher-flashcards.store.js';
+import { TeacherFlashcardsUseCase } from './use-case/teacher-flashcards.use-case.js';
+import { TeacherFlashcardGenerationUseCase } from './use-case/teacher-flashcard-generation.use-case.js';
+import { TeacherFlashcardLibraryUseCase } from './use-case/teacher-flashcard-library.use-case.js';
 import { TeacherLearningUseCase } from './use-case/teacher-learning.use-case.js';
 import { TeacherEnrichmentUseCase } from './use-case/teacher-enrichment.use-case.js';
 import { TeacherReceiptStatusInterceptor } from './teacher-receipt-status.interceptor.js';
@@ -35,9 +45,19 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherLearningController,
     TeacherEnrichmentController,
     TeacherRequestsController,
+    TeacherCalendarController,
+    TeacherFlashcardsController,
+    TeacherFlashcardGenerationController,
+    TeacherFlashcardLibraryController,
   ],
   providers: [
     TeacherService,
+    TeacherCalendarStore,
+    TeacherCalendarUseCase,
+    TeacherFlashcardsStore,
+    TeacherFlashcardsUseCase,
+    TeacherFlashcardGenerationUseCase,
+    TeacherFlashcardLibraryUseCase,
     TeacherLearningUseCase,
     TeacherEnrichmentUseCase,
     ExecuteTeacherCommandUseCase,
@@ -46,6 +66,11 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherPublisherRegistration,
     TeacherReceiptStatusInterceptor,
   ],
-  exports: [TeacherService, PublishTeacherUseCase],
+  exports: [
+    TeacherService,
+    PublishTeacherUseCase,
+    TeacherCalendarUseCase,
+    TeacherFlashcardsUseCase,
+  ],
 })
 export class TeacherModule {}

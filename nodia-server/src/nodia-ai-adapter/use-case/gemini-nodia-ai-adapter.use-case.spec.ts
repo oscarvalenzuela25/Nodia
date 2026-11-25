@@ -89,6 +89,15 @@ function fixture() {
 }
 afterEach(() => vi.unstubAllGlobals());
 
+it('rejects an excluded historical model before contacting Gemini', async () => {
+  const f = fixture();
+  Object.assign(f.row.fields.agentic, { allowed_model_ids: ['fixture-current-model'] });
+  await expect(f.execute.observe(selection)).rejects.toMatchObject({
+    code: 'model_unavailable', outcome: 'not_dispatched',
+  });
+  expect(f.fetch).not.toHaveBeenCalled();
+});
+
 describe('Gemini NodiaAI adapter use case', () => {
   it('routes explicit image generation to its isolated lane and verifies bytes, MIME, hash and terminal identity', async () => {
     const f = fixture();

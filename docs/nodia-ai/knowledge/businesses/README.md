@@ -326,8 +326,10 @@ control de información del negocio son ajustes de la interfaz. El POS nativo
 implementa la distribución aprobada y coloca primero el último producto
 agregado, dentro de cada carrito local. Las consultas y los permisos
 publicados para NodiaAI conservan su alcance.
-[Plan94 §46](../../../mvp/94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25) ·
+[Plan94 §48](../../../mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25) ·
 [Ventas locales](features/multi-sale-workspace.md#distribución-y-orden-del-carrito--2026-11-25).
+
+El corte anterior de [búsqueda de códigos en Productos](features/product-alias-and-code-completeness.md#búsqueda-de-códigos-en-productos--2026-11-23) documenta el resaltado de precio de venta cero.
 
 ## Horarios y recordatorios de visitas — 2026-11-20
 
@@ -640,7 +642,7 @@ Los modos operativos son Agentic y API key conforme90/92. Function calling API n
 | Proveedores comerciales | [suppliers](features/suppliers.md); [ampliación candidata§42](features/product-price-calculator-and-invoice-binding.md#redondeo-división-y-contratos-manuales--solicitud2026-11-17) | use_ocr local con defaultfalse y filtro sólo OCR; QA final común registrada en evidencia2026-11-17 | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Contactos de proveedores | [supplier-contacts](features/supplier-contacts.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Productos | [products](features/products.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
-| Stock opcional de productos | [product-stock-tracking](features/product-stock-tracking.md) | Implementado localmente en [Plan94 §45](../../../mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto) | Ficha candidata. Lecturas de Productos e Historial adaptadas a la revisión 4 | `/business` |
+| Stock opcional de productos | [product-stock-tracking](features/product-stock-tracking.md) | Implementado localmente en [Plan94 §47](../../../mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto) | Ficha candidata. Lecturas de Productos e Historial adaptadas a la revisión 4 | `/business` |
 | Calculadora local y vinculación OCR revisada | [product-price-calculator-and-invoice-binding](features/product-price-calculator-and-invoice-binding.md) | Rev15: redondeo/división, use_ocr y folio opcional locales; QA final común registrada en evidencia2026-11-17. Cortes VM previos conservados en cuerpo | Draft/partial/unregistered/approval:null; sin nueva publicación | `/business` |
 | Historial de productos | [product-logs](features/product-logs.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Punto de venta, ventas y reportes | [point-of-sale-and-sales](features/point-of-sale-and-sales.md) | POS manual desplegado por los recibos previos; ampliación local R24 pendiente de su integración/adopción | Rev5 conserva su aprobación histórica; R17 limita ventas a dos lecturas/cero escritores. Fichas R24 draft sin publicación nueva | `/tools/business`, y módulo NodiaAI para chat |
@@ -846,3 +848,13 @@ separa esta ampliación del corte previo que no añadía al carrito.
 El frontmatter mantiene el límite contractual de32evidencias. Se conserva el
 recibo anterior en [nodia-ai-ai36-c03-publication-authorization-r01.json](../../../evidence/nodia-ai-ai36-c03-publication-authorization-r01.json),
 sin modificar su alcance ni el archivo original.
+
+## Presentación de Caja, Productos y Facturas — 2026-11-23
+
+La interfaz de Caja abre con [el mes civil de Santiago](../../../mvp/109-business-cash-ledger-plan.md#5-contrato-http-v1-de-caja).
+Productos indica la presencia de código de barras y Facturas usa un guion
+para el [folio ausente](../../../mvp/94-business-point-of-sale-and-product-refactor.md#factura-manual-y-panel-de-catálogo).
+El selector individual mantiene su altura al limpiar el valor. La evaluación
+de impacto se limita al Client. Las consultas de NodiaAI conservan el
+significado de sus rangos explícitos, códigos y folios opcionales. La ficha
+firmada de Caja registra el valor inicial histórico del día.

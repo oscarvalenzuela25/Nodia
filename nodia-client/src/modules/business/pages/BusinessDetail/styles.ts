@@ -146,6 +146,7 @@ export const StatusPill = styled(Box, {
 export const StatusDot = styled("span", {
   shouldForwardProp: (prop) => prop !== "active",
 })<{ active: boolean }>(({ theme, active }) => ({
+  display: "inline-block",
   width: 7,
   height: 7,
   borderRadius: "50%",

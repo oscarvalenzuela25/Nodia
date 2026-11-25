@@ -4,6 +4,10 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { checks, classifyChanges, githubOutputs, parseNameStatus, summary } from './classify-changes.mjs';
 import { isSha, requireCd, safeFailure } from './cd-github.mjs';
+import { isGeminiRuntimeProof } from './gemini-runtime-proof.mjs';
+
+export const unmanagedRuntimeError = 'unmanaged_runtime_change_requires_coordinated_rollout';
+const geminiPath = 'nodia-gemini-microservice';
 
 export function ancestor(repo, base, head) {
   requireCd(isSha(base) && isSha(head), 'baseline_commit_invalid');
@@ -37,7 +41,7 @@ export function unmanagedRuntimePaths({ repo = process.cwd(), base, head }) {
   ancestor(repo, base, head);
   const raw = execFileSync('git', ['-C', repo, 'diff', '--no-ext-diff', '--no-textconv', '--name-status', '-z', '--find-renames', base, head, '--']);
   return [...new Set(parseNameStatus(raw).flatMap(item => item.paths))].filter(name => {
-    if (!name.startsWith('nodia-gemini-microservice/') && !name.startsWith('nodia-server/native/')) return false;
+    if (!name.startsWith(geminiPath + '/') && !name.startsWith('nodia-server/native/')) return false;
     if (/\.(?:md|mdx)$/.test(name) || /\/(?:tests?|fixtures|__tests__)\//.test(name) || /\/test_[^/]+\.py$/.test(name)) return false;
     return true;
   }).sort();
@@ -49,17 +53,35 @@ export function serverContentEquivalenceAllowed({ repo = process.cwd(), base, he
   return parseNameStatus(raw).every(item => item.paths.every(name =>
     name.startsWith('docs/') || name.startsWith('nodia-client/')));
 }
-export function deploymentPlan({ repo = process.cwd(), head, clientBase, serverBase, forceClient = false }) {
+function requireCoordinatedGeminiRuntime(repo, head, changed, proof) {
+  requireCd(changed.every(name => name.startsWith(geminiPath + '/')) &&
+    isGeminiRuntimeProof(proof), unmanagedRuntimeError);
+  try {
+    ancestor(repo, proof.source_sha, head);
+    for (const source of [proof.source_sha, head]) {
+      const tree = execFileSync('git', ['-C', repo, 'rev-parse', '--verify', source + ':' + geminiPath],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      requireCd(tree === proof.source_tree_sha, unmanagedRuntimeError);
+      const type = execFileSync('git', ['-C', repo, 'cat-file', '-t', tree],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+      requireCd(type === 'tree', unmanagedRuntimeError);
+    }
+  } catch { requireCd(false, unmanagedRuntimeError); }
+  return proof;
+}
+
+export function deploymentPlan({ repo = process.cwd(), head, clientBase, serverBase, forceClient = false, geminiRuntime }) {
   requireCd(isSha(clientBase) && isSha(serverBase) && isSha(head), 'deployed_baselines_required');
   const client = deployedChanges({ repo, base: clientBase, head });
   const server = clientBase === serverBase ? client : deployedChanges({ repo, base: serverBase, head });
   const unmanaged = unmanagedRuntimePaths({ repo, base: serverBase, head });
-  requireCd(unmanaged.length === 0, 'unmanaged_runtime_change_requires_coordinated_rollout');
+  const attestation = unmanaged.length ? requireCoordinatedGeminiRuntime(repo, head, unmanaged, geminiRuntime) : null;
   return { schema_version: 1, source_sha: head, client_base: clientBase, server_base: serverBase,
     client_required: client.client || forceClient, server_required: server.server || server.contracts,
     server_upload_protocol_version: 2,
     server_content_equivalence_allowed: serverContentEquivalenceAllowed({ repo, base: serverBase, head }),
     python_or_native_deployed: false,
+    ...(attestation ? { gemini_runtime: attestation } : {}),
     separate_runtime_checks_selected: server.python || server.native };
 }
 function argumentsFor(argv) {

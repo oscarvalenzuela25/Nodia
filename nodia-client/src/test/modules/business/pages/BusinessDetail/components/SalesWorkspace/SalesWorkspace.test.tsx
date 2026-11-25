@@ -351,6 +351,35 @@ describe("manual point of sale checkout controls", () => {
     expect(vi.mocked(printSaleTicket).mock.calls[1][0].lines[0].name).toBe("Nombre confirmado");
     expect(state.checkout).toHaveBeenCalledTimes(1);
   });
+  it("dismisses the saved sale notice by keyboard without a commercial write and shows the next receipt", async () => {
+    const user = userEvent.setup();
+    const next = { ...completed, id: "next-saved-sale" };
+    Object.assign(state, { lines: [line], dirty: true });
+    state.checkout.mockResolvedValueOnce(completed).mockResolvedValueOnce(next);
+    const { container } = renderWorkspace();
+
+    await user.click(screen.getByRole("button", { name: "Confirmar venta" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+
+    const alert = screen.getByRole("alert");
+    const print = within(alert).getByRole("button", { name: "Imprimir con detalle" });
+    print.focus();
+    await user.tab();
+    expect(within(alert).getByRole("button", { name: "Cerrar" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+
+    expect(alert).not.toBeInTheDocument();
+    expect(container.firstElementChild).toHaveFocus();
+    expect(state.checkout).toHaveBeenCalledTimes(1);
+    expect(state.transition).not.toHaveBeenCalled();
+    expect(getSale).not.toHaveBeenCalled();
+    expect(printSaleTicket).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Confirmar venta" }));
+    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Confirmar" }));
+    expect(await screen.findByText(next.id)).toBeInTheDocument();
+  });
   it("always previews product detail with explicit printing actions and no remembered format selection", async () => {
     Object.assign(state, { lines: [line], dirty: true });
     renderWorkspace();

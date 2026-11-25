@@ -1,1 +1,1 @@
-export { default } from "./LessonTopics";
+export { default, type LessonFlashcardSelection } from "./LessonTopics";

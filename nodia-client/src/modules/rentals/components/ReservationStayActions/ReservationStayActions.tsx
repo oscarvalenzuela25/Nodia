@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Typography } from "@mui/material";
+import { Alert, Button, LinearProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../../../components/ConfirmDialog";
 import type { RentalProperty, RentalReservation } from "../../types";
@@ -11,7 +11,7 @@ import {
 import { formatRentalInstant } from "../../utils/dates";
 import RentalIntentReview from "../RentalIntentReview";
 import { useBookingSubmit } from "../ReservationModal/hooks/useBookingSubmit";
-import { Information } from "./styles";
+import { Information, StaySchedule } from "./styles";
 export type ReservationStayActionsProps = {
   property: RentalProperty;
   reservation: RentalReservation;
@@ -27,6 +27,8 @@ export default function ReservationStayActions({
   command,
 }: ReservationStayActionsProps) {
   const { t, i18n } = useTranslation();
+  const starting = command === "start";
+  const actionLabel = t(starting ? "rental:start_stay" : "rental:complete_stay");
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30000);
@@ -38,7 +40,7 @@ export default function ReservationStayActions({
     "turnovers",
     property.id,
     reservation.turnover_id ?? undefined,
-    open && command === "start",
+    open && starting,
   );
   const ready =
     turnover.data?.linen_ready === true &&
@@ -46,21 +48,19 @@ export default function ReservationStayActions({
     !!turnover.data.ready_at &&
     Date.parse(turnover.data.ready_at) <= now;
   const expired =
-    command === "start" && Date.parse(reservation.check_out_at) <= now;
+    starting && Date.parse(reservation.check_out_at) <= now;
   const busy = commonBusy || mutation.isPending || mutation.isUncertain;
-  const tooEarly =
-    Date.parse(
-      command === "start" ? reservation.check_in_at : reservation.check_out_at,
-    ) > now;
+  const scheduledAt = starting ? reservation.check_in_at : reservation.check_out_at;
+  const tooEarly = Date.parse(scheduledAt) > now;
   const disabled =
     busy ||
     tooEarly ||
-    (command === "start" && (!ready || expired || turnover.isError));
+    (starting && (!ready || expired || turnover.isError || turnover.isFetching));
   const submit = useBookingSubmit(
     () =>
       mutation.execute({
         operation:
-          command === "start" ? "reservation.start" : "reservation.complete",
+          starting ? "reservation.start" : "reservation.complete",
         id: reservation.id,
         data: {},
       }),
@@ -78,31 +78,32 @@ export default function ReservationStayActions({
       isLoading={busy}
       confirmDisabled={disabled}
       disableEscapeKeyDown={busy}
-      title={t(
-        command === "start" ? "rental:start_stay" : "rental:complete_stay",
-      )}
+      title={actionLabel}
+      confirmText={actionLabel}
+      message={t("rental:reservation_action_context", {
+        guest: reservation.guest_name,
+        property: property.name,
+      })}
     >
       <Information>
-        <Typography>
-          {formatRentalInstant(
-            command === "start"
-              ? reservation.check_in_at
-              : reservation.check_out_at,
-            property.timezone,
-            i18n.language,
-          )}
+        <StaySchedule>
+          <dt>{t(starting ? "rental:check_in_on" : "rental:check_out_on")}</dt>
+          <dd>{formatRentalInstant(scheduledAt, property.timezone, i18n.language)}</dd>
+          <dd>{property.timezone}</dd>
+        </StaySchedule>
+        <Typography variant="body2" color="text.secondary">
+          {t(starting ? "rental:start_requirements" : "rental:complete_requirements")}
         </Typography>
-        <Alert severity="info">
-          {t(
-            command === "start"
-              ? "rental:start_requirements"
-              : "rental:complete_requirements",
-          )}
-        </Alert>
+        {tooEarly && (
+          <Alert severity="info">{t("rental:stay_action_too_early")}</Alert>
+        )}
         {expired && (
           <Alert severity="warning">{t("rental:expired_unstarted_stay")}</Alert>
         )}
-        {command === "start" && !ready && (
+        {starting && turnover.isFetching && (
+          <LinearProgress aria-label={t("rental:preparation_checking")} />
+        )}
+        {starting && !ready && !turnover.isLoading && !turnover.isError && (
           <Alert severity="warning">
             {t("rental:actual_preparation_required")}
           </Alert>

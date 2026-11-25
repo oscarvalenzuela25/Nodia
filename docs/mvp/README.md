@@ -1,5 +1,63 @@
 # Especificación del MVP — Nodia
 
+**Nodia CV — piloto en VM y lectura externa, 2026-11-24.** CV-06
+recorrió el flujo con dos cuentas sintéticas y una inferencia API key
+real. Clásica y Compacta de la misma revisión coincidieron en 9 de 10
+comprobaciones del lector público de OneATS, sin postulaciones.
+[Plan113 §15](113-nodia-cv-implementation-plan.md#15-piloto-en-vm-y-lectura-externa-cv-06--2026-11-24) ·
+[Evidencia CV-06](../evidence/nodia-cv-pilot-vm-and-ats-20261124.md).
+
+**Nodia CV — PDF verificado y versiones, 2026-11-24.** CV-05 incorpora
+Clásica y Compacta en A4, lectura del archivo exacto, descarga y gestión
+de CV guardados. Se comprobó en Nest, PostgreSQL y Edge aislados.
+[Plan113 §14](113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) ·
+[Evidencia CV-05](../evidence/nodia-cv-pdf-versions-20261124.md).
+
+**Nodia CV — pantalla de generación y revisión, 2026-11-24.** CV-04
+integra el selector de IA compartido, oferta, recuperación, revisión
+privada y vista previa del contenido. El recorrido usó API key real desde
+el navegador en la VM aislada.
+[Plan113 §13](113-nodia-cv-implementation-plan.md#13-pantalla-de-generación-y-revisión-cv-04--2026-11-24).
+
+**Nodia CV — motor API key, 2026-11-24.** CV-03 produjo un borrador con una
+selección real de API key, un perfil sintético y una oferta sintética en una
+base aislada en la VM. [Plan113 §12](113-nodia-cv-implementation-plan.md#12-motor-de-generación-cv-03--2026-11-24).
+Al cierre de CV-03 quedaban pendientes Agentic, la pantalla, el PDF y las versiones.
+
+**Nodia CV — primer corte local, 2026-11-24.** Perfiles se verificó
+en Chromium contra Nest y PostgreSQL aislado. El ensayo de PDF pasó extracción y
+maquetación sintéticas en Windows y Linux. [Plan113](113-nodia-cv-implementation-plan.md)
+registra los contratos y el avance. La [guía UI](../features/nodia-cv/ui-design.md)
+define el selector, el editor y la aceptación visual. La importación
+en un ATS comercial queda pendiente.
+
+**Sets de mazos de Teacher — 2026-11-23.** La biblioteca agrupa mazos propios
+en Sets y ofrece la vista de lista o cuadrícula en mazos y tarjetas.
+[Plan112](112-teacher-flashcards-plan.md#sets-de-mazos--propuesta-de-interfaz).
+
+**Calendarios y tarjetas en NodiaAI — 2026-11-23.** La rama de Teacher
+activa siete consultas y trece preparaciones de cambios con confirmación
+humana. La aprobación cubre Calendario de estudio revisión 5 y Tarjetas de
+repaso revisión 6.
+[Catálogo de Teacher](40-nodia-ai-tool-catalog-v1.md#calendarios-y-tarjetas-de-teacher) ·
+[Aprobación](../evidence/nodia-ai-teacher-catalog-approval-20261123.md).
+
+**Tarjetas de repaso de Teacher — primer corte local del 2026-11-22.**
+El [plan de tarjetas](112-teacher-flashcards-plan.md#primer-corte-nativo)
+describe mazos personales, creación manual y desde una cita, subida de
+imagen y repaso móvil.
+La [continuación de importación](112-teacher-flashcards-plan.md#importación-json-y-propuestas-de-texto)
+incorpora JSON con vista previa y propuestas de texto para citas de lección.
+La [continuación de propuestas](112-teacher-flashcards-plan.md#propuestas-de-texto-e-imagen-en-la-biblioteca)
+añade texto e imagen desde apuntes o citas y regeneración por partes.
+La inferencia real de ese carril está pendiente de calificación.
+
+**Calendario de estudio de Teacher — propuesta del 2026-11-22.**
+[Plan111](111-teacher-study-calendar-plan.md) describe la segunda pestaña de
+Teacher, calendarios propios por fechas o días numerados, jornadas, categorías
+y pegado de planes. El usuario confirmó el avance por actividad e indicó
+comenzar la implementación en la rama del calendario.
+
 **Avance de lectura de Teacher sin conexión — 2026-11-21.** PWA-006 está
 publicado. Guarda el punto de lectura en el dispositivo y lo sincroniza con
 la sesión vigente al volver la red. Si otro dispositivo guardó un punto
@@ -420,7 +478,7 @@ El [progreso vigente](00-progress.md) contiene el estado operativo y la próxima
 | --- | --- |
 | Finanzas personales | [Entrevista20](20-personal-finance-interview.md), [ERD21](21-personal-finance-erd.md), [contratos22](22-personal-finance-contracts.md), planes [Server23](23-personal-finance-backend-plan.md) y [Client24](24-personal-finance-client-plan.md) |
 | Reservas | [Entrevista25](25-rental-reservations-interview.md), [especificación26](26-rental-reservations-spec.md), [ERD27](27-rental-reservations-erd.md), [contratos28](28-rental-reservations-contracts.md), planes [Server29](29-rental-reservations-backend-plan.md)/[Client30](30-rental-reservations-client-plan.md) y [rediseño36](36-reservations-redesign-proposal.md) |
-| Negocios, productos y POS | [PRD de Negocios](../features/businesses/01-prd.md), [plan94](94-business-point-of-sale-and-product-refactor.md), [stock opcional planificado](94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto) y [contactos31](31-provider-contacts-proposal.md) |
+| Negocios, productos y POS | [PRD de Negocios](../features/businesses/01-prd.md), [plan94](94-business-point-of-sale-and-product-refactor.md), [stock opcional planificado](94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto) y [contactos31](31-provider-contacts-proposal.md) |
 | Core, módulos y privacidad | [Orden/feedback87](87-core-feedback-module-order-plan.md), [política89](89-module-access-and-user-data-scope.md) y [ADR092 de rutas canónicas](../architecture/decisions/ADR-092-stable-module-navigation-routes.md) |
 | Noticias de tecnología, programación e IA | [Plan105 §18](105-on-demand-tech-news.md#18-plan-de-noticias-personales), [contratos](../features/news/http-contract.md), [catálogo](../features/news/source-catalog.md) y [ADR110 propuesto](../architecture/decisions/ADR-110-personal-news-connection-ownership.md). El piloto DEV usa conexiones privadas y actualización manual. [Plan105 §12](105-on-demand-tech-news.md#12-news-04-segunda-fuente-rss-nodejs--solicitud2026-11-16) y [ADR105](../architecture/decisions/ADR-105-public-news-and-source-access-tiers.md) conservan el corte RSS |
 
@@ -441,6 +499,11 @@ La aprobación explícita del ERD27 del 2026-10-04 no aprueba por extensión con
 Los únicos modos operativos son Agentic y API key. Las referencias a Web, `token_plan` o CRUD conversacional de ventas describen etapas retiradas; no habilitan ejecución. Consultar progreso y plan91 para la disponibilidad realmente comprobada por selección/entorno.
 
 ## Teacher
+
+[Piloto de fragmentos interactivos](106-nodia-teacher-guided-ux-redesign.md#22-piloto-de-fragmentos-interactivos--2026-11-22)
+en una lección existente de inglés. La comparación de *sit* y *seat* y
+el deletreo de **BEE–22** se acotan a ese piloto. El [TODO](TODO.md#cola-actual)
+registra la continuación antes de considerar otras lecciones.
 
 [Rediseño UX/UI106](106-nodia-teacher-guided-ux-redesign.md), solicitado el2026-11-15
 con alta guiada3pasos, paneles, cabecera/drawer y revisión legible del plan

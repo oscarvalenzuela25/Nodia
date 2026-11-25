@@ -48,8 +48,8 @@ import { sileo } from "sileo";
 
 import { TableSkeleton } from "../../../../../../components/skeletons";
 import InputSearch from "../../../../../../components/inputs/InputSearch";
-import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import SelectSingleInput from "../../../../../../components/inputs/SelectSingleInput";
+import SelectMultipleInput from "../../../../../../components/inputs/SelectMultipleInput";
 import ActiveStatusSelect from "../../../../../../components/Filter/components/ActiveStatusSelect";
 import TextInput from "../../../../../../components/inputs/TextInput";
 import { formatStock, parseStockQuantity } from "../../../../infrastructure/productStock";
@@ -72,6 +72,7 @@ import type {
 import ProductModal, { type ProductFormData } from "./components/ProductModal";
 import ProductImageModal from "./components/ProductImageModal";
 import ProductImageThumbnail from "./components/ProductImageThumbnail";
+import ProductBarcodeIndicator from "./components/ProductBarcodeIndicator";
 import ProductSalePrice from "./components/ProductSalePrice";
 import type { ProductSaveTarget } from "./components/ProductModal/hooks/useDeferredProductSave";
 import ProductBulkImport from "./components/ProductBulkImport";
@@ -87,6 +88,7 @@ import {
   type PriceChangeStatus,
 } from "./helpers";
 import { StatusDot } from "../../styles";
+import { zeroSalePriceSx } from "./productRowStyles";
 
 const ActiveFilters = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -416,6 +418,15 @@ export const ProductsTab: FC<Props> = ({
     }
   };
 
+  const handleOpenFilters = () => {
+    setDraftCodePresence(codePresence);
+    setDraftBarcodePresence(barcodePresence);
+    setDraftFilterProviders(appliedFilterProviders);
+    setDraftFilterPriceChange(appliedFilterPriceChange);
+    setDraftFilterActive(appliedFilterActive);
+    setDraftFilterStock(appliedStockMaximum === null ? "" : String(appliedStockMaximum));
+  };
+
   const handleApplyFilters = () => {
     setCodePresence(draftCodePresence);
     setBarcodePresence(draftBarcodePresence);
@@ -522,12 +533,7 @@ export const ProductsTab: FC<Props> = ({
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Filter
           disabled={isBusy}
-          onOpen={() => {
-            setDraftFilterActive(appliedFilterActive);
-            setDraftCodePresence(codePresence);
-            setDraftBarcodePresence(barcodePresence);
-            setDraftFilterStock(appliedStockMaximum === null ? "" : String(appliedStockMaximum));
-          }}
+          onOpen={handleOpenFilters}
           applyDisabled={stockMaximumInvalid}
           onFilter={handleApplyFilters}
           onClear={handleClearFilters}
@@ -567,12 +573,6 @@ export const ProductsTab: FC<Props> = ({
             disabled={isBusy}
           />
 
-          <ActiveStatusSelect
-            value={draftFilterActive ?? "all"}
-            onChange={(value) => setDraftFilterActive(value === "all" ? null : value)}
-            disabled={isBusy}
-          />
-
           <SelectMultipleInput
             label={t("business:filter_price_change_label")}
             placeholder={t("business:filter_price_change_placeholder")}
@@ -582,6 +582,11 @@ export const ProductsTab: FC<Props> = ({
               setDraftFilterPriceChange(vals.filter((value) => value === "increased" || value === "decreased"))
             }
             disabled={isLoading || isFetching}
+          />
+          <ActiveStatusSelect
+            value={draftFilterActive ?? "all"}
+            onChange={(value) => setDraftFilterActive(value === "all" ? null : value)}
+            disabled={isBusy}
           />
         </Filter>
       </Box>
@@ -620,6 +625,19 @@ export const ProductsTab: FC<Props> = ({
               setPage(0);
             }}
           />}
+          {priceChangeOptions
+            .filter(({ value }) => appliedFilterPriceChange.some((variation) => variation === value))
+            .map(({ value, label }) => (
+              <FilterChips
+                key={`price-change-${value}`}
+                label={t("business:filter_chips_price_change", { value: label })}
+                onAction={() => {
+                  setAppliedFilterPriceChange((prev) => prev.filter((variation) => variation !== value));
+                  setDraftFilterPriceChange((prev) => prev.filter((variation) => variation !== value));
+                  setPage(0);
+                }}
+              />
+            ))}
           {appliedFilterActive !== null && (
             <FilterChips
               label={t("business:filter_chips_status", {
@@ -635,19 +653,6 @@ export const ProductsTab: FC<Props> = ({
               }}
             />
           )}
-          {priceChangeOptions
-            .filter(({ value }) => appliedFilterPriceChange.some((variation) => variation === value))
-            .map(({ value, label }) => (
-              <FilterChips
-                key={`price-change-${value}`}
-                label={t("business:filter_chips_price_change", { value: label })}
-                onAction={() => {
-                  setAppliedFilterPriceChange((prev) => prev.filter((variation) => variation !== value));
-                  setDraftFilterPriceChange((prev) => prev.filter((variation) => variation !== value));
-                  setPage(0);
-                }}
-              />
-            ))}
         </ActiveFilters>
       )}
 
@@ -790,7 +795,8 @@ export const ProductsTab: FC<Props> = ({
             <TableSkeleton
               columns={[
                 { width: 48, align: "center" },
-                { header: t("business:product_code") },
+                { align: "center", header: t("business:pos.barcode") },
+                { header: t("business:product_invoice_code") },
                 { header: t("business:product_name") },
                 { header: t("business:product_alias") },
                 { align: "center", header: t("business:pos.image_column") },
@@ -799,8 +805,8 @@ export const ProductsTab: FC<Props> = ({
                 { align: "right", header: t("business:product_sale_price") },
                 { align: "right", header: t("business:product_stock") },
                 ...(showAdditionalColumns ? [
-                  { align: "center" as const, header: t("business:product_status") },
                   { align: "center" as const, header: t("business:product_updated_at") },
+                  { align: "center" as const, header: t("business:product_status") },
                 ] : []),
                 { align: "right", header: t("core:actions") },
               ]}
@@ -847,7 +853,8 @@ export const ProductsTab: FC<Props> = ({
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ width: 48, p: 0.5 }} align="center" />
-                    <TableCell>{t("business:product_code")}</TableCell>
+                    <TableCell align="center">{t("business:pos.barcode")}</TableCell>
+                    <TableCell>{t("business:product_invoice_code")}</TableCell>
                     <TableCell>{t("business:product_name")}</TableCell>
                     <TableCell>{t("business:product_alias")}</TableCell>
                     <TableCell align="center">{t("business:pos.image_column")}</TableCell>
@@ -880,10 +887,10 @@ export const ProductsTab: FC<Props> = ({
                     </TableCell>
                     {showAdditionalColumns && <>
                     <AdditionalColumnHeader align="center">
-                      {t("business:product_status")}
+                      {t("business:product_updated_at")}
                     </AdditionalColumnHeader>
                     <AdditionalColumnHeader align="center">
-                      {t("business:product_updated_at")}
+                      {t("business:product_status")}
                     </AdditionalColumnHeader>
                     </>}
                     <TableCell align="right">{t("core:actions")}</TableCell>
@@ -916,7 +923,7 @@ export const ProductsTab: FC<Props> = ({
 
                       return (
                         <Fragment key={prod.id}>
-                          <TableRow hover>
+                          <TableRow hover sx={prod.sale_price === 0 ? zeroSalePriceSx : undefined}>
                             <TableCell
                               sx={{ width: 48, p: 0.5 }}
                               align="center"
@@ -955,6 +962,7 @@ export const ProductsTab: FC<Props> = ({
                                 </span>
                               </Tooltip>
                             </TableCell>
+                            <TableCell align="center"><ProductBarcodeIndicator barcode={prod.barcode} /></TableCell>
                             <TableCell sx={{ fontWeight: 600, maxWidth: 200, overflowWrap: "anywhere" }}>
                               {prod.code ?? "—"}
                             </TableCell>
@@ -1023,6 +1031,16 @@ export const ProductsTab: FC<Props> = ({
                             </TableCell>
                             <TableCell align="right">{formatStock(prod, i18n.language)}</TableCell>
                             {showAdditionalColumns && <>
+                            <TableCell
+                              align="center"
+                              sx={{
+                                color: "text.secondary",
+                                fontSize: "0.8125rem",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {formatDateTime(prod.updated_at || prod.created_at)}
+                            </TableCell>
                             <TableCell align="center">
                               <Box
                                 sx={{
@@ -1042,18 +1060,6 @@ export const ProductsTab: FC<Props> = ({
                                     : t("business:status_inactive")}
                                 </Typography>
                               </Box>
-                            </TableCell>
-                            <TableCell
-                              align="center"
-                              sx={{
-                                color: "text.secondary",
-                                fontSize: "0.8125rem",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              {formatDateTime(
-                                prod.updated_at || prod.created_at,
-                              )}
                             </TableCell>
                             </>}
                             <TableCell align="right">
@@ -1092,6 +1098,9 @@ export const ProductsTab: FC<Props> = ({
                                 <HistoryOutlinedIcon
                                   sx={{ fontSize: 16, color: "text.secondary" }}
                                 />
+                              </TableCell>
+                              <TableCell align="center">
+                                {historicalLog.barcode === undefined ? "—" : <ProductBarcodeIndicator barcode={historicalLog.barcode} />}
                               </TableCell>
                               <TableCell
                                 sx={{
@@ -1160,12 +1169,6 @@ export const ProductsTab: FC<Props> = ({
                               {showAdditionalColumns && <>
                               <TableCell
                                 align="center"
-                                sx={{ color: "text.secondary" }}
-                              >
-                                -
-                              </TableCell>
-                              <TableCell
-                                align="center"
                                 sx={{
                                   color: "text.secondary",
                                   fontSize: "0.8125rem",
@@ -1177,6 +1180,7 @@ export const ProductsTab: FC<Props> = ({
                                     historicalLog.updated_at,
                                 )}
                               </TableCell>
+                              <TableCell align="center">-</TableCell>
                               </>}
                               <TableCell align="right">
                                 <Typography

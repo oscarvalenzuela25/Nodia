@@ -53,7 +53,7 @@ export const sanitizeProviderFields = <T extends Partial<AiProvider>>(
       provider.default_mode !== undefined
         ? provider.default_mode
         : (provider.mode ?? null),
-    fields: configuredModelFields(provider.fields ?? {}),
+    fields: configuredModelFields(provider.fields ?? {}, provider.default_mode ?? provider.mode),
   };
   // Ensure available_models is an array if present, but never inject default models
   if (

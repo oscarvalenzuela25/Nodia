@@ -38,6 +38,13 @@ No usar un head anterior al cierre, modificar `closed_at` a mano, volver el relo
 
 Los tres recursos admitidos son chats (`conversation_id` y generaciones), adjuntos individuales (`conversation_id`, `attachment_id` y una generación) y preferencias (`preference_id`). Los eventos no contienen texto, archivos, valores recordados, usuario ni keys de almacenamiento. El productor protege la purga de chats, el retiro/limpieza de adjuntos y el borrado confirmado de preferencias.
 
+CV-06 añade `cv_profile` y `cv_version` a la rama de Nodia CV. Sus
+entradas contienen únicamente el UUID del recurso eliminado. Desplegar
+el consumidor de manifiestos y el reconciliador capaces de leer esos dos
+tipos antes de habilitar el productor. Los manifiestos históricos de
+chat conservan su esquema y los tipos existentes conservan su significado.
+[Plan113 §CV-06](../../docs/mvp/113-nodia-cv-implementation-plan.md#cv-06--integración-qa-visual-y-piloto).
+
 La fase SQL de preparación captura y verifica identidades; se liberan locks antes de llamar a R2. La segunda fase SQL revalida objetivo, autoridad, revisión, lease y generaciones pertinentes antes del efecto. El journal empieza con `confirmed_at:null`; sólo se confirma fuera de SQL tras un commit demostrado. La confirmación exacta del usuario para operaciones de negocio no cambia. Los adjuntos retirados conservan sus testigos de limpieza nativa hasta resolver el objeto.
 
 Un fallo o timeout al registrar impide el DELETE local protegido. Si R2 confirmó una intención pero SQL falla o su resultado es incierto, conservar el evento pendiente. Si SQL ya completó el efecto y falla la confirmación externa, conservar su recibo y el pendiente; no reportar un efecto fallido que invite a repetirlo. Estos pendientes bloquean nuevas copias para evitar capturar contenido que una intención anterior podría borrar después.
@@ -49,6 +56,16 @@ Usar `node scripts/nodia-ai-journal.mjs status /ruta/privada/recovery.json` para
 Para conciliar efectos locales ya terminados, ejecutar `node scripts/nodia-ai-journal.mjs reconcile /ruta/privada/recovery.json /ruta/privada/backups.json`. Ambas configuraciones deben señalar el mismo recovery. En R02, el CLI revisa todos los pendientes acotados del estado, hasta 10.000, mediante un máximo de tres SELECT parametrizados por conjuntos, uno por tipo de recurso no vacío, dentro de una transacción SQL de sólo lectura. Un pendiente inicial todavía presente no bloquea la revisión de los posteriores. Sólo después de cerrar esa transacción confirma externamente los IDs ausentes de su tabla de origen. No ejecuta borrados SQL, no envía herramientas ni resuelve un ID todavía presente. Ausencia SQL de un adjunto no prueba por sí sola que R2 ya se haya limpiado; sus trabajos de eliminación y el inventario de objetos conservan esa responsabilidad.
 
 No reemplazar `state.bin`, marcar a mano `confirmed_at` o borrar el pendiente para desbloquear backups. Primero acreditar el resultado actual; si continúa incierto, conservar el testigo y el bloqueo. Los fallos de timers, capacidad o CAS y la antigüedad de pendientes son errores operativos observables.
+
+Para CV, un testigo sin confirmar permite capturar copias y bloquea
+la exportación del manifiesto de restauración. El reconciliador consulta
+las tablas fijas de perfiles y versiones en la base vigente. Si acredita
+la ausencia del recurso, puede confirmar el testigo. Si el recurso sigue
+presente, la intención debe resolverse en la operación autorizada antes de
+restaurar. La ausencia de las tablas de CV carece de valor probatorio.
+En cuarentena se retiran los borradores y PDF temporales de CV y se
+aplican los testigos confirmados. Las versiones guardadas de un perfil
+eliminado conservan su identidad y su PDF mientras no se hayan eliminado.
 
 ## Rotación de copias y GC del journal
 

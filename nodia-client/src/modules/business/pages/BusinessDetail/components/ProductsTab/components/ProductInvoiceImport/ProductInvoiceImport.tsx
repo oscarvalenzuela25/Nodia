@@ -763,7 +763,9 @@ function ScopedProductInvoiceImport({
                   <SelectSingleInput
                     id="ai-intensity-select" dataTestId="ai-intensity-select" label={t("business:select_ai_intensity_label")}
                     options={aiConfiguration.thinkingOptions.map(option => {
-                      const key = `ai_providers:detail.level_${option.value}`;
+                      const effort = currentAiProvider?.key === "gemini" && selectedAiMode === "agentic" && option.value === "xhigh"
+                        ? "extra" : option.value;
+                      const key = `ai_providers:detail.level_${effort}`;
                       return { ...option, label: i18n.exists(key) ? t(key) : option.label };
                     })} value={aiConfiguration.thinkingLevel ?? null}
                     onChange={value => { if (!isBusy && !analysisIntent.current) aiConfiguration.selectThinkingLevel(value); }}

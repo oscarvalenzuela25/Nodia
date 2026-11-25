@@ -1,5 +1,6 @@
 import { NodiaAiSecureFlowModule } from './nodia-ai-secure-flow/nodia-ai-secure-flow.module.js';
 import { Module } from '@nestjs/common';
+import { NodiaCvModule } from './nodia-cv/nodia-cv.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresConfig } from './config/db.config.js';
 import { NodiaAiRuntimeModule } from './nodia-ai-runtime/nodia-ai-runtime.module.js';
@@ -20,6 +21,7 @@ import { ProviderVisitDeliveryModule } from './visit-notifications/delivery/prov
 /** Standalone process: importing the HTTP app never starts these consumers. */
 @Module({
   imports: [
+    NodiaCvModule,
     TypeOrmModule.forRoot(postgresConfig),
     NodiaAiRuntimeModule,
     NodiaAiConversationModule,

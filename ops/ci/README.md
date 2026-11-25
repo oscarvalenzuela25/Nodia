@@ -506,12 +506,13 @@ del historial conservado y no garantiza exclusion ante borrado de historial o
 publicaciones externas. Ante unknown, revisar GitHub/Cloudflare/VPS antes de
 un nuevo CI; no suponer que fallo ni pulsar rerun para repetirlo.
 
-El piloto automatico entrega solo Client estatico y Node API/worker. Cambios
-reales de fuentes/dependencias/configuracion Python o del host nativo bloquean
-CD con unmanaged_runtime_change_requires_coordinated_rollout; documentacion y
-pruebas aisladas no activan runtimes. Los proveedores IA no se despliegan ni
-habilitan por aprobar estos checks. El resumen muestra el ultimo estado
-confirmado por componente y los runtimes que no se entregan.
+El piloto automático entrega Client estático y Node API/worker. Los cambios
+operativos en Python Gemini requieren una [entrega coordinada](../production/ai-runtime/README.md#actualización-coordinada-del-adaptador-gemini--2026-11-24)
+previa. El CD contrasta el árbol Git y la imagen activa mediante SSH
+restringido, y rechaza una acreditación ausente o distinta. El host nativo
+sigue bajo su protección independiente
+`unmanaged_runtime_change_requires_coordinated_rollout`. El resumen
+distingue la imagen observada de los componentes que publica el CD.
 
 Referencias: [eventos Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows),
 [environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments),

@@ -33,6 +33,24 @@ vi.mock('../../config/envs.config.js', async (importOriginal) => {
 });
 
 describe('AnalyzeInvoiceUseCase with the private Gemini adapter', () => {
+  it('sends the exact Gemini Agentic Extra variant and rejects the same effort on another ID before a POST', async () => {
+    let posted: FormData | undefined;
+    const fetchMock = vi.fn(async (_url, options: RequestInit) => {
+      posted = options.body as FormData;
+      return new Response(JSON.stringify({ code: null, total_amount: 0,
+        data: { items: [{ name: 'Synthetic item', quantity: 0 }] } }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const model = 'fixture-model-xhigh';
+    const selection = { ...dto, mode: 'agentic' as const, model, thinking_level: 'xhigh' };
+    await expect(create().execute(file, selection, undefined, undefined, actor)).resolves.toMatchObject({ total_amount: 0 });
+    expect(posted?.get('model')).toBe(model);
+    expect(posted?.get('thinking_level')).toBe('xhigh');
+    await expect(create().execute(file, { ...selection, model: 'fixture-model-high' }, undefined, undefined, actor))
+      .rejects.toBeInstanceOf(BadRequestException);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
   it('forwards caller cancellation to Gemini without a second inference', async () => {
     const cancellation = new AbortController();
     const fetchMock = vi.fn(

@@ -1,4 +1,4 @@
-# ADR-116 — Control opcional de stock por producto
+# ADR-120 — Control opcional de stock por producto
 
 > **Estado** propuesto · **Fecha** 2026-11-25.
 
@@ -54,7 +54,7 @@ anulación comercial sin reposición automática de unidades.
 
 ## Referencias
 
-- [Plan94 §45 — Stock opcional por producto](../../mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto).
+- [Plan94 §47 — Stock opcional por producto](../../mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
 - [ADR085 — Disponibilidad manual anterior](ADR-085-business-sales-and-product-availability.md).
 - [ADR087 — Confirmación atómica en POS](ADR-087-atomic-point-of-sale-checkout.md).
 - [ADR090 — Cantidades de venta](ADR-090-product-units-and-fractional-sale-quantities.md).

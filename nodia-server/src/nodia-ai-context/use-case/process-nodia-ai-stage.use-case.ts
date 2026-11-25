@@ -73,6 +73,7 @@ import { invoiceOcrReferenceIds } from '../../nodia-ai-invoice-ocr/invoice-ocr-d
 import { NODIA_AI_INVOICE_OCR_TOOL } from '../../nodia-ai-invoice-ocr/types/invoice-ocr-port.js';
 import type { NodiaAiAuthorizedActor } from '../../nodia-ai/types/nodia-ai-authorization.types.js';
 import { imageGenerationCommand } from '../types/image-generation-command.js';
+import { productCatalogPricePage } from '../types/product-catalog-price-page.js';
 import { StoreNodiaAiGeneratedImageUseCase } from '../../nodia-ai-attachment/use-case/store-nodia-ai-generated-image.use-case.js';
 const COMPACTION_RESPONSE_TRANSPORTS = {
   gemini_live_session_and_catalog: 'gemini_answer_envelope',
@@ -149,6 +150,14 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
     if (claim.job.stage_key === 'tool_selection')
       return this.activateTools(claim, context);
     const selection = claim.run.selection_snapshot;
+    const toolSelectionProfile =
+      claim.run.context_manifest.tool_selection_profile;
+    const toolSelectionProfileId =
+      toolSelectionProfile &&
+      typeof toolSelectionProfile === 'object' &&
+      !Array.isArray(toolSelectionProfile)
+        ? toolSelectionProfile.profile_id
+        : undefined;
     const data = await context.checkpoint((manager) =>
       this.history(manager, claim),
     );
@@ -186,6 +195,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
           snapshot: data.snapshot,
           recoveryRefs: data.recoveryRefs,
           toolSelection: claim.run.context_manifest.tool_selection,
+          toolSelectionProfileId,
           capabilityIndex: data.capabilityIndex,
           invoiceOcrReferenceIds: invoiceOcrReferenceIds(
             claim.run.context_manifest,
@@ -514,7 +524,13 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
                 signal: AbortSignal,
               ) => {
                 if (signal.aborted) throw new Error('nodia_ai:cancelled');
-                return this.tools.execute(claim, context, call);
+                const result = await this.tools.execute(claim, context, call);
+                // The gateway records its full, validated result before adapting the view for Gemini.
+                return observation.source === 'gemini_live_session_and_catalog' &&
+                  toolSelectionProfileId === 'product_catalog_reads' &&
+                  call.name === 'nodia_products_list'
+                  ? productCatalogPricePage(result)
+                  : result;
               },
             }
           : {}),

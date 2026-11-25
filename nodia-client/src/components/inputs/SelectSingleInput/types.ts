@@ -22,6 +22,8 @@ export type SelectSingleInputProps = {
   onLoadMore?: () => void;
   hasMore?: boolean;
   loadingOptions?: boolean;
+  searchWhileLoading?: boolean;
+  emptyOptionsContent?: ReactNode;
   required?: boolean;
   error?: boolean;
   helperText?: string;

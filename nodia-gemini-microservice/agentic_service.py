@@ -13,13 +13,14 @@ from collections.abc import Callable
 from loguru import logger
 
 from agentic_cli import CliConfig, CliRunner, prepare_cli_home
+from agentic_profile_logout import sign_out_cli_profile
 from cli_execution_receipt import CliExecutionReceipt
 from agentic_observation import command_data, discovered_models, observed_quota
 from agentic_progress import NativeFileCliProgress
 from native_cli_diagnostics import capture_cli_log_diagnostic, capture_plain_gate_diagnostic
 from native_execution_agents import NATIVE_READER_AGENT, prepare_native_reader_agent, verify_native_reader_agent
 from invoice_parser import build_invoice_prompt, clean_and_parse_invoice_json
-from schemas import InvoiceAnalysisResponse
+from schemas import GEMINI_AGENTIC_EFFORTS, InvoiceAnalysisResponse
 from service_errors import InvalidExtraction, ServiceError
 
 
@@ -59,6 +60,21 @@ class AntigravityAgentService:
 
     async def observe_authentication(self) -> dict:
         return await self._observe(timeout=12)
+
+    async def logout(self, home: Path) -> None:
+        try:
+            await self.begin_authentication()
+        except ServiceError as error:
+            if error.code == "agentic_busy":
+                raise ServiceError("runtime_busy", "El perfil está ocupado por otra operación.", 409) from None
+            if error.code == "agentic_unavailable":
+                raise ServiceError("agentic_logout_unavailable",
+                                   "No se pudo verificar el transporte de la sesión agéntica.", 503) from None
+            raise
+        try:
+            await sign_out_cli_profile(self.runner, home)
+        finally:
+            self.finish_authentication()
 
     def finish_authentication(self) -> None:
         if not self._authenticating:
@@ -310,7 +326,8 @@ class AntigravityAgentService:
             raise ServiceError("agentic_unavailable", "Antigravity CLI no está disponible.")
         if getattr(getattr(self.runner, "config", None), "version", None) != "1.3.1":
             raise ServiceError("agentic_cli_incompatible", "La versión del CLI no está verificada para analizar facturas.", 409)
-        if extended_thinking or thinking_level not in (None, "low", "medium", "high"):
+        if (extended_thinking or (thinking_level is not None and thinking_level not in GEMINI_AGENTIC_EFFORTS)
+                or (thinking_level == "xhigh" and (not model or not model.endswith("-xhigh") or model == "-xhigh"))):
             raise ServiceError("agentic_invalid_option", "Opciones agénticas incompatibles.", 422)
         if self._analysis_lock.locked():
             raise ServiceError("agentic_busy", "El motor agéntico está ocupado.", 503)

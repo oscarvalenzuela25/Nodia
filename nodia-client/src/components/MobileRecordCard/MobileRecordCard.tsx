@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import ArrowOutwardOutlined from "@mui/icons-material/ArrowOutwardOutlined";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { CardRoot, FieldGrid } from "./styles";
 
@@ -25,25 +26,29 @@ export type MobileCardAction = {
 };
 type Props = {
   title: string;
+  accessibleTitle?: string;
   status?: ReactNode;
   fields: { key: string; label: string; value: ReactNode; fullWidth?: boolean }[];
   actions?: MobileCardAction[];
   primaryAction?: MobileCardAction;
   disabled?: boolean;
+  sx?: SxProps<Theme>;
 };
 export default function MobileRecordCard({
   title,
+  accessibleTitle,
   status,
   fields,
   actions = [],
   primaryAction,
   disabled = false,
+  sx,
 }: Props) {
   const { t } = useTranslation();
   const id = useId();
   const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null);
   return (
-    <CardRoot aria-label={title}>
+    <CardRoot aria-label={accessibleTitle ?? title} sx={sx}>
       <Box
         sx={{
           display: "flex",
@@ -56,6 +61,7 @@ export default function MobileRecordCard({
           <Typography
             component="h3"
             variant="body1"
+            aria-label={accessibleTitle}
             sx={{ fontWeight: 600, overflowWrap: "anywhere" }}
           >
             {title}
@@ -64,7 +70,7 @@ export default function MobileRecordCard({
         </Box>
         {actions.length > 0 && (
           <IconButton
-            aria-label={t("layout:mobile_cards.actions", { name: title })}
+            aria-label={t("layout:mobile_cards.actions", { name: accessibleTitle ?? title })}
             aria-haspopup="menu"
             aria-controls={anchor ? id : undefined}
             disabled={disabled}

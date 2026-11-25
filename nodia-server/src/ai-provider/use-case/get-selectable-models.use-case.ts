@@ -4,6 +4,7 @@ import { ApiProviderService } from '../../common/ai/api-provider.service.js';
 import { AiProviderService } from '../ai-provider.service.js';
 import { GeminiService } from '../../common/ai/gemini.service.js';
 import { GetSelectableModelsDto } from '../dto/get-selectable-models.dto.js';
+import { filterAgenticModels, restrictAgenticModelFields } from '../helpers/agentic-model-policy.helper.js';
 import { observedModels } from '../helpers/model-observation.helper.js';
 import { observedAgenticQuota } from '../../common/ai/gemini-quota-observation.js';
 import { CodexRuntimeService } from '../../common/ai/codex/codex-runtime.service.js';
@@ -145,10 +146,12 @@ export class GetSelectableModelsUseCase {
       const hasScoped = Boolean(
         provider.fields?.agentic || provider.fields?.api_key,
       );
-      const fields = scoped ?? (hasScoped ? {} : (provider.fields ?? {}));
-      const selectedModel =
-        fields.selected_model || fields.model || fields.chat_model || null;
       const tokenMode = actualMode === 'agentic';
+      const original = scoped ?? (hasScoped ? {} : (provider.fields ?? {}));
+      const fields = tokenMode && scoped ? restrictAgenticModelFields(original) : original;
+      const selected =
+        fields.selected_model || fields.model || fields.chat_model || null;
+      const selectedModel = typeof selected === 'string' ? selected : null;
       const base = {
         providerId: String(provider.id),
         provider: key,
@@ -205,7 +208,7 @@ export class GetSelectableModelsUseCase {
           : [];
         results.push({
           ...base,
-          models,
+          models: filterAgenticModels(scoped, models),
           models_source: session.authenticated ? 'provider' : 'unavailable',
           models_observed_at: session.authenticated
             ? new Date().toISOString()
@@ -260,7 +263,7 @@ export class GetSelectableModelsUseCase {
       };
       results.push({
         ...base,
-        models,
+        models: filterAgenticModels(scoped, models),
         models_source: authenticated ? 'provider' : 'unavailable',
         models_observed_at: authenticated ? new Date().toISOString() : null,
         agenticPlan: {

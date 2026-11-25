@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { pathToFileURL } from 'node:url';
+import { isGeminiRuntimeProof } from './gemini-runtime-proof.mjs';
 
 const execute = promisify(execFile);
 const recordedFingerprint = 'SHA256:9uAxNDxAxuRpicxnP+w4C5bJGHCi/hmnOpBIo2xrXKU';
@@ -60,8 +61,12 @@ export function verifyIdentity(body) {
 export function verifyDeploymentStatus(body) {
   const expectedKeys = ['application', 'blocked', 'current', 'deployment_implemented', 'deployment_requested',
     'forced_command', 'privileged_helper_enabled', 'schema_version', 'status', 'user'];
+  if (body && Object.hasOwn(body, 'gemini_runtime')) {
+    requireValue(isGeminiRuntimeProof(body.gemini_runtime), 'gemini_runtime_attestation_invalid');
+    expectedKeys.push('gemini_runtime');
+  }
   const current = body?.current;
-  requireValue(body && Object.keys(body).sort().join(',') === expectedKeys.join(',') && body.schema_version === 1 &&
+  requireValue(body && Object.keys(body).sort().join(',') === expectedKeys.sort().join(',') && body.schema_version === 1 &&
     body.status === 'deployment_ready' && body.user === 'nodia-deploy' && body.forced_command === true &&
     body.privileged_helper_enabled === true && body.deployment_implemented === true && body.deployment_requested === false &&
     body.blocked === false && current &&

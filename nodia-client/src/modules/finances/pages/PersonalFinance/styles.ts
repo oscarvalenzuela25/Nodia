@@ -10,9 +10,14 @@ export const PageStack = styled(Box)(({ theme }) => ({
 export const PageHeader = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(1),
+  gap: theme.spacing(2),
   paddingBlockEnd: theme.spacing(2),
   borderBlockEnd: `1px solid ${theme.palette.divider}`,
+  [theme.breakpoints.up("md")]: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
 }));
 export const PageTitleContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -37,11 +42,13 @@ export const PageTitle = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.up("sm")]: { fontSize: "1.875rem" },
   [theme.breakpoints.up("md")]: { fontSize: "2.125rem" },
 }));
-export const PageSubtitle = styled(Typography)(({ theme }) => ({
-  ...theme.typography.body1,
-  color: theme.palette.text.secondary,
-  maxWidth: 640,
-  lineHeight: 1.6,
+export const OwnerControl = styled(Box)(({ theme }) => ({
+  minWidth: 0,
+  width: "100%",
+  maxWidth: "28rem",
+  [theme.breakpoints.up("md")]: {
+    flex: "0 1 28rem",
+  },
 }));
 
 export const FinanceTabs = styled(Tabs)(({ theme }) => ({

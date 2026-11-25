@@ -308,8 +308,95 @@ class RootStateTests(PipeFixture, unittest.TestCase):
                 result = receiver.deployment_status()
                 self.assertEqual(result['status'], 'deployment_ready')
                 self.assertEqual(result['application'], {'api_active': True, 'worker_active': True})
+                self.assertNotIn('gemini_runtime', result)
                 self.assertEqual(before, {path: path.read_bytes() for path in fixture.units.rglob('*') if path.is_file()})
                 self.assertEqual(set(fixture.library.iterdir()), {fixture.installed, fixture.installed_policy})
+
+    def test_unverified_gemini_omits_proof_without_contaminating_the_node_baseline(self):
+        self.application_fixture(True)
+        proof = {'schema_version': 1, 'source_sha': 'c' * 40, 'source_tree_sha': 'd' * 40,
+                 'image_id': 'sha256:' + 'e' * 64}
+        with patch.object(receiver, 'gemini_runtime_attestation', return_value=proof) as observed:
+            verified = receiver.deployment_status()
+            self.assertEqual(verified.pop('gemini_runtime'), proof)
+            observed.side_effect = ValueError('gemini_runtime_service_unverified')
+            self.assertEqual(receiver.deployment_status(), verified)
+
+    def test_runtime_attestation_requires_exact_protected_inputs_and_the_live_container_policy(self):
+        temporary = tempfile.TemporaryDirectory(dir='/root', prefix='nodia-gemini-proof-test-')
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+        library = root / 'library'
+        runtime = library / 'ai-runtime'
+        runtime.mkdir(parents=True)
+        helper = runtime / 'gemini-host.py'
+        helper.write_bytes((BASE / 'ai-runtime/gemini-host.py').read_bytes())
+        helper.chmod(0o644)
+        unit = root / 'nodia-gemini.service'
+        unit.write_bytes((BASE / 'ai-runtime/nodia-gemini.service').read_bytes())
+        unit.chmod(0o644)
+        proof = root / 'gemini-rollout-current.json'
+        pin = root / 'gemini-image.json'
+        image = 'sha256:' + 'a' * 64
+        record = {'schema_version': 1, 'source_sha': 'b' * 40, 'source_tree_sha': 'c' * 40, 'image_id': image}
+        pinned = {key: record[key] for key in ('schema_version', 'source_sha', 'image_id')}
+
+        def private(path, value):
+            path.write_text(json.dumps(value), encoding='utf-8')
+            path.chmod(0o600)
+
+        def mapped_path(value):
+            return {'/var/lib/nodia-ai-runtime-setup/gemini-rollout-current.json': proof,
+                    '/etc/nodia/ai-runtime/gemini-image.json': pin,
+                    '/etc/systemd/system/nodia-gemini.service': unit}[str(value)]
+
+        state = {'ActiveState': 'active', 'SubState': 'running', 'Result': 'success', 'MainPID': '10100',
+                 'ControlGroup': '/system.slice/nodia-gemini.service', 'FragmentPath': str(unit),
+                 'DropInPaths': '', 'NeedDaemonReload': 'no'}
+        container = {'image': image, 'label': {'sh.nodia.runtime': 'agentic'}, 'running': True, 'pid': 10700,
+                     'started': 'fixture', 'user': '10001:10001', 'privileged': False, 'cap_add': None,
+                     'cap_drop': ['ALL'], 'ports': {'8000/tcp': [{'HostIp': '127.0.0.1', 'HostPort': '8000'}]},
+                     'cgroupns': 'private', 'restart': 'no', 'memory': 2147483648, 'pids': 256,
+                     'mounts': [{'Type': 'bind', 'Destination': '/app/session_state',
+                                 'Source': '/var/lib/nodia-gemini/session_state'},
+                                {'Type': 'bind', 'Destination': '/home/nodia/agentic_profile',
+                                 'Source': '/var/lib/nodia-gemini/profile'}]}
+        response = lambda body: types.SimpleNamespace(returncode=0, stdout=json.dumps(body).encode(), stderr=b'')
+        with patch.object(receiver, 'LIB', library), patch.object(receiver, 'Path', side_effect=mapped_path), \
+                patch.object(receiver, 'unit_state', return_value=state) as shown, \
+                patch.object(receiver.subprocess, 'run', return_value=response(container)) as inspected:
+            self.assertIsNone(receiver.gemini_runtime_attestation())
+            inspected.assert_not_called()
+            private(proof, record)
+            private(pin, pinned)
+            self.assertEqual(receiver.gemini_runtime_attestation(), record)
+            shown.assert_called_once_with('nodia-gemini.service')
+            command = inspected.call_args.args[0]
+            self.assertEqual(command[:4], ['docker', 'inspect', '--type', 'container'])
+            self.assertNotIn('Config.Env', command[5])
+            for changes in ({'schema_version': True}, {'source_tree_sha': 'z' * 40}, {'extra': 'private'}):
+                private(proof, {**record, **changes})
+                with self.assertRaisesRegex(ValueError, 'gemini_runtime_attestation_invalid'):
+                    receiver.gemini_runtime_attestation()
+            private(proof, record)
+            proof.chmod(0o644)
+            with self.assertRaisesRegex(ValueError, 'invalid_receiver_file_mode'):
+                receiver.gemini_runtime_attestation()
+            private(proof, record)
+            private(pin, {**pinned, 'source_sha': 'e' * 40})
+            with self.assertRaisesRegex(ValueError, 'gemini_runtime_attestation_image_mismatch'):
+                receiver.gemini_runtime_attestation()
+            private(pin, pinned)
+            shown.return_value = {**state, 'DropInPaths': 'unverified-override.conf'}
+            with self.assertRaisesRegex(ValueError, 'gemini_runtime_service_unverified'):
+                receiver.gemini_runtime_attestation()
+            shown.return_value = state
+            inspected.return_value = response({**container, 'image': 'sha256:' + 'f' * 64})
+            with self.assertRaisesRegex(ValueError, 'gemini_runtime_container_unverified'):
+                receiver.gemini_runtime_attestation()
+            inspected.return_value = response({**container, 'privileged': True})
+            with self.assertRaisesRegex(ValueError, 'gemini_runtime_container_policy_changed'):
+                receiver.gemini_runtime_attestation()
 
     def reconciled_application_fixture(self):
         fixture = self.application_fixture(True)

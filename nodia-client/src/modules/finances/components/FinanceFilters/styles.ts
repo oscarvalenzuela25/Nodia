@@ -3,10 +3,14 @@ import { styled } from "@mui/material/styles";
 
 export const FilterBar = styled(Box)(({ theme }) => ({
   display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: { "& > button": { width: "100%", minHeight: 44 } },
+  flexWrap: "wrap",
+  alignItems: "center",
+  gap: theme.spacing(1, 2),
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    "& > button": { width: "100%", minHeight: 44 },
+  },
 }));
 
 export const ActiveFilters = styled(Box)(({ theme }) => ({

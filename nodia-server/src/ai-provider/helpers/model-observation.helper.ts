@@ -1,4 +1,5 @@
 import { BadGatewayException } from '@nestjs/common';
+import { allowedAgenticModelIds, restrictAgenticModelFields } from './agentic-model-policy.helper.js';
 
 /** Saved selector options are advisory metadata, never live capability evidence. */
 function configuredReasoningEfforts(value: unknown): string[] | undefined {
@@ -36,12 +37,19 @@ export function observedModels(value: unknown) {
 }
 // Saved fields are configuration, not evidence of current provider limits or
 // capabilities. Older releases persisted values inferred from model names.
-export function configuredModelFields(fields: Record<string, unknown>) {
-    const result = { ...fields };
+export function configuredModelFields(
+    fields: Record<string, unknown>,
+    defaultMode?: string | null,
+) {
+    const result = {
+        ...(defaultMode === 'agentic'
+            ? restrictAgenticModelFields(fields, allowedAgenticModelIds(fields.agentic))
+            : fields),
+    };
     for (const key of ['quota', 'quotas', 'usage_info', 'usage_percentage', 'remaining_credits', 'total_credits', 'rateLimits'])
         delete result[key];
-    if (Array.isArray(fields.available_models)) {
-        result.available_models = fields.available_models.flatMap((entry: unknown) => {
+    if (Array.isArray(result.available_models)) {
+        result.available_models = result.available_models.flatMap((entry: unknown) => {
             if (!entry || typeof entry !== 'object' || !('id' in entry) || typeof entry.id !== 'string')
                 return [];
             const model = entry as Record<string, unknown>;
@@ -54,8 +62,11 @@ export function configuredModelFields(fields: Record<string, unknown>) {
     }
     for (const mode of ['agentic', 'api_key']) {
         const scoped = fields[mode];
-        if (scoped && typeof scoped === 'object' && !Array.isArray(scoped))
-            result[mode] = configuredModelFields(scoped as Record<string, unknown>);
+        if (!scoped || typeof scoped !== 'object' || Array.isArray(scoped)) continue;
+        const modeFields = scoped as Record<string, unknown>;
+        result[mode] = configuredModelFields(mode === 'agentic'
+            ? restrictAgenticModelFields(modeFields)
+            : modeFields);
     }
     return result;
 }

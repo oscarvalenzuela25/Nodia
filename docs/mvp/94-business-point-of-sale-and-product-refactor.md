@@ -1,6 +1,6 @@
 # Negocios — punto de venta, ventas y refactor de productos
 
-> Stock opcional planificado el 2026-11-25 en [§45](#45-stock-opcional-por-producto).
+> Stock opcional planificado el 2026-11-25 en [§45](#47-stock-opcional-por-producto).
 > El corte descrito allí sustituirá la disponibilidad manual `has_stock`.
 
 > Ampliación vigente2026-11-17: [§42](#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17) aplica redondeo de venta a decenas, división asistida, proveedores OCR opt-in y folio de factura opcional. Sustituye las fórmulas incompatibles de§35/§41 para el comportamiento nuevo, conservando sus recibos históricos. Implementación local; QA común, adopción y aceptación del nuevo alcance separadas de la autorización funcional.
@@ -1421,8 +1421,8 @@ y [selector paginado](../../nodia-client/src/modules/business/infrastructure/use
 
 - Código/folio es opcional y nullable: blanco/espacios se normalizan a null.
   En actualización, omitir conserva; enviar null limpia. No inventar folio,
-  identidad ni consecutivo. La UI muestra «Sin folio» cuando falta; un ID real
-  sigue identificando la factura y sus archivos.
+  identidad ni consecutivo. Listado, tarjetas y vista previa muestran `-`
+  si falta. Un ID real sigue identificando la factura y sus archivos.
 - Fecha de emisión inicia en hoy como fecha civil local del navegador sólo al
   crear. Editar conserva `data.issue_date`, incluso si no existe; revalidar o
   redimensionar no sustituye una fecha editada. No cambia el campo de creación
@@ -1433,6 +1433,10 @@ y [selector paginado](../../nodia-client/src/modules/business/infrastructure/use
 - En Overview/Catálogo se muestran los chips Disponible y No disponible. Se
   retira sólo Por confirmar; `has_stock:null` no se convierte en false/true ni
   altera datos, agregados o la disponibilidad del producto.
+- En la tabla de Productos, **Código de barras** antecede a **Código de factura**.
+  Un indicador verde señala que el producto tiene código de barras y uno
+  rojo señala que falta. Las tarjetas móviles usan el mismo indicador con
+  etiqueta accesible. La columna **Código de factura** sigue mostrando `code`.
 
 [CreateInvoiceDto](../../nodia-server/src/invoice/dto/create-invoice.dto.ts),
 [UpdateInvoiceDto](../../nodia-server/src/invoice/dto/update-invoice.dto.ts),
@@ -1519,12 +1523,60 @@ El cambio cubre el descubrimiento en el selector. La
 [confirmación transaccional de Caja](109-business-cash-ledger-plan.md#63-confirmación-de-productos-desde-ocr)
 sigue en CASH-04.
 
-## 45. Stock opcional por producto
+## 45. Cerrar el aviso de venta guardada — 2026-11-21
+
+El aviso superior de la última venta incorpora una X a la derecha de las
+acciones de impresión. Tiene un área activa de 44 × 44 px y el nombre
+accesible Cerrar o Close. En móvil, los dos botones de impresión se apilan
+junto a la X. Desde 600 px se muestran en una fila.
+
+Cerrar retira el aviso local y devuelve el foco al área de ventas. No
+realiza una petición HTTP. La siguiente venta confirmada muestra su propio
+aviso y el historial conserva el acceso a los comprobantes. La
+[ficha de impresión](../nodia-ai/knowledge/businesses/features/manual-sale-ticket-printing.md#cierre-del-aviso-de-última-venta--2026-11-21)
+registra el alcance del cambio.
+
+Chromium verificó el orden de foco, el cierre por teclado y por clic y la
+posición del botón sin desbordamiento a 320, 599, 600 y 1280 px en español
+oscuro e inglés claro. El ensayo usó ventas sintéticas. La regresión
+automatizada verificó que otro guardado vuelve a mostrar el aviso.
+
+## 46. Búsqueda de códigos en Productos — 2026-11-23
+
+Corte histórico para los buscadores del modal. §48 traslada la búsqueda de códigos al campo del listado y conserva el resaltado de precio cero.
+
+El filtro de Productos reemplaza «Código del producto» por dos selectores
+independientes de búsqueda bajo «Código de factura» y «Código de barras».
+Cada buscador aparece en Todos y Con código y permanece vacío hasta que se
+escribe. Client espera 300 ms y consulta el fragmento en el negocio actual
+con `code_cont` o `barcode_cont`, en páginas de 50. Aplicar usa el código
+exacto mediante `code_eq` o `barcode_eq`. Cambiar a Sin código borra el
+código de ese borrador. Cancelar restaura los criterios aplicados al reabrir.
+Aplicar, quitar filtros y limpiar reinician el paginado. Actividad queda al
+final y Limpiar restablece Activo.
+
+La disponibilidad se retira del listado de Productos, incluidos filtros,
+tabla, tarjetas y comparación histórica. El formulario manual y las reglas
+de disponibilidad del POS conservan su contrato hasta revisar stock.
+El precio de venta normal de $0 destaca el producto actual con un fondo
+rojizo en tabla y tarjeta. El importe sigue visible y las ofertas conservan
+su presentación.
+
+El ajuste reutiliza el API de Productos y no cambia las capacidades,
+autoridad ni datos que obtiene NodiaAI. El contexto de la interfaz se
+registra en la [ficha candidata de códigos](../nodia-ai/knowledge/businesses/features/product-alias-and-code-completeness.md#búsqueda-de-códigos-en-productos--2026-11-23).
+
+Chromium con datos sintéticos verificó búsquedas vacías al abrir, selección
+por teclado, combinación de ambos códigos y conservación del resultado al
+cambiar entre tarjeta y tabla. A 320, 390, 600 y 1280 px se comprobó el
+listado o sus filtros, con español claro e inglés oscuro.
+
+## 47. Stock opcional por producto
 
 **Estado:** implementado localmente el 2026-11-25 como `BIZ-STOCK-001`.
 La disponibilidad manual de §3 y §41 queda como antecedente. El despliegue,
 la revisión de productos legados y el retiro físico de `products.has_stock`
-quedan en el corte operativo. [ADR116 propuesto](../architecture/decisions/ADR-116-optional-product-stock.md) ·
+quedan en el corte operativo. [ADR120 propuesto](../architecture/decisions/ADR-120-optional-product-stock.md) ·
 [Ficha candidata](../nodia-ai/knowledge/businesses/features/product-stock-tracking.md).
 
 ### Reglas de producto y POS
@@ -1708,7 +1760,7 @@ quedan en el corte operativo. [ADR116 propuesto](../architecture/decisions/ADR-1
   Client cubrieron también conservar el saldo actualizado si sólo se edita
   otro campo tras un conflicto y reintentar la misma confirmación OCR.
 
-## 46. Cabecera de Negocios, búsqueda de Productos y rediseño del POS — 2026-11-25
+## 48. Cabecera de Negocios, búsqueda de Productos y rediseño del POS — 2026-11-25
 
 - El nombre del negocio queda como título alineado a la izquierda y sustituye
   al breadcrumb del detalle. El control que abre y cierra la información se

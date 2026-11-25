@@ -125,6 +125,15 @@ El panel guardado mantiene Anular+Vale y el detalle de ancho completo debajo. El
 
 Implementación local revisada. La [evidencia R24](../../../../evidence/business-pos-usability-20261031-r24.json) debe acreditar integración y adopción nuevas; los resultados de R20–R23 y la impresora configurada no prueban impresión física R24. Esta revisión4 es draft/unregistered/approval:null y no publica una herramienta.
 
+## Cierre del aviso de última venta — 2026-11-21
+
+El aviso de venta guardada tiene una X junto a las dos acciones de impresión.
+Al activarla, desaparece el aviso y otra venta confirmada puede mostrar su
+propio comprobante. La venta guardada sigue disponible en Ventas.
+
+El impacto se limita al control local del aviso. Los importes, los formatos
+de impresión y las operaciones del chat conservan su interpretación y alcance.
+
 ## Corte histórico R22: vale y detalle opcional — 2026-10-30
 
 El usuario solicita dos formatos: Imprimir vale omite únicamente la lista de productos; Imprimir ticket conserva el detalle. Ambos muestran los mismos negocio, título, ID/fecha cuando corresponde, total CLP, medio de pago y pie. No se recalcula ni modifica la venta al elegir formato. Un vale no es una venta distinta ni un documento fiscal nuevo.

@@ -102,7 +102,7 @@ export class ReadTeacherUseCase {
         [id],
       );
       const jobs = await manager.query(
-        'SELECT id AS job_id,state,purpose FROM teacher_generation_jobs WHERE session_id=$1 ORDER BY created_at DESC LIMIT 20',
+        "SELECT id AS job_id,state,purpose FROM teacher_generation_jobs WHERE session_id=$1 AND purpose<>'flashcard_text' ORDER BY created_at DESC LIMIT 20",
         [id],
       );
       const attempts = await manager.query(
@@ -465,7 +465,7 @@ export class ReadTeacherUseCase {
       async ({ manager, actor: current }) => {
         const [job]: (TeacherGenerationJob & { session_state: string })[] =
           await manager.query(
-            'SELECT j.*,s.state AS session_state FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id WHERE j.id=$1 AND (s.owner_user_id=$2 OR $3)',
+            "SELECT j.*,s.state AS session_state FROM teacher_generation_jobs j JOIN teacher_sessions s ON s.id=j.session_id WHERE j.id=$1 AND (s.owner_user_id=$2 OR $3) AND j.purpose<>'flashcard_text'",
             [jobId, current.actorId, current.isSuperAdmin],
           );
         if (!job) teacherError('not_found', 404);
