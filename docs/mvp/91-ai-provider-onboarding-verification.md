@@ -10,6 +10,15 @@
 
 Fecha: 2026-10-27. Estado: en revisión; flujo técnico reusable solicitado expresamente. Aplica a nuevos proveedores (por ejemplo DeepSeek), nuevo modo/adaptador y cambios de contratos. [Retirada de Web](90-agentic-api-only-web-retirement.md). Las capacidades reales dependen de proveedor, modelo, cuenta, modo y entorno; no se deducen por nombre ni se exigen mediante fallbacks.
 
+## Catastro de recorridos de producto
+
+Aplicar el [catastro de usos de modelos](114-ai-model-usage-inventory.md)
+junto con esta matriz. El catastro identifica las entradas de producto y el
+resultado verificable. Los gates P y A verifican los contratos por selección
+y transporte. Actualizar los recorridos cuando aparezca un consumidor o
+propósito de generación. El [plan de OpenCode](115-opencode-provider-implementation-plan.md)
+aplica ambos documentos a Agentic y API key.
+
 ## Evidencia mínima por combinación
 
 Registrar proveedor/catalog_id/connection_id, modo `agentic` o `api_key`, ID de modelo descubierto y elegido, esfuerzo si comprobado, versión/hash de cada proyecto, SO/entorno, fecha real de observación, configuración sin secretos, operación, resultado, request/run/attempt IDs públicos permitidos, pruebas ejecutadas y pendientes. Nunca guardar prompt privado, archivo comercial, key/token, cookies ni stdout/stderr crudos del proveedor en el reporte público.

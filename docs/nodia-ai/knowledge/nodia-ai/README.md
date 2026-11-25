@@ -4,7 +4,7 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 84,
+  "revision": 85,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -419,6 +419,14 @@ La [conciliación real](../../../evidence/nodia-ai-ai40-real-unknown-reconciliat
 MCP/PNG/JPEG/WebP quedan legítimamente invalidados en el scope operativo. Los recibos anteriores siguen siendo históricos; disponibilidad actual requiere reaceptación propia y no se recupera copiando proofs. R05 continúa activo; las correcciones de compactación por transporte y terminal sin texto de selección son candidatas sin adopción/aceptación real. PDF revisado conserva su positivo como texto; audio continúa sin proof. Los [fixes selectivos](../../../evidence/nodia-ai-ai40-selective-fixes-validation-r01.json) pasan322 pruebas focales/5 archivos, tipado y lint; el candidato R06 cambia fingerprint y excluye WAV, sin aceptación operativa. La causa original de la inferencia sigue desconocida. C40-06 y las variantes restantes de C40-09/C40-11 permanecen parciales.
 
 # NodiaAI — contexto de producto
+
+## OpenCode — propuesta de integración
+
+La [ficha candidata de OpenCode](features/opencode-provider.md) enlaza el
+[plan de implementación](../../../mvp/115-opencode-provider-implementation-plan.md)
+y el [catastro de usos de IA](../../../mvp/114-ai-model-usage-inventory.md).
+La disponibilidad se verifica por modo, propósito, selección y entorno.
+
 
 ## Archivo de capturas de validación — 2026-11-16
 
