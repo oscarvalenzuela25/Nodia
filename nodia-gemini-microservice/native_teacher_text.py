@@ -1,4 +1,4 @@
-"""Neutral Teacher ownership over the existing physical profile and native ledger.
+"""Restricted text ownership over the existing physical profile and native ledger.
 
 Only identity/hashes/closure receipts persist. Prompts and answers never enter the
 journal. An armed receipt from another process epoch cannot certify old closure.
@@ -19,14 +19,17 @@ from pydantic import Field
 
 from native_attempts import NativeAttemptLedger, ReconcileAttempt, AcknowledgeAttempt
 from service_errors import ServiceError
-from teacher_text_contract import (Closed, Hex64, UuidString, TeacherObserve, TeacherReference, TeacherStart,
-    TeacherAck, TeacherAnswer, TeacherObservation, TeacherTerminalProof, TeacherSnapshot, TeacherDispatchExclusion, TeacherCatalogInspection, canonical_hash)
+from teacher_text_contract import (CONTRACT, CV_CONTRACT, Closed, Hex64, UuidString, TeacherObserve,
+    TeacherReference, TeacherStart, TeacherAck, TeacherAnswer, TeacherObservation, TeacherTerminalProof,
+    TeacherSnapshot, TeacherDispatchExclusion, TeacherCatalogInspection, TextContract, TextSelection,
+    StoredTextReference, TextReference, TextStart, TextAck, CvObserve, CvReference, CvTerminalProof,
+    CvObservation, CvSnapshot, CvStart, CvAck, canonical_hash, owner_namespace)
 from teacher_text_execution import TeacherCliTransport, unique_pairs, TeacherFailure, classify_failure
 from teacher_runtime_backend import TeacherRuntimeBackend, LegacyTeacherBackend
 
 
 class TeacherAdmission(Closed):
-    reference: TeacherReference
+    reference: StoredTextReference
     owner_generation: str = Field(pattern=r"^[0-9a-f]{32}$")
     response_hash: Hex64 | None = None
     failure: TeacherFailure | None = None
@@ -41,15 +44,15 @@ class TeacherRetired(Closed):
 
 
 class TeacherDispatchExcluded(ServiceError):
-    def __init__(self, error: ServiceError, command: TeacherStart):
+    def __init__(self, error: ServiceError, command: TextStart):
         super().__init__(error.code, error.message, error.status, error.retry_after)
-        self.proof = TeacherDispatchExclusion(operation_id=command.operation_id,
+        self.proof = TeacherDispatchExclusion(contract=command.contract, operation_id=command.operation_id,
             request_hash=command.request_hash, session_generation=command.session_generation,
             runtime_hash=command.runtime_hash, observed_at=datetime.now(timezone.utc).isoformat())
 
 
 def fail(code: str, status: int = 409) -> ServiceError:
-    return ServiceError(code, "La operación Teacher requiere verificación de identidad y cierre.", status)
+    return ServiceError(code, "La ejecución de texto requiere verificación de identidad y cierre.", status)
 
 
 class _UnavailableTransport:
@@ -61,16 +64,22 @@ class _UnavailableTransport:
 
 
 class TeacherNativeText:
-    def __init__(self, agentic, profiles, *, backend: TeacherRuntimeBackend | None = None, transport=None):
+    def __init__(self, agentic, profiles, *, backend: TeacherRuntimeBackend | None = None, transport=None,
+                 contract: TextContract = CONTRACT):
         self.agentic = agentic
         self.profiles = profiles
         self.generation = uuid4().hex
         self.instance_generation = uuid4().hex
         self.backend = backend if backend is not None else LegacyTeacherBackend(agentic, generation=self.generation)
-        self.ledger = NativeAttemptLedger(profiles._state_dir / "teacher_attempts"
+        self.contract = contract
+        namespace = owner_namespace(contract)
+        self.ledger = NativeAttemptLedger(profiles._state_dir / (namespace + "_attempts")
             if profiles._state_dir is not None else None)
-        self.directory = profiles._state_dir / "teacher_owners" if profiles._state_dir is not None else None
-        self.retired_directory = profiles._state_dir / "teacher_retired" if profiles._state_dir is not None else None
+        self.directory = profiles._state_dir / (namespace + "_owners") if profiles._state_dir is not None else None
+        self.retired_directory = profiles._state_dir / (namespace + "_retired") if profiles._state_dir is not None else None
+        self.retired_attempt_directory = (
+            profiles._state_dir / "cv_retired_attempts"
+            if contract == CV_CONTRACT and profiles._state_dir is not None else None)
         self.records: dict[str, TeacherAdmission] = {}
         self.texts: dict[str, str] = {}
         self.tasks: dict[str, asyncio.Task] = {}
@@ -79,7 +88,8 @@ class TeacherNativeText:
         # The operational composition must inject its SDK transport. An explicit
         # non-CLI backend never gains a CLI fallback merely by omitting it.
         self.transport = transport if transport is not None else (
-            TeacherCliTransport(self.backend.runner) if self.backend.catalog_supported else _UnavailableTransport())
+            TeacherCliTransport(self.backend.runner)
+            if contract == CONTRACT and self.backend.catalog_supported else _UnavailableTransport())
         self.closed = False
         self.admission_lock = asyncio.Lock()
         self.admission_waiters = 0
@@ -97,6 +107,10 @@ class TeacherNativeText:
     def _process_closed(self) -> bool:
         return self.backend.process_closed() is True
 
+    def _require_contract(self, command: TeacherObserve | CvObserve) -> None:
+        if command.contract != self.contract:
+            raise fail("text_contract_mismatch", 422)
+
     def _read(self, operation_id: str) -> TeacherAdmission | None:
         if operation_id in self.records:
             return self.records[operation_id]
@@ -112,7 +126,7 @@ class TeacherNativeText:
                 if not stat.S_ISREG(info.st_mode) or info.st_size > 8192 or path.is_symlink():
                     raise ValueError("Invalid receipt")
                 record = TeacherAdmission.model_validate(json.loads(stream.read(8193), object_pairs_hook=unique_pairs))
-            if record.reference.operation_id != operation_id:
+            if record.reference.operation_id != operation_id or record.reference.contract != self.contract:
                 raise ValueError("Owner mismatch")
             self.records[operation_id] = record
             return record
@@ -175,23 +189,36 @@ class TeacherNativeText:
         except (ValueError, OSError):
             raise fail("teacher_retired_receipt_invalid") from None
 
-    def _exclusion(self, command: TeacherStart) -> bool:
+    def _attempt_retired(self, attempt_id: str) -> bool:
+        if attempt_id in self.retired_attempts:
+            return True
+        if self.retired_attempt_directory is None:
+            return False
+        try:
+            (self.retired_attempt_directory / (attempt_id + ".json")).lstat()
+        except FileNotFoundError:
+            return False
+        return True
+
+    def _exclusion(self, command: TextStart) -> bool:
         try:
             return (self._read(command.operation_id) is None and self._read_retired(command.operation_id) is None
                 and self.ledger.read(command.attempt_id) is None and command.operation_id not in self.tasks
-                and command.attempt_id not in self.retired_attempts
+                and not self._attempt_retired(command.attempt_id)
                 and not self.admitting.get(command.operation_id) and not self.admitting_attempts.get(command.attempt_id))
         except (OSError, ValueError, ServiceError):
             return False
 
-    async def observe(self, command: TeacherObserve) -> TeacherObservation:
+    async def observe(self, command: TeacherObserve | CvObserve) -> TeacherObservation | CvObservation:
+        self._require_contract(command)
+        observation_type = CvObservation if self.contract == CV_CONTRACT else TeacherObservation
         identity = self.backend.unverified_identity()
         observation = dict(available=False, reason="runtime_unconfigured",
             observed_at=datetime.now(timezone.utc).isoformat(), resource_key=self.profiles.identity("agentic"),
             session_generation=self.session_generation(), runtime_hash=identity.runtime_hash,
             binary_sha512=identity.binary_sha512, policy_hash=identity.policy_hash)
         if observation["resource_key"] is None or isinstance(self.transport, _UnavailableTransport):
-            return TeacherObservation(**observation)
+            return observation_type(**observation)
         try:
             await self.backend.prepare_admission()
             async with self.profiles.observation("agentic", purpose="eligibility", timeout_seconds=18):
@@ -207,12 +234,13 @@ class TeacherNativeText:
         # Session replacement during an observation must not publish stale data.
         if observation["session_generation"] != self.session_generation():
             observation.update(available=False, reason="runtime_generation_changed")
-        return TeacherObservation(**observation)
+        return observation_type(**observation)
 
-    async def _selection(self, command: TeacherObserve) -> None:
+    async def _selection(self, command: TextSelection) -> None:
         await self.backend.validate_selection(command)
 
     async def inspect_catalog(self, command: TeacherObserve) -> TeacherCatalogInspection:
+        self._require_contract(command)
         if not self.backend.catalog_supported:
             raise fail("teacher_catalog_inspection_unsupported", 422)
         if self.closed or self.admission_waiters >= 5:
@@ -264,14 +292,18 @@ class TeacherNativeText:
             self.inspections.discard(task)
 
     @staticmethod
-    def _native_reference(reference: TeacherReference) -> ReconcileAttempt:
+    def _native_reference(reference: TextReference) -> ReconcileAttempt:
         return ReconcileAttempt(resource_key=reference.resource_key,
             session_generation=reference.session_generation, operation_ref=reference.operation_id)
 
-    def _marker(self, reference: TeacherReference) -> dict[str, str]:
-        return {"attempt_id": reference.attempt_id, **self._native_reference(reference).model_dump()}
+    def _marker(self, reference: TextReference) -> dict[str, str]:
+        marker = {"attempt_id": reference.attempt_id, **self._native_reference(reference).model_dump()}
+        if isinstance(reference, CvReference):
+            marker.update(kind=reference.contract, owner_digest=reference.owner_digest)
+        return marker
 
-    def _assert_reference(self, reference: TeacherReference) -> TeacherAdmission:
+    def _assert_reference(self, reference: TextReference) -> TeacherAdmission:
+        self._require_contract(reference)
         record = self._read(reference.operation_id)
         if record is None:
             raise fail("teacher_operation_missing", 404)
@@ -279,7 +311,7 @@ class TeacherNativeText:
             raise fail("teacher_operation_mismatch")
         return record
 
-    def status(self, reference: TeacherReference) -> TeacherSnapshot:
+    def status(self, reference: TextReference) -> TeacherSnapshot | CvSnapshot:
         record = self._assert_reference(reference)
         native = self.ledger.read(reference.attempt_id)
         terminal = None
@@ -290,15 +322,18 @@ class TeacherNativeText:
                 raise fail("teacher_operation_mismatch")
             if native.process_closed and native.state != "dispatch_armed":
                 state = "completed" if native.state == "completed" else "unknown"
-                terminal = TeacherTerminalProof(**reference.model_dump(), terminal_proof_id=native.terminal_proof_id,
+                proof_type = CvTerminalProof if self.contract == CV_CONTRACT else TeacherTerminalProof
+                terminal = proof_type(**reference.model_dump(), terminal_proof_id=native.terminal_proof_id,
                     process_closed=True, remote_outcome=state, response_hash=record.response_hash,
                     observed_at=native.observed_at)
                 if len(terminal.model_dump_json().encode("utf-8")) > 8192:
                     raise fail("teacher_terminal_proof_limit")
-        return TeacherSnapshot(operation_id=reference.operation_id, state=state,
+        snapshot_type = CvSnapshot if self.contract == CV_CONTRACT else TeacherSnapshot
+        return snapshot_type(operation_id=reference.operation_id, state=state,
             text=self.texts.get(reference.operation_id) if state == "completed" else None, terminal_proof=terminal)
 
-    async def start(self, command: TeacherStart) -> TeacherSnapshot:
+    async def start(self, command: TextStart) -> TeacherSnapshot | CvSnapshot:
+        self._require_contract(command)
         try:
             return await self._start_bound(command)
         except ServiceError as error:
@@ -306,7 +341,7 @@ class TeacherNativeText:
                 raise TeacherDispatchExcluded(error, command) from None
             raise
 
-    async def _start_bound(self, command: TeacherStart) -> TeacherSnapshot:
+    async def _start_bound(self, command: TextStart) -> TeacherSnapshot | CvSnapshot:
         if self.admission_waiters >= 5:
             raise fail("runtime_busy")
         self.admission_waiters += 1
@@ -325,14 +360,14 @@ class TeacherNativeText:
                 if not owners[key]:
                     owners.pop(key)
 
-    async def _start_locked(self, command: TeacherStart) -> TeacherSnapshot:
+    async def _start_locked(self, command: TextStart) -> TeacherSnapshot | CvSnapshot:
         reference = command.reference()
         if self._read_retired(command.operation_id) is not None:
             raise fail("teacher_operation_acknowledged")
         if self._read(command.operation_id) is not None:
             self._assert_reference(reference)
             return self.status(reference)
-        if command.attempt_id in self.retired_attempts or self.ledger.read(command.attempt_id) is not None:
+        if self._attempt_retired(command.attempt_id) or self.ledger.read(command.attempt_id) is not None:
             raise fail("teacher_attempt_already_owned")
         if self.closed or len(self.retired) >= 10000 or len(self.records) >= 64:
             raise fail("teacher_admission_capacity", 503)
@@ -400,7 +435,7 @@ class TeacherNativeText:
         if not task.cancelled():
             task.exception()  # Observe without logging private prompts/provider output.
 
-    async def _run(self, command: TeacherStart, record: TeacherAdmission, reservation, timeout: float) -> None:
+    async def _run(self, command: TextStart, record: TeacherAdmission, reservation, timeout: float) -> None:
         reference = record.reference
         native = self.ledger.read(reference.attempt_id)
         cleanup_allowed = False
@@ -420,7 +455,11 @@ class TeacherNativeText:
             self.ledger.close(native, "completed")
             cleanup_allowed = True
             self.texts[reference.operation_id] = answer.text
-            self.profiles.resolve_dispatch("agentic")
+            if isinstance(reference, CvReference):
+                # The Server commits the exact receipt before ACK releases the profile.
+                self.profiles.quarantine("agentic")
+            else:
+                self.profiles.resolve_dispatch("agentic")
         except (Exception, asyncio.CancelledError) as error:
             cleanup_allowed = False
             self.profiles.quarantine("agentic")
@@ -444,7 +483,7 @@ class TeacherNativeText:
                 self.tasks.pop(reference.operation_id, None)
                 reservation.release()
 
-    def reconcile(self, reference: TeacherReference) -> TeacherSnapshot:
+    def reconcile(self, reference: TextReference) -> TeacherSnapshot | CvSnapshot:
         record = self._assert_reference(reference)
         native = self.ledger.read(reference.attempt_id)
         if reference.operation_id in self.tasks:
@@ -459,7 +498,9 @@ class TeacherNativeText:
             recovered = self.backend.recover_local_closure(reference) is True
             if not recovered:
                 raise fail("teacher_original_owner_closure_required")
-        if not recovered and not self._process_closed():
+        cv_closure_proven = (isinstance(reference, CvReference)
+            and native.state != "dispatch_armed" and native.process_closed)
+        if not cv_closure_proven and not recovered and not self._process_closed():
             if native.state == "dispatch_armed":
                 recovered = self.backend.recover_local_closure(reference) is True
             if not recovered:
@@ -476,18 +517,22 @@ class TeacherNativeText:
         snapshot = self.status(reference)
         if snapshot.terminal_proof is None:
             raise fail("native_proof_missing")
-        self.profiles.reconcile_dispatch("agentic", self._marker(reference))
+        if isinstance(reference, CvReference):
+            self.profiles.validate_reconcile_dispatch("agentic", self._marker(reference))
+        else:
+            self.profiles.reconcile_dispatch("agentic", self._marker(reference))
         self.transport.cleanup(reference.operation_id)
         return snapshot
 
-    def acknowledge(self, command: TeacherAck) -> dict[str, bool]:
+    def acknowledge(self, command: TextAck) -> dict[str, bool]:
+        self._require_contract(command)
         previous = self._read_retired(command.operation_id)
         if previous is not None:
             if previous.ack_digest != canonical_hash(command.model_dump()):
                 raise fail("teacher_terminal_proof_mismatch")
             self._ack_cleanup(command)
             return {"acknowledged": True}
-        reference = TeacherReference.model_validate(command.model_dump(exclude={"terminal_proof_id", "response_hash"}))
+        reference = command.reference()
         snapshot = self.status(reference)
         terminal = snapshot.terminal_proof
         if (terminal is None or terminal.terminal_proof_id != command.terminal_proof_id
@@ -505,8 +550,11 @@ class TeacherNativeText:
         self._ack_cleanup(command)
         return {"acknowledged": True}
 
-    def _ack_cleanup(self, command: TeacherAck) -> None:
-        reference = TeacherReference.model_validate(command.model_dump(exclude={"terminal_proof_id", "response_hash"}))
+    def _ack_cleanup(self, command: TextAck) -> None:
+        reference = command.reference()
+        if self.retired_attempt_directory is not None and not self._attempt_retired(reference.attempt_id):
+            # Keep the attempt UUID fenced across replacement before deleting its ledger row.
+            self._persist(self.retired_attempt_directory, reference.attempt_id, b"{}")
         self.ledger.acknowledge(reference.attempt_id, "agentic", AcknowledgeAttempt(
             **self._native_reference(reference).model_dump(), terminal_proof_id=command.terminal_proof_id))
         self.backend.cleanup_owned(reference)
@@ -516,6 +564,8 @@ class TeacherNativeText:
         self.records.pop(reference.operation_id, None)
         self.texts.pop(reference.operation_id, None)
         self.retired_attempts.add(reference.attempt_id)
+        if isinstance(reference, CvReference):
+            self.profiles.reconcile_dispatch_if_owned("agentic", self._marker(reference))
 
     async def close(self) -> None:
         self.closed = True
@@ -524,6 +574,15 @@ class TeacherNativeText:
             task.cancel()
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
+
+
+async def _start_response(adapter: TeacherNativeText, command: TextStart, request: Request) -> TeacherSnapshot | CvSnapshot | JSONResponse:
+    try:
+        return await adapter.start(command)
+    except TeacherDispatchExcluded as error:
+        request.state.error_code = error.code
+        return JSONResponse({"code": error.code, "detail": error.message,
+            "dispatch_exclusion_proof": error.proof.model_dump()}, status_code=error.status)
 
 
 def register_teacher_text_routes(application: FastAPI) -> None:
@@ -537,12 +596,7 @@ def register_teacher_text_routes(application: FastAPI) -> None:
 
     @application.post("/teacher/agentic-text/start", response_model=TeacherSnapshot, status_code=202)
     async def start(command: TeacherStart, request: Request) -> TeacherSnapshot | JSONResponse:
-        try:
-            return await request.app.state.teacher_text.start(command)
-        except TeacherDispatchExcluded as error:
-            request.state.error_code = error.code
-            return JSONResponse({"code": error.code, "detail": error.message,
-                "dispatch_exclusion_proof": error.proof.model_dump()}, status_code=error.status)
+        return await _start_response(request.app.state.teacher_text, command, request)
 
     @application.post("/teacher/agentic-text/status", response_model=TeacherSnapshot)
     async def status(command: TeacherReference, request: Request) -> TeacherSnapshot:
@@ -555,3 +609,25 @@ def register_teacher_text_routes(application: FastAPI) -> None:
     @application.post("/teacher/agentic-text/ack")
     async def acknowledge(command: TeacherAck, request: Request) -> dict[str, bool]:
         return request.app.state.teacher_text.acknowledge(command)
+
+
+def register_cv_text_routes(application: FastAPI) -> None:
+    @application.post("/cv/agentic-text/observe", response_model=CvObservation)
+    async def observe(command: CvObserve, request: Request) -> CvObservation:
+        return await request.app.state.cv_text.observe(command)
+
+    @application.post("/cv/agentic-text/start", response_model=CvSnapshot, status_code=202)
+    async def start(command: CvStart, request: Request) -> CvSnapshot | JSONResponse:
+        return await _start_response(request.app.state.cv_text, command, request)
+
+    @application.post("/cv/agentic-text/status", response_model=CvSnapshot)
+    async def status(command: CvReference, request: Request) -> CvSnapshot:
+        return request.app.state.cv_text.status(command)
+
+    @application.post("/cv/agentic-text/reconcile", response_model=CvSnapshot)
+    async def reconcile(command: CvReference, request: Request) -> CvSnapshot:
+        return request.app.state.cv_text.reconcile(command)
+
+    @application.post("/cv/agentic-text/ack")
+    async def acknowledge(command: CvAck, request: Request) -> dict[str, bool]:
+        return request.app.state.cv_text.acknowledge(command)

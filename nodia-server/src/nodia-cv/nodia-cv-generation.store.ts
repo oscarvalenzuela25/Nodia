@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
+import { agenticHex } from '../ai-generation/agentic-text-contract.js';
 import { API_EXECUTOR_OWNER } from '../nodia-ai-adapter/api-nodia-ai-runtime-owner.js';
 import type { NodiaAiRuntimePolicy } from '../nodia-ai-runtime/config/runtime-policy.js';
 import {
   parseCvAgenticDescriptor,
-  parseCvAgenticReceipt,
   type CvAgenticDescriptor,
-  type CvAgenticReceipt,
 } from './agentic/nodia-cv-agentic-contract.js';
+import {
+  parseCvProviderDescriptor,
+  parseCvProviderReceipt,
+  type CvGeminiDescriptor,
+  type CvProviderReceipt,
+} from './agentic/nodia-cv-agentic-provider.js';
 import type { CvTailoringDraft } from './engine/index.js';
 import type { StartNodiaCvGenerationDto } from './dto/nodia-cv-generation.dto.js';
 import { cvGenerationError } from './policies/nodia-cv-generation-errors.js';
@@ -180,12 +185,13 @@ export class NodiaCvGenerationStore {
   ) {
     const { row, configuration, selection, workerId, executionHash } = claim;
     const descriptor = claim.agenticDescriptor
-      ? parseCvAgenticDescriptor(claim.agenticDescriptor)
+      ? parseCvProviderDescriptor(claim.agenticDescriptor)
       : null;
     if (selection.mode === 'agentic') {
       if (
         !descriptor ||
         configuration.keyId !== null ||
+        descriptor.provider !== configuration.providerKey ||
         descriptor.generation_id !== row.id ||
         descriptor.actor_id !== row.owner_user_id ||
         descriptor.profile_id !== row.profile_id ||
@@ -261,7 +267,7 @@ export class NodiaCvGenerationStore {
   async owned(manager: EntityManager, claim: CvGenerationClaim) {
     const [row] = await manager.query<CvOperation[]>(
       `SELECT o.id,o.phase,o.started_exchanges,o.request_hash,o.runtime_fence,o.api_owner_identity,
-        o.agentic_transport_descriptor,o.cv_agentic_native,o.terminal_proof,
+        o.agentic_transport_descriptor,o.cv_agentic_native,o.cv_gemini_request_hash,o.terminal_proof,
         (s.state='held' AND g.state='running' AND g.profile_id IS NOT NULL AND
           g.deadline_at>clock_timestamp() AND g.lease_until>clock_timestamp()) AS valid_lease
        FROM ai_generation_operations o JOIN nodia_cv_generations g ON g.id=o.cv_generation_id
@@ -375,15 +381,41 @@ export class NodiaCvGenerationStore {
     return !!armed;
   }
 
+  /** Reserve the sole Gemini exchange and bind the exact native request before sending. */
+  async geminiArm(
+    manager: EntityManager,
+    op: CvOperation,
+    descriptor: CvGeminiDescriptor,
+    requestHash: string,
+  ): Promise<boolean> {
+    if (!op.valid_lease || !agenticHex(requestHash)) return false;
+    const [armed] = await manager.query<{ id: string }[]>(
+      `WITH armed AS (UPDATE ai_generation_operations
+        SET phase='transport_open',started_exchanges=1,cv_gemini_request_hash=$5,updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+          AND agentic_transport_descriptor=$4::jsonb AND agentic_acknowledged_at IS NULL
+          AND phase='dispatch_armed' AND started_exchanges=0 AND cv_gemini_request_hash IS NULL
+        RETURNING id) SELECT id FROM armed`,
+      [
+        op.id,
+        op.runtime_fence,
+        op.request_hash,
+        JSON.stringify(parseCvProviderDescriptor(descriptor)),
+        requestHash,
+      ],
+    );
+    return !!armed;
+  }
+
   /** Write the terminal in the draft transaction; the slot stays reserved until native ACK. */
   async agenticTerminal(
     manager: EntityManager,
     op: CvOperation,
-    candidate: CvAgenticReceipt,
+    candidate: CvProviderReceipt,
   ) {
     if (!op.agentic_transport_descriptor)
       cvGenerationError('generation_lease_lost');
-    const receipt = parseCvAgenticReceipt(
+    const receipt = parseCvProviderReceipt(
       candidate,
       op.agentic_transport_descriptor,
     );
@@ -393,12 +425,14 @@ export class NodiaCvGenerationStore {
           response_hash=$7,updated_at=clock_timestamp()
         WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
           AND agentic_transport_descriptor=$4::jsonb AND agentic_acknowledged_at IS NULL
+          AND cv_gemini_request_hash IS NOT DISTINCT FROM $8::text
           AND phase IN ('dispatch_armed','transport_open') AND terminal_proof IS NULL
         RETURNING id)
         SELECT id FROM settled UNION ALL
         SELECT id FROM ai_generation_operations
           WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
-            AND agentic_transport_descriptor=$4::jsonb AND phase='closed' AND terminal_proof=$5::jsonb`,
+            AND agentic_transport_descriptor=$4::jsonb AND phase='closed' AND terminal_proof=$5::jsonb
+            AND cv_gemini_request_hash IS NOT DISTINCT FROM $8::text`,
       [
         op.id,
         op.runtime_fence,
@@ -409,6 +443,7 @@ export class NodiaCvGenerationStore {
           ? null
           : receipt.remote_outcome,
         receipt.response_hash,
+        op.cv_gemini_request_hash ?? null,
       ],
     );
     if (!settled) cvGenerationError('generation_lease_lost');
@@ -418,11 +453,11 @@ export class NodiaCvGenerationStore {
   async agenticAcknowledge(
     manager: EntityManager,
     op: CvOperation,
-    candidate: CvAgenticReceipt,
+    candidate: CvProviderReceipt,
   ) {
     if (!op.agentic_transport_descriptor)
       cvGenerationError('generation_lease_lost');
-    const receipt = parseCvAgenticReceipt(
+    const receipt = parseCvProviderReceipt(
       candidate,
       op.agentic_transport_descriptor,
     );
@@ -432,6 +467,7 @@ export class NodiaCvGenerationStore {
       op.request_hash,
       JSON.stringify(op.agentic_transport_descriptor),
       JSON.stringify(receipt),
+      op.cv_gemini_request_hash ?? null,
     ];
     const [acknowledged] = await manager.query<{ resource_key: string }[]>(
       `WITH acknowledged AS (UPDATE ai_generation_operations
@@ -439,6 +475,7 @@ export class NodiaCvGenerationStore {
           updated_at=clock_timestamp()
         WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
           AND agentic_transport_descriptor=$4::jsonb AND terminal_proof=$5::jsonb
+          AND cv_gemini_request_hash IS NOT DISTINCT FROM $6::text
           AND phase='closed' AND acknowledged_at IS NULL
         RETURNING resource_key)
         SELECT resource_key FROM acknowledged`,
@@ -449,6 +486,7 @@ export class NodiaCvGenerationStore {
         `SELECT id FROM ai_generation_operations
           WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
             AND agentic_transport_descriptor=$4::jsonb AND terminal_proof=$5::jsonb
+            AND cv_gemini_request_hash IS NOT DISTINCT FROM $6::text
             AND phase='closed' AND acknowledged_at IS NOT NULL`,
         parameters,
       );
@@ -479,7 +517,7 @@ export class NodiaCvGenerationStore {
   pendingAgenticOperations(manager: EntityManager, id?: string) {
     return manager.query<CvAgenticOperation[]>(
       `SELECT o.id,o.phase,o.started_exchanges,o.request_hash,o.runtime_fence,o.api_owner_identity,
-        o.agentic_transport_descriptor,o.cv_agentic_native,o.terminal_proof,o.resource_key
+        o.agentic_transport_descriptor,o.cv_agentic_native,o.cv_gemini_request_hash,o.terminal_proof,o.resource_key
        FROM ai_generation_operations o
        JOIN nodia_cv_generations g ON g.id=o.cv_generation_id
        JOIN nodia_ai_runtime_slots s ON s.resource_key=o.resource_key AND s.generation_operation_id=o.id

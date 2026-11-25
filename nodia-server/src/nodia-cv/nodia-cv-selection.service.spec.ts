@@ -1,6 +1,7 @@
 import type { EntityManager } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 import type { AiSelection } from '../ai-generation/ai-selection.js';
+import { agenticHash } from '../ai-generation/agentic-text-contract.js';
 import type {
   ApiNodiaAiCredentialsService,
   NodiaAiApiConfiguration,
@@ -10,7 +11,12 @@ import type { NodiaAiConnectionsService } from '../nodia-ai-conversation/nodia-a
 import type { NodiaAiRuntimePolicy } from '../nodia-ai-runtime/config/runtime-policy.js';
 import type { NodiaCvCodexSelection } from './agentic/nodia-cv-codex-selection.js';
 import type { NodiaCvCodexTransport } from './agentic/nodia-cv-codex-transport.js';
+import type {
+  CvGeminiObservation,
+  NodiaCvGeminiTransport,
+} from './agentic/nodia-cv-gemini-transport.js';
 import {
+  cvAgenticObservationBusy,
   NodiaCvSelectionService,
   type CvAgenticObservation,
 } from './nodia-cv-selection.service.js';
@@ -34,22 +40,90 @@ function fixture(
   policyHash = 'runtime-policy-1',
   codex?: NodiaCvCodexTransport,
   codexSelection?: NodiaCvCodexSelection,
+  gemini?: NodiaCvGeminiTransport,
 ) {
   const resolveConfiguration = vi.fn().mockResolvedValue(configuration);
   const list = vi.fn();
+  const find = vi.fn();
   const query = vi.fn().mockResolvedValue([]);
   const manager = { query } as unknown as EntityManager;
+  const transaction = async (
+    work: (value: EntityManager) => Promise<unknown>,
+  ) => work(manager);
   const selectionService = new NodiaCvSelectionService(
     {
       configuration: resolveConfiguration,
     } as unknown as ApiNodiaAiCredentialsService,
-    { list } as unknown as NodiaAiConnectionsService,
+    { list, find, transaction } as unknown as NodiaAiConnectionsService,
     { policyHash, results: { list_default_rows: 1 } } as NodiaAiRuntimePolicy,
     codex,
     codexSelection,
+    gemini,
   );
 
-  return { selectionService, resolveConfiguration, manager, query, list };
+  return { selectionService, resolveConfiguration, manager, query, list, find };
+}
+
+const geminiConnection = {
+  id: '9007199254740994',
+  label: 'Gemini fixture',
+  provider_key: 'gemini',
+  is_active: true,
+  catalog_active: true,
+  is_default: false,
+  default_mode: 'agentic',
+  use_api_key: true,
+  can_use_api_key: true,
+  use_agentic: true,
+  can_use_agentic: true,
+  configuration_updated_at: new Date('2026-11-25T00:00:00.000Z'),
+  fields: {
+    agentic: {
+      allowed_model_ids: [
+        'gemini-fixture-medium',
+        'gemini-fixture-high',
+        'other-fixture',
+      ],
+      available_models: [
+        { id: 'gemini-fixture-medium', displayName: 'Gemini Fixture (Medium)' },
+        { id: 'gemini-fixture-high', displayName: 'Gemini Fixture (High)' },
+        { id: 'other-fixture', displayName: 'Other fixture' },
+      ],
+      selected_model: 'gemini-fixture-medium',
+      thinking_level: 'medium',
+    },
+    api_key: { available_models: [{ id: 'api-fixture' }] },
+  },
+};
+const geminiRequested = {
+  connection_id: geminiConnection.id,
+  mode: 'agentic',
+  model_id: 'gemini-fixture-high',
+  effort_id: 'high',
+} as const satisfies AiSelection;
+const geminiNative: CvGeminiObservation = {
+  available: true,
+  reason: null,
+  observedAt: '2026-11-25T00:00:00.000Z',
+  resourceKey: 'gemini-profile:' + '1'.repeat(64),
+  sessionGeneration: '2'.repeat(32),
+  policyHash: '3'.repeat(64),
+  runtimeHash: '4'.repeat(64),
+  binarySha512: '5'.repeat(128),
+};
+
+function geminiFixture() {
+  const observe = vi.fn().mockResolvedValue(geminiNative);
+  const codexObserve = vi.fn();
+  const f = fixture(
+    'runtime-policy-1',
+    { observe: codexObserve } as unknown as NodiaCvCodexTransport,
+    {} as NodiaCvCodexSelection,
+    { observe } as unknown as NodiaCvGeminiTransport,
+  );
+  f.find.mockResolvedValue(geminiConnection);
+  f.list.mockResolvedValue([geminiConnection]);
+  return { ...f, observe, codexObserve };
 }
 
 function agenticFixture() {
@@ -349,6 +423,199 @@ describe('Nodia CV selection', () => {
         }),
       ).not.toBe(original);
     }
+  });
+
+  it('binds Gemini metadata and qualification to the exact connection, model, effort, and session', async () => {
+    const f = geminiFixture();
+    const signal = new AbortController().signal;
+    const observation = await f.selectionService.observeAgentic(
+      geminiRequested,
+      signal,
+    );
+    const configurationGeneration = agenticHash({
+      connection_id: geminiConnection.id,
+      provider_key: 'gemini',
+      mode: 'agentic',
+      fields: geminiConnection.fields.agentic,
+      updated_at: geminiConnection.configuration_updated_at,
+      enabled: true,
+    });
+    expect(f.observe).toHaveBeenCalledWith(
+      geminiRequested,
+      configurationGeneration,
+      expect.any(AbortSignal),
+    );
+    expect(f.codexObserve).not.toHaveBeenCalled();
+    const config = await f.selectionService.configureAgentic(
+      geminiRequested,
+      f.manager,
+      observation,
+    );
+    expect(config).toMatchObject({
+      providerKey: 'gemini',
+      keyId: null,
+      configurationGeneration,
+      sessionGeneration: geminiNative.sessionGeneration,
+    });
+
+    const scopeHash = f.selectionService.scopeHash(geminiRequested, config);
+    f.query.mockImplementation(async (_sql: string, params: unknown[]) =>
+      params[0] === scopeHash
+        ? [{ checked_at: new Date(geminiNative.observedAt) }]
+        : [],
+    );
+    await expect(
+      f.selectionService.eligibility(f.manager, geminiRequested, observation),
+    ).resolves.toMatchObject({ eligible: true, reason_code: 'qualified' });
+    await expect(
+      f.selectionService.eligibility(
+        f.manager,
+        { ...geminiRequested, effort_id: 'low' },
+        observation,
+      ),
+    ).resolves.toMatchObject({
+      eligible: false,
+      reason_code: 'configuration_unavailable',
+    });
+
+    f.observe.mockResolvedValue({
+      ...geminiNative,
+      sessionGeneration: '6'.repeat(32),
+    });
+    const renewed = await f.selectionService.observeAgentic(
+      geminiRequested,
+      signal,
+    );
+    await expect(
+      f.selectionService.eligibility(f.manager, geminiRequested, renewed),
+    ).resolves.toMatchObject({
+      eligible: false,
+      reason_code: 'qualification_required',
+    });
+
+    f.find.mockResolvedValue({
+      ...geminiConnection,
+      configuration_updated_at: new Date('2026-11-25T01:00:00Z'),
+    });
+    await expect(
+      f.selectionService.eligibility(f.manager, geminiRequested, observation),
+    ).resolves.toMatchObject({
+      eligible: false,
+      reason_code: 'configuration_unavailable',
+    });
+    expect(f.query).toHaveBeenCalledTimes(2);
+  });
+
+  it('blocks Gemini before qualification lookup when its native profile is busy or the model is not configured', async () => {
+    const f = geminiFixture();
+    const signal = new AbortController().signal;
+    f.observe.mockResolvedValue({
+      ...geminiNative,
+      available: false,
+      reason: 'runtime_busy',
+    });
+    const busy = await f.selectionService.observeAgentic(
+      geminiRequested,
+      signal,
+    );
+    expect(cvAgenticObservationBusy(busy)).toBe(true);
+    await expect(
+      f.selectionService.eligibility(f.manager, geminiRequested, busy),
+    ).resolves.toMatchObject({
+      eligible: false,
+      reason_code: 'gemini_profile_busy',
+    });
+
+    const requested = { ...geminiRequested, model_id: 'unknown-model' };
+    const missing = await f.selectionService.observeAgentic(requested, signal);
+    await expect(
+      f.selectionService.eligibility(f.manager, requested, missing),
+    ).resolves.toMatchObject({
+      configured: false,
+      eligible: false,
+      reason_code: 'gemini_model_unavailable',
+    });
+    expect(f.observe).toHaveBeenCalledTimes(1);
+    expect(f.codexObserve).not.toHaveBeenCalled();
+    expect(f.query).not.toHaveBeenCalled();
+  });
+
+  it('projects only the exact qualified Gemini option and leaves the API key models available', async () => {
+    const f = geminiFixture();
+    const observation = await f.selectionService.observeAgentic(
+      geminiRequested,
+      new AbortController().signal,
+    );
+    const configuration = await f.selectionService.configureAgentic(
+      geminiRequested,
+      f.manager,
+      observation,
+    );
+    const qualifies = (
+      selection: AiSelection,
+      scopeHash = f.selectionService.scopeHash(selection, configuration),
+    ) => ({
+      connection_id: selection.connection_id,
+      model_id: selection.model_id,
+      effort_id: selection.effort_id,
+      scope_hash: scopeHash,
+      configuration_generation: configuration.configurationGeneration,
+      session_generation: configuration.sessionGeneration,
+      resource_key: configuration.resourceKey,
+      policy_hash: configuration.policyHash,
+      runtime_hash: configuration.runtimeHash,
+    });
+
+    const unqualified = await f.selectionService.catalog(f.manager);
+    expect(
+      unqualified.items[0].modes.find((m) => m.mode === 'agentic'),
+    ).toMatchObject({
+      cv_transport: 'unsupported',
+      configured_selection: null,
+      models: [],
+    });
+
+    f.query.mockResolvedValue([
+      qualifies(geminiRequested),
+      qualifies({ ...geminiRequested, effort_id: 'medium' }),
+      qualifies(
+        {
+          ...geminiRequested,
+          model_id: 'gemini-fixture-medium',
+          effort_id: 'medium',
+        },
+        'a'.repeat(64),
+      ),
+    ]);
+    const qualified = await f.selectionService.catalog(f.manager);
+    expect(qualified.items[0].modes).toMatchObject([
+      {
+        mode: 'api_key',
+        cv_transport: 'available',
+        models: [{ model_id: 'api-fixture' }],
+      },
+      {
+        mode: 'agentic',
+        cv_transport: 'available',
+        configured_selection: null,
+        models: [
+          {
+            model_id: 'gemini-fixture-high',
+            label: 'Gemini Fixture (High)',
+            efforts: [{ effort_id: 'high', label: 'high' }],
+          },
+        ],
+      },
+    ]);
+    expect(f.observe).toHaveBeenCalledTimes(1);
+    expect(f.query.mock.calls[1][1]).toEqual([
+      JSON.stringify([
+        {
+          connection_id: geminiRequested.connection_id,
+          configuration_generation: configuration.configurationGeneration,
+        },
+      ]),
+    ]);
   });
 
   it('paginates complete sanitized connections and declares the CV transport explicitly', async () => {

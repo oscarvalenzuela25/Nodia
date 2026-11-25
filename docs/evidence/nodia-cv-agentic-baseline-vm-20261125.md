@@ -208,3 +208,54 @@ selector, el piloto conservó una operación, un intercambio y cero
 pendientes. El recorrido ordinario con otra intención y guardado de
 versiones queda pendiente.
 [Plan113 §17](../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
+
+## Paso 5. Gemini Agentic en el piloto aislado de la VM
+
+El mismo perfil de SDK de Gemini de la VM sirvió para observar el ID
+`gemini-4-hydrogen-high` con esfuerzo `high` y para ejecutar la prueba
+de CV. Se conservó la sesión y se mantuvo un solo contenedor dueño del
+perfil físico. El adaptador de laboratorio se activó con la imagen
+`sha256:69b2120f755791ba5838355440bf183dc4af8fd3b2a48e94a863d2944107d649`.
+La imagen deriva del contenedor anterior y añade los ocho archivos
+Python del transporte CV sobre su base. El contenedor anterior quedó
+detenido y retenido. El runtime mantiene el contrato nativo de Teacher.
+Los recibos de Teacher y CV conservan su ámbito por sesión del runtime,
+que cambia al reiniciar el proceso de Gemini.
+
+Server aplicó la migración `1794042000000` a PostgreSQL 16 exclusivo
+del piloto. El catálogo autenticado descubrió 11 variantes de Neon,
+Carbon e Hydrogen, que se registraron en la conexión Gemini `2` del
+piloto. Antes de inferir, Hydrogen en Alto devolvió
+`qualification_required` y el catálogo Agentic de Gemini para CV
+expuso cero opciones. El worker admitió una única intención con el
+perfil y la oferta sintéticos del piloto.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Generación | `601e96a9-713e-4639-8fa7-f2c2ca302d04` en `ready`. TypeScript respaldado por el perfil. Kubernetes quedó como brecha. |
+| Recibo nativo y SQL | Un intercambio reservado e iniciado. Fase `closed`, resultado `completed`, proceso cerrado, ACK nativo y en SQL, slot libre. Prueba `7d12c01c-7203-4bb7-924a-2f173314ccf6`. SHA-256 de respuesta `ed5a7e490f0d41d48cea4f685ee03c44c3eaf479bd23aade4d6da9a6cc6ac118`. |
+| Ámbito nativo | Runtime `920bc55a89c17286c2326ee154617196a053d17901958ca951b3a63c967949ec`, política `4d1ee2cfe4a3fd6da56fc34a4df90b681ebd26da9fa8f2ced073fce0476cf2b6`. Native devuelve `finish_only` y `native_io=false`. La ruta privada rechazó la solicitud sin credencial con HTTP 401. |
+| PDF Clásica | Una página con extracción verificada por PDF.js. SHA-256 `1e1c42a47e996cbdc0f630e5ec6276b087ab8ea8085c00f4248f1454bbc83067`. |
+| PDF Compacta | Una página con extracción verificada por PDF.js. SHA-256 `4ff2e130ba0c04959d66600c28d63171b45f207d9775afc930b070b5327d03dd`. |
+| Opciones | Gemini devolvió sólo `gemini-4-hydrogen-high / high`. La variante Hydrogen Medio siguió con `qualification_required`. GPT-6.2 Sol en Alto siguió elegible con la prueba del paso 4. |
+
+En pruebas sin inferencia externa se verificaron aislamiento de dueño,
+contención del perfil entre CV y Teacher, respuesta HTTP 429 con
+presupuesto único, caída de transporte, expiración, reinicio, prueba
+de cierre y reintento del ACK sin repostear la generación. El worker
+mantiene la reserva si SQL llegó a armar el intento y falta una prueba
+nativa de su resultado. Pasaron 161 pruebas focales del Server, cinco
+pruebas del selector, la compilación de ambos, dos integraciones de CV
+en PostgreSQL 16 aislado y la suite nativa con 659 pruebas aprobadas y
+15 omisiones de plataforma en Windows.
+
+En Edge, la lista de modelos mostró un solo Hydrogen y la lista de
+intensidades sólo Alto. Al aplicar la selección y cargar perfil y
+oferta, se habilitó Generar borrador. Se probó el popover en escritorio
+y a 320 px. Aplicar y Escape devolvieron el foco al selector y conservaron
+la oferta. El recorrido de UI hizo cero envíos de generación.
+
+La VM conservó los dos recibos de CV, con dos intercambios totales y
+cero operaciones pendientes. El piloto renderizó ambos PDF en memoria
+para verificar su texto. La adopción del Server en otros entornos y
+el guardado ordinario de versiones siguen en el paso 6.

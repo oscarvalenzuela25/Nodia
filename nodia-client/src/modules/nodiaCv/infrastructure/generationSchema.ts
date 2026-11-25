@@ -68,6 +68,12 @@ export const cvEligibilitySchema = z
       "codex_effort_unavailable",
       "codex_profile_busy",
       "codex_usage_unavailable",
+      "gemini_runtime_unavailable",
+      "gemini_session_required",
+      "gemini_session_unverified",
+      "gemini_model_unavailable",
+      "gemini_effort_unavailable",
+      "gemini_profile_busy",
     ]),
     checked_at: z.iso.datetime().nullable(),
   })

@@ -18,7 +18,7 @@ from service_errors import ServiceError
 from teacher_runtime_backend import TeacherRuntimeIdentity
 from teacher_sdk_policy import (CONTRACT, Closed, TeacherSDKAnswer, TeacherSDKHostRequest,
     TeacherSDKObserveRequest, canonical_hash, strict_json)
-from teacher_text_contract import TeacherObserve, TeacherReference, TeacherStart, TeacherAnswer
+from teacher_text_contract import TextSelection, TextReference, TextStart, TeacherAnswer
 from teacher_text_execution import TeacherExecutionError
 from teacher_sdk_diagnostics import SDKDiagnosticContext, TeacherSDKDiagnostics
 
@@ -440,7 +440,7 @@ class TeacherSDKBackend:
         if config.profile.is_symlink() or not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
             raise _fail("teacher_runtime_unverified")
 
-    async def validate_selection(self, command: TeacherObserve) -> None:
+    async def validate_selection(self, command: TextSelection) -> None:
         await self.identity()
         self._profile()
         if self._epoch() is None:
@@ -464,10 +464,10 @@ class TeacherSDKBackend:
     def process_closed(self) -> bool:
         return self._owner is not None and self._owner.process_closed() is True
 
-    def recover_local_closure(self, reference: TeacherReference) -> bool:
+    def recover_local_closure(self, reference: TextReference) -> bool:
         return self._owner is not None and self._owner.recover_local_closure(reference) is True
 
-    def cleanup_owned(self, reference: TeacherReference) -> None:
+    def cleanup_owned(self, reference: TextReference) -> None:
         if self._owner is not None:
             self._owner.cleanup_owned(reference)
 
@@ -485,7 +485,7 @@ class TeacherSDKTransport:
     def runner(self):
         return self.backend.runner
 
-    async def execute(self, command: TeacherStart, timeout: float) -> TeacherAnswer:
+    async def execute(self, command: TextStart, timeout: float) -> TeacherAnswer:
         identity = await self.backend.identity()
         if command.session_generation != self.backend.session_generation:
             raise _fail("runtime_generation_changed", 409)

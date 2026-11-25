@@ -267,12 +267,14 @@ class TeacherSDKGuardTests(unittest.TestCase):
         manager = SimpleNamespace(get_access_token=lambda: "synthetic-token", project_id="synthetic-project", endpoint_url="https://example.invalid")
         path = "/v1beta/models/" + command.model_id + ":streamGenerateContent?alt=sse"
         raw = json.dumps(model_request(command)).encode()
-        for status, failure in ((401, None), (403, None), (307, None), (503, None), (200, TimeoutError("synthetic"))):
+        for status, failure in ((401, None), (403, None), (307, None), (429, None), (503, None), (200, TimeoutError("synthetic"))):
             session = Session(status, failure)
             guard = TeacherSDKGuard(command, manager, "synthetic", session_factory=lambda: session)
             guard.reserve_local()
-            with self.assertRaises((SDKPolicyError, TimeoutError)):
+            with self.assertRaises((SDKPolicyError, TimeoutError)) as error:
                 guard.forward(path, raw)
+            if status == 429:
+                self.assertEqual(str(error.exception), "provider_quota")
             self.assertEqual(guard.provider_dispatches, 1)
             with self.assertRaises(SDKPolicyError):
                 guard.forward(path, raw)

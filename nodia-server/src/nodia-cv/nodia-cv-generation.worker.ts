@@ -5,6 +5,7 @@ import {
   type OnModuleInit,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import type { EntityManager } from 'typeorm';
 import { ApiTextGenerationService } from '../ai-generation/api-text-generation.service.js';
 import { agenticHash } from '../ai-generation/agentic-text-contract.js';
@@ -30,18 +31,24 @@ import {
   CV_AGENTIC_CONTRACT,
   CV_AGENTIC_POLICY_VERSION,
   cvAgenticPayloadHash,
-  parseCvAgenticDescriptor,
   parseCvAgenticReceipt,
+  type CvAgenticDescriptor,
   type CvAgenticReceipt,
 } from './agentic/nodia-cv-agentic-contract.js';
 import {
-  NodiaCvCodexTransport,
-  type CvCodexExecution,
-} from './agentic/nodia-cv-codex-transport.js';
+  parseCvProviderDescriptor,
+  parseCvProviderReceipt,
+  type CvGeminiDescriptor,
+  type CvGeminiReceipt,
+  type CvProviderReceipt,
+} from './agentic/nodia-cv-agentic-provider.js';
+import { NodiaCvCodexTransport } from './agentic/nodia-cv-codex-transport.js';
+import { NodiaCvGeminiTransport } from './agentic/nodia-cv-gemini-transport.js';
 import { NodiaCvGenerationScope } from './nodia-cv-generation-scope.service.js';
 import { NodiaCvGenerationStore } from './nodia-cv-generation.store.js';
 import { NodiaCvProfilesService } from './nodia-cv-profiles.service.js';
 import {
+  cvAgenticObservationBusy,
   NodiaCvSelectionService,
   type CvAgenticObservation,
 } from './nodia-cv-selection.service.js';
@@ -68,6 +75,9 @@ type Closure = {
   error: string;
 };
 
+const GEMINI_STATUS_INTERVAL_MS = 500;
+const GEMINI_RECOVERY_REQUEST_MS = 5_000;
+
 @Injectable()
 export class NodiaCvGenerationWorker
   implements OnModuleInit, GenerationWorkerSource
@@ -85,6 +95,7 @@ export class NodiaCvGenerationWorker
     @Inject(NODIA_AI_RUNTIME_POLICY)
     private readonly policy: NodiaAiRuntimePolicy,
     @Optional() private readonly codex?: NodiaCvCodexTransport,
+    @Optional() private readonly gemini?: NodiaCvGeminiTransport,
   ) {}
 
   onModuleInit() {
@@ -163,11 +174,7 @@ export class NodiaCvGenerationWorker
       next.selection,
       signal,
     );
-    if (
-      signal.aborted ||
-      observation?.selection.status === 'codex_profile_busy'
-    )
-      return null;
+    if (signal.aborted || cvAgenticObservationBusy(observation)) return null;
     return this.scope.transaction(async (manager) => {
       const row = await this.store.next(
         manager,
@@ -222,7 +229,7 @@ export class NodiaCvGenerationWorker
       );
       const agenticDescriptor =
         configuration.keyId === null
-          ? parseCvAgenticDescriptor({
+          ? parseCvProviderDescriptor({
               contract: CV_AGENTIC_CONTRACT,
               owner_kind: 'cv',
               provider: configuration.providerKey,
@@ -390,83 +397,195 @@ export class NodiaCvGenerationWorker
     observation: CvAgenticObservation,
     signal: AbortSignal,
   ) {
-    const codex = this.codex,
-      descriptor = claim.agenticDescriptor;
-    if (!codex || !descriptor)
-      cvGenerationError('agentic_transport_unavailable', 503);
+    const descriptor = claim.agenticDescriptor;
+    if (!descriptor) cvGenerationError('agentic_transport_unavailable', 503);
     try {
-      const result = await codex.execute(
-        {
-          descriptor,
-          prepared: claim.prepared,
-          deadlineAt: claim.deadlineAt,
-          signal,
-        },
-        {
-          bind: (custody, active) =>
-            this.scope.transaction(async (manager) => {
-              const op = await this.store.owned(manager, claim);
-              if (!op?.valid_lease) return false;
-              await this.authorize(manager, claim.row);
-              await this.configuration(manager, claim.row, observation);
-              active.throwIfAborted();
-              return this.store.agenticBind(manager, op, descriptor, custody);
-            }, true),
-          arm: async ({ owner, native, workspace }, active) => {
-            const custody = { owner, native, workspace };
-            const captured = await this.scope.transaction(async (manager) => {
-              const op = await this.store.owned(manager, claim);
-              return op
-                ? this.store.agenticCapture(manager, op, descriptor, custody)
-                : false;
-            }, true);
-            if (!captured) return false;
-            return this.scope.transaction(async (manager) => {
-              const op = await this.store.owned(manager, claim);
-              if (!op?.valid_lease) return false;
-              await this.authorize(manager, claim.row);
-              await this.configuration(manager, claim.row, observation);
-              active.throwIfAborted();
-              return this.store.agenticArm(manager, op, descriptor, custody);
-            }, true);
-          },
-          terminal: (outcome) =>
-            this.finishAgentic(claim, observation, outcome),
-        },
-      );
-      await this.scope.transaction(async (manager) => {
-        const op = await this.store.owned(manager, claim);
-        if (op)
-          await this.store.agenticAcknowledge(manager, op, result.receipt);
-      }, true);
+      if (descriptor.provider === 'gemini') {
+        await this.executeGemini(claim, observation, descriptor, signal);
+      } else {
+        await this.executeCodex(claim, observation, descriptor, signal);
+      }
     } catch {
       // Admission, terminal commit, release or ACK may already have happened. Reconcile
       // the existing operation after its lease, never start another native exchange.
     }
   }
 
+  private async executeCodex(
+    claim: CvGenerationClaim,
+    observation: CvAgenticObservation,
+    descriptor: CvAgenticDescriptor,
+    signal: AbortSignal,
+  ) {
+    const codex = this.codex;
+    if (!codex) cvGenerationError('agentic_transport_unavailable', 503);
+    const result = await codex.execute(
+      {
+        descriptor,
+        prepared: claim.prepared,
+        deadlineAt: claim.deadlineAt,
+        signal,
+      },
+      {
+        bind: (custody, active) =>
+          this.scope.transaction(async (manager) => {
+            const op = await this.store.owned(manager, claim);
+            if (!op?.valid_lease) return false;
+            await this.authorize(manager, claim.row);
+            await this.configuration(manager, claim.row, observation);
+            active.throwIfAborted();
+            return this.store.agenticBind(manager, op, descriptor, custody);
+          }, true),
+        arm: async ({ owner, native, workspace }, active) => {
+          const custody = { owner, native, workspace };
+          const captured = await this.scope.transaction(async (manager) => {
+            const op = await this.store.owned(manager, claim);
+            return op
+              ? this.store.agenticCapture(manager, op, descriptor, custody)
+              : false;
+          }, true);
+          if (!captured) return false;
+          return this.scope.transaction(async (manager) => {
+            const op = await this.store.owned(manager, claim);
+            if (!op?.valid_lease) return false;
+            await this.authorize(manager, claim.row);
+            await this.configuration(manager, claim.row, observation);
+            active.throwIfAborted();
+            return this.store.agenticArm(manager, op, descriptor, custody);
+          }, true);
+        },
+        terminal: (outcome) =>
+          this.finishAgentic(
+            claim,
+            observation,
+            outcome.state === 'draft' ? outcome.draft : null,
+            outcome.receipt,
+          ),
+      },
+    );
+    await this.scope.transaction(async (manager) => {
+      const op = await this.store.owned(manager, claim);
+      if (op) await this.store.agenticAcknowledge(manager, op, result.receipt);
+    }, true);
+  }
+
+  private async executeGemini(
+    claim: CvGenerationClaim,
+    observation: CvAgenticObservation,
+    descriptor: CvGeminiDescriptor,
+    signal: AbortSignal,
+  ) {
+    const gemini = this.gemini;
+    if (!gemini) cvGenerationError('agentic_transport_unavailable', 503);
+    let command: ReturnType<NodiaCvGeminiTransport['prepare']>;
+    try {
+      command = gemini.prepare(descriptor, claim.prepared, claim.deadlineAt);
+    } catch (error) {
+      if (!(error instanceof CvTailoringError)) throw error;
+      const receipt = this.geminiUndispatched(descriptor);
+      await this.finishAgentic(
+        claim,
+        observation,
+        null,
+        receipt,
+        null,
+        'generation_invalid_input',
+      );
+      await this.acknowledgeGemini(claim, null, receipt);
+      return;
+    }
+    const requestHash = command.request_hash;
+    const armed = await this.scope.transaction(async (manager) => {
+      const op = await this.store.owned(manager, claim);
+      if (!op?.valid_lease) return false;
+      await this.authorize(manager, claim.row);
+      await this.configuration(manager, claim.row, observation);
+      signal.throwIfAborted();
+      return this.store.geminiArm(manager, op, descriptor, requestHash);
+    }, true);
+    if (!armed) return;
+
+    let receipt: CvGeminiReceipt;
+    let draft: CvTailoringDraft | null = null;
+    if (signal.aborted) {
+      receipt = this.geminiUndispatched(descriptor);
+    } else {
+      let snapshot = await gemini.start(command, descriptor, signal);
+      while (snapshot.state === 'running') {
+        await delay(GEMINI_STATUS_INTERVAL_MS, undefined, { signal });
+        snapshot = await gemini.status(descriptor, requestHash, signal);
+      }
+      receipt = snapshot.receipt;
+      if (snapshot.text !== null && receipt.remote_outcome === 'completed') {
+        parseCvProviderReceipt(receipt, descriptor, snapshot.text);
+        try {
+          draft = buildCvDraft(claim.prepared, snapshot.text);
+        } catch (error) {
+          if (!(error instanceof CvTailoringError)) throw error;
+        }
+      }
+    }
+    await this.finishAgentic(claim, observation, draft, receipt, requestHash);
+    if (receipt.remote_outcome !== 'not_dispatched')
+      await gemini.acknowledge(
+        descriptor,
+        requestHash,
+        receipt,
+        AbortSignal.timeout(GEMINI_RECOVERY_REQUEST_MS),
+      );
+    await this.acknowledgeGemini(claim, requestHash, receipt);
+  }
+
+  private acknowledgeGemini(
+    claim: CvGenerationClaim,
+    requestHash: string | null,
+    receipt: CvGeminiReceipt,
+  ) {
+    return this.scope.transaction(async (manager) => {
+      const op = await this.store.owned(manager, claim);
+      if (op?.cv_gemini_request_hash === requestHash)
+        await this.store.agenticAcknowledge(manager, op, receipt);
+    }, true);
+  }
+
+  private geminiUndispatched(descriptor: CvGeminiDescriptor): CvGeminiReceipt {
+    return {
+      ...descriptor,
+      terminal_proof_id: randomUUID(),
+      process_closed: true,
+      remote_outcome: 'not_dispatched',
+      response_hash: null,
+      observed_at: new Date().toISOString(),
+    };
+  }
+
   private finishAgentic(
     claim: CvGenerationClaim,
     observation: CvAgenticObservation,
-    result: CvCodexExecution,
+    draft: CvTailoringDraft | null,
+    candidate: CvProviderReceipt,
+    nativeRequestHash: string | null = null,
+    beforeDispatchFailure = 'provider_unavailable',
   ) {
     return this.scope.transaction(async (manager) => {
       const op = await this.store.owned(manager, claim);
       if (!op) cvGenerationError('generation_lease_lost');
-      if (!op.agentic_transport_descriptor)
+      if (
+        !op.agentic_transport_descriptor ||
+        (op.cv_gemini_request_hash ?? null) !== nativeRequestHash
+      )
         cvGenerationError('generation_lease_lost');
-      const receipt = parseCvAgenticReceipt(
-        result.receipt,
+      const receipt = parseCvProviderReceipt(
+        candidate,
         op.agentic_transport_descriptor,
       );
       if (op.phase === 'closed') {
         await this.store.agenticTerminal(manager, op, receipt);
         return;
       }
-      const draft = result.state === 'draft' ? result.draft : null;
       let failure =
         receipt.remote_outcome === 'not_dispatched'
-          ? 'provider_unavailable'
+          ? beforeDispatchFailure
           : 'generation_invalid_output';
       let mayPublish =
         Boolean(draft) &&
@@ -559,6 +678,7 @@ export class NodiaCvGenerationWorker
       current.runtime_fence === expected.runtime_fence &&
       current.request_hash === expected.request_hash &&
       current.started_exchanges === expected.started_exchanges &&
+      current.cv_gemini_request_hash === expected.cv_gemini_request_hash &&
       agenticHash(current.agentic_transport_descriptor) ===
         agenticHash(expected.agentic_transport_descriptor) &&
       agenticHash(current.cv_agentic_native) ===
@@ -566,13 +686,11 @@ export class NodiaCvGenerationWorker
     );
   }
 
-  private async recoverAgentic(
+  private async recoverCodex(
     codex: NodiaCvCodexTransport,
     candidate: CvAgenticOperation,
+    descriptor: CvAgenticDescriptor,
   ) {
-    const descriptor = parseCvAgenticDescriptor(
-      candidate.agentic_transport_descriptor,
-    );
     let receipt: CvAgenticReceipt | null = candidate.terminal_proof
       ? parseCvAgenticReceipt(candidate.terminal_proof, descriptor)
       : null;
@@ -636,6 +754,85 @@ export class NodiaCvGenerationWorker
     }, true);
   }
 
+  private async recoverGemini(
+    gemini: NodiaCvGeminiTransport,
+    candidate: CvAgenticOperation,
+    descriptor: CvGeminiDescriptor,
+  ) {
+    const requestHash = candidate.cv_gemini_request_hash;
+    let receipt = candidate.terminal_proof
+      ? parseCvProviderReceipt(candidate.terminal_proof, descriptor)
+      : null;
+    if (!receipt) {
+      let nativeReceipt: CvGeminiReceipt | null = null;
+      if (requestHash === null && candidate.started_exchanges === 0) {
+        nativeReceipt = this.geminiUndispatched(descriptor);
+      } else if (requestHash !== null) {
+        const snapshot = await gemini
+          .reconcile(
+            descriptor,
+            requestHash,
+            AbortSignal.timeout(GEMINI_RECOVERY_REQUEST_MS),
+          )
+          .catch(() => null);
+        if (snapshot?.state === 'terminal') nativeReceipt = snapshot.receipt;
+      }
+
+      receipt = await this.scope.transaction(async (manager) => {
+        const [current] = await this.store.pendingAgenticOperations(
+          manager,
+          candidate.id,
+        );
+        if (!current || !this.sameAgenticOperation(current, candidate))
+          return null;
+        if (current.terminal_proof)
+          return parseCvProviderReceipt(current.terminal_proof, descriptor);
+        if (!nativeReceipt) {
+          await this.store.markAgenticUnproven(manager, current);
+          return null;
+        }
+        // The original authority to publish is gone. Keep the native receipt,
+        // discard generated text and retire the intent without replay.
+        const unknown = nativeReceipt.remote_outcome === 'unknown';
+        await this.store.fail(
+          manager,
+          current.id,
+          unknown ? 'unknown' : 'failed',
+          unknown
+            ? 'provider_outcome_unknown'
+            : current.started_exchanges === 0
+              ? 'generation_worker_lost_before_dispatch'
+              : 'generation_lease_lost',
+        );
+        await this.store.agenticTerminal(manager, current, nativeReceipt);
+        return nativeReceipt;
+      }, true);
+    }
+    if (!receipt || receipt.provider !== 'gemini') return;
+    if (receipt.remote_outcome !== 'not_dispatched') {
+      if (requestHash === null) return;
+      try {
+        await gemini.acknowledge(
+          descriptor,
+          requestHash,
+          receipt,
+          AbortSignal.timeout(GEMINI_RECOVERY_REQUEST_MS),
+        );
+      } catch {
+        return;
+      }
+    }
+    const terminal = receipt;
+    await this.scope.transaction(async (manager) => {
+      const [current] = await this.store.pendingAgenticOperations(
+        manager,
+        candidate.id,
+      );
+      if (current && this.sameAgenticOperation(current, candidate))
+        await this.store.agenticAcknowledge(manager, current, terminal);
+    }, true);
+  }
+
   async recover(): Promise<void> {
     let failure: unknown;
     for (const [id, closure] of this.closedLocally) {
@@ -676,14 +873,19 @@ export class NodiaCvGenerationWorker
         );
       }
     }, true);
-    const codex = this.codex;
-    if (codex) {
+    if (this.codex || this.gemini) {
       const pending = await this.scope.transaction((manager) =>
         this.store.pendingAgenticOperations(manager),
       );
       for (const op of pending) {
         try {
-          await this.recoverAgentic(codex, op);
+          const descriptor = parseCvProviderDescriptor(
+            op.agentic_transport_descriptor,
+          );
+          if (descriptor.provider === 'openai' && this.codex)
+            await this.recoverCodex(this.codex, op, descriptor);
+          if (descriptor.provider === 'gemini' && this.gemini)
+            await this.recoverGemini(this.gemini, op, descriptor);
         } catch (error) {
           failure ??= error;
         }

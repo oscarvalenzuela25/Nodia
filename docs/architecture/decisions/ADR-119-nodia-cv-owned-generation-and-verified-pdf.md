@@ -58,6 +58,15 @@ El lector de manifiestos y el reconciliador requieren la ampliación
 antes de habilitar el escritor en un entorno protegido.
 [Runbook del journal](../../../ops/nodia-ai-backups/journal.md).
 
+El carril Gemini Agentic del piloto reutiliza el SDK restringido y
+la admisión del perfil físico. El contrato privado `cv-agentic-text/1`
+vincula al dueño CV, su perfil y la generación al hash de la petición
+nativa. PostgreSQL fija el hash junto al presupuesto antes de despachar.
+El adaptador mantiene la reserva hasta confirmar el recibo exacto
+después del commit de CV. Al recuperar, el cierre local se acredita
+por ese intento. Las calificaciones de CV se emiten por conexión,
+modelo, esfuerzo, sesión y runtime observados.
+
 ## Consecuencias
 
 - La cuenta puede repetir el proceso, reutilizar perfiles y reabrir el PDF exacto sin pagar otra inferencia.

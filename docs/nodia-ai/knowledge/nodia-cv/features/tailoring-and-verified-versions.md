@@ -4,11 +4,11 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 6,
+  "revision": 7,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado habilitó Codex Agentic GPT-6.2 Sol en Alto tras un borrador real con perfil y oferta sintéticos."
+    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado habilitó GPT-6.2 Sol en Alto y Gemini 4 Hydrogen en Alto tras sendos borradores Agentic con perfil y oferta sintéticos."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -33,7 +33,7 @@
   "verification": {
     "checked_on": "2026-11-25",
     "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md"],
-    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó un intercambio real, el ACK exacto y la extracción de texto en ambas plantillas."
+    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó un intercambio real por proveedor, los ACK exactos y la extracción de texto en ambas plantillas."
   },
   "approval": null
 }
@@ -56,13 +56,15 @@ la [guía UI](../../../../features/nodia-cv/ui-design.md) y el
 [ADR119 propuesto](../../../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md)
 describen el flujo implementado y los pendientes de aceptación.
 
-## Agentic previsto
+## Agentic en el piloto de la VM
 
-El piloto aislado de la VM habilitó GPT-6.2 Sol en Alto en **Generar CV**.
+El piloto aislado de la VM habilitó GPT-6.2 Sol en Alto y Gemini 4
+Hydrogen en Alto en **Generar CV**.
 El selector exige una calificación válida de CV para la misma conexión,
-modo, modelo, esfuerzo y sesión. Las demás selecciones muestran su propio
-estado. La generación también exige perfil guardado y oferta. La
-recuperación consulta el recibo sin reenviar.
+modo, modelo, esfuerzo y sesión. Gemini muestra las combinaciones que
+cuentan con un recibo de CV para la configuración guardada y revalida
+la sesión al aplicarlas. La generación exige perfil guardado y oferta.
+La recuperación consulta el recibo sin reenviar.
 [Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 
 ## Solicitudes en lenguaje natural

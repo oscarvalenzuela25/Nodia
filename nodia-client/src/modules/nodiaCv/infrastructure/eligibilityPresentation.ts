@@ -12,6 +12,12 @@ export function cvEligibilityReasonKey(reason: string | null) {
     case "codex_effort_unavailable":
     case "codex_profile_busy":
     case "codex_usage_unavailable":
+    case "gemini_runtime_unavailable":
+    case "gemini_session_required":
+    case "gemini_session_unverified":
+    case "gemini_model_unavailable":
+    case "gemini_effort_unavailable":
+    case "gemini_profile_busy":
       return `model_selector.${reason}` as const;
     default:
       return "model_selector.selection_unavailable";

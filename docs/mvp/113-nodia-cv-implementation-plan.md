@@ -658,15 +658,23 @@ calificada y en Medio sigue requiriendo evidencia propia.
 
 #### 5. Integrar y calificar Gemini por el mismo contrato de CV
 
-- [ ] Comparar el adaptador privado de Gemini con el contrato del paso 2.
+El piloto de la VM calificó **Gemini 4 Hydrogen en Alto** mediante un
+único borrador sintético y un recibo de CV completado y confirmado.
+El catálogo de CV publica esa combinación en Agentic. La elegibilidad
+vuelve a comprobar la sesión y configuración vigentes. El caso Codex
+de GPT-6.2 Sol en Alto conservó su calificación.
+[Evidencia del paso 5](../evidence/nodia-cv-agentic-baseline-vm-20261125.md#paso-5-gemini-agentic-en-el-piloto-aislado-de-la-vm).
+
+- [x] Comparar el adaptador privado de Gemini con el contrato del paso 2.
   Reusar su admisión exclusiva y cierre verificable con descriptor de CV.
   Confirmar la disponibilidad del ID y nivel exactos en la cuenta de la
   VM. Mantener las agrupaciones de modelo y razonamiento existentes.
-- [ ] Repetir aislamiento, cuota, caída, timeout, cierre y reinicio con
+- [x] Repetir aislamiento, cuota, caída, timeout, cierre y reinicio con
   las garantías del transporte Gemini. Después ejecutar su probe y
-  recorrido por UI con datos sintéticos. Registrar el alcance por
-  combinación. **Salida**: Gemini anuncia solo lo validado. Un bloqueo
-  de Gemini queda documentado sin impedir la entrega validada de Codex.
+  verificar el selector en la UI con datos sintéticos. Registrar el
+  alcance por combinación. **Salida**: el piloto anuncia únicamente la
+  selección Gemini validada. La generación ordinaria y el guardado
+  de versiones siguen en el recorrido de aceptación pendiente.
 
 #### 6. Preparar la entrega y verificar adopción
 

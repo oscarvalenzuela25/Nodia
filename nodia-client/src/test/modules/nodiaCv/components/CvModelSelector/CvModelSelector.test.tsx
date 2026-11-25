@@ -74,6 +74,40 @@ describe("CvModelSelector", () => {
     expect(settings.onApply).toHaveBeenCalledExactlyOnceWith(next);
   });
 
+  it("offers only the qualified Gemini model and effort and waits for its current eligibility", async () => {
+    const user = userEvent.setup();
+    const exact: NodiaAiSelection = { ...applied, mode: "agentic", model_id: "gemini-fixture-high", effort_id: "high" };
+    const settings = props();
+    const view: CvModelSelectorProps = {
+      ...settings,
+      connections: [{
+        ...connections[0],
+        provider_key: "gemini",
+        modes: [connections[0].modes[0], {
+          ...mode, mode: "agentic", cv_transport: "available", configured_selection: null,
+          models: [{ model_id: exact.model_id, label: "Gemini Fixture (High)", efforts: [{ effort_id: "high", label: "high" }] }],
+        }],
+      }],
+    };
+    const { rerender } = render(<CvModelSelector {...view} />);
+    await user.click(screen.getByRole("button", { name: cv("title") }));
+    await user.click(screen.getByRole("button", { name: action("mode") }));
+    await user.click(screen.getByRole("option", { name: i18n.t("nodiaAi:modes.agentic") }));
+    await user.click(screen.getByRole("button", { name: action("model") }));
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    await user.click(screen.getByRole("option", { name: "Gemini Fixture (High)" }));
+    await user.click(screen.getByRole("button", { name: action("effort") }));
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    await user.click(screen.getByRole("option", { name: i18n.t("nodiaAi:effort_levels.high") }));
+
+    rerender(<CvModelSelector {...view} eligibility={{ selection: exact, eligible: false, reason_code: "gemini_profile_busy" }} />);
+    expect(screen.getByText(cv("gemini_profile_busy"))).toBeVisible();
+    expect(screen.getByRole("button", { name: action("apply") })).toBeDisabled();
+    rerender(<CvModelSelector {...view} eligibility={{ selection: exact, eligible: true, reason_code: "qualified" }} />);
+    await user.click(screen.getByRole("button", { name: action("apply") }));
+    expect(settings.onApply).toHaveBeenCalledExactlyOnceWith(exact);
+  });
+
   it("shows each Agentic gate and accepts only the verified model and reasoning tuple", async () => {
     const user = userEvent.setup();
     const exact: NodiaAiSelection = { ...applied, mode: "agentic", model_id: "fixture-codex", effort_id: "high" };
