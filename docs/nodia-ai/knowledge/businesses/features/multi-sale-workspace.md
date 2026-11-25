@@ -249,8 +249,10 @@ el producto. NodiaAI conserva las lecturas de ventas y reportes.
 [Plan94 §48](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 La presentación compacta alinea cantidad, subtotal y acción de quitar en
-cada fila. El ajuste visual conserva las operaciones del carrito y sus
-importes, por lo que no afecta el contexto de NodiaAI.
+cada fila. El cobro destaca el medio seleccionado con fondo sólido, icono
+y etiqueta, y usa una columna cuando hay poco espacio. La presentación
+conserva las operaciones del carrito, sus importes y el medio elegido, por
+lo que no afecta el contexto de NodiaAI.
 
 ## Producto manual: regla posterior del 2026-11-06
 
