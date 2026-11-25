@@ -99,6 +99,7 @@
     "test:nodia-ai:cross-reports": "npm run build && node test/nodia-ai-ai31.integration.mjs",
     "test:nodia-cv:profiles": "npm run build && node test/nodia-cv-profiles.integration.mjs",
     "test:nodia-cv:generations": "npm run build && node test/nodia-cv-generations.integration.mjs",
+    "test:nodia-cv:agentic-generations": "npm run build && node test/nodia-cv-agentic-generations.integration.mjs",
     "test:nodia-cv:pdf-versions": "npm run build && node test/nodia-cv-pdf.integration.mjs && node test/nodia-cv-pdf-versions.integration.mjs",
     "test:teacher:integration": "npm run build && node test/teacher-domain.integration.mjs && node test/teacher-runtime.integration.mjs",
     "test:teacher:calendar": "npm run build && node test/teacher-study-calendar.integration.mjs",

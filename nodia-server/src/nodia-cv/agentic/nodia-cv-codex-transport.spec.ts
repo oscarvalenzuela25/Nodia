@@ -6,7 +6,6 @@ import {
   agenticHash,
   agenticTextHash,
 } from '../../ai-generation/agentic-text-contract.js';
-import { CODEX_TEACHER_CAPABILITIES } from '../../ai-generation/codex-teacher-text-transport.js';
 import type { CodexProfileLease } from '../../common/ai/codex/codex-profile-lease.js';
 import {
   CV_TAILORING_PROMPT_VERSION,
@@ -28,6 +27,7 @@ import {
   type CvCodexNativePorts,
 } from './nodia-cv-codex-transport.js';
 import type { CvCodexHostRequest } from './nodia-cv-codex-wire.js';
+import { CODEX_CV_HOST_CAPABILITIES } from './nodia-cv-codex-host.js';
 
 const profile: NodiaCvProfileDetail = {
   id: '11111111-1111-4111-8111-111111111111',
@@ -157,14 +157,14 @@ async function fixture(reply: Reply = 'draft') {
       const binding = agenticHash({
         ...reference,
         prompt_hash: agenticTextHash(prompt),
-        source_commit: CODEX_TEACHER_CAPABILITIES.source_commit,
-        policy_hash: CODEX_TEACHER_CAPABILITIES.policy_hash,
+        source_commit: CODEX_CV_HOST_CAPABILITIES.source_commit,
+        policy_hash: CODEX_CV_HOST_CAPABILITIES.policy_hash,
       });
       const start = terminal({
         event: 'started',
         operation_id: reference.operation_id,
         binding_hash: binding,
-        policy_hash: CODEX_TEACHER_CAPABILITIES.policy_hash,
+        policy_hash: CODEX_CV_HOST_CAPABILITIES.policy_hash,
         proof_nonce: proofNonce,
       });
       this.stdout.write(start.slice(0, 40));
@@ -198,7 +198,8 @@ async function fixture(reply: Reply = 'draft') {
       path: '/synthetic/verified-host',
       sha512: 'a'.repeat(128),
       runtimeHash: 'b'.repeat(64),
-      capabilities: CODEX_TEACHER_CAPABILITIES,
+      capabilities: CODEX_CV_HOST_CAPABILITIES,
+      modelMetadata: '{"slug":"synthetic-model"}',
     })),
     acquire: vi.fn(async () => lease),
     identity: vi.fn(async (pid: number) =>
@@ -210,16 +211,20 @@ async function fixture(reply: Reply = 'draft') {
       events.push('process-closed');
     }),
     assertEmpty: vi.fn(async () => undefined),
+    same: vi.fn(async () => false),
     spawn: vi.fn<CvCodexNativePorts['spawn']>(() => {
       child = new FakeHost();
       return child as unknown as ChildProcessWithoutNullStreams;
     }),
   };
   const selection = { observe: vi.fn(async () => live) };
-  const journal = { identity: vi.fn(async () => account) };
+  const journal = {
+    identity: vi.fn(async () => account),
+    root: vi.fn(async () => '/synthetic/profiles/chat-jobs'),
+  };
   const transport = new NodiaCvCodexTransport(
     selection,
-    { releaseIdle: vi.fn() },
+    { releaseIdle: vi.fn(), recoverClosedProfile: vi.fn() },
     journal,
     ports,
   );
@@ -251,6 +256,10 @@ async function fixture(reply: Reply = 'draft') {
     runtime_hash: observation.transport.runtimeHash,
   };
   const barrier = {
+    bind: vi.fn<CvCodexExecutionBarrier['bind']>(async () => {
+      events.push('custody');
+      return true;
+    }),
     arm: vi.fn<CvCodexExecutionBarrier['arm']>(async () => {
       events.push('arm');
       return true;
@@ -270,6 +279,7 @@ async function fixture(reply: Reply = 'draft') {
       barrier,
     );
   return {
+    transport,
     execute,
     selection,
     journal,
@@ -290,6 +300,7 @@ describe('Nodia CV restricted Codex transport', () => {
     const f = await fixture();
     const result = await f.execute();
     expect(f.events).toEqual([
+      'custody',
       'bind',
       'arm',
       'stdin',
@@ -361,22 +372,39 @@ describe('Nodia CV restricted Codex transport', () => {
 
   it('writes no input and emits no replacement terminal when admission is refused', async () => {
     const f = await fixture();
-    f.barrier.arm.mockResolvedValueOnce(false);
+    f.barrier.bind.mockResolvedValueOnce(false);
     await expect(f.execute()).rejects.toThrow('cv:codex_preflight_failed');
     expect(f.requests).toHaveLength(0);
     expect(f.barrier.terminal).not.toHaveBeenCalled();
-    expect(f.events).toEqual(['bind', 'process-closed', 'release']);
+    expect(f.events).toEqual(['release']);
   });
 
   it('retains the profile barrier when admission itself is uncertain and sent nothing', async () => {
     const f = await fixture();
-    f.barrier.arm.mockRejectedValueOnce(
+    f.barrier.bind.mockRejectedValueOnce(
       Error('Synthetic admission response lost'),
     );
     await expect(f.execute()).rejects.toThrow('cv:codex_admission_unverified');
     expect(f.requests).toHaveLength(0);
     expect(f.barrier.terminal).not.toHaveBeenCalled();
     expect(f.lease.release).not.toHaveBeenCalled();
+  });
+
+  it('closes a bound workspace without dispatch when the exchange barrier rejects', async () => {
+    const f = await fixture();
+    f.barrier.arm.mockResolvedValueOnce(false);
+    expect(await f.execute()).toMatchObject({
+      state: 'failed',
+      receipt: { process_closed: true, remote_outcome: 'not_dispatched' },
+    });
+    expect(f.requests).toHaveLength(0);
+    expect(f.events).toEqual([
+      'custody',
+      'bind',
+      'process-closed',
+      'terminal',
+      'release',
+    ]);
   });
 
   it('records a proven predispatch rejection separately from an uncertain remote outcome', async () => {
@@ -440,6 +468,7 @@ describe('Nodia CV restricted Codex transport', () => {
     await expect(f.execute()).rejects.toThrow('cv:codex_close_unverified');
     expect(f.barrier.terminal).not.toHaveBeenCalled();
     expect(f.lease.release).not.toHaveBeenCalled();
+    expect(await f.transport.provenClosed(f.descriptor, null)).toBe(true);
   });
 
   it('retains the profile claim when terminal persistence and ACK fail', async () => {

@@ -1,6 +1,11 @@
 import type { AiSelection } from '../../ai-generation/ai-selection.js';
+import type { CodexProcessIdentity } from '../../common/ai/codex/codex-process-ownership.js';
 import type { NodiaAiApiConfiguration } from '../../nodia-ai-adapter/api-nodia-ai-credentials.service.js';
 import type { ApiExecutorOwner } from '../../nodia-ai-adapter/api-nodia-ai-runtime-owner.js';
+import type {
+  CvAgenticDescriptor,
+  CvAgenticReceipt,
+} from '../agentic/nodia-cv-agentic-contract.js';
 import type { CvTailoringDraft, PreparedCvTailoring } from '../engine/index.js';
 import type { NodiaCvProfileDetail } from './nodia-cv-profile.types.js';
 
@@ -55,19 +60,49 @@ export interface CvGenerationClaim {
   row: CvGenerationRow;
   prepared: PreparedCvTailoring;
   selection: AiSelection;
-  configuration: NodiaAiApiConfiguration;
+  configuration: CvGenerationConfiguration;
+  agenticDescriptor?: CvAgenticDescriptor;
   fence: string;
   workerId: string;
   executionHash: string;
   deadlineAt: Date;
 }
 
+export interface CvAgenticConfiguration extends Omit<
+  NodiaAiApiConfiguration,
+  'providerKey' | 'keyId'
+> {
+  providerKey: 'openai';
+  keyId: null;
+  policyHash: string;
+  runtimeHash: string;
+}
+
+export type CvGenerationConfiguration =
+  NodiaAiApiConfiguration | CvAgenticConfiguration;
+
+export interface CvAgenticCustody {
+  owner: CodexProcessIdentity;
+  native: CodexProcessIdentity | null;
+  workspace: string;
+}
+
 export interface CvOperation {
   id: string;
-  phase: 'dispatch_armed' | 'transport_open';
+  phase: 'dispatch_armed' | 'transport_open' | 'closed';
   started_exchanges: number;
   request_hash: string;
   runtime_fence: string;
   api_owner_identity: ApiExecutorOwner | null;
+  agentic_transport_descriptor?: CvAgenticDescriptor | null;
+  cv_agentic_native?: CvAgenticCustody | null;
+  terminal_proof?: CvAgenticReceipt | null;
   valid_lease?: boolean;
+}
+
+export interface CvAgenticOperation extends CvOperation {
+  resource_key: string;
+  agentic_transport_descriptor: CvAgenticDescriptor;
+  cv_agentic_native: CvAgenticCustody | null;
+  terminal_proof: CvAgenticReceipt | null;
 }

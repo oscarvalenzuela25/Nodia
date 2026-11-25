@@ -9,7 +9,7 @@ import { parseNodiaAiStrictJson } from '../../nodia-ai-context/strict-json.js';
 
 export const CV_CODEX_HOST_MAX_TERMINAL_FRAME_BYTES = 262_144;
 const MAX_REQUEST_FRAME_BYTES = 800_000;
-const MAX_PROMPT_BYTES = 131_072;
+export const CV_CODEX_HOST_MAX_PROMPT_BYTES = 131_072;
 const MAX_RESULT_BYTES = 32_768;
 const MAX_DEADLINE_MS = 600_000;
 
@@ -136,7 +136,7 @@ export function createCvCodexHostWire(
     !agenticUuid(request.operation_id) ||
     !boundedId(request.model_id, 1024) ||
     (request.effort_id !== null && !boundedId(request.effort_id, 256)) ||
-    !boundedText(request.prompt, MAX_PROMPT_BYTES) ||
+    !boundedText(request.prompt, CV_CODEX_HOST_MAX_PROMPT_BYTES) ||
     !boundedId(request.configuration_generation, 256) ||
     !boundedId(request.session_generation, 256) ||
     !boundedId(request.resource_key, 256) ||

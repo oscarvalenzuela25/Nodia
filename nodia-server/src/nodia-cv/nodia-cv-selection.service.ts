@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Optional,
   ServiceUnavailableException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -22,11 +23,21 @@ import {
   NODIA_AI_RUNTIME_POLICY,
   type NodiaAiRuntimePolicy,
 } from '../nodia-ai-runtime/config/runtime-policy.js';
+import { NodiaCvCodexSelection } from './agentic/nodia-cv-codex-selection.js';
+import { NodiaCvCodexTransport } from './agentic/nodia-cv-codex-transport.js';
 import {
   CV_TAILORING_PROMPT_VERSION,
   CV_TAILORING_PURPOSE,
   CV_TAILORING_SCHEMA_VERSION,
 } from './engine/types.js';
+import type {
+  CvAgenticConfiguration,
+  CvGenerationConfiguration,
+} from './types/nodia-cv-generation.types.js';
+
+export type CvAgenticObservation = Awaited<
+  ReturnType<NodiaCvCodexTransport['observe']>
+> | null;
 
 type CvEligibilityCode =
   | 'agentic_transport_unavailable'
@@ -50,7 +61,60 @@ export class NodiaCvSelectionService {
     private readonly connections: NodiaAiConnectionsService,
     @Inject(NODIA_AI_RUNTIME_POLICY)
     private readonly policy: NodiaAiRuntimePolicy,
+    @Optional() private readonly codex?: NodiaCvCodexTransport,
+    @Optional() private readonly codexSelection?: NodiaCvCodexSelection,
   ) {}
+
+  /** Native inspection runs outside the authority and queue transactions. */
+  async observeAgentic(
+    selection: AiSelection,
+    signal: AbortSignal,
+  ): Promise<CvAgenticObservation> {
+    if (selection.mode !== 'agentic' || !this.codexSelection || !this.codex)
+      return null;
+    return this.codex.observe(selection, signal);
+  }
+
+  async configureAgentic(
+    selection: AiSelection,
+    manager: EntityManager,
+    observation: CvAgenticObservation,
+  ): Promise<CvAgenticConfiguration> {
+    if (
+      !this.codexSelection ||
+      !observation ||
+      observation.transport.status === 'host_unavailable' ||
+      observation.selection.status === 'codex_runtime_unavailable'
+    ) {
+      throw new ServiceUnavailableException(
+        'nodiaCv:agentic_transport_unavailable',
+      );
+    }
+    const { selection: verified, transport } = observation;
+    if (
+      selection.mode !== 'agentic' ||
+      verified.status !== 'metadata_ready' ||
+      transport.status !== 'available' ||
+      verified.selection.connection_id !== selection.connection_id ||
+      verified.selection.model_id !== selection.model_id ||
+      verified.selection.effort_id !== selection.effort_id ||
+      !(await this.codexSelection.matchesConfiguration(manager, verified))
+    ) {
+      throw new UnprocessableEntityException(
+        'nodiaCv:configuration_unavailable',
+      );
+    }
+    return {
+      providerKey: verified.providerKey,
+      connectionId: verified.selection.connection_id,
+      keyId: null,
+      configurationGeneration: verified.configurationGeneration,
+      sessionGeneration: verified.sessionGeneration,
+      resourceKey: verified.resourceKey,
+      policyHash: transport.policyHash,
+      runtimeHash: transport.runtimeHash,
+    };
+  }
 
   async configure(
     selection: AiSelection,
@@ -72,7 +136,9 @@ export class NodiaCvSelectionService {
     }
   }
 
-  scopeHash(selection: AiSelection, config: NodiaAiApiConfiguration): string {
+  scopeHash(selection: AiSelection, config: CvGenerationConfiguration): string {
+    const transportIdentity =
+      config.keyId === null ? [config.policyHash, config.runtimeHash] : [];
     return createHash('sha256')
       .update(
         JSON.stringify([
@@ -90,6 +156,7 @@ export class NodiaCvSelectionService {
           config.configurationGeneration,
           config.sessionGeneration,
           config.resourceKey,
+          ...transportIdentity,
         ]),
       )
       .digest('hex');
@@ -106,7 +173,12 @@ export class NodiaCvSelectionService {
        JOIN ai_generation_operations o ON o.cv_generation_id=g.id AND o.actor_id=g.owner_user_id
        WHERE q.scope_hash=$1 AND g.scope_hash=q.scope_hash AND o.owner_kind='cv'
          AND o.phase='closed' AND o.remote_outcome='completed' AND o.acknowledged_at IS NOT NULL
-         AND o.response_hash=q.response_hash`,
+         AND o.response_hash=q.response_hash
+         AND (
+           o.selection_snapshot->>'mode'='api_key'
+           OR (o.selection_snapshot->>'mode'='agentic' AND o.agentic_transport_descriptor IS NOT NULL
+             AND o.agentic_acknowledged_at IS NOT NULL)
+         )`,
       [scopeHash],
     );
     return row?.checked_at ?? null;
@@ -119,6 +191,7 @@ export class NodiaCvSelectionService {
   async eligibility(
     manager: EntityManager,
     selection: AiSelection,
+    observation: CvAgenticObservation = null,
   ): Promise<CvSelectionEligibility> {
     const requested = {
       connection_id: selection.connection_id,
@@ -126,28 +199,26 @@ export class NodiaCvSelectionService {
       model_id: selection.model_id,
       effort_id: selection.effort_id,
     };
-    if (requested.mode === 'agentic') {
-      return {
-        selection: requested,
-        configured: null,
-        qualified: false,
-        eligible: false,
-        reason_code: 'agentic_transport_unavailable',
-        checked_at: null,
-      };
-    }
-
-    let config: NodiaAiApiConfiguration;
+    let config: CvGenerationConfiguration;
     try {
-      config = await this.configure(requested, manager);
+      config =
+        requested.mode === 'agentic'
+          ? await this.configureAgentic(requested, manager, observation)
+          : await this.configure(requested, manager);
     } catch (error) {
-      if (!(error instanceof UnprocessableEntityException)) throw error;
+      const unavailable =
+        requested.mode === 'agentic' &&
+        error instanceof ServiceUnavailableException;
+      if (!unavailable && !(error instanceof UnprocessableEntityException))
+        throw error;
       return {
         selection: requested,
-        configured: false,
+        configured: unavailable ? null : false,
         qualified: false,
         eligible: false,
-        reason_code: 'configuration_unavailable',
+        reason_code: unavailable
+          ? 'agentic_transport_unavailable'
+          : 'configuration_unavailable',
         checked_at: null,
       };
     }

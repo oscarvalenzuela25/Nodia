@@ -16,6 +16,8 @@ use codex_login::{AuthManager, GatewayLoginControl};
 use codex_protocol::config_types::SandboxMode;
 use codex_protocol::models::{ContentItem, ResponseItem};
 use codex_protocol::openai_models::ReasoningEffort;
+#[cfg(feature = "cv")]
+use codex_protocol::openai_models::{ModelInfo, ModelsResponse};
 use codex_protocol::protocol::{AskForApproval, EventMsg, SessionSource};
 use codex_protocol::user_input::UserInput;
 use codex_thread_store::InMemoryThreadStore;
@@ -188,6 +190,36 @@ pub async fn configuration(
 ) -> Result<Config, &'static str> {
     validate_configuration(&trusted)?;
     build_configuration(request, trusted, profile, workspace).await
+}
+
+#[cfg(feature = "cv")]
+pub fn cv_model_catalog(
+    raw: &str,
+    model_id: &str,
+    effort_id: Option<&str>,
+) -> Result<ModelsResponse, &'static str> {
+    if raw.len() > 96_000 {
+        return Err("invalid_configuration");
+    }
+    let model: ModelInfo = serde_json::from_str(raw).map_err(|_| "invalid_configuration")?;
+    let effort: Option<ReasoningEffort> = effort_id
+        .map(|id| serde_json::from_value(Value::String(id.into())).map_err(|_| "invalid_effort"))
+        .transpose()?;
+    if model.slug != model_id
+        || model.used_fallback_model_metadata
+        || effort.as_ref().is_some_and(|effort| {
+            !model
+                .supported_reasoning_levels
+                .iter()
+                .any(|level| &level.effort == effort)
+                || model.resolve_reasoning_effort(effort.clone()) != *effort
+        })
+    {
+        return Err("selection_changed");
+    }
+    Ok(ModelsResponse {
+        models: vec![model],
+    })
 }
 
 fn toml_value(value: &Value) -> Result<toml::Value, &'static str> {
@@ -678,6 +710,64 @@ mod tests {
         assert_eq!(body["tools"], json!([]));
         assert!(body.get("previous_response_id").is_none());
         assert_eq!(hash(response_text.as_bytes()).len(), 64);
+    }
+
+    #[cfg(feature = "cv")]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    #[ignore = "requires ModelInfo extracted from the verified official Codex 0.171.0 bundle"]
+    async fn cv_exact_official_model_exchanges_only_with_the_synthetic_provider() {
+        let catalog_path = std::env::var_os("NODIA_CV_CATALOG_FIXTURE").unwrap();
+        let raw = std::fs::read_to_string(catalog_path).unwrap();
+        let mut request = request();
+        request.model_id = "gpt-6.2-sol".into();
+        request.effort_id = Some("high".into());
+        let catalog = cv_model_catalog(&raw, &request.model_id, Some("high")).unwrap();
+        assert!(cv_model_catalog(&raw, "gpt-6.2-sol-alias", Some("high")).is_err());
+        assert!(cv_model_catalog(&raw, &request.model_id, Some("minimal")).is_err());
+
+        let server = MockServer::start().await;
+        let expected_text = r#"{"requirements":[],"selectedEvidenceIds":["e1"]}"#;
+        Mock::given(method("POST"))
+            .and(path("/responses"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .insert_header("content-type", "text/event-stream")
+                    .set_body_string(sse(
+                        json!({"id":"synthetic-message","type":"message","role":"assistant",
+                        "content":[{"type":"output_text","text":expected_text}]}),
+                    )),
+            )
+            .expect(1)
+            .mount(&server)
+            .await;
+        let home = tempfile::tempdir().unwrap();
+        let work = tempfile::tempdir().unwrap();
+        let mut config = build_configuration(
+            &request,
+            synthetic_configuration(&server.uri()),
+            home.path(),
+            work.path(),
+        )
+        .await
+        .unwrap();
+        config.model_catalog = Some(catalog);
+        let outcome = execute_inner(
+            &request,
+            config,
+            std::future::pending(),
+            false,
+            "synthetic-nonce",
+        )
+        .await;
+        assert!(outcome.local_closed);
+        assert_eq!(outcome.result.unwrap(), expected_text);
+        let requests = server.received_requests().await.unwrap();
+        assert_eq!(requests.len(), 1);
+        let body: Value = serde_json::from_slice(&requests[0].body).unwrap();
+        assert_eq!(body["model"], "gpt-6.2-sol");
+        assert_eq!(body["reasoning"]["effort"], "high");
+        assert!(body.get("tools").is_none_or(|tools| tools == &json!([])));
+        assert!(body.get("previous_response_id").is_none());
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

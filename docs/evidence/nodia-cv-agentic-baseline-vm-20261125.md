@@ -121,3 +121,43 @@ además de integrar la cola, las barreras persistentes y la recuperación.
 
 La entrega del paso 2 conserva la UI y el despliegue del laboratorio.
 Durante la validación se ejecutaron cero inferencias reales.
+
+## Paso 3. Host, cola y recuperación en PostgreSQL aislado
+
+El host de CV se compila con la feature `cv` del host restringido, con
+protocolo y huella propios. Usa Codex Core del commit fijado y recibe
+sólo el `ModelInfo` exacto del CLI oficial `0.171.0`. El Server exige
+la intersección con el catálogo autenticado de la conexión y su política.
+El host vuelve a comprobar el ID y esfuerzo y rechaza cualquier sustitución.
+El carril Teacher conserva su capacidad y configuración.
+
+El sondeo del CLI Linux de la VM con perfil temporal y espacio de red
+aislado confirmó `gpt-6.2-sol` y `high`. El registro exacto de metadatos
+ocupa 90028 bytes y tiene SHA-256
+`bc5d36fea1b17e349916309743eb51787953bd5d883e5e93905eea7a45c94a0e`.
+El binario del CLI tiene SHA-512
+`52f18aa24deab36a9c8f12983fac45e859710db3642b9af79544e1afb7c9c35ac978767a98b7e8481cda15e2c0d9dad787341227524adb88623cc609e087b7f6`.
+La consulta leyó el catálogo incorporado, sin usar una cuenta ni ejecutar
+generaciones. La observación autenticada del catálogo corresponde al paso 1.
+
+El [empaquetado reproducible](../../nodia-server/native/teacher-codex-host/README.md#private-protocol)
+generó el candidato Linux x64 de desarrollo `nodia-cv-codex-host-cee7aca95a10ef68`
+con 238776160 bytes, GLIBC máxima 2.34, SHA-256
+`cee7aca95a10ef6848ca721856113d69315f53575a59436fc037ecadcf1563f0`
+y SHA-512
+`99c618bc6c99aec7f7f9334125d3794457224e3810c97702054811eff614ba451dfdb08d0b13e00766f60129e7949694ac681e5494f595fe1e3432a814896c31`.
+Binario y manifiesto quedan en `nodia-server/native/teacher-codex-host/.cache/artifacts/cv/dev/`.
+
+| Comprobación | Resultado |
+| --- | --- |
+| Aislamiento nativo | 24 pruebas entre CV y Teacher en Docker sin red externa. Codex Core emitió un solo POST sintético en loopback con `gpt-6.2-sol / high`, sin herramientas ni continuación. La inspección offline rechazó un alias. |
+| Migración y concurrencia | Las 81 migraciones de Server aplicaron en PostgreSQL 16 desechable. Doble admisión y doble reclamo convergieron en el mismo intento, con una sola trama. El CHECK rechazó un recibo de otro actor. |
+| Publicación y ACK | El worker registra la custodia antes de iniciar el proceso, guarda la identidad nativa antes del presupuesto y comprueba contrato y permisos antes de despachar y publicar. Un fallo simulado de ACK mantuvo el recibo y el slot. Un worker nuevo cerró el ACK exacto y liberó el slot, sin reenviar. El probe sólo calificó después del ACK. |
+| Pérdida de respuesta | Sin prueba de cierre, la operación conservó el slot `unknown`. Una prueba posterior de cierre permitió conciliar el resultado remoto `unknown` y liberar, con el contador de intercambios intacto. La recuperación autónoma verifica el grupo en el mismo arranque Linux, o conserva la reserva si falta evidencia de custodia. |
+| Copia restaurada | PostgreSQL clonó una base con un terminal cerrado y ACK pendiente. La preparación de restore se detuvo para conciliación del dueño y conservó el recibo exacto. La cola operativa resolvió el ACK sin repetir el intercambio. |
+| Autoridad y regresiones | Se revocó el módulo antes del envío y antes de publicar. La primera revocación conservó cero intercambios. La segunda impidió publicar el borrador. Cambiar la generación de sesión invalidó la calificación. Pasaron 126 pruebas TypeScript, lint, compilación y las integraciones de API key y PDF en bases independientes. |
+
+La VM mantiene su release y esquema operativos. El paso 4 debe adoptar
+el host y el Server con la migración, ejecutar el probe con una cuenta
+real y habilitar la selección en la interfaz según el recibo. El paso 3
+no lanzó inferencias reales ni cambió la configuración de la cuenta.

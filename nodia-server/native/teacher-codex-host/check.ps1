@@ -1,6 +1,8 @@
 param(
     [ValidateSet('check', 'test', 'build', 'release', 'lint', 'format')]
-    [string]$Task = 'test'
+    [string]$Task = 'test',
+    [ValidateSet('teacher', 'cv')]
+    [string]$Lane = 'teacher'
 )
 $ErrorActionPreference = 'Stop'
 $sourcePath = $PSScriptRoot
@@ -24,5 +26,8 @@ $cargoArguments = switch ($Task) {
     'format' { @('fmt', '--check') }
 }
 if ($Task -in @('test', 'build', 'release', 'lint', 'format')) { $arguments += @('--network', 'none') }
+if ($Lane -eq 'cv' -and $Task -ne 'format') {
+    $cargoArguments = @($cargoArguments[0], '--features', 'cv') + @($cargoArguments | Select-Object -Skip 1)
+}
 & docker @arguments $image cargo @cargoArguments
 exit $LASTEXITCODE

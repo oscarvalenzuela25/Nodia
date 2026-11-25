@@ -8,7 +8,12 @@ import type {
 import { NodiaAiAdapterError } from '../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
 import type { NodiaAiConnectionsService } from '../nodia-ai-conversation/nodia-ai-connections.service.js';
 import type { NodiaAiRuntimePolicy } from '../nodia-ai-runtime/config/runtime-policy.js';
-import { NodiaCvSelectionService } from './nodia-cv-selection.service.js';
+import type { NodiaCvCodexSelection } from './agentic/nodia-cv-codex-selection.js';
+import type { NodiaCvCodexTransport } from './agentic/nodia-cv-codex-transport.js';
+import {
+  NodiaCvSelectionService,
+  type CvAgenticObservation,
+} from './nodia-cv-selection.service.js';
 
 const selection: AiSelection = {
   connection_id: '9007199254740993',
@@ -25,7 +30,11 @@ const configuration: NodiaAiApiConfiguration = {
   sessionGeneration: 'epoch-1',
 };
 
-function fixture(policyHash = 'runtime-policy-1') {
+function fixture(
+  policyHash = 'runtime-policy-1',
+  codex?: NodiaCvCodexTransport,
+  codexSelection?: NodiaCvCodexSelection,
+) {
   const resolveConfiguration = vi.fn().mockResolvedValue(configuration);
   const list = vi.fn();
   const query = vi.fn().mockResolvedValue([]);
@@ -36,9 +45,50 @@ function fixture(policyHash = 'runtime-policy-1') {
     } as unknown as ApiNodiaAiCredentialsService,
     { list } as unknown as NodiaAiConnectionsService,
     { policyHash, results: { list_default_rows: 1 } } as NodiaAiRuntimePolicy,
+    codex,
+    codexSelection,
   );
 
   return { selectionService, resolveConfiguration, manager, query, list };
+}
+
+function agenticFixture() {
+  const requested = {
+    ...selection,
+    mode: 'agentic',
+    effort_id: 'high',
+  } as const;
+  const observation = {
+    selection: {
+      selection: requested,
+      status: 'metadata_ready',
+      qualified: false,
+      providerKey: 'openai',
+      configurationGeneration: 'c'.repeat(64),
+      sessionGeneration: 'd'.repeat(32),
+      resourceKey: 'codex-profile:' + 'e'.repeat(64),
+      checkedAt: new Date('2026-11-25T00:00:00Z').toISOString(),
+    },
+    transport: {
+      status: 'available',
+      host: {},
+      policyHash: 'a'.repeat(64),
+      runtimeHash: 'b'.repeat(64),
+    },
+  } as const as NonNullable<CvAgenticObservation>;
+  const observe = vi.fn(async () => observation);
+  const matchesConfiguration = vi.fn().mockResolvedValue(true);
+  return {
+    ...fixture(
+      'runtime-policy-1',
+      { observe } as unknown as NodiaCvCodexTransport,
+      { matchesConfiguration } as unknown as NodiaCvCodexSelection,
+    ),
+    requested,
+    observation,
+    observe,
+    matchesConfiguration,
+  };
 }
 
 describe('Nodia CV selection', () => {
@@ -128,6 +178,103 @@ describe('Nodia CV selection', () => {
       reason_code: 'configuration_unavailable',
     });
     expect(query).not.toHaveBeenCalled();
+  });
+
+  it('keeps live Agentic metadata unqualified until the exact scope has a CV acceptance', async () => {
+    const f = agenticFixture();
+    const signal = new AbortController().signal;
+    const observation = await f.selectionService.observeAgentic(
+      f.requested,
+      signal,
+    );
+    expect(f.observe).toHaveBeenCalledWith(f.requested, signal);
+    expect(f.query).not.toHaveBeenCalled();
+    expect(f.matchesConfiguration).not.toHaveBeenCalled();
+    const config = await f.selectionService.configureAgentic(
+      f.requested,
+      f.manager,
+      observation,
+    );
+    const scopeHash = f.selectionService.scopeHash(f.requested, config);
+    expect(config).toMatchObject({
+      keyId: null,
+      policyHash: 'a'.repeat(64),
+      runtimeHash: 'b'.repeat(64),
+    });
+    const eligibility = await f.selectionService.eligibility(
+      f.manager,
+      f.requested,
+      observation,
+    );
+    expect(eligibility).toMatchObject({
+      configured: true,
+      qualified: false,
+      eligible: false,
+      reason_code: 'qualification_required',
+    });
+    expect(f.query.mock.calls[0][1]).toEqual([scopeHash]);
+    const checkedAt = new Date('2026-11-25T00:00:00Z');
+    f.query.mockResolvedValueOnce([{ checked_at: checkedAt }]);
+    await expect(
+      f.selectionService.eligibility(f.manager, f.requested, observation),
+    ).resolves.toMatchObject({
+      eligible: true,
+      qualified: true,
+      checked_at: checkedAt,
+    });
+    expect(f.resolveConfiguration).not.toHaveBeenCalled();
+  });
+
+  it('rejects an observation from a different effort or a changed configuration before checking qualifications', async () => {
+    const f = agenticFixture();
+    await expect(
+      f.selectionService.eligibility(
+        f.manager,
+        { ...f.requested, effort_id: 'medium' },
+        f.observation,
+      ),
+    ).resolves.toMatchObject({
+      eligible: false,
+      reason_code: 'configuration_unavailable',
+    });
+    expect(f.matchesConfiguration).not.toHaveBeenCalled();
+    f.matchesConfiguration.mockResolvedValueOnce(false);
+    await expect(
+      f.selectionService.eligibility(f.manager, f.requested, f.observation),
+    ).resolves.toMatchObject({
+      eligible: false,
+      reason_code: 'configuration_unavailable',
+    });
+    expect(f.query).not.toHaveBeenCalled();
+  });
+
+  it('invalidates Agentic qualification for another effort, session, configuration, policy or runtime', async () => {
+    const f = agenticFixture();
+    const config = await f.selectionService.configureAgentic(
+      f.requested,
+      f.manager,
+      f.observation,
+    );
+    const original = f.selectionService.scopeHash(f.requested, config);
+    expect(
+      f.selectionService.scopeHash(
+        { ...f.requested, effort_id: 'medium' },
+        config,
+      ),
+    ).not.toBe(original);
+    for (const key of [
+      'sessionGeneration',
+      'configurationGeneration',
+      'policyHash',
+      'runtimeHash',
+    ] as const) {
+      expect(
+        f.selectionService.scopeHash(f.requested, {
+          ...config,
+          [key]: 'changed',
+        }),
+      ).not.toBe(original);
+    }
   });
 
   it('paginates complete sanitized connections and declares the CV transport explicitly', async () => {

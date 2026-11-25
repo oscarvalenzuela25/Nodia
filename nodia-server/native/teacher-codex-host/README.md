@@ -11,6 +11,38 @@ actual account and acceptance for a selection/epoch remain separate gates.
 
 ## Private protocol
 
+The default build serves Teacher. The optional Cargo feature `cv` emits
+`nodia-cv-codex-host/1` capabilities and requires a separate executable
+pin. The CV process accepts the trailing arguments
+`--model-metadata-json <one ModelInfo object>`. The Server reads that object
+from the installed and SHA-512 pinned Codex CLI `0.171.0` using
+`debug models --bundled` with an isolated environment. The bundled entry
+supplies the SDK format for the selection already authorized by the live
+account catalog. The Server and the CV host verify the exact slug and
+effort. The CV variant initializes a one-model catalog in the SDK and
+retains the tool ceiling, response firewall and one-exchange budget.
+
+`--check-model <slug> <effort JSON> --model-metadata-json <object>`
+validates that compatibility with the same parser used for execution. It
+does not open a profile, use an account or start a turn.
+
+Build and package CV separately with `./check.ps1 -Task build -Lane cv`
+and `python package.py --profile dev --lane cv`. Server requires
+`NODIA_CODEX_CV_HOST` (absolute executable path),
+`NODIA_CODEX_CV_HOST_SHA512` and `NODIA_CODEX_CV_CATALOG_SHA512`
+(the installed official Codex CLI hash). The package manifest records
+the native binary hash and the SDK catalog release. The runtime fingerprint
+also incorporates the exact selected catalog entry. The existing
+Teacher artifact and variables are independent.
+
+The optional test
+`cv_exact_official_model_exchanges_only_with_the_synthetic_provider`
+requires the exact bundled entry extracted from the verified Codex CLI.
+Mount that JSON read-only, set `NODIA_CV_CATALOG_FIXTURE` to its path in
+the container and use `cargo test --locked --offline --features cv -- --ignored`
+with Docker `--network none`. The test uses its own loopback-only response
+fixture and checks one request for GPT-6.2 Sol with `high` and empty tools.
+
 `--capabilities` writes one JSON line and exits before inspecting the current
 directory, environment, config, profile, keyring or provider. Its metadata states
 the source commit, policy hash and limits; it never claims account readiness.

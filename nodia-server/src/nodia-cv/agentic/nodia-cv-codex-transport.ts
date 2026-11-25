@@ -1,8 +1,8 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { addAbortListener } from 'node:events';
-import { readFile } from 'node:fs/promises';
-import { basename, extname } from 'node:path';
+import { lstat, readFile, realpath, rm } from 'node:fs/promises';
+import { basename, dirname, extname, join } from 'node:path';
 import type { AiSelection } from '../../ai-generation/ai-selection.js';
 import {
   agenticHash,
@@ -10,7 +10,6 @@ import {
 } from '../../ai-generation/agentic-text-contract.js';
 import {
   codexTeacherEnvironment,
-  codexTeacherHostMetadata,
   type CodexTeacherHostPorts,
 } from '../../ai-generation/codex-teacher-text-transport.js';
 import type { CodexChatRuntime } from '../../common/ai/codex/codex-chat-runtime.js';
@@ -22,6 +21,7 @@ import {
 import {
   assertCodexGroupEmpty,
   codexProcessIdentity,
+  sameCodexProcess,
   stopCodexGroup,
   type CodexProcessIdentity,
 } from '../../common/ai/codex/codex-process-ownership.js';
@@ -32,6 +32,8 @@ import {
   type CvTailoringDraft,
   type PreparedCvTailoring,
 } from '../engine/index.js';
+import { cvGenerationPrompt } from '../policies/nodia-cv-generation.js';
+import type { CvAgenticCustody } from '../types/nodia-cv-generation.types.js';
 import {
   CV_AGENTIC_POLICY_VERSION,
   cvAgenticPayloadHash,
@@ -40,6 +42,11 @@ import {
   type CvAgenticDescriptor,
   type CvAgenticReceipt,
 } from './nodia-cv-agentic-contract.js';
+import {
+  CodexCvHostSelectionError,
+  codexCvHostMetadata,
+  type CodexCvHostMetadata,
+} from './nodia-cv-codex-host.js';
 import type {
   CvCodexSelectionReady,
   NodiaCvCodexSelection,
@@ -58,16 +65,18 @@ type ProfileIdentity = Pick<
 
 export interface CvCodexNativePorts extends Pick<
   CodexTeacherHostPorts,
-  'metadata' | 'acquire' | 'spawn' | 'identity' | 'stop'
+  'acquire' | 'spawn' | 'identity' | 'stop' | 'same'
 > {
+  metadata: typeof codexCvHostMetadata;
   assertEmpty(group: number): Promise<void>;
 }
 
 const nativePorts: CvCodexNativePorts = {
-  metadata: codexTeacherHostMetadata,
+  metadata: codexCvHostMetadata,
   acquire: (connection, signal) =>
     acquireCodexProfileLease(connection, true, signal, true),
   identity: codexProcessIdentity,
+  same: sameCodexProcess,
   stop: stopCodexGroup,
   assertEmpty: assertCodexGroupEmpty,
   spawn: (path, args, options) =>
@@ -86,7 +95,9 @@ export type CvCodexExecution =
     };
 
 export interface CvCodexExecutionBarrier {
-  /** Persist the native identity and single exchange. Return false only when no admission was written. */
+  /** Persist ownership of the gated workspace before starting a native process. */
+  bind(custody: CvAgenticCustody, signal: AbortSignal): Promise<boolean>;
+  /** Persist the native identity, then check authority and consume one exchange before stdin. */
   arm(
     input: {
       descriptor: CvAgenticDescriptor;
@@ -97,8 +108,18 @@ export interface CvCodexExecutionBarrier {
     },
     signal: AbortSignal,
   ): Promise<boolean>;
-  /** The owner durably records the terminal and ACK before the native profile is released. */
+  /** Persist the exact terminal before releasing the native profile. SQL ACK follows release. */
   terminal(outcome: CvCodexExecution): Promise<void>;
+}
+
+interface LocalCvLease {
+  descriptor: CvAgenticDescriptor;
+  lease: CodexProfileLease;
+  active: boolean;
+  closed: boolean;
+  childPid?: number;
+  native?: CodexProcessIdentity;
+  releasing?: Promise<void>;
 }
 
 const identityMatches = (
@@ -124,6 +145,7 @@ async function transportSourcesHash(): Promise<string> {
   const paths = [
     source,
     new URL(`./nodia-cv-codex-wire${extension}`, source),
+    new URL(`./nodia-cv-codex-host${extension}`, source),
     new URL(`./nodia-cv-agentic-contract${extension}`, source),
     new URL(`./nodia-cv-codex-selection${extension}`, source),
   ];
@@ -195,10 +217,18 @@ async function waitForHost(
 
 /** This host has no tool registry, environments, attachments, continuation or transport retries. */
 export class NodiaCvCodexTransport {
+  private readonly leases = new Map<string, LocalCvLease>();
+
   constructor(
     private readonly selection: Pick<NodiaCvCodexSelection, 'observe'>,
-    private readonly runtime: Pick<CodexRuntimeService, 'releaseIdle'>,
-    private readonly journal: Pick<CodexChatRuntime['journal'], 'identity'>,
+    private readonly runtime: Pick<
+      CodexRuntimeService,
+      'releaseIdle' | 'recoverClosedProfile'
+    >,
+    private readonly journal: Pick<
+      CodexChatRuntime['journal'],
+      'identity' | 'root'
+    >,
     private readonly ports: CvCodexNativePorts = nativePorts,
   ) {}
 
@@ -210,7 +240,7 @@ export class NodiaCvCodexTransport {
         transport: { status: 'unobserved' },
       } as const;
     try {
-      const host = await this.ports.metadata(signal);
+      const host = await this.ports.metadata(signal, observed.selection);
       const sources = await transportSourcesHash();
       signal.throwIfAborted();
       const policyHash = agenticHash({
@@ -226,8 +256,13 @@ export class NodiaCvCodexTransport {
         selection: observed,
         transport: { status: 'available', host, policyHash, runtimeHash },
       } as const;
-    } catch {
+    } catch (error) {
       signal.throwIfAborted();
+      if (error instanceof CodexCvHostSelectionError)
+        return {
+          selection: observed,
+          transport: { status: 'selection_unsupported', reason: error.reason },
+        } as const;
       return {
         selection: observed,
         transport: { status: 'host_unavailable' },
@@ -297,7 +332,7 @@ export class NodiaCvCodexTransport {
         operation_id: descriptor.attempt_id,
         model_id: descriptor.model_id,
         effort_id: descriptor.effort_id,
-        prompt: `${systemPrompt}\n\nInput JSON:\n${userPrompt}`,
+        prompt: cvGenerationPrompt(prepared),
         deadline_at: deadline.toISOString(),
         configuration_generation: descriptor.configuration_generation,
         session_generation: descriptor.session_generation,
@@ -311,7 +346,7 @@ export class NodiaCvCodexTransport {
     return this.run(
       descriptor,
       prepared,
-      transport.host.path,
+      transport.host,
       selected,
       lease,
       wire,
@@ -323,7 +358,7 @@ export class NodiaCvCodexTransport {
   private async run(
     descriptor: CvAgenticDescriptor,
     prepared: PreparedCvTailoring,
-    path: string,
+    host: CodexCvHostMetadata,
     observation: CvCodexSelectionReady,
     lease: CodexProfileLease,
     wire: HostWire,
@@ -333,8 +368,15 @@ export class NodiaCvCodexTransport {
     let child: ChildProcessWithoutNullStreams | undefined;
     let native: CodexProcessIdentity | undefined;
     let releasedInput = false;
-    let admission: 'not_admitted' | 'unverified' | 'admitted' = 'not_admitted';
+    let custody: 'unbound' | 'uncertain' | 'bound' = 'unbound';
     let outcome = noDispatch;
+    const owned: LocalCvLease = {
+      descriptor,
+      lease,
+      active: true,
+      closed: false,
+    };
+    this.leases.set(descriptor.attempt_id, owned);
     try {
       const actual = await this.journal.identity(
         descriptor.connection_id,
@@ -344,14 +386,23 @@ export class NodiaCvCodexTransport {
       if (!identityMatches(actual, descriptor))
         throw Error('cv:codex_session_changed');
       const owner = await this.ports.identity(process.pid);
+      const workspace = basename(lease.cwd);
+      custody = 'uncertain';
+      if (!(await barrier.bind({ owner, native: null, workspace }, signal))) {
+        custody = 'unbound';
+        throw Error('cv:codex_preflight_failed');
+      }
+      custody = 'bound';
       signal.throwIfAborted();
       child = this.ports.spawn(
-        path,
+        host.path,
         [
           '--config-json',
           JSON.stringify(hostSettings()),
           '--workspace',
           lease.cwd,
+          '--model-metadata-json',
+          host.modelMetadata,
         ],
         {
           cwd: lease.cwd,
@@ -360,6 +411,7 @@ export class NodiaCvCodexTransport {
           shell: false,
         },
       );
+      owned.childPid = child.pid;
       const exit = new Promise<number | null>((resolve) => {
         child?.once('close', resolve);
         child?.once('error', () => resolve(null));
@@ -376,20 +428,18 @@ export class NodiaCvCodexTransport {
       )
         throw Error('cv:codex_native_identity_unverified');
       native = observedNative;
+      owned.native = native;
       await lease.bindRuntime(child.pid, native);
-      signal.throwIfAborted();
-      admission = 'unverified';
       const accepted = await barrier.arm(
         {
           descriptor,
           observation,
           owner,
           native,
-          workspace: basename(lease.cwd),
+          workspace,
         },
         signal,
       );
-      admission = accepted ? 'admitted' : 'not_admitted';
       if (accepted) {
         signal.throwIfAborted();
         releasedInput = true;
@@ -409,14 +459,16 @@ export class NodiaCvCodexTransport {
           !releasedInput || outcome.outcome === 'unknown',
         );
       else if (child?.pid) await this.ports.assertEmpty(child.pid);
+      owned.closed = true;
     } catch {
       // Leave the persisted identity and the profile barrier for reconciliation.
       throw Error('cv:codex_close_unverified');
+    } finally {
+      owned.active = false;
     }
-    if (admission === 'unverified')
-      throw Error('cv:codex_admission_unverified');
-    if (admission === 'not_admitted') {
-      await lease.release();
+    if (custody === 'uncertain') throw Error('cv:codex_admission_unverified');
+    if (custody === 'unbound') {
+      await this.releaseLocal(owned);
       throw Error('cv:codex_preflight_failed');
     }
     const receipt = parseCvAgenticReceipt(
@@ -455,7 +507,129 @@ export class NodiaCvCodexTransport {
       }
     }
     await barrier.terminal(result);
-    await lease.release();
+    await this.releaseLocal(owned);
     return result;
   }
+
+  private localLease(descriptor: CvAgenticDescriptor) {
+    const owned = this.leases.get(descriptor.attempt_id);
+    if (owned && agenticHash(owned.descriptor) !== agenticHash(descriptor))
+      throw Error('cv:codex_attempt_mismatch');
+    return owned;
+  }
+
+  private async releaseLocal(owned: LocalCvLease) {
+    if (!owned.closed) throw Error('cv:codex_close_unverified');
+    owned.releasing ??= owned.lease
+      .release()
+      .then(() => {
+        this.leases.delete(owned.descriptor.attempt_id);
+      })
+      .catch((error: unknown) => {
+        owned.releasing = undefined;
+        throw error;
+      });
+    await owned.releasing;
+  }
+
+  private async profileLock(descriptor: CvAgenticDescriptor) {
+    const actual = await this.journal.identity(
+      descriptor.connection_id,
+      false,
+      false,
+    );
+    if (actual.resourceKey !== descriptor.resource_key)
+      throw Error('cv:codex_resource_mismatch');
+    const root = dirname(await this.journal.root());
+    const file = join(root, descriptor.connection_id, 'nodia.lock');
+    const exists = await lstat(file).then(
+      () => true,
+      (error: unknown) => {
+        if (missingPath(error)) return false;
+        throw error;
+      },
+    );
+    return { root, exists };
+  }
+
+  /** Check the original process group. A restored SQL row alone is insufficient evidence. */
+  async provenClosed(
+    descriptor: CvAgenticDescriptor,
+    custody: CvAgenticCustody | null,
+  ) {
+    const local = this.localLease(descriptor);
+    if (local) {
+      if (local.active) return false;
+      if (!local.closed) {
+        if (local.native) await this.ports.stop(local.native, false);
+        else if (local.childPid) await this.ports.assertEmpty(local.childPid);
+        local.closed = true;
+      }
+      return true;
+    }
+    const lock = await this.profileLock(descriptor);
+    if (!custody?.native) return !lock.exists;
+    const identity = await this.ports.identity(process.pid);
+    if (
+      custody.owner.boot !== identity.boot ||
+      custody.native.boot !== identity.boot
+    )
+      return false;
+    if (lock.exists && (await this.ports.same(custody.owner))) return false;
+    await this.ports.stop(custody.native, false);
+    return true;
+  }
+
+  /** Only call after PostgreSQL durably records the terminal. */
+  async releaseClosed(
+    descriptor: CvAgenticDescriptor,
+    custody: CvAgenticCustody | null,
+  ) {
+    const local = this.localLease(descriptor);
+    if (local) {
+      await this.releaseLocal(local);
+      return;
+    }
+    const lock = await this.profileLock(descriptor);
+    if (custody?.native) {
+      if (!(await this.provenClosed(descriptor, custody)))
+        throw Error('cv:codex_close_unverified');
+      if (lock.exists)
+        await this.runtime.recoverClosedProfile(
+          descriptor.connection_id,
+          custody.owner,
+          custody.native,
+        );
+    } else if (lock.exists) {
+      throw Error('cv:codex_close_unverified');
+    }
+    if (custody) await this.removeWorkspace(lock.root, custody.workspace);
+  }
+
+  private async removeWorkspace(root: string, workspace: string) {
+    if (!/^teacher-work-[A-Za-z0-9]{6}$/.test(workspace))
+      throw Error('cv:codex_workspace_unverified');
+    const path = join(root, workspace);
+    const info = await lstat(path).catch((error: unknown) => {
+      if (missingPath(error)) return null;
+      throw error;
+    });
+    if (!info) return;
+    if (
+      !info.isDirectory() ||
+      info.uid !== process.getuid?.() ||
+      (await realpath(path)) !== path
+    )
+      throw Error('cv:codex_workspace_unverified');
+    await rm(path, { recursive: true });
+  }
+}
+
+function missingPath(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'ENOENT'
+  );
 }

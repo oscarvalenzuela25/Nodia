@@ -508,7 +508,7 @@ Esta promoción usa la protección de CD existente.
 
 ## 17. Continuación de CV-03 — generación Agentic — 2026-11-25
 
-**Estado: paso 2 validado localmente con datos sintéticos.** Rama
+**Estado: paso 3 validado en PostgreSQL aislado con datos sintéticos.** Rama
 `codex/nodia-cv-agentic`, basada en `development`.
 El entregable inicial es un borrador válido desde **Generar CV** en la VM
 con **ChatGPT / Agentic / GPT-6.2 Sol / Alto** (`gpt-6.2-sol`, `high`).
@@ -517,12 +517,10 @@ y nivel explícitos del catálogo vivo de su cuenta. Los modelos de este
 plan son objetivos de prueba. La configuración y el catálogo siguen
 resolviendo los IDs que puede ejecutar cada conexión.
 
-El catálogo de CV proyecta modelos y modos de IA. La elegibilidad
-devuelve `agentic_transport_unavailable` y el worker exige `api_key`.
-La ruta textual común envía Agentic al servicio de Teacher, cuyo
-descriptor, journal y recibo pertenecen a Teacher. El módulo CV ya tiene
-prompt, esquema, verificador de evidencia, worker, ledger con
-`owner_kind='cv'`, vista previa y ambas plantillas.
+El catálogo de CV proyecta modelos y modos de IA. El worker integra
+Codex con descriptor, custodia y recibo de `owner_kind='cv'`. El
+resultado usa el prompt, el esquema y el verificador de evidencia del
+módulo, y la interfaz habilitará Agentic después de la calificación.
 [ADR119](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md) ·
 [Plan91](91-ai-provider-onboarding-verification.md#matriz-de-aceptación) ·
 [Contrato de proveedores](ai-provider-feature-contract.md).
@@ -597,18 +595,26 @@ selección y la persistencia de las barreras corresponden al paso 3.
 
 #### 3. Integrar Codex con la cola y la recuperación de CV
 
-- [ ] Reusar la sesión, primitivas de proceso y slot común con el
+La migración `1794041000000` integra el descriptor y el cierre de CV
+en el ledger compartido. El host preparado verifica GPT-6.2 Sol en
+Alto con metadatos oficiales y un backend sintético. PostgreSQL aislado
+verificó el envío único, la revocación antes y después del envío, el
+ACK recuperado y la copia con cierre pendiente. La adopción en la VM
+y la calificación real corresponden al paso 4.
+[Evidencia del paso 3](../evidence/nodia-cv-agentic-baseline-vm-20261125.md#paso-3-host-cola-y-recuperación-en-postgresql-aislado).
+
+- [x] Reusar la sesión, primitivas de proceso y slot común con el
   propietario técnico de CV. Añadir la selección explícita de transporte
   al worker. Usar los campos existentes si cubren el ciclo y, si falta
   alguno, hacer una migración aditiva compatible con operaciones previas.
   Integrar esquema, contrato, DI y worker en ese orden.
-- [ ] Revalidar sesión, módulo, titular, revisión del perfil y selección
+- [x] Revalidar sesión, módulo, titular, revisión del perfil y selección
   al admitir, al reclamar, antes de despachar y antes de publicar. Fijar
   descriptor, lease/fence y presupuesto antes del intercambio. Mantener
   un solo despacho por intención, incluyendo doble clic, reinicio,
   concurrencia y relectura del recibo. La misma clave con otro insumo
   conserva el 409.
-- [ ] Distinguir error previo al envío, rechazo definitivo, respuesta
+- [x] Distinguir error previo al envío, rechazo definitivo, respuesta
   inválida, cierre local no probado y resultado remoto `unknown`.
   Conciliar por la identidad del intento y cerrar el proceso con evidencia
   nativa. Persistir el terminal y su resultado antes del ACK al adaptador.

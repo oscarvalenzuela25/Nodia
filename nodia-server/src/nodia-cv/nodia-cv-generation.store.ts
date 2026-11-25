@@ -1,14 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
 import { API_EXECUTOR_OWNER } from '../nodia-ai-adapter/api-nodia-ai-runtime-owner.js';
-import type { NodiaAiApiConfiguration } from '../nodia-ai-adapter/api-nodia-ai-credentials.service.js';
 import type { NodiaAiRuntimePolicy } from '../nodia-ai-runtime/config/runtime-policy.js';
+import {
+  parseCvAgenticDescriptor,
+  parseCvAgenticReceipt,
+  type CvAgenticDescriptor,
+  type CvAgenticReceipt,
+} from './agentic/nodia-cv-agentic-contract.js';
 import type { CvTailoringDraft } from './engine/index.js';
 import type { StartNodiaCvGenerationDto } from './dto/nodia-cv-generation.dto.js';
 import { cvGenerationError } from './policies/nodia-cv-generation-errors.js';
 import type {
   CvDraftReviewContent,
+  CvAgenticCustody,
+  CvAgenticOperation,
   CvGenerationClaim,
+  CvGenerationConfiguration,
   CvGenerationRow,
   CvOperation,
 } from './types/nodia-cv-generation.types.js';
@@ -20,7 +28,7 @@ type Admission = {
   sessionId: string;
   input: StartNodiaCvGenerationDto;
   profile: NodiaCvProfileDetail;
-  config: NodiaAiApiConfiguration;
+  config: CvGenerationConfiguration;
   scopeHash: string;
   requestHash: string;
   purposeVersion: string;
@@ -171,6 +179,31 @@ export class NodiaCvGenerationStore {
     policy: NodiaAiRuntimePolicy,
   ) {
     const { row, configuration, selection, workerId, executionHash } = claim;
+    const descriptor = claim.agenticDescriptor
+      ? parseCvAgenticDescriptor(claim.agenticDescriptor)
+      : null;
+    if (selection.mode === 'agentic') {
+      if (
+        !descriptor ||
+        configuration.keyId !== null ||
+        descriptor.generation_id !== row.id ||
+        descriptor.actor_id !== row.owner_user_id ||
+        descriptor.profile_id !== row.profile_id ||
+        descriptor.profile_revision !== row.profile_revision ||
+        descriptor.connection_id !== configuration.connectionId ||
+        descriptor.model_id !== selection.model_id ||
+        descriptor.effort_id !== selection.effort_id ||
+        descriptor.resource_key !== row.resource_key ||
+        descriptor.configuration_generation !== row.configuration_generation ||
+        descriptor.session_generation !== row.session_generation ||
+        !('policyHash' in configuration) ||
+        configuration.policyHash !== descriptor.policy_hash ||
+        configuration.runtimeHash !== descriptor.runtime_hash
+      )
+        cvGenerationError('selection_unavailable');
+    } else if (descriptor || configuration.keyId === null) {
+      cvGenerationError('selection_unavailable');
+    }
     await manager.query(
       "INSERT INTO nodia_ai_runtime_slots(resource_key,state,fence) VALUES($1,'free',0) ON CONFLICT DO NOTHING",
       [row.resource_key],
@@ -185,7 +218,7 @@ export class NodiaCvGenerationStore {
       `WITH changed AS (UPDATE nodia_cv_generations SET state='running',
         deadline_at=least(expires_at,clock_timestamp()+$2*interval '1 second'),
         lease_until=least(expires_at,clock_timestamp()+least($2,$3)*interval '1 second'),
-        updated_at=clock_timestamp() WHERE id=$1 RETURNING deadline_at)
+        updated_at=clock_timestamp() WHERE id=$1 AND state='queued' RETURNING deadline_at)
        SELECT deadline_at FROM changed`,
       [
         row.id,
@@ -193,11 +226,12 @@ export class NodiaCvGenerationStore {
         policy.timing.lease_seconds,
       ],
     );
+    if (!timing) return null;
     await manager.query(
       `INSERT INTO ai_generation_operations (id,owner_kind,cv_generation_id,actor_id,auth_session_public_id,
         connection_id,selected_key_id,selection_snapshot,configuration_generation,session_generation,resource_key,
-        worker_id,owner_fence,runtime_fence,phase,request_hash,exchange_limit,reserved_exchanges,api_owner_identity)
-       VALUES($1,'cv',$1,$2,$3,$4,$5,$6::jsonb,$7,$8,$9,$10,1,$11,'dispatch_armed',$12,1,1,$13::jsonb)`,
+        worker_id,owner_fence,runtime_fence,phase,request_hash,exchange_limit,reserved_exchanges,api_owner_identity,agentic_transport_descriptor)
+       VALUES($1,'cv',$1,$2,$3,$4,$5,$6::jsonb,$7,$8,$9,$10,1,$11,'dispatch_armed',$12,1,1,$13::jsonb,$14::jsonb)`,
       [
         row.id,
         row.owner_user_id,
@@ -211,7 +245,8 @@ export class NodiaCvGenerationStore {
         workerId,
         fence,
         executionHash,
-        JSON.stringify(API_EXECUTOR_OWNER),
+        descriptor ? null : JSON.stringify(API_EXECUTOR_OWNER),
+        descriptor ? JSON.stringify(descriptor) : null,
       ],
     );
     await manager.query(
@@ -226,28 +261,245 @@ export class NodiaCvGenerationStore {
   async owned(manager: EntityManager, claim: CvGenerationClaim) {
     const [row] = await manager.query<CvOperation[]>(
       `SELECT o.id,o.phase,o.started_exchanges,o.request_hash,o.runtime_fence,o.api_owner_identity,
+        o.agentic_transport_descriptor,o.cv_agentic_native,o.terminal_proof,
         (s.state='held' AND g.state='running' AND g.profile_id IS NOT NULL AND
           g.deadline_at>clock_timestamp() AND g.lease_until>clock_timestamp()) AS valid_lease
        FROM ai_generation_operations o JOIN nodia_cv_generations g ON g.id=o.cv_generation_id
        JOIN nodia_ai_runtime_slots s ON s.resource_key=o.resource_key AND s.generation_operation_id=o.id
        WHERE o.id=$1 AND o.owner_kind='cv' AND o.acknowledged_at IS NULL AND o.worker_id=$2
         AND s.holder_worker_id=$2 AND o.runtime_fence=$3 AND s.fence=$3
-        AND o.request_hash=$4 AND o.api_owner_identity=$5::jsonb FOR UPDATE OF o,g,s`,
+        AND o.request_hash=$4
+        AND o.api_owner_identity IS NOT DISTINCT FROM $5::jsonb
+        AND o.agentic_transport_descriptor IS NOT DISTINCT FROM $6::jsonb FOR UPDATE OF o,g,s`,
       [
         claim.row.id,
         claim.workerId,
         claim.fence,
         claim.executionHash,
-        JSON.stringify(API_EXECUTOR_OWNER),
+        claim.agenticDescriptor ? null : JSON.stringify(API_EXECUTOR_OWNER),
+        claim.agenticDescriptor
+          ? JSON.stringify(claim.agenticDescriptor)
+          : null,
       ],
     );
     return row ?? null;
   }
 
   async beforeExchange(manager: EntityManager, id: string) {
-    await manager.query(
-      "UPDATE ai_generation_operations SET phase='transport_open',started_exchanges=1,updated_at=clock_timestamp() WHERE id=$1",
+    const [started] = await manager.query<{ id: string }[]>(
+      `WITH started AS (UPDATE ai_generation_operations
+        SET phase='transport_open',started_exchanges=1,updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND selection_snapshot->>'mode'='api_key'
+          AND phase='dispatch_armed' AND started_exchanges=0
+        RETURNING id) SELECT id FROM started`,
       [id],
+    );
+    if (!started) cvGenerationError('generation_lease_lost');
+  }
+
+  async agenticBind(
+    manager: EntityManager,
+    op: CvOperation,
+    descriptor: CvAgenticDescriptor,
+    custody: CvAgenticCustody,
+  ): Promise<boolean> {
+    if (custody.native !== null || !op.valid_lease) return false;
+    const [bound] = await manager.query<{ id: string }[]>(
+      `WITH bound AS (UPDATE ai_generation_operations
+        SET cv_agentic_native=$5::jsonb,updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+          AND agentic_transport_descriptor=$4::jsonb AND agentic_acknowledged_at IS NULL
+          AND phase='dispatch_armed' AND started_exchanges=0 AND cv_agentic_native IS NULL
+        RETURNING id) SELECT id FROM bound`,
+      [
+        op.id,
+        op.runtime_fence,
+        op.request_hash,
+        JSON.stringify(parseCvAgenticDescriptor(descriptor)),
+        JSON.stringify(custody),
+      ],
+    );
+    return !!bound;
+  }
+
+  /** Persist process ownership even if authority to send has been revoked. */
+  async agenticCapture(
+    manager: EntityManager,
+    op: CvOperation,
+    descriptor: CvAgenticDescriptor,
+    custody: CvAgenticCustody,
+  ): Promise<boolean> {
+    if (!custody.native) return false;
+    const [captured] = await manager.query<{ id: string }[]>(
+      `WITH captured AS (UPDATE ai_generation_operations
+        SET cv_agentic_native=$5::jsonb,updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+          AND agentic_transport_descriptor=$4::jsonb AND agentic_acknowledged_at IS NULL
+          AND phase='dispatch_armed' AND started_exchanges=0
+          AND cv_agentic_native=$6::jsonb
+        RETURNING id) SELECT id FROM captured`,
+      [
+        op.id,
+        op.runtime_fence,
+        op.request_hash,
+        JSON.stringify(parseCvAgenticDescriptor(descriptor)),
+        JSON.stringify(custody),
+        JSON.stringify({ ...custody, native: null }),
+      ],
+    );
+    return !!captured;
+  }
+
+  async agenticArm(
+    manager: EntityManager,
+    op: CvOperation,
+    descriptor: CvAgenticDescriptor,
+    custody: CvAgenticCustody,
+  ): Promise<boolean> {
+    if (!custody.native || !op.valid_lease) return false;
+    const [armed] = await manager.query<{ id: string }[]>(
+      `WITH armed AS (UPDATE ai_generation_operations
+        SET phase='transport_open',started_exchanges=1,updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+          AND agentic_transport_descriptor=$4::jsonb AND agentic_acknowledged_at IS NULL
+          AND phase='dispatch_armed' AND started_exchanges=0 AND cv_agentic_native=$5::jsonb
+        RETURNING id) SELECT id FROM armed`,
+      [
+        op.id,
+        op.runtime_fence,
+        op.request_hash,
+        JSON.stringify(parseCvAgenticDescriptor(descriptor)),
+        JSON.stringify(custody),
+      ],
+    );
+    return !!armed;
+  }
+
+  /** Write the terminal in the draft transaction; the slot stays reserved until native ACK. */
+  async agenticTerminal(
+    manager: EntityManager,
+    op: CvOperation,
+    candidate: CvAgenticReceipt,
+  ) {
+    if (!op.agentic_transport_descriptor)
+      cvGenerationError('generation_lease_lost');
+    const receipt = parseCvAgenticReceipt(
+      candidate,
+      op.agentic_transport_descriptor,
+    );
+    const [settled] = await manager.query<{ id: string }[]>(
+      `WITH settled AS (UPDATE ai_generation_operations
+        SET phase='closed',terminal_proof=$5::jsonb,remote_outcome=$6,
+          response_hash=$7,updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+          AND agentic_transport_descriptor=$4::jsonb AND agentic_acknowledged_at IS NULL
+          AND phase IN ('dispatch_armed','transport_open') AND terminal_proof IS NULL
+        RETURNING id)
+        SELECT id FROM settled UNION ALL
+        SELECT id FROM ai_generation_operations
+          WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+            AND agentic_transport_descriptor=$4::jsonb AND phase='closed' AND terminal_proof=$5::jsonb`,
+      [
+        op.id,
+        op.runtime_fence,
+        op.request_hash,
+        JSON.stringify(op.agentic_transport_descriptor),
+        JSON.stringify(receipt),
+        receipt.remote_outcome === 'not_dispatched'
+          ? null
+          : receipt.remote_outcome,
+        receipt.response_hash,
+      ],
+    );
+    if (!settled) cvGenerationError('generation_lease_lost');
+  }
+
+  /** Called only after the matching native profile barrier has been released. */
+  async agenticAcknowledge(
+    manager: EntityManager,
+    op: CvOperation,
+    candidate: CvAgenticReceipt,
+  ) {
+    if (!op.agentic_transport_descriptor)
+      cvGenerationError('generation_lease_lost');
+    const receipt = parseCvAgenticReceipt(
+      candidate,
+      op.agentic_transport_descriptor,
+    );
+    const parameters = [
+      op.id,
+      op.runtime_fence,
+      op.request_hash,
+      JSON.stringify(op.agentic_transport_descriptor),
+      JSON.stringify(receipt),
+    ];
+    const [acknowledged] = await manager.query<{ resource_key: string }[]>(
+      `WITH acknowledged AS (UPDATE ai_generation_operations
+        SET agentic_acknowledged_at=clock_timestamp(),acknowledged_at=clock_timestamp(),
+          updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+          AND agentic_transport_descriptor=$4::jsonb AND terminal_proof=$5::jsonb
+          AND phase='closed' AND acknowledged_at IS NULL
+        RETURNING resource_key)
+        SELECT resource_key FROM acknowledged`,
+      parameters,
+    );
+    if (!acknowledged) {
+      const [already] = await manager.query<{ id: string }[]>(
+        `SELECT id FROM ai_generation_operations
+          WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2 AND request_hash=$3
+            AND agentic_transport_descriptor=$4::jsonb AND terminal_proof=$5::jsonb
+            AND phase='closed' AND acknowledged_at IS NOT NULL`,
+        parameters,
+      );
+      if (already) return;
+      cvGenerationError('generation_lease_lost');
+    }
+    const [freed] = await manager.query<{ resource_key: string }[]>(
+      `WITH freed AS (UPDATE nodia_ai_runtime_slots
+        SET state='free',generation_operation_id=NULL,holder_worker_id=NULL,lease_until=NULL,
+          external_operation_ref=NULL,fence=fence+1,updated_at=clock_timestamp()
+        WHERE generation_operation_id=$1 AND fence=$2 AND resource_key=$3 AND state IN ('held','unknown')
+        RETURNING resource_key) SELECT resource_key FROM freed`,
+      [op.id, op.runtime_fence, acknowledged.resource_key],
+    );
+    if (!freed) cvGenerationError('generation_lease_lost');
+    if (receipt.remote_outcome === 'completed') {
+      await manager.query(
+        `INSERT INTO nodia_cv_generation_qualifications(scope_hash,generation_id,response_hash)
+          SELECT scope_hash,id,$2 FROM nodia_cv_generations
+          WHERE id=$1 AND qualification AND state='ready' AND expires_at>clock_timestamp()
+          ON CONFLICT(scope_hash) DO NOTHING`,
+        [op.id, receipt.response_hash],
+      );
+    }
+  }
+
+  /** Without an ID this supplies snapshots only. After native I/O, lock and revalidate one exact attempt. */
+  pendingAgenticOperations(manager: EntityManager, id?: string) {
+    return manager.query<CvAgenticOperation[]>(
+      `SELECT o.id,o.phase,o.started_exchanges,o.request_hash,o.runtime_fence,o.api_owner_identity,
+        o.agentic_transport_descriptor,o.cv_agentic_native,o.terminal_proof,o.resource_key
+       FROM ai_generation_operations o
+       JOIN nodia_cv_generations g ON g.id=o.cv_generation_id
+       JOIN nodia_ai_runtime_slots s ON s.resource_key=o.resource_key AND s.generation_operation_id=o.id
+       WHERE o.owner_kind='cv' AND o.agentic_transport_descriptor IS NOT NULL
+         AND o.acknowledged_at IS NULL AND s.fence=o.runtime_fence
+         AND (o.phase='closed' OR g.lease_until IS NULL OR g.lease_until<=clock_timestamp() OR s.state='unknown')
+         AND ($1::uuid IS NULL OR o.id=$1)
+       ORDER BY o.updated_at,o.id LIMIT 30${id ? ' FOR UPDATE OF o,g,s' : ''}`,
+      [id ?? null],
+    );
+  }
+
+  async markAgenticUnproven(manager: EntityManager, op: CvAgenticOperation) {
+    if (op.phase === 'closed') return;
+    await this.markUnproven(manager, op);
+    await manager.query(
+      `UPDATE ai_generation_operations SET updated_at=clock_timestamp()
+        WHERE id=$1 AND owner_kind='cv' AND runtime_fence=$2
+          AND phase<>'closed' AND acknowledged_at IS NULL`,
+      [op.id, op.runtime_fence],
     );
   }
 
@@ -293,7 +545,7 @@ export class NodiaCvGenerationStore {
         } satisfies CvDraftReviewContent),
       ],
     );
-    if (row.qualification) {
+    if (row.qualification && row.selection_snapshot?.mode !== 'agentic') {
       await manager.query(
         `INSERT INTO nodia_cv_generation_qualifications(scope_hash,generation_id,response_hash)
          VALUES($1,$2,$3) ON CONFLICT(scope_hash) DO NOTHING`,
@@ -358,7 +610,8 @@ export class NodiaCvGenerationStore {
     return manager.query<CvOperation[]>(
       `SELECT o.id,o.phase,o.started_exchanges,o.request_hash,o.runtime_fence,o.api_owner_identity
        FROM ai_generation_operations o JOIN nodia_cv_generations g ON g.id=o.cv_generation_id
-       WHERE o.owner_kind='cv' AND o.acknowledged_at IS NULL AND g.lease_until<=clock_timestamp()
+       WHERE o.owner_kind='cv' AND o.selection_snapshot->>'mode'='api_key'
+         AND o.acknowledged_at IS NULL AND g.lease_until<=clock_timestamp()
        ORDER BY g.lease_until,g.id LIMIT 30 FOR UPDATE OF o,g SKIP LOCKED`,
     );
   }
