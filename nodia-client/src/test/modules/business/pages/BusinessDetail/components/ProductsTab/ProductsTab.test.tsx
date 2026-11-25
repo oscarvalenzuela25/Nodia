@@ -305,8 +305,8 @@ describe("ProductsTab Component", () => {
     const expand = within(row).getByTestId("expand-product-btn-prod-1");
     await user.click(expand);
     const historical = screen.getByTestId("historical-row-prod-1");
-    expect(within(row).getAllByRole("cell")).toHaveLength(10);
-    expect(within(historical).getAllByRole("cell")).toHaveLength(10);
+    expect(within(row).getAllByRole("cell")).toHaveLength(11);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(11);
     const stockHeader = screen.getByRole("columnheader", { name: "Stock" }) as HTMLTableCellElement;
     expect(within(row).getAllByRole("cell")[stockHeader.cellIndex]).toHaveTextContent(/^0$/);
     expect(within(historical).getAllByRole("cell")[stockHeader.cellIndex]).toHaveTextContent(/^—$/);
@@ -321,15 +321,15 @@ describe("ProductsTab Component", () => {
     expect(toggle).toHaveFocus();
     expect(screen.getByRole("columnheader", { name: "Última actualización" }).nextElementSibling)
       .toBe(screen.getByRole("columnheader", { name: "Estado" }));
-    expect(within(row).getAllByRole("cell")).toHaveLength(12);
-    expect(within(historical).getAllByRole("cell")).toHaveLength(12);
+    expect(within(row).getAllByRole("cell")).toHaveLength(13);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(13);
     expect(screen.getByRole("columnheader", { name: "Stock" })).toBe(stockHeader);
     expect(within(row).getByText(mockProducts[0].name).closest("td")).toBe(nameCell);
     expect(within(row).getByTestId("product-actions-btn-prod-1")).toBe(actions);
     await user.keyboard(" ");
     expect(toggle).toHaveAttribute("aria-expanded", "false");
-    expect(within(row).getAllByRole("cell")).toHaveLength(10);
-    expect(within(historical).getAllByRole("cell")).toHaveLength(10);
+    expect(within(row).getAllByRole("cell")).toHaveLength(11);
+    expect(within(historical).getAllByRole("cell")).toHaveLength(11);
     expect(screen.getByTestId("historical-row-prod-1")).toBe(historical);
     expect(within(row).getByTestId("product-actions-btn-prod-1")).toBe(actions);
     expect(businessServices.getProducts).toHaveBeenCalledTimes(reads);
@@ -359,14 +359,14 @@ describe("ProductsTab Component", () => {
     renderWithClient(<ProductsTab businessId="biz-123" />);
     const toggle = await screen.findByRole("button", { name: "Mostrar última actualización y estado" });
     const empty = screen.getByRole("cell");
-    expect(empty).toHaveAttribute("colspan", "10");
-    expect(screen.getAllByRole("columnheader")).toHaveLength(10);
+    expect(empty).toHaveAttribute("colspan", "11");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(11);
     await user.click(toggle);
-    expect(empty).toHaveAttribute("colspan", "12");
-    expect(screen.getAllByRole("columnheader")).toHaveLength(12);
+    expect(empty).toHaveAttribute("colspan", "13");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(13);
     await user.click(toggle);
-    expect(empty).toHaveAttribute("colspan", "10");
-    expect(screen.getAllByRole("columnheader")).toHaveLength(10);
+    expect(empty).toHaveAttribute("colspan", "11");
+    expect(screen.getAllByRole("columnheader")).toHaveLength(11);
   });
 
   it("paginates products and requests new page when clicking next page button", async () => {

@@ -394,6 +394,7 @@
   "filter_status_label": "Status",
   "filter_status_placeholder": "Select status...",
   "filter_chips_code": "Code: {{value}}",
+  "filter_chips_stock": "Stock: {{value}}",
   "filter_chips_provider": "Provider: {{value}}",
   "filter_chips_status": "Status: {{value}}",
   "stock_variant_out": "Out of stock",
