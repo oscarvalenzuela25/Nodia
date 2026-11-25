@@ -168,19 +168,22 @@ describe("BusinessDetail Page", () => {
     expect(await screen.findByRole("button", { name: "Abrir factura vinculada" })).toBeVisible();
   });
 
-  it("renders business details with header, breadcrumb, owner, and default overview tab", async () => {
+  it("shows the business title and toggles its details from the main navigation row", async () => {
     renderWithClient(<BusinessDetail />);
 
-    await waitFor(() => {
-      expect(screen.getAllByText("Panadería Central").length).toBeGreaterThanOrEqual(1);
-    });
-
-    // Breadcrumb root present
-    expect(screen.getByTestId("breadcrumb-root")).toBeInTheDocument();
+    const title = await screen.findByRole("heading", { level: 1, name: "Panadería Central" });
+    expect(title).toBeVisible();
+    expect(screen.queryByRole("link", { name: i18n.t("business:title") })).not.toBeInTheDocument();
 
     const expand = screen.getByRole("button", { name: i18n.t("business:detail_header_expand") });
+    const sectionTabs = screen.getByRole("tablist", { name: i18n.t("business:pos.section") });
+    const tabs = within(sectionTabs).getAllByRole("tab");
+    expect(tabs.at(-1)).toHaveAccessibleName(/Colaboradores/i);
+    expect(sectionTabs).not.toContainElement(expand);
+    expect(sectionTabs.compareDocumentPosition(expand) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(expand).toHaveAttribute("aria-expanded", "false");
     await userEvent.click(expand);
+    expect(title).toBeVisible();
 
     // Owner and badge
     expect(screen.getByText(/Oscar Valenzuela/i)).toBeInTheDocument();
@@ -206,16 +209,13 @@ describe("BusinessDetail Page", () => {
     });
   });
 
-  it("navigates back to business list when clicking breadcrumb link", async () => {
+  it("can return to the business list when loading the business fails", async () => {
+    vi.mocked(businessServices.getBusinessById).mockRejectedValue(new Error("Business unavailable"));
     const user = userEvent.setup();
     renderWithClient(<BusinessDetail />);
 
-    await waitFor(() => {
-      expect(screen.getAllByText("Panadería Central").length).toBeGreaterThanOrEqual(1);
-    });
-
-    const backLink = screen.getByRole("link", { name: "Negocios" });
-    await user.click(backLink);
+    expect(await screen.findByRole("alert")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: i18n.t("business:back_to_list") }));
 
     expect(screen.getByText("Business List Page")).toBeInTheDocument();
   });

@@ -35,7 +35,8 @@ export const validVersion = (value: unknown): value is number => typeof value ==
 export const fieldsFingerprint = (data: ProductFormData): string => JSON.stringify([
   data.code, data.name, data.barcode, data.measurement_unit, data.cost_price, data.cost_price_tax,
   data.sale_price, data.offer_price, data.is_offer_enabled,
-  data.has_stock, data.provider_id || null, data.is_active, data.alias ?? null,
+  data.track_stock, data.provider_id || null, data.is_active, data.alias ?? null,
+  data.stock ?? null,
 ]);
 const localFiles = new WeakMap<File, string>();
 export const imageFingerprint = (change: ProductImageChange): string | null => {
@@ -72,19 +73,18 @@ export function readProductSaveJournal(actorId: string, businessId: string, init
       (entry.product !== null && (!entry.product || entry.product.business_id !== businessId || typeof entry.product.id !== "string" || !validVersion(entry.product.version))) ||
       (entry.image !== null && (!entry.image || typeof entry.image.id !== "string" || !validVersion(entry.image.expectedVersion) || typeof entry.image.contentAttempted !== "boolean")) ||
       (entry.removal !== null && (!entry.removal || !validVersion(entry.removal.expectedVersion)))) throw new Error("invalid_product_save_journal");
-  // The earlier journal included an auxiliary percentage at position six.
-  // Discard only that retired slot; preserve all remaining fields and unknown
-  // outcome/image gates so reopening cannot replay a confirmed field save.
+  // Preserve the completed-field decision from legacy journals. Manual
+  // availability did not opt the product into stock control.
   if (entry.fieldsFingerprint !== null) {
     try {
       const fields: unknown = JSON.parse(entry.fieldsFingerprint);
       if (Array.isArray(fields) && fields.length === 13 && typeof fields[12] === "boolean" && typeof fields[6] === "number" && Number.isInteger(fields[6]) && fields[6] >= 0) {
         fields.splice(6, 1);
       }
-      // Old saves had no alias slot. Append null without changing an unknown
-      // outcome or interpreting a current alias fingerprint as the retired slot.
-      if (Array.isArray(fields) && fields.length === 12) {
-        fields.push(null);
+      if (Array.isArray(fields) && (fields.length === 12 || fields.length === 13)) {
+        if (fields.length === 12) fields.push(null); // Pre-alias fingerprint.
+        fields[9] = entry.originProductId === null ? false : null;
+        fields.push(null); // No historical stock-balance write.
         return { ...entry, fieldsFingerprint: JSON.stringify(fields) };
       }
     } catch { /* An opaque historical fingerprint cannot be treated as equal. */ }

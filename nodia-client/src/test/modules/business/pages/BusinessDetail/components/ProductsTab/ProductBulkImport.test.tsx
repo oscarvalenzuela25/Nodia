@@ -68,7 +68,7 @@ describe("ProductBulkImport Helpers", () => {
         cost_price_tax: 190,
         sale_price: 1500,
         stock: 100,
-        has_stock: true,
+        track_stock: true,
       });
 
       expect(result.isValid).toBe(true);
@@ -82,7 +82,7 @@ describe("ProductBulkImport Helpers", () => {
       // Row 2: Invalid because the cost is negative; its omitted code is allowed.
       // Row 3: Valid
       const csvData = [
-        "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,has_stock",
+        "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,track_stock",
         "SKU-001,Galleta Vainilla,500,95,800,20,true,true",
         ",Producto Sin Codigo,-100,0,200,10,true,true",
         "SKU-003,Bebida Energética,1200,228,1800,50,true,true",
@@ -103,7 +103,7 @@ describe("ProductBulkImport Helpers", () => {
 
     it("parses CSV with localized Spanish headers containing DB field in parentheses", () => {
       const csvData = [
-        "Código (code),Nombre (name),Costo base (cost_price),Impuesto (cost_price_tax),Precio de venta (sale_price),Stock (stock),Activo (is_active),Disponible (has_stock)",
+        "Código (code),Nombre (name),Costo base (cost_price),Impuesto (cost_price_tax),Precio de venta (sale_price),Stock (stock),Activo (is_active),Usar stock (track_stock)",
         "ES-001,Alfajor Artesanal,800,152,1300,40,true,true",
       ].join("\n");
 
@@ -121,7 +121,7 @@ describe("ProductBulkImport Helpers", () => {
 
     it("parses CSV with localized English headers containing DB field in parentheses", () => {
       const csvData = [
-        "Code (code),Name (name),Base cost (cost_price),Tax (cost_price_tax),Sale price (sale_price),Stock (stock),Active (is_active),Available (has_stock)",
+        "Code (code),Name (name),Base cost (cost_price),Tax (cost_price_tax),Sale price (sale_price),Stock (stock),Active (is_active),Track stock (track_stock)",
         "EN-001,Organic Green Tea,1500,285,2300,60,true,true",
       ].join("\n");
 
@@ -153,7 +153,7 @@ describe("ProductBulkImport Helpers", () => {
 
     it("parses CSV with semicolon delimiter", () => {
       const csvData = [
-        "code;name;cost_price;cost_price_tax;sale_price;stock;is_active;has_stock",
+        "code;name;cost_price;cost_price_tax;sale_price;stock;is_active;track_stock",
         "SKU-SEMI;Chocolate Dulce;700;133;1100;15;true;true",
       ].join("\n");
 
@@ -211,7 +211,7 @@ describe("ProductBulkImport Component", () => {
 
   it("waits for the CSV read and an explicit submit before creating products", async () => {
     const user = userEvent.setup();
-    const csv = "name,cost_price,cost_price_tax,sale_price,has_stock\nSynthetic delayed product,100,119,150,true";
+    const csv = "name,cost_price,cost_price_tax,sale_price,track_stock\nSynthetic delayed product,100,119,150,true";
     const file = new File([csv], "products.csv", { type: "text/csv" });
     const pendingReaders: FileReader[] = [];
     const read = vi.spyOn(FileReader.prototype, "readAsText").mockImplementation(function (this: FileReader) {
@@ -272,10 +272,10 @@ describe("ProductBulkImport Component", () => {
 
   it("keeps CSV sale prices manual and sends only an explicitly applied suggestion", async () => {
     const user = userEvent.setup();
-    vi.mocked(businessServices.bulkCreateProducts).mockResolvedValueOnce([{ id: "101", version: 1, business_id: "biz-123", code: null, name: "Synthetic", cost_price: 2000, cost_price_tax: 2000, sale_price: 3570, has_stock: true, stock: 0, is_active: true }]);
+    vi.mocked(businessServices.bulkCreateProducts).mockResolvedValueOnce([{ id: "101", version: 1, business_id: "biz-123", code: null, name: "Synthetic", cost_price: 2000, cost_price_tax: 2000, sale_price: 3570, track_stock: true, stock: 0, is_active: true }]);
     renderWithClient(<ProductBulkImport {...defaultProps} />);
     await user.upload(document.querySelector('input[type="file"]') as HTMLInputElement,
-      new File(["name,cost_price,cost_price_tax,sale_price,has_stock\nSynthetic,1000,1190,999,true"], "synthetic.csv", { type: "text/csv" }));
+      new File(["name,cost_price,cost_price_tax,sale_price,track_stock\nSynthetic,1000,1190,999,true"], "synthetic.csv", { type: "text/csv" }));
     await user.click(await screen.findByTestId("edit-row-0"));
     const sale = screen.getByRole("spinbutton", { name: /^Precio Venta/ });
     const net = screen.getByRole("spinbutton", { name: /^Costo Base sin Impuesto/ });
@@ -312,7 +312,7 @@ describe("ProductBulkImport Component", () => {
     renderWithClient(<ProductBulkImport {...defaultProps} />);
 
     const csvContent = [
-      "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,has_stock",
+      "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,track_stock",
       "SKU-OK,Café Grano 1kg,5000,950,8500,25,true,true",
       ",Té Verde Sin SKU,-2000,380,3200,40,true,true",
     ].join("\n");
@@ -358,7 +358,7 @@ describe("ProductBulkImport Component", () => {
 
     // The row is invalid because its name is missing; supplier codes are optional.
     const csvContent = [
-      "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,has_stock",
+      "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,track_stock",
       "SKU-MANZANILLA,,1000,190,1600,10,true,true",
     ].join("\n");
 
@@ -413,7 +413,7 @@ describe("ProductBulkImport Component", () => {
     renderWithClient(<ProductBulkImport {...defaultProps} />);
 
     const csvContent = [
-      "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,has_stock",
+      "code,name,cost_price,cost_price_tax,sale_price,stock,is_active,track_stock",
       "SKU-DEL,Producto Para Borrar,1000,190,1600,10,true,true",
     ].join("\n");
 
@@ -441,7 +441,7 @@ describe("ProductBulkImport Component", () => {
     vi.mocked(businessServices.bulkCreateProducts).mockResolvedValue([...created]);
     vi.mocked(businessServices.bulkUpdateProducts).mockRejectedValueOnce(new Error("Synthetic update failure")).mockResolvedValueOnce([]);
     renderWithClient(<ProductBulkImport {...defaultProps} />);
-    const csv = 'id,code,name,cost_price,cost_price_tax,sale_price,has_stock,measurement_unit,version\n,,Tomates,100,119,150,true,kg,\n,,Hierbas,100,119,150,true,bundle,\n16,EXIST,Actual,100,119,150,true,unit,3';
+    const csv = 'id,code,name,cost_price,cost_price_tax,sale_price,track_stock,measurement_unit,version\n,,Tomates,100,119,150,true,kg,\n,,Hierbas,100,119,150,true,bundle,\n16,EXIST,Actual,100,119,150,true,unit,3';
     await user.upload(document.querySelector('input[type="file"]') as HTMLInputElement, new File([csv], "products.csv", { type: "text/csv" }));
     const submit = await screen.findByTestId("submit-bulk-products");
     await waitFor(() => expect(submit).toBeEnabled());
@@ -469,7 +469,7 @@ describe("ProductBulkImport Component", () => {
     }]);
     renderWithClient(<ProductBulkImport {...defaultProps} />);
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    await user.upload(fileInput, new File(["name,cost_price,cost_price_tax,sale_price,has_stock\nProducto sin código,100,119,150,true"], "products.csv", { type: "text/csv" }));
+    await user.upload(fileInput, new File(["name,cost_price,cost_price_tax,sale_price,track_stock\nProducto sin código,100,119,150,true"], "products.csv", { type: "text/csv" }));
     const submit = await screen.findByTestId("submit-bulk-products");
     await waitFor(() => expect(submit).toBeEnabled());
     await user.click(submit);
@@ -497,7 +497,7 @@ describe("ProductBulkImport Component", () => {
       : new AxiosError("Synthetic lost response"));
     renderWithClient(<ProductBulkImport {...defaultProps} />);
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    await user.upload(fileInput, new File(["name,cost_price,cost_price_tax,sale_price,has_stock\nProducto sin código,100,119,150,true"], "products.csv", { type: "text/csv" }));
+    await user.upload(fileInput, new File(["name,cost_price,cost_price_tax,sale_price,track_stock\nProducto sin código,100,119,150,true"], "products.csv", { type: "text/csv" }));
     const submit = await screen.findByTestId("submit-bulk-products");
     await waitFor(() => expect(submit).toBeEnabled());
     await user.click(submit);

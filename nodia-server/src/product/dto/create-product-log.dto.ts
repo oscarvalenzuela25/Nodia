@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PRODUCT_BARCODE_PATTERN } from '../product-catalog.js';
+import { IsProductStockQuantity } from './product-stock-validation.js';
 import {
   PRODUCT_MEASUREMENT_UNITS,
   type ProductMeasurementUnit,
@@ -77,8 +78,7 @@ export class CreateProductLogDto {
   @IsInt()
   sale_price: number;
 
-  @IsOptional()
-  @IsInt()
-  @Min(0)
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsProductStockQuantity()
   stock?: number;
 }

@@ -48,13 +48,19 @@ export class ExportProductsCsvUseCase {
       throw new BadRequestException('Export resource limits are invalid');
     const isEn = dto.lang?.toLowerCase().startsWith('en');
 
+    const stockHeader = limits
+      ? isEn ? 'Available (has_stock),Legacy stock (stock)' : 'Disponible (has_stock),Stock histórico (stock)'
+      : isEn ? 'Track stock (track_stock),Stock (stock)' : 'Usar stock (track_stock),Stock (stock)';
     const header = isEn
-      ? 'Supplier code (code),Barcode (barcode),Name (name),Alias (alias),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Available (has_stock),Legacy stock (stock),Active (is_active),ID (id),Version (version)'
-      : 'Código proveedor (code),Código de barras (barcode),Nombre (name),Alias (alias),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Disponible (has_stock),Stock histórico (stock),Activo (is_active),ID (id),Versión (version)';
+      ? `Supplier code (code),Barcode (barcode),Name (name),Alias (alias),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),${stockHeader},Active (is_active),ID (id),Version (version)`
+      : `Código proveedor (code),Código de barras (barcode),Nombre (name),Alias (alias),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),${stockHeader},Activo (is_active),ID (id),Versión (version)`;
 
     const queryParams: GetProductsDto = { all: true, includes: false };
-    if (dto.business_id) {
-      queryParams.q = { business_id_eq: dto.business_id };
+    if (dto.q || dto.business_id) {
+      queryParams.q = {
+        ...dto.q,
+        ...(dto.business_id ? { business_id_eq: dto.business_id } : {}),
+      };
     }
 
     const response = actor
@@ -95,8 +101,8 @@ export class ExportProductsCsvUseCase {
         this.escapeCsvValue(product.sale_price),
         this.escapeCsvValue(product.offer_price),
         this.escapeCsvValue(product.is_offer_enabled),
-        this.escapeCsvValue(product.has_stock),
-        this.escapeCsvValue(product.stock),
+        this.escapeCsvValue(limits ? product.has_stock : product.track_stock),
+        this.escapeCsvValue(limits || product.track_stock ? product.stock : null),
         this.escapeCsvValue(product.is_active),
         this.escapeCsvValue(product.id),
         this.escapeCsvValue(product.version),

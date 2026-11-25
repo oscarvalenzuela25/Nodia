@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Product } from './product.entity.js';
 import type { ProductMeasurementUnit } from '../product-measurement-unit.js';
+import { stockQuantityTransformer } from '../../common/utils/stock-quantity.js';
 
 @Entity({
   name: 'product_logs',
@@ -44,7 +45,7 @@ export class ProductLog {
   @Column({ type: 'integer' })
   sale_price: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'numeric', default: 0, transformer: stockQuantityTransformer })
   stock: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -58,6 +59,9 @@ export class ProductLog {
 
   @Column({ type: 'boolean', nullable: true })
   has_stock: boolean | null;
+
+  @Column({ type: 'boolean', nullable: true })
+  track_stock: boolean | null;
 
   @Column({ type: 'integer', nullable: true })
   product_version: number | null;

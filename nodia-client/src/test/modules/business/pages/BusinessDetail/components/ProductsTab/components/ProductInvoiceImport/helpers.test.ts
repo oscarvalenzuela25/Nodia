@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { bindInvoiceRow, canBindInvoiceProduct, mapExtractedItemsToRows, validateInvoiceRows, reviewInvoiceAlias, reviewInvoiceSalePrice, invoiceAliasNeedsReview, invoiceRowEditPrice, updateInvoiceProductRevision } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/helpers';
 import { invoiceConfirmationItem, prepareInvoiceConfirmation } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/invoiceOcrConfirmation';
+import { evaluateInvoiceStock, observeInvoiceStock, setInvoiceStockTracking } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductInvoiceImport/invoiceStock';
 import type { ProductEntity } from '../../../../../../../../../modules/business/infrastructure/types';
 
 describe('Purchase invoice versus POS catalog', () => {
@@ -9,19 +10,21 @@ describe('Purchase invoice versus POS catalog', () => {
       stock: 999, has_stock: false, barcode: '00012', offer_price: 150,
       is_offer_enabled: true, version: 4, is_active: false } as ProductEntity;
     const [row] = mapExtractedItemsToRows([{ code: 'SUP', name: 'New label', quantity: 7, cost_price: 8, cost_price_tax: 9 }], [existing]);
-    expect(row).toMatchObject({ quantity: 7, has_stock: false, version: 4, is_active: false });
-    expect(row.stock).toBeUndefined();
+    expect(row).toMatchObject({ quantity: 7, stockReview: { tracking: false, observedBalance: 999 }, version: 4, is_active: false });
     const update = invoiceConfirmationItem(row, 'business');
     expect(update).toMatchObject({ kind: 'update', product_id: '12', expected_version: 4, product: { is_active: false }, line: { quantity: 7 } });
     for (const field of ['stock','quantity','has_stock','barcode','offer_price','is_offer_enabled']) expect(update).not.toHaveProperty(`product.${field}`);
+    expect(update).not.toHaveProperty('track_stock');
+    expect(update).not.toHaveProperty('stock_action');
   });
-  it('defaults a new item to available independently of purchase quantity, including zero', () => {
+  it('defaults a new item to untracked independently of purchase quantity, including zero', () => {
     const [row] = mapExtractedItemsToRows([{ code: 'NEW', name: 'New', quantity: 0, cost_price: 0, cost_price_tax: 0 }], []);
     expect(row.quantity).toBe(0);
-    expect(row.has_stock).toBe(true);
+    expect(row.stockReview).toEqual(observeInvoiceStock());
     expect(row.isValid).toBe(true);
     expect(invoiceConfirmationItem(row, 'business')).toMatchObject({ kind: 'create', line: { quantity: 0 }, product: { sale_price: 0, alias: 'New' } });
-    expect(invoiceConfirmationItem({ ...row, has_stock: false }, 'business')).not.toHaveProperty('product.has_stock');
+    expect(invoiceConfirmationItem(row, 'business')).not.toHaveProperty('track_stock');
+    expect(invoiceConfirmationItem(row, 'business')).not.toHaveProperty('stock_action');
   });
 });
 
@@ -31,6 +34,111 @@ const product: ProductEntity = { id: '12', business_id: 'business', provider_id:
   barcode: '000123', offer_price: 950, is_offer_enabled: true, measurement_unit: 'kg' };
 const invoice = { providerId: '9', code: '  Folio ', total: 119, issueDate: '' };
 const sourceRow = () => mapExtractedItemsToRows([{ code: 'INV-9', name: 'Invoice label', quantity: 6, cost_price: 900, cost_price_tax: 1071 }], [])[0];
+
+describe('OCR stock review', () => {
+  it('adds decimal quantities exactly and distinguishes a blank amount from replacement zero', () => {
+    const review = observeInvoiceStock({ track_stock: true, stock: 1.125 });
+    expect(evaluateInvoiceStock({ ...review, quantity: '0,125' }, 6)).toEqual({
+      action: { mode: 'add', quantity: 0.125 },
+      projectedBalance: 1.25,
+    });
+    expect(evaluateInvoiceStock({ ...review, mode: 'replace', quantity: '' }, 6)).toEqual({});
+    expect(evaluateInvoiceStock({ ...review, mode: 'replace', quantity: '0' }, 6)).toEqual({
+      action: { mode: 'replace', quantity: 0 },
+      projectedBalance: 0,
+    });
+    for (const quantity of ['0.0001', '-1', '1e2', '2147483647']) {
+      expect(evaluateInvoiceStock({ ...review, quantity }, 6)).toHaveProperty('error');
+    }
+  });
+
+  it('proposes the invoiced quantity for tracked products and keeps an explicit clear', () => {
+    const tracked = observeInvoiceStock({ track_stock: true, stock: 1.125 });
+    expect(evaluateInvoiceStock(tracked, 0.125)).toEqual({
+      action: { mode: 'add', quantity: 0.125 },
+      projectedBalance: 1.25,
+    });
+    expect(evaluateInvoiceStock(tracked, 0)).toMatchObject({ action: { quantity: 0 } });
+    expect(evaluateInvoiceStock(tracked, Number.NaN)).toEqual({});
+    expect(evaluateInvoiceStock(tracked, 0.0001)).toHaveProperty('error');
+    expect(evaluateInvoiceStock({ ...tracked, quantity: '' }, 6)).toEqual({});
+  });
+
+  it('requires replacing an invalid saved balance when enabling stock, and clears a disabled draft', () => {
+    const observed = observeInvoiceStock({ track_stock: false, stock: -1 });
+    const review = setInvoiceStockTracking(observed, true);
+    expect(evaluateInvoiceStock(review, 6)).toEqual({ error: 'business:ocr_stock_replace_invalid_balance' });
+    const replacement = { ...review, mode: 'replace', quantity: '0' } as const;
+    expect(evaluateInvoiceStock(replacement, 6)).toMatchObject({ projectedBalance: 0 });
+    expect(setInvoiceStockTracking(replacement, false)).toEqual(observed);
+  });
+
+  it('serializes explicit tracking and stock intent at row level, alongside the independent invoice quantity', () => {
+    const review = { ...setInvoiceStockTracking(observeInvoiceStock(), true), quantity: '1.25' };
+    expect(invoiceConfirmationItem({ ...sourceRow(), stockReview: review }, 'business')).toMatchObject({
+      kind: 'create',
+      line: { quantity: 6 },
+      track_stock: true,
+      stock_action: { mode: 'add', quantity: 1.25 },
+    });
+    const tracked = { ...product, track_stock: true };
+    const row = bindInvoiceRow(sourceRow(), tracked, ['cost_price'], 'business');
+    expect(invoiceConfirmationItem(row, 'business')).toMatchObject({
+      line: { quantity: 6 },
+      stock_action: { mode: 'add', quantity: 6 },
+    });
+    expect(invoiceConfirmationItem({ ...row, stockReview: { ...observeInvoiceStock(tracked), mode: 'replace', quantity: '0' } }, 'business')).toMatchObject({
+      kind: 'manual_match',
+      expected_version: 3,
+      line: { quantity: 6 },
+      changes: { cost_price: 900 },
+      stock_action: { mode: 'replace', quantity: 0 },
+    });
+    const disabled = invoiceConfirmationItem({ ...row, stockReview: setInvoiceStockTracking(observeInvoiceStock(tracked), false) }, 'business');
+    expect(disabled).toHaveProperty('track_stock', false);
+    expect(disabled).not.toHaveProperty('stock_action');
+  });
+
+  it('requires an explicit catalog or stock change and supports stock-only manual binding', () => {
+    const row = bindInvoiceRow(sourceRow(), { ...product, track_stock: true }, [], 'business');
+    expect(() => invoiceConfirmationItem({
+      ...row,
+      stockReview: { ...observeInvoiceStock({ ...product, track_stock: true }), quantity: '' },
+    }, 'business')).toThrow('business:ocr_stock_manual_change_required');
+    const stockReview = { ...observeInvoiceStock({ ...product, track_stock: true }), quantity: '2' };
+    expect(invoiceConfirmationItem({ ...row, stockReview }, 'business')).toMatchObject({
+      kind: 'manual_match',
+      product_id: product.id,
+      changes: {},
+      stock_action: { mode: 'add', quantity: 2 },
+    });
+  });
+
+  it('resets stock when binding a different product and recalculates an accepted revision using the same explicit intent', () => {
+    const tracked = { ...product, track_stock: true };
+    const row = {
+      ...bindInvoiceRow(sourceRow(), tracked, ['cost_price'], 'business'),
+      stockReview: { ...observeInvoiceStock(tracked), quantity: '2' },
+    };
+    const latest = updateInvoiceProductRevision(row, { ...tracked, stock: 78.5, version: 4 }, 'business');
+    expect(latest.stockReview).toMatchObject({ quantity: '2', observedBalance: 78.5 });
+    expect(evaluateInvoiceStock(latest.stockReview, latest.quantity)).toMatchObject({ projectedBalance: 80.5 });
+    const cleared = updateInvoiceProductRevision(
+      { ...row, stockReview: { ...row.stockReview, quantity: '' } },
+      { ...tracked, stock: 78.5, version: 4 },
+      'business',
+    );
+    expect(evaluateInvoiceStock(cleared.stockReview, cleared.quantity)).toEqual({});
+    const different = bindInvoiceRow(row, { ...tracked, id: '13', stock: 1 }, ['cost_price'], 'business');
+    expect(evaluateInvoiceStock(different.stockReview, different.quantity)).toMatchObject({
+      action: { mode: 'add', quantity: 6 },
+      projectedBalance: 7,
+    });
+    const noTracking = updateInvoiceProductRevision(row, { ...tracked, track_stock: false, version: 5 }, 'business');
+    expect(invoiceConfirmationItem(noTracking, 'business')).not.toHaveProperty('stock_action');
+    expect(invoiceConfirmationItem(noTracking, 'business')).not.toHaveProperty('track_stock');
+  });
+});
 
 describe('Manual invoice product binding', () => {
   it('prepares only checked fields by ID/version, retaining manual sale and original invoice identity', () => {
@@ -48,12 +156,11 @@ describe('Manual invoice product binding', () => {
     expect(row.code).toBe(''); expect(row.invoice_code).toBe('INV-9');
     expect(invoiceConfirmationItem(row, 'business')).toMatchObject({ product_id: '12', expected_version: 3, changes: { sale_price: 1020 } });
   });
-  it('rejects missing version, foreign business, invalid money, empty choices and unassigned sale', () => {
+  it('rejects missing version, foreign business, invalid money and unassigned sale', () => {
     for (const candidate of [{ ...product, version: undefined }, { ...product, business_id: 'other' }, { ...product, cost_price: Number.NaN }, { ...product, sale_price: 2147483648 }]) {
       expect(canBindInvoiceProduct(candidate, 'business')).toBe(false);
       expect(() => bindInvoiceRow(sourceRow(), candidate, ['code'], 'business')).toThrow();
     }
-    expect(() => bindInvoiceRow(sourceRow(), product, [], 'business')).toThrow();
     expect(() => bindInvoiceRow({ ...sourceRow(), sale_price: Number.NaN }, product, ['sale_price'], 'business')).toThrow();
   });
   it('refuses a changed target, version or business at payload creation', () => {
@@ -131,7 +238,7 @@ describe('Editable OCR aliases', () => {
 describe('OCR default boundaries', () => {
   it('applies 30 percent over extracted gross cost for automatic catalog matches while preserving alias and availability', () => {
     const [row] = mapExtractedItemsToRows([{ code: 'SUP', name: 'Invoice name', quantity: 1, cost_price: 100, cost_price_tax: 119 }], [{ ...product, code: 'SUP' }]);
-    expect(row).toMatchObject({ alias: 'Manual alias', alias_reviewed: true, has_stock: false, sale_price: 150 });
+    expect(row).toMatchObject({ alias: 'Manual alias', alias_reviewed: true, stockReview: { tracking: false }, sale_price: 150 });
     const payload = invoiceConfirmationItem(row, 'business');
     expect(payload).toMatchObject({ product_id: product.id, product: { sale_price: 150, alias: 'Manual alias' } });
     expect(payload).not.toHaveProperty('product.has_stock');
@@ -180,7 +287,7 @@ describe('Local OCR sale price changes', () => {
   it('replaces the editable price, recomputes comparison and preserves catalog identity and availability', () => {
     const row = bindInvoiceRow(sourceRow(), product, ['cost_price'], 'business');
     const changed = reviewInvoiceSalePrice(row, 1200);
-    expect(changed).toMatchObject({ id: product.id, version: product.version, sale_price: 1200, has_stock: false, alias: product.alias, quantity: 6, priceDiff: { diff: 210, percent: 21, isIncrease: true } });
+    expect(changed).toMatchObject({ id: product.id, version: product.version, sale_price: 1200, stockReview: { tracking: false }, alias: product.alias, quantity: 6, priceDiff: { diff: 210, percent: 21, isIncrease: true } });
     expect(invoiceConfirmationItem(changed, 'business')).toMatchObject({ product_id: product.id, expected_version: product.version, changes: { cost_price: 900, sale_price: 1200 } });
     expect(row.sale_price).toBe(990);
   });

@@ -101,12 +101,14 @@ describe("POS autocomplete catalogue", () => {
     expect(input).not.toHaveAttribute("readonly");
     fireEvent.change(input, { target: { value: "Coffee" } });
     expect(input).toHaveValue("Coffee");
+    expect(input.parentElement).toContainElement(screen.getByRole("progressbar", { name: text("catalog_loading") }));
     const previous = screen.getByRole("option", { name: /Old search option/ });
     expect(previous).toHaveAttribute("aria-disabled", "true");
     fireEvent.click(previous);
     expect(onSelect).not.toHaveBeenCalled();
     await waitFor(() => expect(fetchProducts.mock.calls.at(-1)?.[0]?.q?.search).toBe("Coffee"));
     await readyInput();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     await openPopup(input);
     const result = await screen.findByRole("option", { name: /Coffee/ });
     expect(screen.queryByRole("option", { name: /Old search option/ })).not.toBeInTheDocument();
@@ -131,6 +133,7 @@ describe("POS autocomplete catalogue", () => {
     await waitFor(() => expect(fetchProducts).toHaveBeenCalledTimes(2));
     expect(input).toHaveAttribute("readonly");
     expect(input).toHaveAttribute("aria-busy", "true");
+    expect(input.parentElement).toContainElement(screen.getByRole("progressbar", { name: text("catalog_loading") }));
     expect(screen.getByRole("listbox")).toBe(listbox);
     expect(screen.getByRole("option", { name: /Synthetic product 1/ })).toBe(first);
     expect(first).toHaveAttribute("aria-disabled", "true");
@@ -139,6 +142,7 @@ describe("POS autocomplete catalogue", () => {
     expect(onSelect).not.toHaveBeenCalled();
     await act(async () => { next.reject(new AxiosError("Synthetic next-page failure")); });
     expect(await screen.findByRole("alert")).toHaveTextContent(i18n.t("core:server_error_alert"));
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     await openPopup(input);
     expect(screen.getByRole("option", { name: /Synthetic product 1/ })).toBe(first);
     expect(feedback.error).toHaveBeenCalledTimes(1);
@@ -178,11 +182,13 @@ describe("POS autocomplete catalogue", () => {
     const input = screen.getByRole("combobox");
     expect(input).toBeDisabled();
     expect(input).toHaveAttribute("aria-busy", "true");
+    expect(input.parentElement).toContainElement(screen.getByRole("progressbar", { name: text("catalog_loading") }));
     expect(onFetchingChange).toHaveBeenCalledWith(true);
     update({ disabled: true });
     await act(async () => { initial.resolve(page([item("1")])); });
     await waitFor(() => expect(onFetchingChange).toHaveBeenLastCalledWith(false));
     expect(input).toBeDisabled();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     fireEvent.mouseDown(input);
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     expect(onSelect).not.toHaveBeenCalled();
@@ -201,7 +207,7 @@ describe("POS autocomplete catalogue", () => {
     const user = userEvent.setup();
     const input = await readyInput();
     await user.click(input);
-    expect(fetchProducts.mock.calls[0][0]?.q?.has_stock_eq).toBe(true);
+    expect(fetchProducts.mock.calls[0][0]?.q?.sellable_stock_eq).toBe(true);
     const zeroOption = screen.getByRole("option", { name: /Synthetic product 1/ });
     const unavailableOption = screen.getByRole("option", { name: /Synthetic product 2/ });
     expect(within(zeroOption).getByText(/\$\s*0/)).toBeInTheDocument();
@@ -219,7 +225,7 @@ describe("POS autocomplete catalogue", () => {
     const assignable = await screen.findByRole("option", { name: /Synthetic product 2/ });
     expect(assignable).toHaveAttribute("aria-disabled", "false");
     expect(screen.getByRole("option", { name: /Synthetic product 3/ })).toHaveAttribute("aria-disabled", "true");
-    expect(fetchProducts.mock.calls.at(-1)?.[0]?.q).not.toHaveProperty("has_stock_eq");
+    expect(fetchProducts.mock.calls.at(-1)?.[0]?.q).not.toHaveProperty("sellable_stock_eq");
     await user.click(assignable);
     expect(onSelect.mock.calls).toEqual([[zero], [unavailable]]);
   });

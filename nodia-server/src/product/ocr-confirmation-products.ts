@@ -1,8 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 import { validateCatalogId } from '../common/dto/catalog-id.dto.js';
+import { stockQuantityMillis } from '../common/utils/stock-quantity.js';
 import { normalizeProductAlias } from './product-alias.js';
 import { normalizeProductCode } from './product-measurement-unit.js';
 import { roundProductSalePrice } from './product-sale-price.js';
+import type { ProductStockAction } from './product-stock.js';
 
 const maxInteger = 2147483647;
 const maxItems = 500;
@@ -36,7 +38,12 @@ type CatalogChanges = {
 type OcrProductFields = Required<CatalogChanges> & { is_active: boolean };
 type OcrProductTarget = { product_id: string; expected_version: number };
 
-export type OcrProductItem = { line: OcrLine } & (
+type OcrStockIntent = {
+  track_stock?: boolean;
+  stock_action?: ProductStockAction;
+};
+
+export type OcrProductItem = { line: OcrLine } & OcrStockIntent & (
   | { kind: 'create'; product: OcrProductFields & { code: string } }
   | ({ kind: 'update'; product: OcrProductFields } & OcrProductTarget)
   | ({ kind: 'manual_match'; changes: CatalogChanges } & OcrProductTarget)
@@ -139,9 +146,9 @@ function normalizeProductFields(value: unknown): OcrProductFields {
   };
 }
 
-function normalizeChanges(value: unknown): CatalogChanges {
+function normalizeChanges(value: unknown, hasStockIntent: boolean): CatalogChanges {
   const changes = fields(value, catalogFields);
-  if (!Object.keys(changes).length) throw invalid();
+  if (!hasStockIntent && !Object.keys(changes).length) throw invalid();
   return {
     ...(Object.hasOwn(changes, 'code') ? { code: code(changes.code) } : {}),
     ...(Object.hasOwn(changes, 'name') ? { name: name(changes.name) } : {}),
@@ -164,6 +171,24 @@ function assertMatchesLine(product: CatalogChanges, line: OcrLine): void {
       throw invalid();
 }
 
+const stockIntentFields = ['track_stock', 'stock_action'] as const;
+
+function normalizeStockIntent(row: Record<string, unknown>): OcrStockIntent {
+  const intent: OcrStockIntent = {};
+  if (Object.hasOwn(row, 'track_stock')) {
+    if (typeof row.track_stock !== 'boolean') throw invalid();
+    intent.track_stock = row.track_stock;
+  }
+  if (Object.hasOwn(row, 'stock_action')) {
+    const { mode, quantity } = fields(row.stock_action, ['mode', 'quantity']);
+    if ((mode !== 'add' && mode !== 'replace') || typeof quantity !== 'number')
+      throw invalid();
+    if (intent.track_stock === false) throw invalid();
+    intent.stock_action = { mode, quantity: stockQuantityMillis(quantity) / 1000 };
+  }
+  return intent;
+}
+
 function normalizeItem(value: unknown): OcrProductItem {
   const row = fields(value, [
     'kind',
@@ -172,10 +197,13 @@ function normalizeItem(value: unknown): OcrProductItem {
     'product_id',
     'expected_version',
     'changes',
+    ...stockIntentFields,
   ]);
   const line = normalizeLine(row.line);
+  const stockIntent = normalizeStockIntent(row);
   if (row.kind === 'create') {
-    fields(row, ['kind', 'line', 'product']);
+    fields(row, ['kind', 'line', 'product', ...stockIntentFields]);
+    if (stockIntent.stock_action && stockIntent.track_stock !== true) throw invalid();
     const product = normalizeProductFields(row.product);
     if (product.code === null) throw invalid();
     assertMatchesLine(product, line);
@@ -183,6 +211,7 @@ function normalizeItem(value: unknown): OcrProductItem {
       kind: row.kind,
       line,
       product: { ...product, code: product.code },
+      ...stockIntent,
     };
   }
   if (row.kind !== 'update' && row.kind !== 'manual_match') throw invalid();
@@ -192,17 +221,20 @@ function normalizeItem(value: unknown): OcrProductItem {
     product_id,
     expected_version: integer(row.expected_version, 1),
   };
-  const common = ['kind', 'line', 'product_id', 'expected_version'];
+  const common = ['kind', 'line', 'product_id', 'expected_version', ...stockIntentFields];
   if (row.kind === 'manual_match') {
     fields(row, [...common, 'changes']);
-    const changes = normalizeChanges(row.changes);
+    const changes = normalizeChanges(
+      row.changes,
+      stockIntent.track_stock !== undefined || stockIntent.stock_action !== undefined,
+    );
     assertMatchesLine(changes, line);
-    return { kind: row.kind, line, ...target, changes };
+    return { kind: row.kind, line, ...target, changes, ...stockIntent };
   }
   fields(row, [...common, 'product']);
   const product = normalizeProductFields(row.product);
   assertMatchesLine(product, line);
-  return { kind: row.kind, line, ...target, product };
+  return { kind: row.kind, line, ...target, product, ...stockIntent };
 }
 
 export function normalizeOcrProducts(value: unknown): OcrProductItem[] {

@@ -29,6 +29,7 @@ import {
   validateRansackEnvelope,
 } from '../common/utils/ransack-query.builder.js';
 import { RANSACK_POLICIES } from '../common/utils/ransack-query.policies.js';
+import { stockQuantityMillis, stockQuantityTransformer } from '../common/utils/stock-quantity.js';
 import type { ActorReference } from '../authorization/authority-transaction.js';
 import {
   assertBusinessesAccess,
@@ -58,6 +59,7 @@ import type {
   OcrProductItem,
   OcrSavedProduct,
 } from './ocr-confirmation-products.js';
+import { resolveOcrStockWrite, validateProductStockWrite } from './product-stock.js';
 import { CashWriteRejection } from '../business-cash/use-case/execute-cash-mutation.use-case.js';
 
 type ProductReference = Pick<Product, 'id' | 'business_id' | 'provider_id'>;
@@ -174,6 +176,9 @@ export class ProductService {
   >(attributes: T, create = false): T {
     rejectRetiredProductFields(attributes);
     const normalized = { ...attributes };
+    for (const field of Object.keys(normalized) as (keyof T)[]) {
+      if (normalized[field] === undefined) delete normalized[field];
+    }
     if (create || attributes.alias !== undefined)
       normalized.alias = normalizeProductAlias(attributes.alias) ?? null;
     else delete normalized.alias;
@@ -223,14 +228,18 @@ export class ProductService {
     await this.authorizeBusinesses(this.productRepository.manager, actor, [...new Set(products.map(product => product.business_id))]);
     const result = products.map((product) => this.productResponse(product));
     if (!images || !products.length) return result;
-    const previous: ProductLog[] = await this.productRepository.manager.query(
+    const previous: (Omit<ProductLog, 'stock'> & { stock: number | string })[] =
+      await this.productRepository.manager.query(
       `SELECT DISTINCT ON (pl.product_id) pl.* FROM product_logs pl
         JOIN products p ON p.id=pl.product_id
         WHERE pl.product_id=ANY($1::bigint[]) AND (pl.sale_price,pl.cost_price,pl.cost_price_tax,pl.measurement_unit) IS DISTINCT FROM
           (p.sale_price,p.cost_price,p.cost_price_tax,p.measurement_unit) AND pl.source<>'manual'
         ORDER BY pl.product_id,pl.created_at DESC,pl.id DESC`, [products.map((product) => product.id)],
     );
-    const previousByProduct = new Map(previous.map((log) => [String(log.product_id), log]));
+    const previousByProduct = new Map(previous.map((log) => [
+      String(log.product_id),
+      { ...log, stock: stockQuantityTransformer.from(log.stock) },
+    ]));
     for (const product of result) product.previous_price_snapshot = previousByProduct.get(product.id) ?? null;
     if (!this.storage) {
       await this.authorizeBusinesses(this.productRepository.manager, actor, [...new Set(products.map(product => product.business_id))]);
@@ -284,12 +293,19 @@ export class ProductService {
         `SELECT count(*)::text AS total,
       count(*) FILTER(WHERE has_stock=true)::text AS available,
       count(*) FILTER(WHERE has_stock=false)::text AS unavailable,
-      count(*) FILTER(WHERE has_stock IS NULL)::text AS unknown
+      count(*) FILTER(WHERE has_stock IS NULL)::text AS unknown,
+      count(*) FILTER(WHERE track_stock)::text AS tracked,
+      count(*) FILTER(WHERE track_stock AND stock > 0)::text AS in_stock,
+      count(*) FILTER(WHERE track_stock AND stock = 0)::text AS out_of_stock,
+      count(*) FILTER(WHERE NOT track_stock)::text AS untracked
       FROM products WHERE business_id=$1 AND ($2::text='all' OR is_active=($2::text='active'))`,
         [businessId, activity],
       );
     const counts: Record<string, number> = {};
-    for (const field of ['total', 'available', 'unavailable', 'unknown']) {
+    for (const field of [
+      'total', 'available', 'unavailable', 'unknown',
+      'tracked', 'in_stock', 'out_of_stock', 'untracked',
+    ]) {
       if (
         !row ||
         !/^[0-9]+$/.test(row[field]) ||
@@ -471,12 +487,15 @@ export class ProductService {
 
   private productCreation(dto: CreateProductDto) {
     const attributes = normalizeCatalogSalePrice(this.catalogFields(dto, true));
-    validateCatalogProduct(attributes, true);
+    validateCatalogProduct(attributes);
+    validateProductStockWrite(undefined, attributes);
     return {
       ...attributes,
       barcode: dto.barcode ?? null,
       offer_price: dto.offer_price ?? null,
       is_offer_enabled: dto.is_offer_enabled ?? false,
+      has_stock: dto.has_stock ?? null,
+      track_stock: dto.track_stock ?? false,
       stock: dto.stock ?? 0,
       is_active: dto.is_active ?? true,
       version: 1,
@@ -487,6 +506,7 @@ export class ProductService {
     manager: EntityManager,
     product: Product,
     dto: UpdateProductDto,
+    stockIntent?: Pick<OcrProductItem, 'track_stock' | 'stock_action'>,
   ): Promise<{ candidate: Product; changedFields: string[] }> {
     const { expected_version, ...suppliedAttributes } = dto;
     const attributes = normalizeCatalogSalePrice(
@@ -504,10 +524,21 @@ export class ProductService {
       'is_offer_enabled',
       'has_stock',
       'measurement_unit',
-    ].some((key) => Object.hasOwn(attributes, key));
+      'track_stock',
+      'stock',
+    ].some((key) => Object.hasOwn(attributes, key)) ||
+      stockIntent?.track_stock !== undefined ||
+      stockIntent?.stock_action !== undefined;
     checkProductVersion(product, expected_version, requiresVersion);
     if (product.version >= 2147483647)
       throw new ConflictException('product:version_conflict');
+    if (stockIntent)
+      Object.assign(attributes, resolveOcrStockWrite(
+        product,
+        stockIntent.track_stock,
+        stockIntent.stock_action,
+      ));
+    validateProductStockWrite(product, attributes);
     await this.assertMovable(
       manager,
       product,
@@ -561,7 +592,11 @@ export class ProductService {
       }[] = [];
       for (const item of items) {
         if (item.kind === 'create') {
-          const input = { ...invoice, ...item.product, has_stock: true };
+          const input = {
+            ...invoice,
+            ...item.product,
+            ...resolveOcrStockWrite(undefined, item.track_stock, item.stock_action),
+          };
           staged.push({
             candidate: products.create(this.productCreation(input)),
             changedFields: Object.keys(input),
@@ -573,6 +608,7 @@ export class ProductService {
           manager,
           locked.get(item.product_id)!,
           updateById.get(item.product_id)!,
+          item,
         );
         staged.push({ ...update, source: 'update' });
       }
@@ -636,6 +672,8 @@ export class ProductService {
 
     const {
       stock_status_in,
+      tracked_stock_lteq,
+      sellable_stock_eq,
       price_change_in,
       availability_in,
       barcode_eq,
@@ -644,11 +682,24 @@ export class ProductService {
       has_stock_null,
       is_offer_enabled_eq,
       search,
+      catalog_search,
       code_presence,
       barcode_presence,
       ...cleanQ
     } = q ?? {};
-    applyProductLookupFilters(qb, { search, code_presence, barcode_presence });
+    applyProductLookupFilters(qb, { search, catalog_search, code_presence, barcode_presence });
+    if (tracked_stock_lteq !== undefined) {
+      qb.andWhere('product.track_stock = true AND product.stock <= :maxTrackedStock', {
+        maxTrackedStock: stockQuantityMillis(tracked_stock_lteq) / 1000,
+      });
+    }
+    if (sellable_stock_eq !== undefined) {
+      if (typeof sellable_stock_eq !== 'boolean')
+        throw new BadRequestException('product:invalid_stock_tracking');
+      qb.andWhere('(NOT product.track_stock OR product.stock > 0) = :sellableStock', {
+        sellableStock: sellable_stock_eq,
+      });
+    }
     if (availability_in !== undefined) {
       if (
         !Array.isArray(availability_in) ||
@@ -856,7 +907,7 @@ export class ProductService {
         savedProduct,
         'create',
         current.userId,
-        Object.keys(createDto),
+        Object.keys(attributes),
       ),
     );
     await logs.save(log);
@@ -894,7 +945,7 @@ export class ProductService {
           prod,
           'create',
           current.userId,
-          Object.keys(bulkDto.items[index] ?? {}),
+          Object.keys(attributes[index]),
         ),
       ),
     );
@@ -955,21 +1006,21 @@ export class ProductService {
     const products = manager.getRepository(Product);
     const productLogs = manager.getRepository(ProductLog);
     const selected = await this.lockProductUpdates(manager, current, bulkDto.items);
-    const candidates: Product[] = [];
+    const updates: Awaited<ReturnType<ProductService['productUpdate']>>[] = [];
     for (const [index, item] of bulkDto.items.entries()) {
       const { id: _id, ...attributes } = item;
-      candidates.push((await this.productUpdate(manager, selected[index], attributes)).candidate);
+      updates.push(await this.productUpdate(manager, selected[index], attributes));
     }
-    const savedProducts = await this.persist(() => products.save(candidates));
+    const savedProducts = await this.persist(() =>
+      products.save(updates.map(({ candidate }) => candidate)),
+    );
     const logs = savedProducts.map((prod, index) =>
       productLogs.create(
         productSnapshot(
           prod,
           'update',
           current.userId,
-          Object.keys(bulkDto.items[index] ?? {}).filter(
-            (key) => !['id', 'expected_version'].includes(key),
-          ),
+          updates[index].changedFields,
         ),
       ),
     );

@@ -421,6 +421,7 @@ Nodia se rige bajo la escala estándar de breakpoints de Material UI, adaptada p
 - **Ancho Completo**: Todos los inputs (`TextInput`, `SelectSingleInput`, `SelectMultipleInput`, `TranslationInput`) deben configurarse con `fullWidth` dentro de sus contenedores móviles.
 - **Limpiar selector individual**: La X se centra en el campo, ocupa espacio horizontal y conserva la altura del selector al aparecer o desaparecer. La opción táctil conserva un área de 44 px y al borrar devuelve el foco al selector.
 - **Acciones junto a texto**: TextInput admite `endAdornment` y una descripción externa enlazada mediante `aria-describedby`. En una fila con botón de envío, ubicar etiqueta/ayuda fuera de la fila para centrar botón y campo, sin offsets; en xs apilar y ocupar todo el ancho. Ojito accesible con etiqueta ES/EN/aria-pressed y mouseDown preventDefault conserva borrador/foco al alternar tipo. Referencia verificada: GeminiLoginViewer,44px,600/1280px centrados y320/390px sin overflow.
+- **Stock de Producto**: desde `sm`, el borde inferior del campo Stock coincide con el de la tarjeta **Usar stock**. La ayuda y los errores ocupan una fila debajo del campo. En `xs`, los controles se apilan con 16 px de separación.
 - **Fechas nativas**: el indicador de calendario debe usar el mismo color del texto del input en ambos temas, preservando el selector nativo y su accesibilidad. Referencia: TextInput con currentColor y colorScheme.
 - **Teclado Virtual y Auto-Scroll**:
   - Los modales deben implementar `overflowY: "auto"` con scrollbar sutil sobre el cuerpo del modal para permitir desplazamiento fluido cuando el teclado virtual de iOS o Android cubra la mitad inferior de la pantalla.
@@ -540,12 +541,23 @@ Corte histórico R15: Definir tu plan explicó Guardar/Enviar/Proponer mediante 
 
 ### 9.13 Tabla provisional de factura y selección IA — 2026-11-16
 
+El control opcional de stock de [Plan94 §47](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto)
+concentra el ajuste en una columna **Stock** junto a **Alias comercial**.
+Con el control apagado se muestra un guion. Al encenderlo desde el lápiz,
+el campo se precarga con la cantidad extraída y toma el modo **Sumar**.
+La factura guarda su cantidad extraída por separado. El campo muestra unos
+cuatro dígitos a la vez y su etiqueta **Cantidad** está disponible para
+lectores de pantalla. El botón de 44 px alterna sumar y reemplazar, con
+tooltip y centrado respecto al campo. La ayuda y el error quedan debajo
+de los controles. La fila muestra saldo leído y saldo proyectado.
+Ante un conflicto se conserva la intención y se revisa el saldo vigente.
+
 La [solicitud vigente del plan94§41](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#41-revisión-ocr-compacta-defaults-comerciales-y-selección-ia--solicitud2026-11-16)
 sustituye el toggle y la disponibilidad opcional del corte2026-11-07 inferior.
-La tabla conserva comparación horizontal en un único árbol, `minWidth: 1200`
-constante y scroll local dentro de TableContainer también en móvil, con las
-scrollbars del theme. Cantidad de la factura queda siempre a la derecha de Alias
-comercial; las filas históricas mantienen la correspondencia de columnas.
+La tabla conserva la comparación horizontal en un único árbol y un ancho
+mínimo de 1120 px. El scroll es local a TableContainer, con las scrollbars del
+theme. Las filas históricas mantienen la correspondencia con las columnas
+actuales y muestran el saldo registrado cuando corresponde.
 
 Nuevos productos copian nombre al alias y comienzan disponibles; updates cargan
 alias de catálogo y omiten `has_stock` del payload para conservar disponibilidad.
@@ -811,7 +823,7 @@ Pasaron 218 regresiones en 4 archivos (los 9 casos del helper están incluidos),
 
 ### 10.11 Catálogo y controles del punto de venta (2026-10-29)
 
-Los apartados base y R13 conservan sus cortes históricos. La composición vigente desde R14 se describe al final: sólo partidas seleccionadas y búsqueda desplegable, sin listado exterior del catálogo.
+Los apartados base y R13 conservan sus cortes históricos. R14 introdujo la lista de partidas seleccionadas y el buscador desplegable como entrada al catálogo. La composición de la interfaz se actualiza en el apartado del 2026-11-25.
 
 El POS comparte una consulta infinita entre el selector con imágenes y el listado. Solicita páginas de 24 productos con filtros del servidor, orden estable y búsqueda con debounce; deduplica por ID, descarta contextos anteriores y conserva los datos durante una nueva petición. El listado y el menú tienen scroll local y `overflow-anchor: none`: en Edge, una sola llegada al fondo cargaba todas las páginas con el anclaje predeterminado; la variante final conserva `scrollTop` y carga una página adicional. El botón Cargar más ofrece una alternativa al observador. No descargar todo el catálogo para simular búsqueda o scroll.
 
@@ -834,6 +846,10 @@ Fotos80px y precio por flag con normal debajo, sin code/barcode en catálogo/car
 La izquierda tiene sólo SaleLineList con partidas seleccionadas/imagen/precio/cantidad; el selector y barcode agregan productos sin catálogo/listado exterior o filas a0. La derecha contiene Total→cuatro medios84px→Confirmar56px, sin duplicar líneas. Los dos paneles comparten `clamp(620px, calc(100dvh - 220px), 1040px)`, observados780px con viewport1000px de alto. Cabecera inicialmente colapsada, tabs y motor/snapshot montados; móvil conserva un estado. CSS de paneles queda acotado al POS, sin aplicar alturas o min-height globales a listas de opciones, slots o controles.
 
 El popup infinito conserva el mismo UL durante append: guardar scrollTop/contexto/conteo, restaurar en layout y una RAF, cancelar al cerrar/deshabilitar/desmontar o cambiar actor/sesión/negocio/modo/búsqueda cruda. Query/page locks separan búsquedas y descartan callbacks obsoletos. Mientras responde, input readonly y opciones/indicadores bloqueados conservan foco/popup; no deshabilitar el input ya enfocado al iniciar nueva búsqueda. QA verificó24→48, scrollTop2187→2187 y mismo UL, sin tercera página o warnings. No usar sólo overflow-anchor como prueba de retención MUI.
+
+El buscador del catálogo muestra un indicador circular de 18 px al extremo
+derecho del campo, junto a los controles del autocompletado. Se usa para la
+carga inicial, la búsqueda y la paginación, con un nombre accesible traducido.
 
 useSaleLineImages trata imágenes como metadatos, sin repriciar carritos: cache30s por actor/sessionVersion/negocio/producto, seeds de productos ya consultados y sólo IDs seleccionados faltantes en lotes100 (hasta2 para200partidas). La fixture de recarga recuperó19IDs con1GET y los seeds evitaron GET extra. No serializar URLs firmadas como precio/snapshot ni transformar una imagen ausente en permiso para vender.
 
@@ -889,6 +905,22 @@ Un grid que contiene papel80mm puede desbordar por min-content aun con overflow 
 #### Acciones del último recibo R23 — 2026-10-31
 
 En un aviso con dos acciones de impresión relacionadas, usar dos columnas minmax(0,1fr) desde sm y una columna en xs. Mantener gap8px, ancho completo y targets44px; el mensaje del Alert puede envolver sin invadir las acciones. Conservar los mismos botones y handlers al redimensionar. [R23](../docs/evidence/business-pos-receipt-actions-row-20261031-r23.json) registra geometría/teclado y los checks por alcance; no cambia el panel de venta guardada ni el transporte de impresión.
+
+#### Ventas laterales y cobro compacto — 2026-11-25
+
+El POS usa una columna de carritos, la venta activa y una columna de cobro en
+escritorio ancho. En móvil se mantiene una sola página con el cobro debajo de
+los productos. Nueva venta precede al total. Cada medio de pago combina un
+color del theme con icono, etiqueta y confirmación visual de selección. Los
+controles compactos conservan un mínimo de 44 px. El buscador muestra su
+indicador dentro del campo, separado del estado de la confirmación.
+
+El listado de productos tiene altura acotada y scroll vertical local, pista
+transparente y foco visible. El último agregado queda primero y restablece el
+scroll del listado, mientras que la edición de cantidad conserva la posición.
+Las imágenes, el subtotal, la disponibilidad observada y el editor de precio
+siguen en la misma fila. La distribución interna responde al ancho de la lista
+y la escala de texto. [Plan94 §48](../docs/mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 ### 10.12 Sesión Codex consultada por intención — 2026-11-01
 

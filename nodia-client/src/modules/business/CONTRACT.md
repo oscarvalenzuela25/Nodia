@@ -24,10 +24,15 @@ modal local con nombre arriba y alias/checkbox. Con alias existente se conserva.
 Prevalidar todas las filas/comandos antes del primer POST; errores conservan
 borrador y modal. No declarar transacción global del flujo de varias peticiones.
 Vinculación manual rotula «(Sin código)» y conserva ID/revisión/campos elegidos.
-Busca en Server por q.search (nombre OR alias); filtros q.code_presence y
-q.barcode_presence present/missing, Todos omitido. Limpiar restaura Todos en
-ambos y Activo en actividad; aplicar/quitar reinicia página. CSV agrega alias y
-omitir columna conserva el anterior; fingerprint de recuperación incluye alias.
+El buscador de Productos y la exportación de su vista usan `q.catalog_search`
+para buscar en Server por código de barras, código de factura/proveedor, alias
+o nombre; POS y vinculación OCR conservan `q.search` por nombre o alias. Al
+entrar en Productos el buscador recibe foco al quedar habilitado. El modal
+mantiene los filtros de presencia `q.code_presence` y `q.barcode_presence`
+(`present`/`missing`, Todos omitido) como selectores sin caja de búsqueda.
+Limpiar restaura Todos en ambos y Activo en actividad; aplicar/quitar reinicia
+página. CSV agrega alias y omitir columna conserva el anterior; fingerprint de
+recuperación incluye alias.
 [Plan94§38](../../../../docs/mvp/94-business-point-of-sale-and-product-refactor.md#38-alias-humano-de-productos-y-revisión-ocr--solicitud2026-11-14).
 
 Actualizado por solicitud del usuario el 2026-10-09. Registro de implementación; no implica aprobación documental automática.

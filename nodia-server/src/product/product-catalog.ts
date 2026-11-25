@@ -31,7 +31,7 @@ export function validateBarcode(
 
 export function validateCatalogProduct(
   product: Partial<Product>,
-  create = false,
+  _create = false,
 ): void {
   rejectRetiredProductFields(product);
   if (product.alias !== undefined) normalizeProductAlias(product.alias);
@@ -39,8 +39,6 @@ export function validateCatalogProduct(
   if (product.measurement_unit !== undefined)
     validateProductMeasurementUnit(product.measurement_unit);
   if (product.barcode !== undefined) validateBarcode(product.barcode);
-  if (create && typeof product.has_stock !== 'boolean')
-    throw new BadRequestException('product:availability_required');
   if (
     product.has_stock !== undefined &&
     product.has_stock !== null &&
@@ -116,7 +114,8 @@ export function productSnapshot(
     barcode: product.barcode ?? null,
     offer_price: product.offer_price ?? null,
     is_offer_enabled: product.is_offer_enabled ?? false,
-    has_stock: product.has_stock ?? null,
+    has_stock: changedFields.includes('has_stock') ? product.has_stock ?? null : null,
+    track_stock: product.track_stock ?? false,
     product_version: product.version,
     source,
     event_type: source,

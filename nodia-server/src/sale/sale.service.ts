@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
+import { stockQuantityTransformer } from '../common/utils/stock-quantity.js';
 import type {
   ProductSaleRow,
   SaleItemSnapshot,
+  SaleStockDeduction,
   SaleView,
 } from './types/sale.types.js';
 
@@ -71,14 +73,39 @@ export class SaleService {
     manager: EntityManager,
     businessId: string,
     ids: readonly string[],
+    writeStock = false,
   ): Promise<ProductSaleRow[]> {
     if (!ids.length) return [];
-    return manager.query(
+    const rows: (Omit<ProductSaleRow, 'stock'> & { stock: string })[] = await manager.query(
       `SELECT p.id::text,p.business_id::text,p.code,p.barcode,p.name,p.sale_price::text,p.offer_price::text,
-      is_offer_enabled,cost_price::text,cost_price_tax::text,version,is_active,has_stock,measurement_unit
-      FROM products p WHERE p.business_id=$1 AND p.id=ANY($2::bigint[]) ORDER BY p.id FOR SHARE`,
+      is_offer_enabled,cost_price::text,cost_price_tax::text,version,is_active,track_stock,stock::text,measurement_unit
+      FROM products p WHERE p.business_id=$1 AND p.id=ANY($2::bigint[]) ORDER BY p.id
+      ${writeStock ? 'FOR NO KEY UPDATE' : 'FOR SHARE'}`,
       [businessId, ids],
     );
+    return rows.map((row) => ({
+      ...row,
+      stock: stockQuantityTransformer.from(row.stock),
+    }));
+  }
+
+  async applyStockDeductions(
+    manager: EntityManager,
+    businessId: string,
+    deductions: readonly SaleStockDeduction[],
+  ): Promise<void> {
+    if (!deductions.length) return;
+    const rows: { id: string }[] = await manager.query(
+      `WITH changed AS (
+         UPDATE products p SET stock=d.stock_after,version=p.version+1,updated_at=clock_timestamp()
+         FROM jsonb_to_recordset($2::jsonb) AS d(product_id bigint,stock_before numeric,stock_after numeric)
+         WHERE p.business_id=$1 AND p.id=d.product_id AND p.track_stock AND p.stock=d.stock_before
+         RETURNING p.id
+       ) SELECT id::text FROM changed`,
+      [businessId, JSON.stringify(deductions)],
+    );
+    if (rows.length !== deductions.length)
+      throw new ConflictException('business:sale_product_changed');
   }
   async replaceItems(
     manager: EntityManager,

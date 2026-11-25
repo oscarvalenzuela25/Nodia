@@ -132,17 +132,19 @@ const products: ProductEntity[] = Array.from({ length: 28 }, (_, i) => ({
     i === 0
       ? "Producto de prueba con un nombre largo para validar la tarjeta"
       : "Producto QA " + (i + 1),
+  alias: i === 0 ? "Café de barrio QA" : null,
   cost_price: 1000,
   cost_price_tax: 1190,
   sale_price: i === 2 ? 0 : 1500,
   barcode: String(100000 + i).padStart(8, "0"),
   has_stock: i === 26 ? false : i === 25 ? null : true,
+  track_stock: i === 0 || i === 2,
   offer_price: i === 0 ? 2000 : null,
   is_offer_enabled: i === 0,
   effective_price: i === 0 ? "2000" : i === 2 ? "0" : "1500",
   price_source: i === 0 ? "offer" : "regular",
   version: 1,
-  stock: i === 0 ? 0 : 5,
+  stock: i === 0 ? 0 : i === 2 ? 2.5 : 5,
   is_active: i !== 27,
   created_at: "2026-10-09",
   updated_at: "2026-10-09",
@@ -292,7 +294,22 @@ mainInstance.defaults.adapter = async (request) => {
   };
   if (url.endsWith("/business")) return list([business]);
   if (url.endsWith("/providers")) return list(providers);
-  if (url.endsWith("/products")) return list(products);
+  if (url.endsWith("/products")) {
+    const catalogSearch = typeof q.catalog_search === "string" ? q.catalog_search.trim().toLowerCase() : "";
+    const nameSearch = typeof q.search === "string" ? q.search.trim().toLowerCase() : "";
+    const requestedIds = typeof q.id_in === "string" ? new Set(q.id_in.split(",")) : null;
+    const matching = products.filter((product) =>
+      (!requestedIds || requestedIds.has(product.id)) &&
+      (!catalogSearch || [product.barcode, product.code, product.alias, product.name].some((field) =>
+        field?.toLowerCase().includes(catalogSearch))) &&
+      (!nameSearch || [product.alias, product.name].some((field) => field?.toLowerCase().includes(nameSearch))) &&
+      (typeof q.tracked_stock_lteq !== "number" ||
+        (product.track_stock && product.stock <= q.tracked_stock_lteq)) &&
+      (typeof q.sellable_stock_eq !== "boolean" ||
+        (!product.track_stock || product.stock > 0) === q.sellable_stock_eq),
+    );
+    return list(matching);
+  }
   if (url.endsWith("/invoices")) return list(invoices);
 
   if (/providers\/101\/contacts$/.test(url))
