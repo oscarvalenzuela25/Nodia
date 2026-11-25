@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Incorporación de OpenCode — 2026-11-25.** El
+[catastro de modelos](114-ai-model-usage-inventory.md) reúne los recorridos
+de QA al incorporar un proveedor o selección. El
+[plan de OpenCode](115-opencode-provider-implementation-plan.md) cubre Agentic
+y API key. El primer ensayo gratuito devolvió HTTP 429. La implementación,
+la inferencia válida y la adopción por entorno quedan pendientes.
+
 **Punto de venta y búsqueda de Productos — 2026-11-25.** Client implementa
 el diseño aprobado del POS con carritos laterales, cobro compacto y el último
 producto agregado al inicio de su carrito. La cabecera y la búsqueda de
