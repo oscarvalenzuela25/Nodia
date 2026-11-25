@@ -21,7 +21,7 @@ const product: ProductEntity = { id: "17", business_id: "business-a", version: 4
   cost_price: 100, cost_price_tax: 119, sale_price: 149, offer_price: 200, is_offer_enabled: false,
   has_stock: true, stock: 0, is_active: true, provider_id: null };
 const form: ProductFormData = { measurement_unit: "unit", code: product.code, barcode: product.barcode!, name: product.name, alias: null, cost_price: 100, cost_price_tax: 119,
-  sale_price: 149, offer_price: 200, is_offer_enabled: false, has_stock: true, is_active: true, provider_id: null };
+  sale_price: 149, offer_price: 200, is_offer_enabled: false, track_stock: false, is_active: true, provider_id: null };
 const createFile = () => new File(["synthetic image"], "product.png", { type: "image/png", lastModified: 1 });
 const key = productSaveKey("actor-a", "business-a", null);
 const errorWithStatus = (status: number) => Object.assign(new AxiosError("Synthetic rejection"), { response: { status, data: { message: "Synthetic server error" } } });
@@ -45,7 +45,8 @@ describe("deferred product and image save", () => {
 
   it.each([false, true])("preserves confirmed fields and the unknown-outcome gate when reopening a journal with the retired auxiliary slot (unknown=%s)", async (fieldsUnknown) => {
     const earlierFields: unknown[] = JSON.parse(fieldsFingerprint(form));
-    earlierFields.pop(); // Before alias existed.
+    earlierFields.splice(-2); // Before stock tracking and alias existed.
+    earlierFields[9] = true; // Former manual availability.
     earlierFields.splice(6, 0, 30);
     sessionStorage.setItem(key, JSON.stringify({ ...emptyJournal("actor-a", "business-a", null), product,
       fieldsFingerprint: JSON.stringify(earlierFields), fieldsUnknown }));
@@ -215,7 +216,8 @@ describe("deferred product and image save", () => {
   });
 
   it("recognizes a confirmed pre-alias fingerprint without replaying saved fields", async () => {
-    const oldFields: unknown[] = JSON.parse(fieldsFingerprint(form)); oldFields.pop();
+    const oldFields: unknown[] = JSON.parse(fieldsFingerprint(form)); oldFields.splice(-2);
+    oldFields[9] = true;
     sessionStorage.setItem(key, JSON.stringify({ ...emptyJournal("actor-a", "business-a", null), product, fieldsFingerprint: JSON.stringify(oldFields) }));
     const persist = vi.fn();
     const { result } = renderHook(() => useDeferredProductSave({ businessId: "business-a", persistFields: persist }), { wrapper });

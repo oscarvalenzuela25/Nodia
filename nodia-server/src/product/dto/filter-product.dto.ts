@@ -11,13 +11,23 @@ import {
   ArrayMaxSize,
   ArrayNotEmpty,
   ValidateBy,
+  ValidateIf,
 } from 'class-validator';
+import {
+  IsProductStockQuantity,
+  toProductStockQueryValue,
+} from './product-stock-validation.js';
 
 export class FilterProductDto {
   @IsOptional()
   @IsString()
   @MaxLength(255)
   search?: string;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsString()
+  @MaxLength(255)
+  catalog_search?: string;
 
   @IsOptional()
   @IsIn(['present', 'missing'])
@@ -179,6 +189,18 @@ export class FilterProductDto {
   )
   @IsNumber()
   stock_lteq?: number;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @Transform(({ value }) => toProductStockQueryValue(value))
+  @IsProductStockQuantity()
+  tracked_stock_lteq?: number;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @Transform(({ value }) =>
+    value === 'true' ? true : value === 'false' ? false : value,
+  )
+  @IsBoolean()
+  sellable_stock_eq?: boolean;
 
   @IsOptional()
   @IsString()

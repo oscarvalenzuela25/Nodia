@@ -30,7 +30,7 @@ export default function InvoiceProductMatch({ businessId, row, disabled, onClose
   const optionsList = options.map(item => ({ value: item.id, label: `${item.alias?.trim() || item.name} (${item.code?.trim() || t("business:invoice_match_no_code")})` }));
   return <BaseModal open onClose={onClose} title={t("business:invoice_match_title")} subtitle={t("business:invoice_match_help")} size="md" actions={<Stack direction={{ xs: "column-reverse", sm: "row" }} sx={{ gap: 2, width: "100%", justifyContent: "flex-end" }}>
     <Button variant="outlined" onClick={onClose} sx={{ width: { xs: "100%", sm: "auto" } }}>{t("core:cancel")}</Button>
-    <Button variant="contained" disabled={loading || selected.isError || products.isError || !product || !chosen.length} onClick={() => { if (product && !loading && !selected.isError && !products.isError && chosen.length && onApply(product, chosen)) onClose(); }} sx={{ width: { xs: "100%", sm: "auto" } }}>{t("business:invoice_match_apply")}</Button>
+    <Button variant="contained" disabled={loading || selected.isError || products.isError || !product} onClick={() => { if (product && !loading && !selected.isError && !products.isError && onApply(product, chosen)) onClose(); }} sx={{ width: { xs: "100%", sm: "auto" } }}>{t("business:invoice_match_apply")}</Button>
   </Stack>}>
     <Stack sx={{ gap: 2, minWidth: 0 }}>
       <SelectSingleInput label={t("business:invoice_match_select")} placeholder={t("business:invoice_match_search")} options={optionsList} value={productId}
@@ -53,7 +53,7 @@ export default function InvoiceProductMatch({ businessId, row, disabled, onClose
           </Box>)}
         </Comparison>}
       </Box>}
-      <Alert severity="info">{t("business:invoice_match_preserve")}</Alert>
+      <Alert severity="info">{t(product && !chosen.length ? "business:ocr_stock_only_match" : "business:invoice_match_preserve")}</Alert>
     </Stack>
   </BaseModal>;
 }

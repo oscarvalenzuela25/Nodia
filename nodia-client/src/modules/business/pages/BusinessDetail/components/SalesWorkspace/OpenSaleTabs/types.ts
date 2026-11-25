@@ -9,6 +9,7 @@ export interface OpenSaleTabsProps {
   sales: OpenSaleTab[];
   activeId: string;
   panelId: string;
+  orientation?: "horizontal" | "vertical";
   disabled: boolean;
   onSelect: (id: string, source: "pointer" | "keyboard") => void;
   onClose: (id: string) => void;

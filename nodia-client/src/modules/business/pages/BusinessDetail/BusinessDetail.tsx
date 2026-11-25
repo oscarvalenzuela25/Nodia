@@ -61,7 +61,6 @@ import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 
 import {
   DetailContainer,
-  DetailBreadcrumb,
   HeaderCard,
   HeaderTopSection,
   BusinessAvatarBox,
@@ -165,6 +164,7 @@ const BusinessDetail: FC = () => {
   const [collapsedHeaders, setCollapsedHeaders] = useState<Record<string, boolean>>({});
   const headerId = useId();
   const headerExpanded = collapsedHeaders[id ?? ""] === false;
+  const headerToggleLabel = t(headerExpanded ? "business:detail_header_collapse" : "business:detail_header_expand");
 
   // Direct modal trigger states (from quick action buttons)
   const [directNewProductOpen, setDirectNewProductOpen] = useState(false);
@@ -265,27 +265,13 @@ const BusinessDetail: FC = () => {
         />
       )}
 
-      {/* Global Breadcrumb */}
-      <DetailBreadcrumb
-        items={[
-          { label: t("business:title"), to: BUSINESS_ROUTE },
-          { label: business?.name ?? t("business:detail_title") },
-        ]}
-        extra={<Tooltip title={t(headerExpanded ? "business:detail_header_collapse" : "business:detail_header_expand")}>
-          <span>
-            <IconButton
-              aria-label={t(headerExpanded ? "business:detail_header_collapse" : "business:detail_header_expand")}
-              aria-expanded={headerExpanded}
-              aria-controls={headerId}
-              disabled={isBusy || !id || !business}
-              onClick={() => { if (id) setCollapsedHeaders(previous => ({ ...previous, [id]: !(previous[id] ?? true) })); }}
-              sx={{ width: 44, height: 44, flexShrink: 0 }}
-            >
-              {headerExpanded ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
-            </IconButton>
-          </span>
-        </Tooltip>}
-      />
+      <Typography
+        component="h1"
+        variant="h5"
+        sx={{ textAlign: "start", fontWeight: 700, overflowWrap: "anywhere" }}
+      >
+        {business?.name ?? t("business:detail_title")}
+      </Typography>
 
       {/* Header Card with Business Info and Embedded Tabs */}
       <Skeleton loading={isLoading} fallback={<HeaderCardSkeleton />}>
@@ -298,18 +284,12 @@ const BusinessDetail: FC = () => {
               </BusinessAvatarBox>
 
               <Box sx={{ flex: 1, minWidth: 0, overflowWrap: "anywhere" }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
-                  <Typography variant="h5" sx={{ fontWeight: 700, color: "text.primary" }}>
-                    {business?.name ?? "..."}
-                  </Typography>
-
-                  <StatusPill active={business?.is_active ?? true}>
-                    <StatusDot active={business?.is_active ?? true} />
-                    {business?.is_active
-                      ? t("business:status_active")
-                      : t("business:status_inactive")}
-                  </StatusPill>
-                </Box>
+                <StatusPill active={business?.is_active ?? true}>
+                  <StatusDot active={business?.is_active ?? true} />
+                  {business?.is_active
+                    ? t("business:status_active")
+                    : t("business:status_inactive")}
+                </StatusPill>
 
                 <HeaderMetaRow>
                   <Typography variant="caption" color="text.secondary">
@@ -366,46 +346,62 @@ const BusinessDetail: FC = () => {
 
           {/* Embedded Navigation Tabs */}
           <TabsWrapper>
-            {mobile ? (
-              <>
+            <Box sx={{ display: "flex", gap: 1, alignItems: { xs: "flex-end", sm: "center" } }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                {mobile ? (
+                  <SelectSingleInput
+                    label={t("business:pos.section")}
+                    clearable={false}
+                    autoFocusSearch={false}
+                    value={selectedTab}
+                    onChange={selectSection}
+                    disabled={isBusy}
+                    options={sections.map(({ value, label }) => ({ value, label: t(label) }))}
+                  />
+                ) : (
+                  <StyledTabs
+                    orientation="horizontal"
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label={t("business:pos.section")}
+                  >
+                    {renderSectionTabs(sections)}
+                  </StyledTabs>
+                )}
+              </Box>
+              <Tooltip title={headerToggleLabel} describeChild>
+                <Box component="span" sx={{ display: "flex", flexShrink: 0 }}>
+                  <IconButton
+                    aria-label={headerToggleLabel}
+                    aria-expanded={headerExpanded}
+                    aria-controls={headerId}
+                    disabled={isBusy || !id || !business}
+                    onClick={() => { if (id) setCollapsedHeaders(previous => ({ ...previous, [id]: !(previous[id] ?? true) })); }}
+                    sx={{ width: 44, height: 44 }}
+                  >
+                    {headerExpanded ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
+                  </IconButton>
+                </Box>
+              </Tooltip>
+            </Box>
+            {mobile && selectedMarketSection && (
+              <Box sx={{ mt: 2 }}>
                 <SelectSingleInput
-                  label={t("business:pos.section")}
+                  label={t("business:market_lists.market")}
                   clearable={false}
                   autoFocusSearch={false}
-                  value={selectedTab}
+                  value={selectedMarketSection}
                   onChange={selectSection}
                   disabled={isBusy}
-                  options={sections.map(({ value, label }) => ({ value, label: t(label) }))}
+                  options={marketSections.map(({ value, label }) => {
+                    const count = sectionCounts[value];
+                    const title = t(label);
+                    return { value, label: count === undefined ? title : `${title} (${count})` };
+                  })}
                 />
-                {selectedMarketSection && (
-                  <Box sx={{ mt: 2 }}>
-                    <SelectSingleInput
-                      label={t("business:market_lists.market")}
-                      clearable={false}
-                      autoFocusSearch={false}
-                      value={selectedMarketSection}
-                      onChange={selectSection}
-                      disabled={isBusy}
-                      options={marketSections.map(({ value, label }) => {
-                        const count = sectionCounts[value];
-                        const title = t(label);
-                        return { value, label: count === undefined ? title : `${title} (${count})` };
-                      })}
-                    />
-                  </Box>
-                )}
-              </>
-            ) : (
-              <StyledTabs
-                orientation="horizontal"
-                value={selectedTab}
-                onChange={handleTabChange}
-                variant="scrollable"
-                scrollButtons="auto"
-                aria-label={t("business:pos.section")}
-              >
-                {renderSectionTabs(sections)}
-              </StyledTabs>
+              </Box>
             )}
           </TabsWrapper>
           {!mobile && selectedMarketSection && <MarketTabs

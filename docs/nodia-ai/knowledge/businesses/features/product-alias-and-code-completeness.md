@@ -4,7 +4,7 @@
   "document_id": "businesses.product-alias-and-code-completeness",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -54,7 +54,7 @@
       "kind": "implementation"
     },
     {
-      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductCodeFilter.tsx",
+      "path": "nodia-client/src/modules/business/pages/BusinessDetail/components/ProductsTab/ProductsTab.tsx",
       "kind": "implementation"
     },
     {
@@ -75,6 +75,14 @@
 ---
 
 # Alias humano y completitud de códigos — contexto funcional candidato
+
+## Buscador unificado del catálogo — 2026-11-25
+
+Productos busca en el servidor por nombre, alias, código de factura o código
+de barras en un solo campo. El filtro conserva los selectores de presencia.
+Este diseño actualiza el corte de búsqueda de códigos del 2026-11-23 y
+mantiene el resaltado de precio cero. POS y OCR conservan nombre y alias.
+[Plan94 §48](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 ## Qué resuelve y qué significa
 

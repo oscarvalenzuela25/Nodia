@@ -95,5 +95,13 @@ export interface ProductSaleRow {
   cost_price_tax: string | number | null;
   version: number;
   is_active: boolean;
-  has_stock: boolean | null;
+  track_stock: boolean;
+  stock: number;
+}
+
+export interface SaleStockDeduction {
+  product_id: string;
+  quantity: number;
+  stock_before: number;
+  stock_after: number;
 }

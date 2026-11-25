@@ -117,11 +117,12 @@ function resolveField(
 export function validateRansackEnvelope(q: object | undefined): void {
   if (q === undefined) return;
   if (q === null || typeof q !== 'object' || Array.isArray(q)) return invalid();
-  const entries: [string, unknown][] = Object.entries(q);
+  // Class-transformer creates undefined properties for omitted DTO fields.
+  const entries = Object.entries(q).filter(([, value]) => value !== undefined);
   if (entries.length > RANSACK_LIMITS.conditions) return invalid();
   for (const [key, value] of entries) {
     if (key.length > 128) return invalid();
-    if (value === undefined || value === null) continue;
+    if (value === null) continue;
     const list = Array.isArray(value) ? value : [value];
     if (list.length > RANSACK_LIMITS.listItems) return invalid();
     for (const item of list) {

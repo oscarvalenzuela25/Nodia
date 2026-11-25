@@ -70,7 +70,13 @@ type OcrProductChanges = {
 type OcrProductFields = Required<OcrProductChanges> & { is_active: boolean };
 type OcrProductTarget = CashRevision & { product_id: string };
 
-export type OcrConfirmationItem = { line: OcrConfirmationLine } & (
+export type OcrStockAction = { mode: "add" | "replace"; quantity: number };
+
+export type OcrConfirmationItem = {
+  line: OcrConfirmationLine;
+  track_stock?: boolean;
+  stock_action?: OcrStockAction;
+} & (
   | { kind: "create"; product: OcrProductFields & { code: string } }
   | ({ kind: "update"; product: OcrProductFields } & OcrProductTarget)
   | ({ kind: "manual_match"; changes: OcrProductChanges } & OcrProductTarget)

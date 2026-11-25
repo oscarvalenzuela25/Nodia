@@ -28,11 +28,29 @@ describe("OpenSaleTabs", () => {
     await userEvent.keyboard("{End}"); expect(tabs[1]).toHaveFocus();
     await userEvent.keyboard("{ArrowRight}"); expect(tabs[0]).toHaveFocus();
   });
-  it("closes the requested inactive cart without selecting it", async () => {
+  it("exposes the vertical layout and navigates with up and down arrows", async () => {
+    const onSelect = vi.fn();
+    render(<OpenSaleTabs sales={sales} activeId="a" panelId="cart" orientation="vertical" disabled={false} onSelect={onSelect} onClose={vi.fn()} />);
+    expect(screen.getByRole("tablist")).toHaveAttribute("aria-orientation", "vertical");
+    const tabs = screen.getAllByRole("tab");
+    tabs[0].focus();
+    await userEvent.keyboard("{ArrowDown}");
+    expect(onSelect).toHaveBeenLastCalledWith("b", "keyboard");
+    expect(tabs[1]).toHaveFocus();
+    await userEvent.keyboard("{ArrowUp}");
+    expect(onSelect).toHaveBeenLastCalledWith("a", "keyboard");
+    expect(tabs[0]).toHaveFocus();
+  });
+  it("keeps selecting a card and closing it as independent actions", async () => {
     const onSelect = vi.fn(), onClose = vi.fn();
     render(<OpenSaleTabs sales={sales} activeId="a" panelId="cart" disabled={false} onSelect={onSelect} onClose={onClose} />);
+    await userEvent.click(screen.getByRole("tab", { name: /Venta 3/ }));
+    expect(onSelect).toHaveBeenCalledExactlyOnceWith("b", "pointer");
+    expect(onClose).not.toHaveBeenCalled();
+    onSelect.mockClear();
     await userEvent.click(screen.getByRole("button", { name: "Cerrar Venta 3" }));
-    expect(onClose).toHaveBeenCalledWith("b"); expect(onSelect).not.toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalledExactlyOnceWith("b");
+    expect(onSelect).not.toHaveBeenCalled();
   });
   it("allows consulting a pending cart but prevents discarding it or an in-flight cart", () => {
     const pending = sales.map((sale, index) => ({ ...sale, pending: index === 0, busy: index === 1 }));

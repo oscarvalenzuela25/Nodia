@@ -17,13 +17,13 @@ export async function verifyDirectSaleCheckout({
   await db.query('INSERT INTO businesses(id,owner_id) VALUES($1,1)', [
     business,
   ]);
-  const [paid, zero, unavailable, unknown] = await db.query(
+  const [paid, zero, unavailable] = await db.query(
     `
-    INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,stock,barcode,has_stock)
-    VALUES($1,'checkout-paid','Checkout paid',800,952,30,1500,7,'000017',true),
-      ($1,'checkout-zero','Checkout zero',0,0,0,0,0,null,true),
-      ($1,'checkout-unavailable','Checkout unavailable',0,0,0,100,4,null,false),
-      ($1,'checkout-unknown','Checkout unknown',0,0,0,100,4,null,null)
+    INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price,stock,barcode,is_active)
+    VALUES($1,'checkout-paid','Checkout paid',800,952,1500,7,'000017',true),
+      ($1,'checkout-zero','Checkout zero',0,0,0,0,null,true),
+      ($1,'checkout-unavailable','Checkout unavailable',0,0,100,4,null,false),
+      ($1,'checkout-unknown','Checkout unknown',0,0,100,4,null,true)
     RETURNING id::text`,
     [business],
   );
@@ -154,7 +154,6 @@ export async function verifyDirectSaleCheckout({
         [[item(zero.id, '0')], /positive_total/],
         [[item('5', '100')], /unavailable/],
         [[item(unavailable.id, '100')], /unavailable/],
-        [[item(unknown.id, '100')], /unavailable/],
         [[item(paid.id, '1499')], /product_changed/],
         [[item(paid.id, '1500', 2)], /product_changed/],
       ])
@@ -162,8 +161,13 @@ export async function verifyDirectSaleCheckout({
     },
   );
   await check(
-    'checkout event persistence failure rolls back header, items and receipt together',
+    'checkout event persistence failure rolls back stock, header, items and receipt together',
     async () => {
+      const [product] = await db.query(
+        `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price,track_stock,stock)
+         VALUES($1,'tracking-rollback','Rollback',0,0,1500,true,2.5) RETURNING id::text`,
+        [business],
+      );
       await db.query(`CREATE FUNCTION checkout_test_reject_event() RETURNS trigger LANGUAGE plpgsql AS $$
       BEGIN IF NEW.business_id='${business}'::uuid AND NEW.event_type='checkout'
         THEN RAISE EXCEPTION 'synthetic_checkout_event_failure'; END IF; RETURN NEW; END $$;
@@ -171,8 +175,12 @@ export async function verifyDirectSaleCheckout({
         FOR EACH ROW EXECUTE FUNCTION checkout_test_reject_event();`);
       try {
         await unchanged(
-          { request_key: randomUUID(), items: [item()] },
+          { request_key: randomUUID(), items: [item(product.id)] },
           /synthetic_checkout_event_failure/,
+        );
+        assert.deepEqual(
+          (await db.query('SELECT stock, version FROM products WHERE id=$1', [product.id]))[0],
+          { stock: '2.5', version: 1 },
         );
       } finally {
         await db.query(
@@ -373,7 +381,7 @@ export async function verifyDirectSaleCheckout({
           (
             await db.query('SELECT stock FROM products WHERE id=$1', [paid.id])
           )[0].stock,
-          7,
+          '7',
         );
       } finally {
         if (runner.isTransactionActive) await runner.rollbackTransaction();
@@ -382,4 +390,71 @@ export async function verifyDirectSaleCheckout({
       }
     },
   );
+
+  await check('tracked fractional stock is deducted once with replay and the last units have one winner', async () => {
+    const [product, exhausted] = await db.query(
+      `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price,track_stock,stock)
+       VALUES($1,'tracking-fraction','Fraction',0,0,1500,true,0.3),
+             ($1,'tracking-empty','Empty',0,0,1500,true,0)
+       RETURNING id::text`,
+      [business],
+    );
+    const balance = async () =>
+      (await db.query('SELECT stock, version FROM products WHERE id=$1', [product.id]))[0];
+    const order = (quantity, version) => ({
+      request_key: randomUUID(),
+      items: [item(product.id, '1500', version, quantity)],
+    });
+
+    const first = order(0.1, 1);
+    const sale = await run(first);
+    assert.deepEqual(await run(first), sale);
+    assert.deepEqual(await balance(), { stock: '0.2', version: 2 });
+    const [{ changes }] = await db.query(
+      'SELECT changes FROM sale_events WHERE sale_id=$1',
+      [sale.id],
+    );
+    assert.deepEqual(changes.stock_deductions, [{
+      product_id: product.id, quantity: 0.1, stock_before: 0.3, stock_after: 0.2,
+    }]);
+
+    const invalid = order(0.1, 2);
+    invalid.items.push(item(exhausted.id));
+    await unchanged(invalid, /sale_stock_insufficient/);
+    assert.deepEqual(await balance(), { stock: '0.2', version: 2 });
+
+    const competing = [order(0.2, 2), order(0.2, 2)];
+    const results = await Promise.allSettled(competing.map((intent) => run(intent)));
+    assert.equal(results.filter((result) => result.status === 'fulfilled').length, 1);
+    assert.match(results.find((result) => result.status === 'rejected').reason.message, /sale_product_changed/);
+    assert.deepEqual(await balance(), { stock: '0', version: 3 });
+  });
+
+  await check('draft confirmation deducts only at completion and cancellation preserves that effect', async () => {
+    const [product] = await db.query(
+      `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price,track_stock,stock)
+       VALUES($1,'tracking-draft','Draft',0,0,1500,true,1.25) RETURNING id::text`,
+      [business],
+    );
+    const balance = async () =>
+      (await db.query('SELECT stock, version FROM products WHERE id=$1', [product.id]))[0];
+    const draft = await mutate.execute(business, 'create', {
+      request_key: randomUUID(),
+      items: [item(product.id, '1500', 1, 0.25)],
+    }, actor);
+    assert.deepEqual(await balance(), { stock: '1.25', version: 1 });
+
+    const command = { request_key: randomUUID(), sale_id: draft.id, expected_version: draft.version };
+    const complete = await mutate.execute(business, 'complete', command, actor);
+    assert.deepEqual(await mutate.execute(business, 'complete', command, actor), complete);
+    assert.deepEqual(await balance(), { stock: '1', version: 2 });
+
+    await mutate.execute(business, 'cancel', {
+      request_key: randomUUID(),
+      sale_id: complete.id,
+      expected_version: complete.version,
+      cancellation_reason: 'Synthetic correction',
+    }, actor);
+    assert.deepEqual(await balance(), { stock: '1', version: 2 });
+  });
 }

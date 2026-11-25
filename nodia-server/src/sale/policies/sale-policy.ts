@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { createHash, randomUUID } from 'node:crypto';
+import { stockQuantityMillis } from '../../common/utils/stock-quantity.js';
 import { validateProductMeasurementUnit } from '../../product/product-measurement-unit.js';
 import { roundedSaleLineTotal, saleQuantity } from './sale-quantity.js';
 import {
@@ -14,6 +15,7 @@ import {
   type SaleOperation,
   type SalePaymentMethod,
   type SaleStatus,
+  type SaleStockDeduction,
 } from '../types/sale.types.js';
 
 export const SALE_MAX_ITEMS = 200;
@@ -192,7 +194,7 @@ export function snapshotSaleItems(
   let total = 0n;
   return inputs.map((input, position) => {
     const product = byId.get(input.product_id);
-    if (!product || product.is_active !== true || product.has_stock !== true)
+    if (!product || product.is_active !== true)
       throw new ConflictException('business:sale_product_unavailable');
     const normal = saleMoney(product.sale_price);
     const offer =
@@ -205,6 +207,9 @@ export function snapshotSaleItems(
       catalogPrice !== saleMoney(input.expected_unit_price)
     )
       throw new ConflictException('business:sale_product_changed');
+    if (product.track_stock &&
+        stockQuantityMillis(product.stock) < stockQuantityMillis(input.quantity))
+      throw new ConflictException('business:sale_stock_insufficient');
     validateProductMeasurementUnit(product.measurement_unit);
     const override = manualUnitPrice(input.unit_price_override);
     const price = override ?? catalogPrice;
@@ -244,6 +249,31 @@ export function snapshotSaleItems(
     };
   });
 }
+
+/** Build the effects from validated lines and the same locked product snapshot. */
+export function saleStockDeductions(
+  items: readonly SaleItemView[],
+  products: readonly ProductSaleRow[],
+): SaleStockDeduction[] {
+  const tracked = new Map(products.filter((product) => product.track_stock)
+    .map((product) => [product.id, product]));
+  return items.flatMap((item) => {
+    const product = tracked.get(item.product_id);
+    if (!product) return [];
+    if (product.version >= 2147483647)
+      throw new ConflictException('business:sale_product_changed');
+    const remaining = stockQuantityMillis(product.stock) - stockQuantityMillis(item.quantity);
+    if (remaining < 0)
+      throw new ConflictException('business:sale_stock_insufficient');
+    return [{
+      product_id: product.id,
+      quantity: item.quantity,
+      stock_before: product.stock,
+      stock_after: remaining / 1000,
+    }];
+  });
+}
+
 /** Confirmation revalidates the observed catalog while preserving an explicit sale-only price. */
 export function saleItemInputsFromSnapshots(
   items: readonly SaleItemView[],

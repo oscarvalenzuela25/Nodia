@@ -14,6 +14,7 @@ import { Business } from '../../business/entities/business.entity.js';
 import { Provider } from '../../provider/entities/provider.entity.js';
 import { ProductLog } from './product-log.entity.js';
 import type { ProductMeasurementUnit } from '../product-measurement-unit.js';
+import { stockQuantityTransformer } from '../../common/utils/stock-quantity.js';
 
 @Entity({
   name: 'products',
@@ -69,6 +70,9 @@ export class Product {
   @Column({ type: 'boolean', nullable: true })
   has_stock: boolean | null;
 
+  @Column({ type: 'boolean', default: false })
+  track_stock: boolean;
+
   @Column({ type: 'integer', default: 1 })
   version: number;
 
@@ -84,7 +88,7 @@ export class Product {
     byte_size: number;
   } | null;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'numeric', default: 0, transformer: stockQuantityTransformer })
   stock: number;
 
   @Column({ type: 'boolean', default: true })

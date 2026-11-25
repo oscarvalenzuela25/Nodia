@@ -37,6 +37,7 @@ const product = {
   cost_price_tax: 12,
   sale_price: 15,
   stock: 0,
+  track_stock: false,
   business: { owner: { password: 'synthetic-private' } },
 };
 const schema = readFileSync(
@@ -134,8 +135,8 @@ describe('AI-15 Negocios reads', () => {
       'nodia_product_logs_get', 'nodia_product_logs_list', 'nodia_product_logs_query',
     ]);
     for (const tool of registry.list(['/business']))
-      expect(tool.revision).toBe(changed.has(tool.toolName) ? 3 : 2);
-    expect(registry.list(['/business']).filter((tool) => tool.revision === 3)).toHaveLength(5);
+      expect(tool.revision).toBe(changed.has(tool.toolName) ? 4 : 2);
+    expect(registry.list(['/business']).filter((tool) => tool.revision === 4)).toHaveLength(5);
     expect(
       new Set(registry.list(['/business']).map((tool) => tool.kind)),
     ).toEqual(new Set(['read']));
@@ -151,6 +152,7 @@ describe('AI-15 Negocios reads', () => {
     expect(result.data).toMatchObject({
       id: common.id,
       stock: 0,
+      track_stock: false,
       provider_id: null,
       created_at: now.toISOString(),
     });
@@ -165,6 +167,15 @@ describe('AI-15 Negocios reads', () => {
     expect(qb.take).toHaveBeenCalledWith(25);
     expect(qb.andWhere).toHaveBeenCalledWith('product.is_active = :ransack_0', {
       ransack_0: true,
+    });
+  });
+  it('returns fractional stock and its control flag through the published read schema', async () => {
+    const registry = new NodiaAiToolRegistryUseCase([family], 'fixture_v1');
+    const { context } = harness(Product, { ...product, track_stock: true, stock: 0.125 });
+    const tool = registry.get('nodia_products_get')!;
+    const result = await uc.execute('products_get', { id: product.id }, context);
+    expect(registry.validateOutput(tool, result)).toMatchObject({
+      data: { track_stock: true, stock: 0.125 },
     });
   });
   it('supports explicit inactive and all without silently restoring active', async () => {

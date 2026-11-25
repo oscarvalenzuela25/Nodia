@@ -21,6 +21,7 @@ const dto = {
   cost_price_tax: 2,
   sale_price: 4,
   stock: 5,
+  track_stock: true,
   has_stock: true,
   is_active: true,
 };
@@ -159,9 +160,13 @@ describe('Native product writers through their use cases', () => {
     expect(f.products.save).not.toHaveBeenCalled();
     await expect(f.service.updateProduct('3', { measurement_unit: 'kg', expected_version: 2 }, f.manager, actor))
       .rejects.toThrow('product:version_conflict');
-    await f.service.updateProduct('3', { measurement_unit: 'kg', expected_version: 3 }, f.manager, actor);
-    expect(f.product).toMatchObject({ measurement_unit: 'kg', version: 4 });
-    expect(f.logs.save).toHaveBeenLastCalledWith(expect.objectContaining({ measurement_unit: 'kg', product_version: 4 }));
+    await expect(f.service.updateProduct('3', { measurement_unit: 'kg', expected_version: 3 }, f.manager, actor))
+      .rejects.toThrow('product:stock_quantity_required');
+    await f.service.updateProduct('3', { measurement_unit: 'kg', stock: 0.125, expected_version: 3 }, f.manager, actor);
+    expect(f.product).toMatchObject({ measurement_unit: 'kg', stock: 0.125, version: 4 });
+    expect(f.logs.save).toHaveBeenLastCalledWith(expect.objectContaining({
+      measurement_unit: 'kg', stock: 0.125, product_version: 4,
+    }));
   });
   it('rejects an invalid explicit unit at the direct writer boundary before any persistence', async () => {
     const f = fixture();

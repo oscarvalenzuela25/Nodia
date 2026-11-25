@@ -352,7 +352,7 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
         field('barcode', 'string', 'r.barcode', { nullable: true }),
         field('has_stock', 'boolean', 'r.has_stock', {
           nullable: true,
-          semantics: 'manual_availability_not_inventory_units',
+          semantics: 'former_manual_availability_classification',
         }),
         field('is_offer_enabled', 'boolean', 'r.is_offer_enabled'),
         field('sale_price', 'integer', 'r.sale_price', { groupable: false }),
@@ -376,7 +376,7 @@ export const NODIA_AI_REPORT_SOURCES: readonly ReportSourceDefinition[] =
       ],
       limitations: [
         ...legacyLimits,
-        'Availability is manual, not inventory units. Product prices are not completed sales and are not monetary aggregates.',
+        'The has_stock field retains the former manual availability classification. Product prices are catalog values. Current inventory balances are outside this report.',
       ],
     }),
     source({

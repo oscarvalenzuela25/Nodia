@@ -15,12 +15,13 @@ vi.mock("../../../../../../../modules/business/pages/BusinessDetail/components/P
 });
 vi.mock("../../../../../../../modules/business/infrastructure/salesServices", () => ({ getProduct: vi.fn() }));
 const product: ProductEntity = { id: "product-1", business_id: "business-1", code: "SUP-1", name: "Synthetic product", cost_price: 1000, cost_price_tax: 1190,
-  sale_price: 1547, stock: 0, has_stock: false, barcode: "001234", is_offer_enabled: false, offer_price: 2000, version: 3, is_active: true };
+  sale_price: 1547, stock: 0, track_stock: false, barcode: "001234", is_offer_enabled: false, offer_price: 2000, version: 3, is_active: true };
 describe("ProductModal", () => {
   const submit = vi.fn();
   beforeEach(() => vi.clearAllMocks());
   const input = (name: string) => screen.getByTestId(`product-${name}-input`).querySelector("input")!;
-  const chooseAvailability = async (label: string) => { const user = userEvent.setup(); await user.click(screen.getByRole("button", { name: "Disponibilidad" })); await user.click(screen.getByRole("option", { name: label })); };
+  const trackStock = () => screen.getByRole("switch", { name: "Usar stock" });
+  const stock = () => screen.getByRole("textbox", { name: "Stock" });
   it("prefills a new scanned barcode exactly, focuses the name and does not overwrite an open draft or existing product", async () => {
     const props = { businessId: "business-1", onClose: vi.fn(), onSubmit: submit };
     const { rerender } = render(<ProductModal {...props} open initialBarcode="000000123" />);
@@ -93,14 +94,17 @@ describe("ProductModal", () => {
     expect(input("name")).toHaveValue("Synthetic product draft");
     expect(submit).not.toHaveBeenCalled();
   });
-  it("starts a new product available and separates supplier code, barcode and optional image", async () => {
+  it("starts stock tracking off with a disabled zero balance and independent identifiers", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} />);
     expect(input("code")).toBeInTheDocument(); expect(input("barcode")).toBeInTheDocument();
-    expect(screen.queryByTestId("product-stock-input")).not.toBeInTheDocument();
+    expect(trackStock()).not.toBeChecked();
+    expect(stock()).toBeDisabled();
+    expect(stock()).toHaveValue("0");
     expect(screen.getByText("image boundary")).toBeInTheDocument();
     const user = userEvent.setup(); await user.type(input("code"), "SUP"); await user.type(input("name"), "Synthetic"); await user.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-    expect(submit.mock.calls[0][0]).toMatchObject({ has_stock: true });
+    expect(submit.mock.calls[0][0]).toMatchObject({ track_stock: false });
+    expect(submit.mock.calls[0][0]).not.toHaveProperty("stock");
   });
   it("creates without a supplier code and starts the product with units", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} />);
@@ -134,17 +138,19 @@ describe("ProductModal", () => {
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
     expect(submit.mock.calls[0][0]).toMatchObject({ code: null, measurement_unit: "kg", barcode: "001234", expected_version: 3 });
   });
-  it("submits manual false without numeric stock and preserves leading barcode zeroes", async () => {
+  it("submits enabled decimal stock and preserves leading barcode zeroes", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} />);
-    const user = userEvent.setup(); await user.type(input("code"), "SUP"); await user.type(input("name"), "Synthetic"); await chooseAvailability("No disponible");
+    const user = userEvent.setup(); await user.type(input("code"), "SUP"); await user.type(input("name"), "Synthetic");
+    await user.click(trackStock());
+    expect(stock()).toBeEnabled();
+    await user.clear(stock()); await user.type(stock(), "1,125");
     expect(input("barcode")).toHaveAttribute("type", "text");
     await user.type(input("barcode"), "001234{Enter}");
     expect(submit).not.toHaveBeenCalled();
     expect(input("barcode")).toHaveValue("001234");
     await user.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-    expect(submit.mock.calls[0][0]).toMatchObject({ code: "SUP", barcode: "001234", has_stock: false, is_offer_enabled: false, offer_price: 0 });
-    expect(submit.mock.calls[0][0]).not.toHaveProperty("stock");
+    expect(submit.mock.calls[0][0]).toMatchObject({ code: "SUP", barcode: "001234", track_stock: true, stock: 1.125, is_offer_enabled: false, offer_price: 0 });
   });
   it("selects an existing barcode on focus and keeps a replacement scan local until explicit save", async () => {
     const parentEnter = vi.fn();
@@ -175,19 +181,30 @@ describe("ProductModal", () => {
     await user.type(input("name"), "No barcode product");
     await user.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-    expect(submit.mock.calls[0][0]).toMatchObject({ code: "SUP-ONLY", barcode: null, has_stock: true });
+    expect(submit.mock.calls[0][0]).toMatchObject({ code: "SUP-ONLY", barcode: null, track_stock: false });
   });
-  it("prefills existing values, availability and activity without rewriting them", () => {
+  it("prefills existing values, tracked stock and activity without rewriting them", () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={{ ...product, is_active: false }} />);
     expect(input("code")).toHaveValue("SUP-1"); expect(input("barcode")).toHaveValue("001234");
     expect(screen.getByTestId("product-active-switch").querySelector("input")).not.toBeChecked();
-    expect(screen.getByRole("button", { name: "Disponibilidad" })).toHaveTextContent("No disponible");
+    expect(trackStock()).not.toBeChecked();
+    expect(stock()).toBeDisabled();
   });
-  it("preserves unknown availability in an existing product and keeps its explicit classification gate", async () => {
-    render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={{ ...product, has_stock: null }} />);
-    expect(screen.getByRole("button", { name: "Disponibilidad" })).not.toHaveTextContent("Disponible");
-    await userEvent.setup().click(screen.getByTestId("save-product-btn"));
-    expect(submit).not.toHaveBeenCalled(); expect(await screen.findByText("Seleccione la disponibilidad manualmente.")).toBeInTheDocument();
+  it("preserves the saved balance when switched off and rejects invalid tracked precision", async () => {
+    render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={{ ...product, track_stock: true, stock: 3 }} />);
+    const user = userEvent.setup();
+    expect(trackStock()).toBeChecked(); expect(stock()).toHaveValue("3");
+    await user.clear(stock()); await user.type(stock(), "0.0001");
+    await user.click(screen.getByTestId("save-product-btn"));
+    expect(submit).not.toHaveBeenCalled();
+    await waitFor(() => expect(stock()).toHaveAccessibleDescription(/hasta tres decimales/));
+    await user.click(trackStock());
+    expect(stock()).toHaveValue("3"); expect(stock()).toBeDisabled();
+    expect(stock()).not.toHaveAccessibleDescription();
+    await user.click(screen.getByTestId("save-product-btn"));
+    await waitFor(() => expect(submit).toHaveBeenCalledOnce());
+    expect(submit.mock.calls[0][0]).toMatchObject({ track_stock: false, expected_version: 3 });
+    expect(submit.mock.calls[0][0]).not.toHaveProperty("stock");
   });
   it("links only net and gross costs, leaving the saved sale source and alternate price untouched", async () => {
     render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={product} />);
@@ -225,8 +242,8 @@ describe("ProductModal", () => {
     expect(submit).not.toHaveBeenCalled(); expect(input("offer-price")).toHaveValue(null); expect(await screen.findByText("Ingrese un importe entero CLP válido.")).toBeInTheDocument();
   });
   it("reviews a newer server version explicitly while preserving the edited form", async () => {
-    vi.mocked(getProduct).mockResolvedValue({ ...product, name: "Other session name", version: 4 });
-    render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={product} />);
+    vi.mocked(getProduct).mockResolvedValue({ ...product, name: "Other session name", track_stock: true, stock: 2, version: 4 });
+    render(<ProductModal businessId="business-1" open onClose={vi.fn()} onSubmit={submit} initialData={{ ...product, track_stock: true, stock: 3 }} />);
     const user = userEvent.setup(); await user.clear(input("name")); await user.type(input("name"), "My draft name");
     await user.click(screen.getByRole("button", { name: "Comprobar cambios recientes del producto" }));
     const row = await screen.findByRole("row", { name: /Nombre del Producto/ });
@@ -235,6 +252,12 @@ describe("ProductModal", () => {
     expect(within(row).getByText("Modificado")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Confirmar" }));
     expect(input("name")).toHaveValue("My draft name");
+    expect(await screen.findByRole("textbox", { name: "Stock" })).toHaveValue("2");
+    await user.click(screen.getByTestId("save-product-btn"));
+    await waitFor(() => expect(submit).toHaveBeenCalledOnce());
+    expect(submit.mock.calls[0][0]).toMatchObject({ name: "My draft name", expected_version: 4 });
+    expect(submit.mock.calls[0][0]).not.toHaveProperty("stock");
+    expect(submit.mock.calls[0][0]).not.toHaveProperty("track_stock");
     await user.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalled());
     expect(submit.mock.calls[0][0]).toMatchObject({ name: "My draft name", expected_version: 4 });
@@ -263,7 +286,8 @@ describe("ProductModal", () => {
     expect(input("tax-rate")).toHaveValue(19); expect(input("offer-price")).toHaveValue(2000);
     await user.click(screen.getByTestId("save-product-btn"));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1200, cost_price_tax: 1190, cost_price: 1000, has_stock: false, offer_price: 2000 });
+    expect(submit.mock.calls[0][0]).toMatchObject({ sale_price: 1200, cost_price_tax: 1190, cost_price: 1000, offer_price: 2000 });
+    expect(submit.mock.calls[0][0]).not.toHaveProperty("track_stock");
   });
   it("preserves the saved sale source until blur and normalizes direct submit while retaining a failed save", async () => {
     submit.mockRejectedValueOnce(new Error("Synthetic server error"));

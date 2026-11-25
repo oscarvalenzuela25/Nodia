@@ -21,6 +21,7 @@ const base = {
   cost_price_tax: 2,
   sale_price: 4,
   stock: 5,
+  track_stock: true,
   has_stock: true,
   is_active: true,
 };
@@ -230,7 +231,7 @@ describe('Legacy product bulk relation integrity through native use cases', () =
     const result = await new UpdateBulkProductsUseCase(f.service).execute(
       {
         items: [
-          { id: '10', stock: 0 },
+          { id: '10', stock: 0, expected_version: 1 },
           { id: '2', name: 'Edited', is_active: false },
         ],
       },
@@ -342,7 +343,7 @@ describe('Legacy product bulk relation integrity through native use cases', () =
     expect(await write()).toEqual([{ id: '10', version: 2 }, { id: '20', version: 1 }, { id: '2', version: 2 }]);
     expect(f.products.save).toHaveBeenCalledWith([
       expect.objectContaining({ id: '10', provider_id: '7', is_active: false, has_stock: null, stock: 5, sale_price: 110 }),
-      expect.objectContaining({ id: '20', provider_id: '9', has_stock: true, stock: 0, sale_price: 20 }),
+      expect.objectContaining({ id: '20', provider_id: '9', has_stock: null, track_stock: false, stock: 0, sale_price: 20 }),
       expect.objectContaining({ id: '2', provider_id: '9', has_stock: true, stock: 5, sale_price: 20 }),
     ]);
     expect(f.logs.save).toHaveBeenCalledWith([

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { skipToken, useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
-import { getProviders, getInvoices, getProducts } from "./services";
+import { getProviders, getInvoices } from "./services";
 
 const useSearch = () => {
   const [input, setSearch] = useState("");
@@ -11,7 +11,7 @@ const useSearch = () => {
     const timer = setTimeout(() => setDebouncedSearch(trimmedInput), 300);
     return () => clearTimeout(timer);
   }, [trimmedInput]);
-  return { search: debouncedSearch, trimmedInput, setSearch };
+  return { search: debouncedSearch, setSearch };
 };
 
 export const usePagedProviderOptions = (businessId: string, enabled = true, options: { useOcrOnly?: boolean; actorScope?: readonly [string, number] } = {}) => {
@@ -40,57 +40,4 @@ export const usePagedInvoiceCodeOptions = (businessId: string, enabled = true) =
     enabled: isSessionActive && enabled && !!businessId,
   });
   return { isFetching: query.isFetching, isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, fetchNextPage: query.fetchNextPage, hasNextPage: query.hasNextPage, setSearch, options: Array.from(new Set(query.data?.pages.flatMap((page) => page.data.map((invoice) => invoice.code).filter((code): code is string => typeof code === "string" && code.trim().length > 0)) ?? [])) };
-};
-
-export const usePagedProductCodeOptions = (
-  businessId: string,
-  field: "code" | "barcode",
-) => {
-  const { isSessionActive } = useAuth();
-  const { search, trimmedInput, setSearch } = useSearch();
-  const hasSearch = trimmedInput.length > 0;
-  const isDebouncing = trimmedInput !== search;
-  const requestSearch = !isDebouncing && isSessionActive && businessId ? search : "";
-  const query = useInfiniteQuery({
-    queryKey: ["products", "options", businessId, field, requestSearch],
-    initialPageParam: 1,
-    queryFn: requestSearch
-      ? ({ pageParam, signal }) =>
-          getProducts(
-            {
-              page: pageParam,
-              limit: 50,
-              includes: false,
-              q: {
-                business_id_eq: businessId,
-                ...(field === "code"
-                  ? { code_cont: requestSearch, code_presence: "present" }
-                  : { barcode_cont: requestSearch, barcode_presence: "present" }),
-                s: `${field} asc`,
-              },
-            },
-            signal,
-          )
-      : skipToken,
-    getNextPageParam: ({ meta }) =>
-      meta.page < meta.total_pages ? meta.page + 1 : undefined,
-  });
-
-  const identifiers = query.data?.pages.flatMap((page) =>
-    page.data
-      .map((product) => product[field])
-      .filter((value): value is string => typeof value === "string" && value.trim().length > 0),
-  );
-
-  return {
-    hasSearch,
-    isSearching: hasSearch && (isDebouncing || query.isFetching),
-    isFetching: query.isFetching,
-    isError: query.isError,
-    refetch: query.refetch,
-    fetchNextPage: query.fetchNextPage,
-    hasNextPage: query.hasNextPage,
-    setSearch,
-    options: Array.from(new Set(identifiers)),
-  };
 };

@@ -1,5 +1,8 @@
 # Negocios — punto de venta, ventas y refactor de productos
 
+> Stock opcional planificado el 2026-11-25 en [§45](#47-stock-opcional-por-producto).
+> El corte descrito allí sustituirá la disponibilidad manual `has_stock`.
+
 > Ampliación vigente2026-11-17: [§42](#42-precios-de-venta-redondeados-división-local-y-proveedores-ocr--solicitud2026-11-17) aplica redondeo de venta a decenas, división asistida, proveedores OCR opt-in y folio de factura opcional. Sustituye las fórmulas incompatibles de§35/§41 para el comportamiento nuevo, conservando sus recibos históricos. Implementación local; QA común, adopción y aceptación del nuevo alcance separadas de la autorización funcional.
 
 > Ampliación funcional vigente del 2026-11-06: [§35](#35-precios-independientes-calculadora-local-y-vinculación-ocr-revisada--2026-11-06) retira el porcentaje persistido, sustituye el cálculo bidireccional por una calculadora local explícita y añade vinculación manual OCR por ID/versión con campos revisados. Regla pedida y autorizada por el usuario; implementación/pruebas/adopción de este alcance en curso, ADR095 propuesto y nueva ficha sin aprobar/publicar. Los cortes anteriores conservan su evidencia y sólo se sustituyen las reglas incompatibles indicadas.
@@ -1540,6 +1543,8 @@ automatizada verificó que otro guardado vuelve a mostrar el aviso.
 
 ## 46. Búsqueda de códigos en Productos — 2026-11-23
 
+Corte histórico para los buscadores del modal. §48 traslada la búsqueda de códigos al campo del listado y conserva el resaltado de precio cero.
+
 El filtro de Productos reemplaza «Código del producto» por dos selectores
 independientes de búsqueda bajo «Código de factura» y «Código de barras».
 Cada buscador aparece en Todos y Con código y permanece vacío hasta que se
@@ -1565,3 +1570,238 @@ Chromium con datos sintéticos verificó búsquedas vacías al abrir, selección
 por teclado, combinación de ambos códigos y conservación del resultado al
 cambiar entre tarjeta y tabla. A 320, 390, 600 y 1280 px se comprobó el
 listado o sus filtros, con español claro e inglés oscuro.
+
+## 47. Stock opcional por producto
+
+**Estado:** implementado localmente el 2026-11-25 como `BIZ-STOCK-001`.
+La disponibilidad manual de §3 y §41 queda como antecedente. El despliegue,
+la revisión de productos legados y el retiro físico de `products.has_stock`
+quedan en el corte operativo. [ADR120 propuesto](../architecture/decisions/ADR-120-optional-product-stock.md) ·
+[Ficha candidata](../nodia-ai/knowledge/businesses/features/product-stock-tracking.md).
+
+### Reglas de producto y POS
+
+- Sustituir `products.has_stock` por `track_stock` (`boolean NOT NULL DEFAULT
+  false`), etiqueta **Usar stock** / **Track stock**. El switch de alta nace
+  apagado y se puede activar. **Stock** muestra `0` y su input queda inhabilitado
+  mientras el switch esté apagado. Al activarlo se puede editar el saldo. En
+  edición, apagar conserva el último saldo guardado fuera de operación. Enviar
+  cambios de saldo sólo con el control encendido. **Propuesta para la
+  reactivación:** mostrar el saldo guardado y revisar el valor inicial antes de
+  ponerlo en operación. Si el valor legado es inválido, se exige una cantidad
+  válida. [Modelo actual](../../nodia-server/src/product/entities/product.entity.ts).
+- Un producto activo con control apagado se vende sin modificar su saldo. Un
+  producto activo con control encendido se vende hasta la cantidad disponible.
+  Saldo cero bloquea añadir o confirmar cantidades positivas en POS. La
+  validación definitiva se hace en Server al confirmar. Catálogo, escaneo,
+  alta desde código desconocido y carritos guardados deben reflejar esa regla.
+  Si hay conflicto, mostrar el saldo vigente y conservar el carrito para revisión.
+- Descontar al confirmar una venta, tanto en el cobro directo (`checkout`)
+  como al completar un borrador (`complete`). Crear, editar o descartar el
+  borrador deja el saldo intacto. **Propuesta para la anulación:** conservar
+  el comportamiento de inventario actual, sin reposición automática. Los
+  ajustes por devolución física requieren una decisión de producto propia.
+  [Caso de uso de ventas](../../nodia-server/src/sale/use-case/mutate-sale.use-case.ts).
+- El stock usa la unidad del producto. Mantener cantidades exactas de hasta
+  tres decimales, el rango inclusivo `0..2147483647` para nuevos saldos y el
+  máximo de venta existente. Migrar saldo operativo y snapshots de producto a
+  PostgreSQL `numeric` sin escala fija y validar escala antes de persistir.
+  Reutilizar aritmética exacta en milésimas. Conservar los valores históricos,
+  incluso saldos legados negativos mientras estén fuera de control. En ajustes
+  nuevos, rechazar negativos, exceso de precisión y desborde. Si cambia la
+  unidad de un producto con stock controlado, exigir revisar y declarar el
+  saldo en la unidad nueva. [ADR090 sobre cantidades de venta](../architecture/decisions/ADR-090-product-units-and-fractional-sale-quantities.md).
+
+### Compras desde OCR
+
+- La revisión editable de Facturas presenta una sola columna **Stock** para
+  el ajuste de cantidad. Un producto nuevo empieza con el control apagado.
+  Un producto vinculado toma la configuración y saldo vigentes del catálogo.
+  Con el control apagado la celda muestra `—`, sin input ni botón de modo.
+- Con el control encendido, el campo compacto propone la cantidad extraída de
+  la factura para editarla directamente. La propuesta se copia sin convertir
+  unidades. El botón de modo admite teclado y tacto. El tooltip inicial indica
+  **Sumar al stock**. Al pulsarlo cambia a **Reemplazar el stock**, con etiqueta
+  accesible y tooltip que reflejan el modo seleccionado. Borrar la cantidad
+  omite el ajuste. `0` explícito es válido, incluido reemplazar el saldo por cero.
+  Mostrar saldo observado y resultado proyectado al revisar un ajuste.
+  La factura guarda por separado la cantidad extraída en `line.quantity`.
+  Al confirmar, el ajuste de stock usa el valor visible en el campo.
+- El lápiz de producto permite encender o apagar **Usar stock**. El editor
+  contiene el switch y la tabla contiene la cantidad. Apagar limpia el ajuste
+  del borrador. Encender inicializa **Sumar** con la cantidad extraída.
+  En una reactivación, la revisión muestra el saldo guardado antes de
+  confirmarlo como base o reemplazarlo. Un saldo legado inválido exige
+  **Reemplazar** con un valor válido en esa misma fila. Cambiar el producto
+  vinculado usa el saldo y control del nuevo destino y la propuesta inicial
+  de la factura. Volver a revisar el mismo destino conserva la cantidad
+  editada y el modo elegido.
+- La confirmación nativa recibe `track_stock` sólo si se declara un cambio y
+  una intención opcional `stock_action: { mode: 'add' | 'replace', quantity }`
+  por fila que corresponde a un producto. Aplica también a la vinculación
+  manual, como decisión independiente de los otros campos editables. Un ajuste
+  requiere el control efectivo encendido. Para un producto nuevo la base es
+  cero. Para uno existente, omitir modo/cantidad conserva saldo y omitir el
+  switch conserva configuración. El servidor obtiene la base bajo lock y
+  valida la versión revisada y el saldo resultante. Si hay conflicto, se
+  vuelve a leer el mismo producto y la persona revisa la intención sobre el
+  nuevo saldo antes de confirmar.
+- Reusar el recibo de `POST /invoices/ocr-confirmations`: factura, productos,
+  logs, egreso opcional y recibo quedan en la misma transacción. Incluir la
+  intención explícita en el hash. Mantener la forma canónica anterior al
+  omitir los campos nuevos y conservar recuperación de recibos previos.
+  Un reenvío idéntico recupera el resultado original. Tras pérdida de respuesta
+  consultar el recibo antes de crear otra intención.
+  [Plan109 §6.3](109-business-cash-ledger-plan.md#63-confirmación-de-productos-desde-ocr).
+
+### Filtro de Productos
+
+- Sustituir el filtro de disponibilidad manual por **Stock máximo** / **Maximum
+  stock**. Enviar `q[tracked_stock_lteq]` como filtro nativo propuesto. Sólo si
+  hay un umbral válido, aplicar `track_stock = true AND stock <= umbral` antes
+  de contar, ordenar y paginar. `0` filtra productos agotados con control
+  encendido. Vacío omite el predicado e incluye ambos modos según los demás
+  filtros. El umbral se compara en la unidad de cada producto.
+- Mantener borrador y filtro aplicado, chip removible y retorno a página uno
+  al aplicar, quitar o limpiar. **Limpiar filtros** restaura la actividad en
+  **Activo**. Tabla y tarjetas móviles muestran el saldo controlado o `—`,
+  diferenciando un cero real. Reutilizar el mismo predicado en la exportación
+  nativa cuando se exporte el resultado filtrado.
+
+### Integridad y transición
+
+- Añadir `track_stock` apagado a los productos existentes y preservar sus
+  saldos. El antiguo `has_stock` expresa disponibilidad manual y carece de
+  equivalencia con el control numérico. Antes del corte, revisar los productos
+  activos antes marcados como no disponibles o desconocidos. Con la nueva
+  regla pasan a ser vendibles con el control apagado. La decisión de
+  inactivarlos o habilitar control con saldo real corresponde al operador.
+- Bloquear filas de producto en orden estable por ID, en la misma
+  transacción que ventas o confirmaciones OCR y con alcance por negocio.
+  En venta, validar todas las partidas antes de descontar. Guardar saldo,
+  versión, venta, partidas, evento y recibo juntos. Registrar cantidad
+  descontada y saldos antes/después en el evento nuevo para poder verificar el
+  efecto. Reusar la clave idempotente y recuperar el recibo antes de tocar
+  productos. Los flujos de ajuste y descuento usan la misma revisión de
+  producto. Cambiar saldo o switch incrementa `version`; un carrito
+  obsoleto vuelve a revisión incluso si todavía hay unidades suficientes.
+- Inventariar y migrar consumidores de disponibilidad y de saldo entero en
+  POS, Productos, Overview, historial, CSV, REST y las lecturas/reportes de
+  NodiaAI. El contrato previo `stock_lteq` conserva su semántica durante la
+  transición. Incluir exportación CSV, cargas masivas y proyecciones con
+  schemas cerrados en la revisión de compatibilidad. Los registros y recibos
+  históricos conservan su interpretación. `product_logs.has_stock` queda
+  como evidencia de la clasificación anterior. Los nuevos snapshots
+  distinguen control y cantidad. NodiaAI conserva ventas y reportes de solo
+  lectura, según §26. Los contratos de lectura que cambien de semántica o
+  acepten decimales requieren revisión coordinada de schemas y contexto.
+- Separar migración aditiva, activación comercial y retiro de
+  `products.has_stock`. Ensayar la conversión de los saldos y snapshots a
+  decimales entre la primera migración y la activación. Antes de activar,
+  comprobar compatibilidad entre Server, Client y pestañas anteriores de
+  la PWA. Un ejecutor viejo con
+  capacidad de confirmar ventas impediría garantizar el descuento. Bloquear o
+  drenar esos escritores antes del corte, y conservar una recuperación que
+  preserve saldos, eventos y recibos después del primer descuento. Retirar
+  la columna cuando el código desplegado y las vías de recuperación dejen de
+  depender de ella. [Plan99 de despliegue](99-production-deployment-and-cicd-plan.md).
+- El Client nuevo restaura carritos guardados antes de esta versión. Al
+  registrar observaciones de stock utiliza un campo adicional en el carrito
+  local. Después de activar, recuperar esos carritos con un Client que
+  conozca el campo. El parser de versiones anteriores es estricto.
+
+### Checklist para implementar
+
+- [x] **Modelo y compatibilidad local.** Implementar anulación comercial sin
+  reposición y reactivación con revisión del saldo. Inventariar los consumidores de `has_stock`, el saldo entero,
+  el resumen de disponibilidad y las rutas de confirmación. Ensayar la
+  migración aditiva sobre PostgreSQL aislado con saldos legados, activos e
+  inactivos, logs y recibos.
+- [x] **Server.** Implementar las reglas comunes, descuento transaccional,
+  revisión y ajustes OCR. Probar saldo exacto a cero, límites, fracciones,
+  dos cajas con la última unidad, venta frente a suma/reemplazo OCR,
+  reversión de toda la transacción al fallar una línea, aislamiento por
+  negocio y recuperación del commit sin un segundo descuento o suma.
+- [x] **Client.** Reutilizar el modal de Producto también desde POS, añadir
+  columna, switch y modos OCR, y el filtro de Productos. Probar apagado,
+  encendido, borrador conservado ante error, cero, vacío, cambio de vínculo,
+  revisión tras conflicto y filtro combinado con búsqueda y actividad. Validar
+  escritorio y móvil, teclado y tacto, estados de carga y traducciones ES/EN.
+- [ ] **Corte operativo.** Medir el impacto de conversión en tabla y locks
+  con volumen representativo. Revisar catálogo legado, coordinar la activación
+  de Server y Client, y verificar actualizaciones de pestañas PWA y plan de
+  recuperación. Registrar evidencia por entorno antes de retirar la columna.
+
+### Implementación y verificación local
+
+- La migración `1794030000000` amplía Productos e Historial y convierte los
+  saldos a `numeric` con restricciones de escala y rango. Conserva el saldo
+  histórico y mantiene `has_stock` como clasificación de compatibilidad. Su
+  reversión rechaza balances decimales, metadatos de seguimiento y descuentos
+  auditados. El nuevo Client opera con `track_stock`. Los productos activos
+  legados con disponibilidad anterior negativa o desconocida requieren revisión
+  al activar esta versión. [Migración](../../nodia-server/src/migrations/1794030000000-TrackProductStock.ts).
+- Los dos caminos de confirmación POS usan los mismos saldos bloqueados y
+  almacenan el descuento en el evento junto al recibo. Las lecturas de
+  Productos e Historial de NodiaAI pasan a revisión 4, con el saldo decimal y
+  la marca de control, y conservan el significado histórico de la clasificación
+  anterior. Las capacidades de ventas siguen siendo de solo lectura. El filtro
+  de stock máximo es nativo de Productos.
+- Las integraciones de ventas y Facturas OCR usaron PostgreSQL 16 aislado
+  y peticiones autenticadas sintéticas. Cubren rollback, concurrencia,
+  recuperación por la misma clave, descuento exacto, sumar y reemplazar desde
+  OCR y filtro con cero. La confirmación OCR usó almacenamiento sintético.
+  [Ventas](../../nodia-server/test/business-sales.integration.mjs) ·
+  [Facturas OCR](../../nodia-server/test/business-cash-invoice.integration.mjs) ·
+  [Migración y precios](../../nodia-server/test/business-pricing-ocr.integration.mjs).
+- Chromium comprobó el formulario de alta y el saldo decimal en escritorio
+  (1280 px, español) y móvil (390 px, inglés), y el filtro por cero en el
+  listado de escritorio, con transporte sintético. Las pruebas focales de
+  Client cubrieron también conservar el saldo actualizado si sólo se edita
+  otro campo tras un conflicto y reintentar la misma confirmación OCR.
+
+## 48. Cabecera de Negocios, búsqueda de Productos y rediseño del POS — 2026-11-25
+
+- El nombre del negocio queda como título alineado a la izquierda y sustituye
+  al breadcrumb del detalle. El control que abre y cierra la información se
+  integra en el extremo derecho de la navegación principal, después de las
+  pestañas visibles o junto al selector de sección en móvil. Conserva la
+  sección activa y el foco al alternar. Este ajuste es de presentación y
+  navegación dentro del mismo negocio.
+- El buscador del listado de Productos recibe el foco al entrar, cuando el
+  campo está habilitado. `q.catalog_search` busca en nombre, alias, código de
+  factura o código de barras en una operación OR, antes de paginar y dentro
+  del ámbito autorizado. La exportación de la vista reutiliza ese criterio.
+  El modal de filtros retira el nombre y los buscadores de códigos. Conserva
+  los selectores de presencia, los demás criterios y sus valores iniciales.
+  El parámetro `q.search` de POS y vinculación OCR conserva el contrato de
+  §38. [Impacto en conocimiento de Negocios](../nodia-ai/knowledge/businesses/README.md#cabecera-y-búsqueda-del-catálogo--2026-11-25).
+- El usuario validó el diseño del POS y pidió implementarlo. En escritorio
+  ancho, la interfaz apila los carritos abiertos a la izquierda, muestra el
+  título activo encima del lector y ubica **Nueva venta** encima del cobro
+  compacto a la derecha. En móvil, los carritos preceden al lector y el
+  cobro se muestra debajo en la misma página. Esta presentación sustituye el
+  selector de panel del corte móvil de §25. Las acciones y los medios de pago
+  usan colores de la paleta, etiquetas, iconos y una marca de selección.
+  La tarjeta selecciona el carrito en toda su superficie. La X es una acción
+  independiente de cierre y pide confirmación cuando hay productos por descartar.
+- Cada fila ofrece `−`, cantidad editable y `+`. Agregar desde el catálogo,
+  lector o alta de producto lleva la fila al inicio y muestra el comienzo de
+  la lista. Volver a agregar un producto incrementa la misma fila. Ajustar su
+  cantidad conserva su posición. El orden se guarda con el borrador, y la
+  lista tiene desplazamiento vertical propio con pista transparente.
+  La confirmación, los recibos y la revisión de stock conservan sus contratos.
+  [Ficha de ventas locales](../nodia-ai/knowledge/businesses/features/multi-sale-workspace.md#distribución-y-orden-del-carrito--2026-11-25).
+
+Chromium verificó apertura y cierre de la cabecera con teclado, foco al
+entrar y volver a Productos, los cuatro campos de búsqueda y la adaptación
+móvil con datos sintéticos. La integración HTTP con PostgreSQL 16 aislado
+verificó las coincidencias antes de contar y paginar, el alcance de los
+filtros, los códigos con ceros y los comodines literales. Las compilaciones
+locales de Client y Server pasaron.
+
+En el POS, Chromium verificó escaneo, reescaneo, selección desde el buscador
+con carga circular, cambio de cantidad, scroll transparente, recuperación de
+carritos y vistas entre 320 y 1600 px, con transporte sintético. Las pruebas
+de Client cubrieron además el alta desde el lector, el orden después de
+revisar catálogo y el contraste del cobro en los dos modos de Nodia.

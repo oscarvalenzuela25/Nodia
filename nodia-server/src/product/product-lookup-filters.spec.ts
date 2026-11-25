@@ -29,8 +29,8 @@ describe('product alias/name lookup and independent code completeness', () => {
       expect(() => applyProductLookupFilters(f.qb, { code_presence })).toThrow('product:invalid_code_presence');
   });
   it('validates the HTTP query contract without coercing malformed arrays or booleans', async () => {
-    expect(await validate(plainToInstance(FilterProductDto, { search: 'Alias', code_presence: 'missing', barcode_presence: 'present' }))).toHaveLength(0);
-    const invalid = await validate(plainToInstance(FilterProductDto, { search: ['Alias'], code_presence: true, barcode_presence: 'all' }));
-    expect(new Set(invalid.map(error => error.property))).toEqual(new Set(['search', 'code_presence', 'barcode_presence']));
+    expect(await validate(plainToInstance(FilterProductDto, { search: 'Alias', catalog_search: '000123', code_presence: 'missing', barcode_presence: 'present' }))).toHaveLength(0);
+    const invalid = await validate(plainToInstance(FilterProductDto, { search: ['Alias'], catalog_search: ['000123'], code_presence: true, barcode_presence: 'all' }));
+    expect(new Set(invalid.map(error => error.property))).toEqual(new Set(['search', 'catalog_search', 'code_presence', 'barcode_presence']));
   });
 });

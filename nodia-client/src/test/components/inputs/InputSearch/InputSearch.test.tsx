@@ -4,6 +4,25 @@ import { describe, it, expect, vi } from "vitest";
 import InputSearch from "../../../../../src/components/inputs/InputSearch";
 
 describe("InputSearch", () => {
+  it("focuses once when initially enabled and leaves focus on another control after refetch", async () => {
+    const user = userEvent.setup();
+    const view = (disabled: boolean) => <>
+      <InputSearch value="" onChange={vi.fn()} autoFocus disabled={disabled} />
+      <button type="button">Otro control</button>
+    </>;
+    const { rerender } = render(view(true));
+    const search = screen.getByRole("textbox");
+    expect(search).toBeDisabled();
+    rerender(view(false));
+    expect(search).toHaveFocus();
+
+    rerender(view(true));
+    const other = screen.getByRole("button", { name: "Otro control" });
+    await user.click(other);
+    rerender(view(false));
+    expect(other).toHaveFocus();
+  });
+
   it("keeps typing, clear and focus working with the search icon at the end", async () => {
     const user = userEvent.setup();
     const change = vi.fn();

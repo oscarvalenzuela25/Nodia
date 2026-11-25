@@ -42,6 +42,7 @@ const line = lineCommand.extend({
   quantity: editableQuantitySchema,
   name: z.string(), code: z.string().nullable(), barcode: z.string().nullable(), measurement_unit: measurementUnitSchema.optional(),
   regular_price: amount, offer_price: amount.nullable(), price_source: z.enum(["regular", "offer"]),
+  stock_available: editableQuantitySchema.optional(),
 });
 const mutation = z.object({
   operation: z.enum(["create", "update", "checkout", "complete", "cancel", "discard"]),

@@ -1,7 +1,8 @@
 import { businessKeys, productKeys, providerKeys, invoiceKeys, productLogKeys, normalizeProductParams, normalizeProviderParams } from "./queryKeys";
 export { businessKeys, productKeys, providerKeys, invoiceKeys, productLogKeys } from "./queryKeys";
 import useAuth from "../../../hooks/useAuth";
-import { claimHttpErrorNotification, getHttpErrorMessage } from "../../../config/httpFeedback";
+import { useEffect } from "react";
+import { claimHttpErrorNotification, getHttpErrorMessage, notifyHttpError } from "../../../config/httpFeedback";
 import { invoiceAiAnalysisMessageKey } from "./invoiceAiFailure";
 import type { AxiosError } from "axios";
 import {
@@ -178,7 +179,9 @@ export const useProducts = (
 
 export const useProductAvailability = (businessId: string) => {
   const { isSessionActive } = useAuth();
-  return useQuery({ queryKey: [...productKeys.all, "availability", businessId], queryFn: () => getProductAvailability(businessId), enabled: isSessionActive && Boolean(businessId) });
+  const query = useQuery({ queryKey: [...productKeys.all, "availability", businessId], queryFn: () => getProductAvailability(businessId), enabled: isSessionActive && Boolean(businessId) });
+  useEffect(() => { if (query.error) notifyHttpError(query.error); }, [query.error]);
+  return query;
 };
 
 export const useCreateProduct = () => {
@@ -583,7 +586,7 @@ export const useQueryProductLogs = (
 
 export const useExportProductsCsv = () => {
   return useMutation({
-    mutationFn: (params?: { business_id?: string; lang?: string }) =>
+    mutationFn: (params?: import("./types").ExportProductsParams) =>
       exportProductsCsv(params),
     onError: (error: AxiosError<{ message?: string; error?: string }>) => {
       const serverMessage = getHttpErrorMessage(error);

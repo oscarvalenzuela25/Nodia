@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
-import { Alert, Box, Button, Chip, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, Box, Button, Chip, FormHelperText, Grid, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BaseModal from "../../../../../../../../components/BaseModal";
 import TextInput from "../../../../../../../../components/inputs/TextInput";
@@ -20,6 +20,8 @@ import { useDeferredProductSave } from "./hooks/useDeferredProductSave";
 import type { ProductImageChange, ProductSaveTarget } from "./hooks/useDeferredProductSave";
 import { MEASUREMENT_UNITS } from "../../../../../../infrastructure/measurementUnits";
 import { productCodeFits } from "../../../../../../infrastructure/productCodes";
+import { parseStockQuantity } from "../../../../../../infrastructure/productStock";
+import { formatQuantity } from "../../../../../../infrastructure/saleQuantities";
 import { barcodeValue } from "../../../../../../infrastructure/salesPolicies";
 import { getProduct } from "../../../../../../infrastructure/salesServices";
 import { notifyHttpError } from "../../../../../../../../config/httpFeedback";
@@ -38,11 +40,21 @@ const productSchema = z.object({
     if (rounded === null) { context.addIssue({ code: "custom" }); return z.NEVER; }
     return rounded;
   }),
-  offer_price: integerMoney.nullable(), is_offer_enabled: z.boolean(), has_stock: z.boolean().nullable().refine((value) => value !== null),
+  offer_price: integerMoney.nullable(), is_offer_enabled: z.boolean(),
+  track_stock: z.boolean(), stock: z.string(),
   provider_id: z.string().optional().nullable(), is_active: z.boolean(),
   expected_version: z.number().int().positive().optional(),
-}).refine((value) => !value.is_offer_enabled || value.offer_price !== null, { path: ["offer_price"] });
-export type ProductFormData = z.infer<typeof productSchema>;
+}).refine((value) => !value.is_offer_enabled || value.offer_price !== null, { path: ["offer_price"] })
+  .transform(({ stock, ...data }, context) => {
+    const balance = data.track_stock ? parseStockQuantity(stock) : null;
+    if (data.track_stock && balance === null) {
+      context.addIssue({ code: "custom", path: ["stock"] });
+      return z.NEVER;
+    }
+    return { ...data, ...(balance === null ? {} : { stock: balance }) };
+  });
+type ProductFormValues = z.infer<typeof productSchema>;
+export type ProductFormData = Omit<ProductFormValues, "track_stock"> & { track_stock?: boolean };
 type ProductFormInput = z.input<typeof productSchema>;
 interface Props {
   open: boolean; onClose: () => void; onSubmit: (data: ProductFormData, target?: ProductSaveTarget) => Promise<ProductEntity>;
@@ -58,7 +70,9 @@ const defaults = (product?: ProductEntity | null, initialBarcode?: string): Prod
   cost_price: product?.cost_price ?? 0, cost_price_tax: product?.cost_price_tax ?? 0,
   sale_price: product?.sale_price ?? 0,
   offer_price: product ? product.offer_price ?? null : 0, is_offer_enabled: product?.is_offer_enabled ?? false,
-  has_stock: product ? product.has_stock ?? null : true, provider_id: product?.provider_id ?? null, is_active: product?.is_active ?? true,
+  track_stock: product?.track_stock ?? false,
+  stock: product ? String(product.stock) : "0",
+  provider_id: product?.provider_id ?? null, is_active: product?.is_active ?? true,
 });
 const initialTaxRate = (product?: ProductEntity | null) => {
   if (!product || product.cost_price <= 0) return 19;
@@ -107,11 +121,20 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
   if (previousProduct !== initialData) { setPreviousProduct(initialData); setTaxRate(initialTaxRate(initialData)); setPricingError(null); setImageChange({ kind: "keep" }); setAliasUsesName(productAliasUsesName(initialData?.name ?? "", initialData?.alias)); }
   const currentProduct = saving.savedProduct ?? initialData;
   const version = currentProduct?.version;
-  const { control, reset, handleSubmit, getValues, setValue, formState: { errors } } = useForm<ProductFormInput, unknown, ProductFormData>({ resolver: zodResolver(productSchema), defaultValues: defaults(restoredProduct, openingBarcode) });
+  const { control, reset, resetField, handleSubmit, getValues, setValue, formState: { dirtyFields, errors } } = useForm<ProductFormInput, unknown, ProductFormValues>({ resolver: zodResolver(productSchema), defaultValues: defaults(restoredProduct, openingBarcode) });
   const costPriceTax = useWatch({ control, name: "cost_price_tax" });
   const productName = useWatch({ control, name: "name" });
   const productAlias = useWatch({ control, name: "alias" });
   const salePrice = useWatch({ control, name: "sale_price" });
+  const trackStock = useWatch({ control, name: "track_stock" });
+  const unit = useWatch({ control, name: "measurement_unit" });
+  const stockUnitChanged = !!currentProduct && unit !== (currentProduct.measurement_unit ?? "unit");
+  const stockHintId = useId();
+  const stockError = trackStock && Boolean(errors.stock);
+  const stockHint = stockError ? t("business:stock_tracking.invalid")
+    : trackStock && stockUnitChanged ? t("business:stock_tracking.unit_changed") : undefined;
+  const sendStockTracking = !initialData || !!dirtyFields.track_stock;
+  const sendStockBalance = trackStock && (!initialData || !!dirtyFields.track_stock || !!dirtyFields.stock || stockUnitChanged);
   const validSalePrice = Number.isInteger(salePrice) && roundSalePrice(salePrice) !== null;
   useEffect(() => { if (open) {
     const source = initialData ?? restoredProduct;
@@ -167,27 +190,38 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
     if (value === null || value === undefined || value === "") return t("business:pos.value_not_set");
     if (field === "measurement_unit") return t(`product:units.${String(value)}`);
     if (field === "provider_id") return options.find((provider) => provider.id === value)?.name ?? String(value);
-    if (field === "has_stock") return t(value ? "business:pos.available" : "business:pos.unavailable");
     if (typeof value === "boolean") return t(value ? "business:pos.yes" : "business:pos.no");
+    if (field === "stock" && typeof value === "number") return formatQuantity(value, i18n.language);
     if (["sale_price", "offer_price", "cost_price", "cost_price_tax"].includes(field) && typeof value === "number") return new Intl.NumberFormat(i18n.language, { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(value);
     return String(value);
   };
-  const fieldLabels = { name: "product_name", alias: "product_alias", code: "pos.supplier_code", measurement_unit: "measurement_unit", barcode: "pos.barcode", sale_price: "product_sale_price", offer_price: "pos.alternate_price", is_offer_enabled: "pos.use_alternate", has_stock: "pos.availability", is_active: "active_label", cost_price: "product_cost_price", cost_price_tax: "product_cost_tax", provider_id: "product_provider" } as const;
+  const fieldLabels = { name: "product_name", alias: "product_alias", code: "pos.supplier_code", measurement_unit: "measurement_unit", barcode: "pos.barcode", sale_price: "product_sale_price", offer_price: "pos.alternate_price", is_offer_enabled: "pos.use_alternate", track_stock: "stock_tracking.track", stock: "product_stock", is_active: "active_label", cost_price: "product_cost_price", cost_price_tax: "product_cost_tax", provider_id: "product_provider" } as const;
   const canonicalReviewValue = (field: keyof ProductFormData, value: unknown) => {
     if (field === "measurement_unit" && value === undefined) return "unit";
+    if (field === "track_stock" && value === undefined) return false;
+    if (field === "stock" && typeof value === "string") return parseStockQuantity(value);
     if (field === "code" && typeof value === "string") return value.trim() || null;
     return value ?? null;
   };
   const reviewRows = latest ? (Object.keys(fieldLabels) as (keyof typeof fieldLabels)[]).map(field => {
     const saved = canonicalReviewValue(field, latest[field]);
-    const draft = canonicalReviewValue(field, field === "alias" ? resolveProductAlias(getValues("name"), getValues("alias"), aliasUsesName) : getValues(field));
+    const untouchedStockField = (field === "track_stock" && !dirtyFields.track_stock)
+      || (field === "stock" && !sendStockBalance)
+      || (field === "measurement_unit" && !dirtyFields.measurement_unit);
+    const draft = untouchedStockField ? saved : canonicalReviewValue(field,
+      field === "alias" ? resolveProductAlias(getValues("name"), getValues("alias"), aliasUsesName) : getValues(field));
     return { field, label: field === "measurement_unit" ? t("product:measurement_unit") : t(`business:${fieldLabels[field]}`), saved: reviewValue(field, saved), draft: reviewValue(field, draft), changed: saved !== draft };
   }) : [];
-  const submitForm = async (data: ProductFormData) => {
+  const submitForm = async ({ track_stock, stock, ...data }: ProductFormValues) => {
     if (savedCompletion.current || isSubmitting || pricingError || !validProductTaxRate(taxRate)) return;
     setValue("sale_price", data.sale_price, { shouldDirty: true });
     let product: ProductEntity;
-    try { product = await saving.save({ ...data, alias: resolveProductAlias(data.name, data.alias, aliasUsesName), expected_version: version }, imageChange); }
+    try { product = await saving.save({
+      ...data,
+      ...(sendStockTracking ? { track_stock } : {}),
+      ...(sendStockBalance ? { stock } : {}),
+      alias: resolveProductAlias(data.name, data.alias, aliasUsesName), expected_version: version,
+    }, imageChange); }
     catch { return; /* Keep the form and image draft for recovery. */ }
     savedCompletion.current = true;
     setCompleting(true);
@@ -226,7 +260,13 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
           error={Boolean(errors[name])} helperText={errors[name] ? t("business:pos.invalid_field") : name === "barcode" ? t("business:pos.barcode_input_help") : undefined} disabled={isSubmitting} data-testid={`product-${name}-input`} /> } /></Grid>)}
         <Grid size={12}><Controller name="measurement_unit" control={control} render={({ field }) => <SelectSingleInput id="product-measurement-unit" label={t("product:measurement_unit")} labelAdornment={help("measurement_unit", t("product:measurement_unit"))} required clearable={false}
           value={field.value} options={MEASUREMENT_UNITS.map((unit) => ({ value: unit, label: t(`product:units.${unit}`) }))}
-          onChange={field.onChange} disabled={isSubmitting} error={Boolean(errors.measurement_unit)} helperText={errors.measurement_unit ? t("product:invalid_measurement_unit") : undefined} data-testid="product-measurement-unit-input" /> } /></Grid>
+          onChange={(value) => {
+            if (currentProduct && value !== field.value) {
+              const originalUnit = currentProduct.measurement_unit ?? "unit";
+              setValue("stock", value === originalUnit ? String(currentProduct.stock) : "", { shouldDirty: true });
+            }
+            field.onChange(value);
+          }} disabled={isSubmitting} error={Boolean(errors.measurement_unit)} helperText={errors.measurement_unit ? t("product:invalid_measurement_unit") : undefined} data-testid="product-measurement-unit-input" /> } /></Grid>
         <Grid size={{ xs: 12, sm: 6 }}>{moneyField("cost_price", t("business:product_cost_price"))}</Grid>
         <Grid size={{ xs: 12, sm: 6 }}><TextInput label={t("business:product_tax_rate")} labelAdornment={<Box sx={{ minHeight: 44, display: "inline-flex", alignItems: "center" }}>{help("tax_rate", t("business:product_tax_rate"))}</Box>} type="number" value={Number.isFinite(taxRate) ? String(taxRate) : ""} data-testid="product-tax-rate-input" disabled={isSubmitting} error={!Number.isFinite(taxRate) || taxRate < 0} onChange={(event) => {
           const value = event.target.value === "" ? Number.NaN : Number(event.target.value); setTaxRate(value);
@@ -241,9 +281,23 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
             <Controller name="is_offer_enabled" control={control} render={({ field }) => <SwitchWrapper sx={{ height: { xs: "auto", sm: 42 }, minHeight: { xs: 44, sm: 0 }, boxSizing: "border-box" }}><StyledFormControlLabel labelPlacement="start" label={t(field.value ? "business:pos.alternate_applied" : "business:status_inactive")} control={<StyledSwitch checked={field.value} onChange={(_, value) => field.onChange(value)} disabled={isSubmitting} slotProps={{ input: { "aria-label": t("business:pos.use_alternate") } }} />} /></SwitchWrapper>} />
           </Box>
         </Box></Grid>
-        <Grid size={{ xs: 12, sm: 6 }}><Controller name="has_stock" control={control} render={({ field }) => <SelectSingleInput id="product-has-stock" label={t("business:pos.availability")} labelAdornment={help("has_stock", t("business:pos.availability"))} required clearable={false}
-          value={field.value === null ? null : String(field.value)} data-testid="product-has-stock-input" options={[{ value: "true", label: t("business:pos.available") }, { value: "false", label: t("business:pos.unavailable") }]}
-          onChange={(value) => field.onChange(value === null ? null : value === "true")} disabled={isSubmitting} error={Boolean(errors.has_stock)} helperText={errors.has_stock ? t("business:pos.choose_availability") : undefined} /> } /></Grid>
+        <Grid size={12}><Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))" }, columnGap: 2, alignItems: "end" }}>
+          <Controller name="track_stock" control={control} render={({ field }) => <SwitchWrapper sx={{ mb: { xs: 2, sm: 0 } }}>
+            <StyledFormControlLabel labelPlacement="start" label={t("business:stock_tracking.track")} control={
+              <StyledSwitch checked={field.value} onChange={(_, value) => field.onChange(value)} disabled={isSubmitting}
+                slotProps={{ input: { role: "switch", "aria-label": t("business:stock_tracking.track") } }} />
+            } />
+          </SwitchWrapper>} />
+          <Controller name="stock" control={control} render={({ field }) => <TextInput
+            id="product-stock" name={field.name} label={t("business:product_stock")} inputMode="decimal"
+            disabled={isSubmitting || !trackStock} value={trackStock ? field.value : currentProduct ? String(currentProduct.stock) : "0"}
+            onChange={field.onChange} onBlur={field.onBlur} error={stockError}
+            aria-describedby={stockHint ? stockHintId : undefined}
+          />} />
+          {stockHint && <FormHelperText id={stockHintId} error={stockError} sx={{ gridColumn: { xs: 1, sm: 2 }, mx: 1.75 }}>
+            {stockHint}
+          </FormHelperText>}
+        </Box></Grid>
         <Grid size={{ xs: 12, sm: 6 }}><Controller name="provider_id" control={control} render={({ field }) => <SelectSingleInput id="product-provider" label={t("business:product_provider")} labelAdornment={help("provider_id", t("business:product_provider"))} {...providerSearch}
           options={options.map((provider) => ({ value: provider.id, label: provider.name }))} value={field.value ?? null} onChange={field.onChange} disabled={isSubmitting} data-testid="product-provider-select" /> } /></Grid>
         <Grid size={12}><Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.5 }}><Typography variant="body2" sx={{ fontWeight: 600 }}>{t("business:active_label")}</Typography>{help("is_active", t("business:active_label"))}</Box><Controller name="is_active" control={control} render={({ field }) => <SwitchWrapper data-testid="product-active-switch"><StyledFormControlLabel labelPlacement="start" label={t("business:active_label")} control={<StyledSwitch checked={field.value} onChange={(_, value) => field.onChange(value)} disabled={isSubmitting} />} /></SwitchWrapper>} /></Grid>
@@ -253,7 +307,17 @@ export const ProductModal = ({ open, onClose, onSubmit, onSaved, businessId, ini
     </FormContainer>
     <ConfirmDialog open={Boolean(latest)} size="lg" onClose={() => setLatest(null)} confirmDisabled={!latest?.version || saving.phase === "fields_unknown" || Boolean(saving.pendingIntent && !saving.pendingIntent.needsReview)} onConfirm={() => {
       if (!latest?.version) return;
-      try { saving.adoptReviewed(latest); setLatest(null); } catch (error) { notifyHttpError(error); }
+      try {
+        saving.adoptReviewed(latest);
+        const draftValues = getValues();
+        resetField("track_stock", { defaultValue: latest.track_stock ?? false });
+        resetField("stock", { defaultValue: String(latest.stock) });
+        resetField("measurement_unit", { defaultValue: latest.measurement_unit ?? "unit" });
+        if (dirtyFields.track_stock) setValue("track_stock", draftValues.track_stock, { shouldDirty: true });
+        if (sendStockBalance) setValue("stock", draftValues.stock, { shouldDirty: true });
+        if (dirtyFields.measurement_unit) setValue("measurement_unit", draftValues.measurement_unit, { shouldDirty: true });
+        setLatest(null);
+      } catch (error) { notifyHttpError(error); }
     }} title={t("business:pos.inspect_product")} message={t("business:pos.inspect_product_explanation")}>
       {saving.pendingIntent && !saving.pendingIntent.needsReview && <Alert severity="warning" sx={{ mt: 2 }}>{t("business:pos.image_pending")}</Alert>}
       {latest && (mobile ? <Box sx={{ display: "grid", gap: 1.5, mt: 2 }}>{reviewRows.map(row => <Box key={row.field} sx={{ p: 1.5, border: "1px solid", borderColor: row.changed ? "primary.main" : "divider", borderRadius: 1 }}>

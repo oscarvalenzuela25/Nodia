@@ -1,5 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { Alert, Autocomplete, Box, Button, LinearProgress, TextField, Typography } from "@mui/material";
+import { Alert, Autocomplete, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import ImageOutlined from "@mui/icons-material/ImageOutlined";
 import { useTranslation } from "react-i18next";
 import { usePosCatalog } from "../../../../../infrastructure/usePosCatalog";
@@ -7,6 +7,7 @@ import { productToCartLine } from "../../../../../infrastructure/salesPolicies";
 import type { ProductEntity } from "../../../../../infrastructure/types";
 import ProductPrice from "../ProductPrice";
 import { measurementUnit } from "../../../../../infrastructure/measurementUnits";
+import { formatStock } from "../../../../../infrastructure/productStock";
 import { OptionItem, ProductContent, ProductCopy, ProductPicture, catalogueScrollbars } from "./styles";
 
 export interface PosProductCatalogProps {
@@ -22,11 +23,15 @@ const eligible = (product: ProductEntity, assignmentMode: boolean) => {
   try { productToCartLine(product); return true; } catch { return false; }
 };
 function ProductSummary({ product }: { product: ProductEntity }) {
+  const { t, i18n } = useTranslation("business");
   return <ProductContent>
     <ProductPicture variant="rounded" src={product.image?.url} alt="" slotProps={{ img: { loading: "lazy" } }}><ImageOutlined /></ProductPicture>
     <ProductCopy>
       <Typography sx={{ fontWeight: 600, fontSize: { xs: "1rem", sm: "1.125rem" }, lineHeight: 1.3 }}>{product.name}</Typography>
       <ProductPrice price={product.effective_price} regularPrice={product.sale_price} onOffer={product.is_offer_enabled === true} measurementUnit={measurementUnit(product.measurement_unit)} />
+      {product.track_stock === true && <Typography variant="body2" color="text.secondary">
+        {t("stock_tracking.available_balance", { stock: formatStock(product, i18n.language) })}
+      </Typography>}
     </ProductCopy>
   </ProductContent>;
 }
@@ -79,10 +84,31 @@ export default function PosProductCatalog({ businessId, disabled, assignmentMode
           void catalog.loadMore();
         }
       } }, popper: { sx: { minWidth: 0, maxWidth: "calc(100vw - 32px)" } } }}
-      renderInput={(params) => <TextField {...params} placeholder={t("business:pos.search_products")}
-        slotProps={{ ...params.slotProps, htmlInput: { ...params.slotProps.htmlInput, readOnly: catalog.networkFetching, "aria-busy": catalog.fetching, "aria-disabled": disabled || catalog.networkFetching } }} />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={t("business:pos.search_products")}
+          slotProps={{
+            ...params.slotProps,
+            input: {
+              ...params.slotProps.input,
+              endAdornment: <>
+                {catalog.fetching && (
+                  <CircularProgress size={18} aria-label={t("business:pos.catalog_loading")} sx={{ flexShrink: 0, mr: 0.5 }} />
+                )}
+                {params.slotProps.input.endAdornment}
+              </>,
+            },
+            htmlInput: {
+              ...params.slotProps.htmlInput,
+              readOnly: catalog.networkFetching,
+              "aria-busy": catalog.fetching,
+              "aria-disabled": disabled || catalog.networkFetching,
+            },
+          }}
+        />
+      )}
       renderOption={({ key, ...props }, product) => <OptionItem key={key} {...props}><ProductSummary product={product} /></OptionItem>} />
-    {catalog.fetching && !catalog.isLoading && <LinearProgress aria-label={t("business:pos.catalog_loading")} />}
     {catalog.isError && <Alert severity="error" action={<Button disabled={disabled || catalog.fetching} onClick={() => void catalog.retry()}>{t("business:pos.retry")}</Button>}>{t("core:server_error_alert")}</Alert>}
   </Box>;
 }
