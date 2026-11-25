@@ -83,6 +83,50 @@ test('an exact successful marker can only verify without writing or requiring as
   assert.equal(result.status,'already_current');assert.equal(calls,1);
 });
 
+test('an acknowledged deployment can be verified by its exact canonical identity after a status 404, without replay', async t => {
+  const scenarios = [
+    { name: 'canonical deployment becomes visible', code: 8000009, canonical: deployment(true), polls: 2 },
+    { name: 'a different deployment ID stays unconfirmed', code: 8000009, polls: 2,
+      canonical: { ...deployment(true), id: '22222222-3333-4444-5555-666666666666' },
+      failure: /pages_status_deadline_requires_reconciliation/ },
+    { name: 'an unrelated 404 stops immediately', code: 1234, polls: 1,
+      failure: /pages_read_failed_deployment_status_http_404_cf_1234/ },
+  ];
+  for (const scenario of scenarios) await t.test(scenario.name, async scenarioTest => {
+    const directory = fixture(scenarioTest);
+    const submissions = [];
+    let statusReads = 0;
+    let waits = 0;
+    const request = async (url, { method }) => {
+      const resource = new URL(url).pathname;
+      if (resource.endsWith('/projects/nodia')) {
+        const canonical = statusReads === 2 ? scenario.canonical : deployment(false);
+        return response(project(canonical));
+      }
+      if (resource.endsWith('/deployments') && method === 'GET') return response([]);
+      if (resource.endsWith('/upload-token')) return response({ jwt: 'fixture' });
+      if (resource.endsWith('/check-missing')) return response([]);
+      if (resource.endsWith('/upsert-hashes')) return response(null);
+      if (resource.endsWith('/deployments')) {
+        submissions.push(method);
+        return response(deployment(true, 'active'));
+      }
+      assert.equal(method, 'GET');
+      assert.ok(resource.endsWith('/deployments/' + id));
+      statusReads++;
+      return Response.json({ success: false, errors: [{ code: scenario.code }] }, { status: 404 });
+    };
+    const result = publishPages({ environment, metadata, directory, allowCreate: true,
+      request, pollLimit: 2, sleep: async () => { waits++; } });
+    if (scenario.failure) await assert.rejects(result, scenario.failure);
+    else assert.deepEqual(await result, { status: 'complete', source_sha: metadata.source_sha,
+      deployment_id: id, deployment_requested: true });
+    assert.deepEqual(submissions, ['POST']);
+    assert.equal(statusReads, scenario.polls);
+    assert.equal(waits, scenario.polls);
+  });
+});
+
 test('a full history page continues to an existing marker without uploading or creating',async()=>{
   let projects=0;const pages=[];
   const request=async(url,options)=>{
