@@ -3,6 +3,10 @@
   "code_conflict": "The invoice/supplier code already exists in this business.",
   "availability_required": "Select product availability manually.",
   "invalid_availability": "Product availability is invalid.",
+  "invalid_stock": "Enter a valid stock quantity between 0 and 2,147,483,647 with up to three decimal places.",
+  "invalid_stock_tracking": "The Track stock setting is invalid.",
+  "stock_tracking_disabled": "Enable Track stock to change the balance.",
+  "stock_quantity_required": "Enter the balance in the new measurement unit.",
   "invalid_activity": "Product activity status is invalid.",
   "invalid_barcode": "The barcode is invalid. Preserve leading zeroes and remove outer spaces.",
   "invalid_offer": "The alternate price configuration is invalid.",
@@ -43,7 +47,7 @@
     "bundle": "bundle"
   },
   "bulk_create_unknown": "We could not confirm whether the new products were saved. Your rows are kept and creating them again is blocked. Manually review the catalogue to check what was saved before closing and importing again.",
-  "table_show_additional_columns": "Show availability, status and last updated",
-  "table_hide_additional_columns": "Hide availability, status and last updated",
+  "table_show_additional_columns": "Show status and last updated",
+  "table_hide_additional_columns": "Hide status and last updated",
   "profit_percentage_retired": "Stored margin is no longer supported. Refresh the form and review the sale price again."
 }

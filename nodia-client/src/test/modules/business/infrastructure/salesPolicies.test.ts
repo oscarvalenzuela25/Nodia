@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addCartProduct, averageClp, barcodeValue, cartTotal, moneyInteger, productToCartLine, quantityFromInput, refreshCartPrices, saleToCart, setCartQuantity, removeCartProduct, setCartUnitPrice, cartLinePrice } from "../../../../modules/business/infrastructure/salesPolicies";
+import { addCartProduct, averageClp, barcodeValue, cartTotal, exceedsObservedStock, InsufficientStockError, moneyInteger, productToCartLine, quantityFromInput, refreshCartPrices, saleToCart, setCartQuantity, removeCartProduct, setCartUnitPrice, cartLinePrice } from "../../../../modules/business/infrastructure/salesPolicies";
 import { salesPeriod } from "../../../../modules/business/infrastructure/salesDates";
 import type { ProductEntity } from "../../../../modules/business/infrastructure/types";
 import type { Sale } from "../../../../modules/business/infrastructure/salesTypes";
@@ -29,6 +29,41 @@ describe("POS policies", () => {
     const once = addCartProduct([], product);
     expect(addCartProduct(once, product)[0].quantity).toBe(2);
     expect(() => addCartProduct(once, { ...product, version: 3 })).toThrow("price_changed");
+  });
+  it("moves additions and rescans to the front while quantity edits and catalog review preserve position", async () => {
+    const second = { ...product, id: "second" };
+    const third = { ...product, id: "third" };
+    const initial = [productToCartLine(second), productToCartLine(product)];
+    const added = addCartProduct(initial, third);
+    expect(added.map((line) => line.product_id)).toEqual([third.id, second.id, product.id]);
+    expect(initial.map((line) => line.product_id)).toEqual([second.id, product.id]);
+
+    const rescanned = addCartProduct(setCartUnitPrice(added, product.id, "250"), product);
+    expect(rescanned[0]).toMatchObject({ product_id: product.id, quantity: 2, unit_price_override: "250" });
+    const edited = setCartQuantity(rescanned, second.id, 0.125);
+    const reviewed = await refreshCartPrices(product.business_id, edited, async () => [second, product, third]);
+    expect(reviewed.map(({ product_id, quantity }) => [product_id, quantity]))
+      .toEqual([[product.id, 2], [third.id, 1], [second.id, 0.125]]);
+  });
+  it("allows active untracked products, blocks tracked zero and requires a deliberate fractional quantity", () => {
+    const untracked = { ...product, track_stock: false, has_stock: false, stock: 0 };
+    expect(addCartProduct([], untracked)[0]).toMatchObject({ quantity: 1 });
+    expect(addCartProduct([], untracked)[0]).not.toHaveProperty("stock_available");
+    const tracked = { ...product, track_stock: true, stock: 0.125 };
+    const lines = addCartProduct([], tracked);
+    expect(lines[0]).toMatchObject({ quantity: 0, stock_available: 0.125 });
+    expect(setCartQuantity(lines, tracked.id, 0.125)[0].quantity).toBe(0.125);
+    expect(() => addCartProduct(lines, tracked)).toThrow(InsufficientStockError);
+    expect(() => setCartQuantity(lines, tracked.id, 0.126)).toThrow(InsufficientStockError);
+    expect(() => addCartProduct([], { ...tracked, stock: 0 })).toThrow(InsufficientStockError);
+  });
+  it("refreshes observed stock to zero without clipping the requested quantity or losing a manual price", async () => {
+    const tracked = { ...product, track_stock: true, stock: 4 };
+    const original = setCartUnitPrice(addCartProduct([], tracked), tracked.id, "50");
+    const updated = await refreshCartPrices("business", original, async () => [{ ...tracked, version: 3, stock: 0 }]);
+    expect(updated[0]).toMatchObject({ expected_product_version: 3, stock_available: 0, quantity: 1, unit_price_override: "50" });
+    expect(exceedsObservedStock(updated[0], updated[0].quantity)).toBe(true);
+    expect(setCartQuantity(updated, tracked.id, 0)[0]).toMatchObject({ stock_available: 0, quantity: 0 });
   });
   it("retains a zero row and removes only the explicitly selected product", () => {
     const lines = [productToCartLine(product), { ...productToCartLine(product), product_id: "second", quantity: 3 }];

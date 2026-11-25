@@ -37,7 +37,7 @@ export function usePosCatalog(businessId: string, assignmentMode = false) {
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {
       const page = await getProducts({ page: pageParam, limit: PAGE_SIZE, includes: true,
-        q: { business_id_eq: businessId, is_active_eq: true, ...(assignmentMode ? {} : { has_stock_eq: true }), search: querySearch || undefined, s: "name asc" } });
+        q: { business_id_eq: businessId, is_active_eq: true, ...(assignmentMode ? {} : { sellable_stock_eq: true }), search: querySearch || undefined, s: "name asc" } });
       if (!page || !Array.isArray(page.data) || !page.meta || page.meta.page !== pageParam || !Number.isSafeInteger(page.meta.total_pages) || page.meta.total_pages < 0 ||
           page.data.some((product) => !product || typeof product.id !== "string" || product.business_id !== businessId)) throw new Error("invalid_pos_catalog_response");
       return page;

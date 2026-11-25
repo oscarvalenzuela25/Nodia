@@ -32,7 +32,8 @@ describe('ExportProductsCsvUseCase', () => {
         cost_price: 600,
         cost_price_tax: 114,
         sale_price: 1200,
-        stock: 50,
+        track_stock: true,
+        stock: 0,
         is_active: true,
       },
     ];
@@ -44,19 +45,23 @@ describe('ExportProductsCsvUseCase', () => {
 
     const csv = await useCase.execute({
       business_id: 'b7b80a11-827c-4712-9c17-9150d0325d7b',
+      q: { tracked_stock_lteq: 0 },
     });
 
     const lines = csv.split('\n');
     expect(lines[0]).toBe(
-      'Código proveedor (code),Código de barras (barcode),Nombre (name),Alias (alias),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Disponible (has_stock),Stock histórico (stock),Activo (is_active),ID (id),Versión (version)',
+      'Código proveedor (code),Código de barras (barcode),Nombre (name),Alias (alias),Unidad de medida (measurement_unit),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio normal (sale_price),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Usar stock (track_stock),Stock (stock),Activo (is_active),ID (id),Versión (version)',
     );
     expect(lines[1]).toBe(
-      'PROD-001,,"Bebida Cola, 500ml",Cola pequeña,unit,600,114,1200,,,,50,true,101,',
+      'PROD-001,,"Bebida Cola, 500ml",Cola pequeña,unit,600,114,1200,,,true,0,true,101,',
     );
     expect(productServiceMock.findAllProducts).toHaveBeenCalledWith({
       all: true,
       includes: false,
-      q: { business_id_eq: 'b7b80a11-827c-4712-9c17-9150d0325d7b' },
+      q: {
+        business_id_eq: 'b7b80a11-827c-4712-9c17-9150d0325d7b',
+        tracked_stock_lteq: 0,
+      },
     });
   });
 
@@ -71,6 +76,7 @@ describe('ExportProductsCsvUseCase', () => {
         cost_price: 450,
         cost_price_tax: 85,
         sale_price: 900,
+        track_stock: false,
         stock: 30,
         is_active: false,
       },
@@ -88,10 +94,10 @@ describe('ExportProductsCsvUseCase', () => {
 
     const lines = csv.split('\n');
     expect(lines[0]).toBe(
-      'Supplier code (code),Barcode (barcode),Name (name),Alias (alias),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Available (has_stock),Legacy stock (stock),Active (is_active),ID (id),Version (version)',
+      'Supplier code (code),Barcode (barcode),Name (name),Alias (alias),Measurement unit (measurement_unit),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Regular price (sale_price),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Track stock (track_stock),Stock (stock),Active (is_active),ID (id),Version (version)',
     );
     expect(lines[1]).toBe(
-      'PROD-002,,Potato Chips,,kg,450,85,900,,,,30,false,102,',
+      'PROD-002,,Potato Chips,,kg,450,85,900,,,false,,false,102,',
     );
   });
 
@@ -111,6 +117,7 @@ describe('ExportProductsCsvUseCase', () => {
       meta: { page: 1, limit: 1, total_items: 1, total_pages: 1 },
     });
     const csv = await useCase.execute({}, { maxRows: 100, maxBytes: 4096 });
+    expect(csv.split('\n')[0]).toContain('Disponible (has_stock),Stock histórico (stock)');
     expect(csv).toContain('"\'=SUM(1,2)",,\'  @CMD,"\'=HYPERLINK(""synthetic"")",,0');
     expect(csv).toContain(',0,false,1');
     expect(productServiceMock.findAllProducts).toHaveBeenCalledWith(

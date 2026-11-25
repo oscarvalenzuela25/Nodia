@@ -3,6 +3,7 @@ import { roundSalePrice } from "../../../../../../../../utils/salePrice";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import InvoiceAliasReview from "./InvoiceAliasReview";
 import InvoicePriceReview from "./InvoicePriceReview";
+import InvoiceStockCell from "./InvoiceStockCell";
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import InvoiceProductMatch from "./InvoiceProductMatch";
 import PriceSuggestion from "../PriceSuggestion";
@@ -104,6 +105,7 @@ import {
   MAX_OCR_CONFIRMATION_ROWS,
   prepareInvoiceConfirmation,
 } from "./invoiceOcrConfirmation";
+import { evaluateInvoiceStock, invoiceStockTrackingChange, observeInvoiceStock, setInvoiceStockTracking, type InvoiceStockReview } from "./invoiceStock";
 
 const parseNumericInput = (value: string): number => value.trim() ? Number(value) : Number.NaN;
 const numericInputValue = (value: number | undefined): string => typeof value === "number" && Number.isFinite(value) ? String(value) : "";
@@ -293,7 +295,13 @@ function ScopedProductInvoiceImport({
     };
   }, []);
 
-  const hasErrors = useMemo(() => rows.some((r) => !r.isValid), [rows]);
+  const stockResults = useMemo(() => rows.map((row) => evaluateInvoiceStock(row.stockReview, row.quantity)), [rows]);
+  const stockErrors = rows.map((row, index) => {
+    const result = stockResults[index];
+    return result.error ?? (row.manual_match?.fields.length === 0 && !result.action &&
+      invoiceStockTrackingChange(row.stockReview) === undefined ? "business:ocr_stock_manual_change_required" : undefined);
+  });
+  const hasErrors = rows.some((row, index) => !row.isValid || stockErrors[index]);
   const sourceChanged = !reviewSource || reviewSource.file !== file || reviewSource.providerId !== selectedProviderId ||
     reviewSource.businessId !== businessId;
   const invalidFile = !file || !canConfirmInvoiceFile(file);
@@ -455,6 +463,15 @@ function ScopedProductInvoiceImport({
     setRows((prev) => validateInvoiceRows(prev.filter((_, idx) => idx !== index)));
   };
 
+  const handleStockReviewChange = (index: number, update: (review: InvoiceStockReview) => InvoiceStockReview) => {
+    if (isBusy || analysisIntent.current || sourceChanged) return;
+    setRows((previous) => previous.map((row, currentIndex) =>
+      currentIndex === index && row.stockReview?.tracking
+        ? { ...row, stockReview: update(row.stockReview) }
+        : row,
+    ));
+  };
+
   const handleOpenEdit = (index: number) => {
     if (isBusy || analysisIntent.current) return;
     const row = rows[index];
@@ -547,7 +564,6 @@ function ScopedProductInvoiceImport({
       cost_price_tax: Number(editFormData.cost_price_tax ?? 0),
       sale_price: newSalePrice,
       quantity: editFormData.quantity ?? Number.NaN,
-      has_stock: currentRow.has_stock,
       version: currentRow.version,
       manual_match: reviewedPrice.manual_match,
       is_active: editFormData.is_active ?? true,
@@ -1149,6 +1165,14 @@ function ScopedProductInvoiceImport({
                             ? [latest.name, latest.code, formatCashAmount(String(Number(latest.sale_price)), i18n.language)].filter(Boolean).join(" · ")
                             : t("business:cash.ocr_product_no_longer_available")}
                         </Typography>
+                        {latest && (row.stockReview?.tracking || latest.track_stock) && (
+                          <Typography variant="body2">
+                            {latest.track_stock
+                              ? t("business:ocr_stock_current", { balance: typeof latest.stock === "number" && Number.isFinite(latest.stock)
+                                ? latest.stock.toLocaleString(i18n.language, { maximumFractionDigits: 3 }) : "—" })
+                              : t("business:ocr_stock_tracking_off")}
+                          </Typography>
+                        )}
                         {latest && (
                           <Button size="small" color="inherit" disabled={isBusy} onClick={applyRevision} sx={{ minHeight: 44 }}>
                             {t("business:cash.ocr_use_reviewed_product")}
@@ -1200,19 +1224,19 @@ function ScopedProductInvoiceImport({
               boxShadow: "none",
             }}
           >
-            <Table size="small" sx={{ minWidth: 1200 }}>
+            <Table size="small" sx={{ minWidth: 1120 }}>
               <TableHead>
                 <TableRow>
                   <TableCell width={36}></TableCell>
-                  <TableCell width={110}>{t("business:product_status")}</TableCell>
-                  <TableCell>{t("business:product_code")}</TableCell>
+                  <TableCell width={96}>{t("business:product_status")}</TableCell>
+                  <TableCell sx={{ minWidth: 112 }}>{t("business:product_code")}</TableCell>
                   <TableCell>{t("business:product_name")}</TableCell>
                   <TableCell>{t("business:product_alias")}</TableCell>
-                  <TableCell align="right">{t("business:pos.invoice_quantity")}</TableCell>
-                  <TableCell align="right">{t("business:product_cost_price")}</TableCell>
-                  <TableCell align="right">{t("business:product_cost_tax")}</TableCell>
-                  <TableCell align="right" sx={{ minWidth: 180 }}>{t("business:invoice_sale_price_default")}</TableCell>
-                  <TableCell align="right" width={96} sx={{ whiteSpace: "nowrap" }}>{t("core:actions")}</TableCell>
+                  <TableCell align="right">{t("business:product_stock")}</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 90, px: 1 }}>{t("business:product_cost_price")}</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 90, px: 1 }}>{t("business:product_cost_tax")}</TableCell>
+                  <TableCell align="right" sx={{ minWidth: 156 }}>{t("business:invoice_sale_price_default")}</TableCell>
+                  <TableCell align="right" width={80} sx={{ px: 1, whiteSpace: "nowrap" }}>{t("core:actions")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1220,7 +1244,7 @@ function ScopedProductInvoiceImport({
                   <Fragment key={`${row.code}-${idx}`}>
                     <TableRow
                       sx={{
-                        backgroundColor: !row.isValid
+                        backgroundColor: !row.isValid || stockErrors[idx]
                           ? "rgba(211, 47, 47, 0.05)"
                           : "inherit",
                         transition: "background-color 0.2s ease",
@@ -1231,15 +1255,15 @@ function ScopedProductInvoiceImport({
                       <TableCell align="center">
                         <Tooltip
                           title={
-                            row.isValid
+                            row.isValid && !stockErrors[idx]
                               ? t("business:row_valid_tooltip")
                               : t("business:row_error_tooltip", {
-                                  errors: row.errors.join(", "),
+                                  errors: [...row.errors, ...(stockErrors[idx] ? [t(stockErrors[idx])] : [])].join(", "),
                                 })
                           }
                         >
                           <Box sx={{ display: "inline-flex" }}>
-                            {row.isValid ? (
+                            {row.isValid && !stockErrors[idx] ? (
                               <ValidBadge data-testid={`valid-dot-${idx}`} />
                             ) : (
                               <ErrorBadge data-testid={`error-dot-${idx}`} />
@@ -1265,8 +1289,8 @@ function ScopedProductInvoiceImport({
                       </TableCell>
 
                       <TableCell sx={{ fontWeight: 600, maxWidth: 240, overflowWrap: "anywhere" }}>{row.code || "-"}</TableCell>
-                      <TableCell sx={{ minWidth: 160, maxWidth: 280, overflowWrap: "anywhere" }}>{row.name}</TableCell>
-                      <TableCell sx={{ minWidth: 180, maxWidth: 280, overflowWrap: "anywhere" }}>
+                      <TableCell sx={{ minWidth: 144, maxWidth: 280, overflowWrap: "anywhere" }}>{row.name}</TableCell>
+                      <TableCell sx={{ minWidth: 152, maxWidth: 280, overflowWrap: "anywhere" }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1, p: 0.5, borderRadius: 1,
                           border: "1px solid", borderColor: invoiceAliasNeedsReview(row) ? "warning.main" : "transparent",
                           bgcolor: invoiceAliasNeedsReview(row) ? "action.hover" : "transparent" }}>
@@ -1281,7 +1305,14 @@ function ScopedProductInvoiceImport({
                           </IconButton></span></Tooltip>
                         </Box>
                       </TableCell>
-                      <TableCell align="right">{Number.isFinite(row.quantity) ? row.quantity : "—"}</TableCell>
+                      <InvoiceStockCell
+                        name={row.name}
+                        invoicedQuantity={row.quantity}
+                        review={row.stockReview}
+                        result={stockResults[idx]}
+                        disabled={isBusy || sourceChanged}
+                        onChange={(update) => handleStockReviewChange(idx, update)}
+                      />
                       <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
                         {Number.isFinite(row.cost_price) ? `$${row.cost_price.toLocaleString()}` : "-"}
                       </TableCell>
@@ -1382,7 +1413,8 @@ function ScopedProductInvoiceImport({
                           </Typography>
                         </TableCell>
                         <TableCell sx={{ overflowWrap: "anywhere" }}>{row.historicalProduct.alias ?? "—"}</TableCell>
-                        <TableCell align="right" sx={{ color: "text.secondary" }}>—</TableCell>
+                        <TableCell align="right">{typeof row.historicalProduct.controlledStock === "number" && Number.isFinite(row.historicalProduct.controlledStock)
+                          ? row.historicalProduct.controlledStock.toLocaleString(i18n.language, { maximumFractionDigits: 3 }) : "—"}</TableCell>
                         <TableCell align="right" sx={{ color: "text.secondary" }}>
                           ${row.historicalProduct.cost_price.toLocaleString()}
                         </TableCell>
@@ -1480,6 +1512,28 @@ function ScopedProductInvoiceImport({
                 />
               }
               label={t("business:active_label")}
+              labelPlacement="start"
+            />
+          </SwitchWrapper>
+
+          <SwitchWrapper>
+            <StyledFormControlLabel
+              control={
+                <StyledSwitch
+                  disabled={isBusy || sourceChanged}
+                  checked={editFormData.stockReview?.tracking ?? false}
+                  onChange={(event) => {
+                    if (isBusy || analysisIntent.current || sourceChanged) return;
+                    const tracking = event.target.checked;
+                    setEditFormData((previous) => ({
+                      ...previous,
+                      stockReview: setInvoiceStockTracking(previous.stockReview ?? observeInvoiceStock(), tracking),
+                    }));
+                  }}
+                  name="track_stock"
+                />
+              }
+              label={t("business:stock_tracking.track")}
               labelPlacement="start"
             />
           </SwitchWrapper>

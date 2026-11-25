@@ -3,11 +3,13 @@ import { sileo } from "sileo";
 import i18n from "../../../translate";
 import useAuthStore from "../../../store/authStore";
 import { claimHttpErrorNotification, getHttpErrorMessage } from "../../../config/httpFeedback";
+import { getServerErrorCode } from "../../../config/axiosInstance";
 import { readSaleJournal, removeSaleJournal, type SaleJournal } from "../../../config/businessSaleRecoveryStorage";
 import { loadSaleWorkspace, writeSaleWorkspace, type SaleWorkspaceSession, type SaleWorkspaceSnapshot } from "../../../config/businessSaleWorkspaceStorage";
 import { getSaleReceipt, mutateSale } from "./salesServices";
-import { cartTotal, quantityFromInput, saleToCart } from "./salesPolicies";
-import type { PaymentMethod, Sale, SaleMutation } from "./salesTypes";
+import { addCartProduct, cartTotal, exceedsObservedStock, quantityFromInput, saleToCart } from "./salesPolicies";
+import type { CartLine, PaymentMethod, Sale, SaleMutation } from "./salesTypes";
+import type { ProductEntity } from "./types";
 
 const freshSession = (number: number): SaleWorkspaceSession => ({ id: crypto.randomUUID(), number, sale: null, lines: [], paymentMethod: "cash", description: "", dirty: false, pending: null, quantityDrafts: {}, barcode: "" });
 const emptyWorkspace = (actorId: string, businessId: string): SaleWorkspaceSnapshot => {
@@ -24,13 +26,14 @@ const sameIntention = (left: unknown, right: unknown) => JSON.stringify(orderedJ
 const errorFeedback = (error: unknown) => {
   if (claimHttpErrorNotification(error)) sileo.error({ title: i18n.t("core:server_error_toast"), description: getHttpErrorMessage(error) });
 };
-interface EngineState { workspace: SaleWorkspaceSnapshot; storageError: boolean; busyIds: string[] }
+interface EngineState { workspace: SaleWorkspaceSnapshot; storageError: boolean; busyIds: string[]; catalogConflictIds: string[] }
 
 /** Local domain state; every durable update commits carts and recovery identities together. */
 export class SaleWorkspaceEngine {
   private state: EngineState;
   private listeners = new Set<() => void>();
   private locks = new Set<string>();
+  private catalogConflicts = new Set<string>();
   private mounted = false;
   private lease = 0;
   private readBlocked = false;
@@ -44,7 +47,7 @@ export class SaleWorkspaceEngine {
     let workspace = emptyWorkspace(actorId, businessId);
     try { if (actorId && businessId) workspace = this.restore(); }
     catch { this.readBlocked = true; }
-    this.state = { workspace, storageError: this.readBlocked, busyIds: [] };
+    this.state = { workspace, storageError: this.readBlocked, busyIds: [], catalogConflictIds: [] };
   }
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   getSnapshot = () => this.state;
@@ -58,7 +61,9 @@ export class SaleWorkspaceEngine {
     return this.mounted && lease === this.lease && Boolean(this.actorId) && Boolean(this.businessId) && auth.user?.id === this.actorId && auth.sessionVersion === this.sessionVersion;
   }
   private publish(workspace = this.state.workspace, storageError = this.state.storageError) {
-    this.state = { workspace, storageError, busyIds: [...this.locks] };
+    const sessions = new Set(workspace.sessions.map((entry) => entry.id));
+    for (const id of this.catalogConflicts) if (!sessions.has(id)) this.catalogConflicts.delete(id);
+    this.state = { workspace, storageError, busyIds: [...this.locks], catalogConflictIds: [...this.catalogConflicts] };
     for (const listener of this.listeners) listener();
   }
   private restore(): SaleWorkspaceSnapshot {
@@ -106,6 +111,22 @@ export class SaleWorkspaceEngine {
     if (!this.editable(id)) return false;
     return this.replace(id, (entry) => ({ ...entry, ...patch }), true);
   }
+  addProduct(id: string, product: ProductEntity, { clearBarcode = false } = {}): boolean {
+    const entry = this.session(id);
+    if (!entry || entry.sale || !this.editable(id)) return false;
+    if (product.business_id !== this.businessId) throw new Error("unavailable_product");
+
+    const lines = addCartProduct(entry.lines, product);
+    const quantityDrafts = { ...entry.quantityDrafts };
+    delete quantityDrafts[product.id];
+    return this.replace(id, (entry) => ({
+      ...entry,
+      lines,
+      quantityDrafts,
+      barcode: clearBarcode ? "" : entry.barcode,
+      dirty: true,
+    }), true);
+  }
   setPaymentMethod(id: string, value: PaymentMethod) {
     const entry = this.session(id);
     // Original Other remains valid for history/recovery; new manual selections have four methods.
@@ -137,6 +158,7 @@ export class SaleWorkspaceEngine {
   }
   reset(id: string): boolean {
     if (!this.editable(id)) return false;
+    this.catalogConflicts.delete(id);
     return this.replace(id, (entry) => ({ ...freshSession(entry.number), id: entry.id }));
   }
   /** Never discard an in-flight or uncertain commercial intention. */
@@ -166,6 +188,7 @@ export class SaleWorkspaceEngine {
         ...entry, sale: value, lines: saleToCart(value), paymentMethod: value.payment_method, description: value.payment_method_description ?? "", dirty: false, pending: null, quantityDrafts: {}, barcode: "",
       } : entry),
     };
+    this.catalogConflicts.delete(id);
     if (!this.commit(next)) throw new Error(i18n.t("business:pos.storage_error"));
     await this.invalidate();
     if (!this.current(lease)) return false;
@@ -185,7 +208,9 @@ export class SaleWorkspaceEngine {
       return await this.accept(id, result, mutation, lease) ? result : null;
     } catch (error) {
       if (!this.current(lease)) return null;
-      const conflict = axios.isAxiosError<{ message?: unknown }>(error) && [error.response?.data?.message].flat().some((message) => message === "business:sale_request_conflict" || message === "business:sale_request_pending");
+      const messages = axios.isAxiosError<{ message?: unknown }>(error) ? [getServerErrorCode(error), error.response?.data?.message].flat() : [];
+      const conflict = messages.includes("business:sale_request_conflict") || messages.includes("business:sale_request_pending");
+      if (messages.includes("business:sale_product_changed") || messages.includes("business:sale_stock_insufficient")) this.catalogConflicts.add(id);
       if (axios.isAxiosError(error) && error.response && error.response.status >= 400 && error.response.status < 500 && error.response.status !== 408 && !conflict) {
         this.replace(id, (entry) => ({ ...entry, pending: null }));
       }
@@ -200,11 +225,23 @@ export class SaleWorkspaceEngine {
     if (!entry || entry.pending) return Promise.resolve(null);
     return this.dispatch(id, { operation: entry.sale ? "update" : "create", saleId: entry.sale?.id, command: { ...this.command(entry), ...(entry.sale ? { expected_version: entry.sale.version } : {}) } });
   }
+  async reviewCatalog(id: string, lines: CartLine[]): Promise<boolean> {
+    const entry = this.session(id);
+    if (!entry || !this.editable(id)) return false;
+    if (entry.sale) {
+      if (entry.sale.status !== "draft" || lines.some((line) => exceedsObservedStock(line, line.quantity))) return false;
+      return Boolean(await this.dispatch(id, { operation: "update", saleId: entry.sale.id,
+        command: { ...this.command({ ...entry, lines }), expected_version: entry.sale.version } }));
+    }
+    if (!this.edit(id, { lines, dirty: true })) return false;
+    this.catalogConflicts.delete(id); this.publish();
+    return true;
+  }
   checkout(id: string): Promise<Sale | null> {
     const entry = this.session(id);
-    if (!entry || entry.sale || entry.pending) return Promise.resolve(null);
+    if (!entry || entry.sale || entry.pending || this.catalogConflicts.has(id)) return Promise.resolve(null);
     try {
-      if (!entry.lines.length || entry.paymentMethod === "other" || BigInt(cartTotal(entry.lines)) <= 0n || entry.description.trim().length > 500 || entry.lines.some((line) => entry.quantityDrafts[line.product_id] !== undefined && quantityFromInput(entry.quantityDrafts[line.product_id]) !== line.quantity)) throw new Error("invalid_checkout");
+      if (!entry.lines.length || entry.paymentMethod === "other" || BigInt(cartTotal(entry.lines)) <= 0n || entry.description.trim().length > 500 || entry.lines.some((line) => exceedsObservedStock(line, line.quantity) || (entry.quantityDrafts[line.product_id] !== undefined && quantityFromInput(entry.quantityDrafts[line.product_id]) !== line.quantity))) throw new Error("invalid_checkout");
     } catch { sileo.error({ title: i18n.t("business:pos.checkout_invalid") }); return Promise.resolve(null); }
     const lines = entry.lines.filter((line) => line.quantity > 0);
     if (lines.length !== entry.lines.length && !this.edit(id, { lines, quantityDrafts: Object.fromEntries(Object.entries(entry.quantityDrafts).filter(([productId]) => lines.some((line) => line.product_id === productId))), dirty: true })) return Promise.resolve(null);
@@ -212,7 +249,7 @@ export class SaleWorkspaceEngine {
   }
   transition(id: string, operation: "complete" | "cancel" | "discard", cancellationReason?: string): Promise<Sale | null> {
     const entry = this.session(id);
-    if (!entry?.sale || entry.pending || entry.dirty) return Promise.resolve(null);
+    if (!entry?.sale || entry.pending || entry.dirty || (operation === "complete" && this.catalogConflicts.has(id))) return Promise.resolve(null);
     return this.dispatch(id, { operation, saleId: entry.sale.id, command: { request_key: crypto.randomUUID(), expected_version: entry.sale.version, ...(cancellationReason ? { cancellation_reason: cancellationReason } : {}) } });
   }
   retry(id: string): Promise<Sale | null> { const entry = this.session(id); return entry?.pending ? this.dispatch(id, entry.pending.mutation) : Promise.resolve(null); }

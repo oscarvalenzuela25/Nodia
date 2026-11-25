@@ -4,7 +4,7 @@
   "document_id": "businesses.multi-sale-workspace",
   "product_id": "businesses",
   "kind": "feature",
-  "revision": 13,
+  "revision": 14,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
@@ -236,6 +236,17 @@
 }
 ---
 # Varias ventas locales — contexto funcional candidato
+
+## Distribución y orden del carrito — 2026-11-25
+
+El POS nativo muestra los carritos abiertos a la izquierda y el cobro a la
+derecha en escritorio ancho. En móvil se apilan en una sola vista. Cada
+producto recién agregado toma el primer lugar en su carrito. Agregar de
+nuevo incrementa esa misma fila. Los botones de cantidad y la edición del
+campo mantienen el orden, que se restaura con el borrador. El descuento de
+stock sigue condicionado a una venta confirmada y al control habilitado en
+el producto. NodiaAI conserva las lecturas de ventas y reportes.
+[Plan94 §46](../../../../mvp/94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
 
 ## Producto manual: regla posterior del 2026-11-06
 

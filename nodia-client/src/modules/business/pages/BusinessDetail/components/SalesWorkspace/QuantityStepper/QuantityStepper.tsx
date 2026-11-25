@@ -30,10 +30,10 @@ export default function QuantityStepper({ name, quantity, inputValue, disabled, 
   const invalidQuantity = quantityThousandths(quantity) === null;
   const blocked = disabled || invalidQuantity;
   return <Stepper role="group" aria-label={t("business:pos.quantity_for", { name })}>
-    <Typography component="label" htmlFor={id} variant="body2" sx={{ fontWeight: 600 }}>{t("business:pos.quantity")}</Typography>
+    <Typography component="label" htmlFor={id} sx={visuallyHidden}>{t("business:pos.quantity")}</Typography>
     <Box component="span" id={descriptionId} sx={visuallyHidden}>{name}</Box>
     <ControlRow>
-      <StepButton type="button" variant="outlined" aria-label={t("business:pos.decrease_quantity", { name })} disabled={blocked || decrementDisabled || quantity === 0} onClick={onDecrement}><RemoveRounded /></StepButton>
+      <StepButton type="button" variant="outlined" color="inherit" aria-label={t("business:pos.decrease_quantity", { name })} disabled={blocked || decrementDisabled || quantity === 0} onClick={onDecrement}><RemoveRounded /></StepButton>
       <InputArea><TextInput id={id} type="text" inputMode="decimal" value={raw} disabled={blocked} error={invalid}
         aria-describedby={descriptionId} onFocus={(event) => event.currentTarget.select()}
         onChange={(event) => {

@@ -38,6 +38,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   value = null,
   onChange,
   placeholder,
+  searchable = true,
   searchPlaceholder,
   autoFocusSearch = true,
   disabled = false,
@@ -73,14 +74,14 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
   }, [options]);
 
   const filteredOptions = useMemo(() => {
-    if (onSearchChange || !searchTerm.trim()) return normalizedOptions;
+    if (!searchable || onSearchChange || !searchTerm.trim()) return normalizedOptions;
     const term = searchTerm.toLowerCase().trim();
     return normalizedOptions.filter(
       (opt) =>
         opt.label.toLowerCase().includes(term) ||
         opt.value.toLowerCase().includes(term)
     );
-  }, [normalizedOptions, searchTerm, onSearchChange]);
+  }, [normalizedOptions, searchable, searchTerm, onSearchChange]);
 
   const selectedOption = useMemo(() => {
     if (!value) return null;
@@ -215,7 +216,7 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
           },
         }}
       >
-        <SearchContainer onClick={(e) => e.stopPropagation()}>
+        {searchable && <SearchContainer onClick={(e) => e.stopPropagation()}>
           <SearchField
             autoFocus={autoFocusSearch}
             fullWidth
@@ -247,10 +248,10 @@ const SelectSingleInput: FC<SelectSingleInputProps> = ({
               },
             }}
           />
-        </SearchContainer>
+        </SearchContainer>}
 
         {loadingOptions && <LinearProgress sx={{ height: 2 }} />}
-        <OptionsList role="listbox" aria-multiselectable="false" autoFocusItem={!autoFocusSearch && isOpen}>
+        <OptionsList role="listbox" aria-multiselectable="false" autoFocusItem={isOpen && (!searchable || !autoFocusSearch)}>
           {filteredOptions.length === 0 ? (
             <Box sx={{ py: 2, px: 2, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">

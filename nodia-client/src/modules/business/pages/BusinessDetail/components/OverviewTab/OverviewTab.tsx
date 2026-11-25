@@ -254,10 +254,11 @@ export const OverviewTab: FC<Props> = ({
                   </Typography>
                 </KpiValue>
                 {availability.isError && <Typography color="error">{t("business:pos.availability_error")}</Typography>}
-                {availability.data && <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
-                  <Typography variant="caption" sx={{ width: "100%" }}>{t("business:pos.active_products")}</Typography>
-                  <Chip size="small" color="success" variant="outlined" label={`${t("business:pos.available")}: ${availability.data.available}`} />
-                  <Chip size="small" color="error" variant="outlined" label={`${t("business:pos.unavailable")}: ${availability.data.unavailable}`} />
+                {availability.data && typeof availability.data.in_stock === "number" && typeof availability.data.out_of_stock === "number" && typeof availability.data.untracked === "number" && <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
+                  <Typography variant="caption" sx={{ width: "100%" }}>{t("business:stock_tracking.summary")}</Typography>
+                  <Chip size="small" color="success" variant="outlined" label={`${t("business:stock_tracking.in_stock")}: ${availability.data.in_stock}`} />
+                  <Chip size="small" color="error" variant="outlined" label={`${t("business:stock_tracking.out_of_stock")}: ${availability.data.out_of_stock}`} />
+                  <Chip size="small" variant="outlined" label={`${t("business:stock_tracking.untracked")}: ${availability.data.untracked}`} />
                 </Box>}
               </Box>
             </KpiCard>

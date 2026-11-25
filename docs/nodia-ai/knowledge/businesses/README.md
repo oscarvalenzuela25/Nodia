@@ -4,7 +4,7 @@
   "document_id": "businesses",
   "product_id": "businesses",
   "kind": "product",
-  "revision": 73,
+  "revision": 75,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -13,6 +13,10 @@
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Negocios y NodiaAI conforme AGENTS",
   "sources": [
+    {
+      "path": "docs/nodia-ai/knowledge/businesses/features/product-stock-tracking.md",
+      "kind": "specification"
+    },
     {
       "path": "docs/mvp/110-market-shopping-lists-plan.md",
       "kind": "specification"
@@ -312,6 +316,18 @@
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 # Negocios — contexto de producto para NodiaAI
+
+## Cabecera y búsqueda del catálogo — 2026-11-25
+
+En la vista nativa de Productos, un solo buscador encuentra coincidencias
+por nombre, alias, código de factura o código de barras. Los filtros de
+presencia de código siguen disponibles. El foco al entrar y la ubicación del
+control de información del negocio son ajustes de la interfaz. El POS nativo
+implementa la distribución aprobada y coloca primero el último producto
+agregado, dentro de cada carrito local. Las consultas y los permisos
+publicados para NodiaAI conservan su alcance.
+[Plan94 §46](../../../mvp/94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25) ·
+[Ventas locales](features/multi-sale-workspace.md#distribución-y-orden-del-carrito--2026-11-25).
 
 ## Horarios y recordatorios de visitas — 2026-11-20
 
@@ -624,6 +640,7 @@ Los modos operativos son Agentic y API key conforme90/92. Function calling API n
 | Proveedores comerciales | [suppliers](features/suppliers.md); [ampliación candidata§42](features/product-price-calculator-and-invoice-binding.md#redondeo-división-y-contratos-manuales--solicitud2026-11-17) | use_ocr local con defaultfalse y filtro sólo OCR; QA final común registrada en evidencia2026-11-17 | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Contactos de proveedores | [supplier-contacts](features/supplier-contacts.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Productos | [products](features/products.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
+| Stock opcional de productos | [product-stock-tracking](features/product-stock-tracking.md) | Implementado localmente en [Plan94 §45](../../../mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto) | Ficha candidata. Lecturas de Productos e Historial adaptadas a la revisión 4 | `/business` |
 | Calculadora local y vinculación OCR revisada | [product-price-calculator-and-invoice-binding](features/product-price-calculator-and-invoice-binding.md) | Rev15: redondeo/división, use_ocr y folio opcional locales; QA final común registrada en evidencia2026-11-17. Cortes VM previos conservados en cuerpo | Draft/partial/unregistered/approval:null; sin nueva publicación | `/business` |
 | Historial de productos | [product-logs](features/product-logs.md) | Backend existente/parcial; gates en ficha | Sólo lecturas AI-15 publicadas; resto pendiente | `/tools/business` |
 | Punto de venta, ventas y reportes | [point-of-sale-and-sales](features/point-of-sale-and-sales.md) | POS manual desplegado por los recibos previos; ampliación local R24 pendiente de su integración/adopción | Rev5 conserva su aprobación histórica; R17 limita ventas a dos lecturas/cero escritores. Fichas R24 draft sin publicación nueva | `/tools/business`, y módulo NodiaAI para chat |

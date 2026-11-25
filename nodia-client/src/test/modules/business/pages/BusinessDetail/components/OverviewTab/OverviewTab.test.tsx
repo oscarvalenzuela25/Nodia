@@ -164,7 +164,7 @@ describe("OverviewTab Component", () => {
       user: { id: "42", name: "Oscar Valenzuela" },
     });
     vi.clearAllMocks();
-    vi.mocked(businessServices.getProductAvailability).mockResolvedValue({ total: 3, available: 1, unavailable: 1, unknown: 1, activity: "active" });
+    vi.mocked(businessServices.getProductAvailability).mockResolvedValue({ total: 3, tracked: 2, in_stock: 1, out_of_stock: 1, untracked: 1, activity: "active" });
     vi.mocked(businessServices.getProducts).mockResolvedValue({
       data: mockProducts,
       meta: { total_items: 3, page: 1, limit: 50, total_pages: 1 },
@@ -233,7 +233,7 @@ describe("OverviewTab Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Disponible: 1")).toBeInTheDocument();
+      expect(screen.getByText("Con stock: 1")).toBeInTheDocument();
     });
 
     // Main count: 3 productos
@@ -241,15 +241,15 @@ describe("OverviewTab Component", () => {
     expect(screen.getByText("productos")).toBeInTheDocument();
 
     // 3 Stock badges
-    expect(screen.getByText("Disponible: 1")).toBeInTheDocument();
-    expect(screen.getByText("No disponible: 1")).toBeInTheDocument();
-    expect(screen.queryByText("Por confirmar: 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Con stock: 1")).toBeInTheDocument();
+    expect(screen.getByText("Agotados: 1")).toBeInTheDocument();
+    expect(screen.getByText("Sin control de stock: 1")).toBeInTheDocument();
 
     // Inventory value and its divider are removed
     expect(screen.queryByText(/Valor inventario/i)).not.toBeInTheDocument();
 
     // Availability label is removed
-    expect(screen.getByText("Disponibilidad de productos activos")).toBeInTheDocument();
+    expect(screen.getByText("Stock de productos activos")).toBeInTheDocument();
     expect(screen.queryByText(/98\.4%/i)).not.toBeInTheDocument();
   });
 

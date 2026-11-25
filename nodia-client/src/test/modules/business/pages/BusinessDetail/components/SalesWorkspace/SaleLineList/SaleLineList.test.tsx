@@ -25,7 +25,7 @@ describe("SaleLineList", () => {
     expect(screen.getByRole("textbox", { name: "Precio CLP" })).toBeEnabled();
     for (const quantity of screen.getAllByRole("textbox", { name: "Cantidad" })) expect(quantity).toBeDisabled();
     expect(screen.getByRole("button", { name: "Editar precio Second product" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Revisar precios vigentes" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Revisar precios y stock" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Quitar Selected synthetic product de esta venta" })).toBeDisabled();
     await user.clear(screen.getByRole("textbox", { name: "Precio CLP" }));
     await user.type(screen.getByRole("textbox", { name: "Precio CLP" }), "800");
@@ -37,7 +37,7 @@ describe("SaleLineList", () => {
     await user.click(screen.getByRole("button", { name: "Editar precio Second product" }));
     await user.click(screen.getByRole("button", { name: "Modificar sólo para esta venta" }));
     expect(screen.queryByRole("textbox", { name: "Precio CLP" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Revisar precios vigentes" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Revisar precios y stock" })).toBeEnabled();
   });
   it("retains a zero row until the explicit trash action and enlarges text without changing its price", async () => {
     function Harness() {
@@ -84,9 +84,25 @@ describe("SaleLineList", () => {
     expect(within(region).getAllByRole("button")).toHaveLength(2);
     await userEvent.click(within(region).getByRole("button", { name: /Aumentar/ }));
     expect(onStep).toHaveBeenCalledExactlyOnceWith("1", 1);
+    await userEvent.click(within(region).getByRole("button", { name: /Disminuir/ }));
+    expect(onStep).toHaveBeenLastCalledWith("1", -1);
     const input = within(region).getByRole("textbox", { name: "Cantidad" });
     fireEvent.change(input, { target: { value: "" } }); expect(onQuantity).toHaveBeenLastCalledWith("1", "");
     fireEvent.change(input, { target: { value: "0" } }); expect(onQuantity).toHaveBeenLastCalledWith("1", "0");
+  });
+  it("scrolls the product region to the newest addition or switched sale and keeps position during edits", () => {
+    const { rerender } = render(<SaleLineList {...defaults} editingScope="sale-1" scrollToTopVersion={0} />);
+    const region = screen.getByRole("region", { name: "Productos de la venta" });
+    region.scrollTop = 90;
+    rerender(<SaleLineList {...defaults} lines={[{ ...line, quantity: 3 }]} editingScope="sale-1" scrollToTopVersion={0} />);
+    expect(region.scrollTop).toBe(90);
+
+    rerender(<SaleLineList {...defaults} lines={[{ ...line, quantity: 4 }]} editingScope="sale-1" scrollToTopVersion={1} />);
+    expect(region.scrollTop).toBe(0);
+
+    region.scrollTop = 90;
+    rerender(<SaleLineList {...defaults} editingScope="sale-2" scrollToTopVersion={1} />);
+    expect(region.scrollTop).toBe(0);
   });
   it("keeps lines and quantities available after an image error, with an explicit local retry", async () => {
     const retryImages = vi.fn(); render(<SaleLineList {...defaults} imageError retryImages={retryImages} />);
@@ -103,13 +119,13 @@ describe("SaleLineList", () => {
     expect(increase).toBeDisabled();
     const user = userEvent.setup();
     await user.tab();
-    expect(screen.getByRole("button", { name: "Revisar precios vigentes" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Revisar precios y stock" })).toHaveFocus();
     await user.keyboard("{Enter}");
     expect(onReview).toHaveBeenCalledTimes(1);
     decrease.focus(); await user.keyboard("{Enter}");
     expect(onFontScale).toHaveBeenLastCalledWith(190);
     rerender(<SaleLineList {...defaults} disabled onReview={onReview} onFontScale={onFontScale} fontScale={80} />);
-    expect(screen.getByRole("button", { name: "Revisar precios vigentes" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Revisar precios y stock" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Reducir tamaño de la lista" })).toBeDisabled();
   });
 });

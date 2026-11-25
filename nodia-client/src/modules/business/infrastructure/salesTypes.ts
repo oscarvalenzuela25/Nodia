@@ -36,4 +36,5 @@ export interface TopProducts {
 export interface CartLine extends SaleLineCommand {
   name: string; code: string | null; barcode: string | null; regular_price: string; offer_price: string | null; measurement_unit?: MeasurementUnit;
   price_source: "regular" | "offer";
+  stock_available?: number;
 }

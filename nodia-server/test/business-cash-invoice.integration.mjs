@@ -16,6 +16,7 @@ import { CreateBusinessCashCategories1793690000000 } from '../dist/migrations/17
 import { CreateBusinessCashMovements1793700000000 } from '../dist/migrations/1793700000000-CreateBusinessCashMovements.js';
 import { LinkBusinessCashInvoiceExpenses1793710000000 } from '../dist/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.js';
 import { LinkInvoiceUploadsToCashAttempts1793720000000 } from '../dist/migrations/1793720000000-LinkInvoiceUploadsToCashAttempts.js';
+import { TrackProductStock1794030000000 } from '../dist/migrations/1794030000000-TrackProductStock.js';
 import { ProductModule } from '../dist/product/product.module.js';
 import { withBusinessCashHttpLab } from './fixtures/business-cash-http.fixture.mjs';
 
@@ -126,7 +127,7 @@ async function setup(source) {
     "INSERT INTO invoices(business_id,code) VALUES($1,'pre-migration') RETURNING id",
     [business],
   );
-  assert.equal((await source.runMigrations()).length, 5);
+  assert.equal((await source.runMigrations()).length, 6);
   const [migrated] = await source.query(
     'SELECT version,code FROM invoices WHERE id=$1',
     [legacy.id],
@@ -565,9 +566,9 @@ async function ocrRows(source, send, recorder, cash) {
   );
   const products = await source.query(
     `
-    INSERT INTO products(business_id,provider_id,code,name,alias,cost_price,cost_price_tax,sale_price,stock,has_stock,is_active)
-    VALUES($1,$2,'target-automatic','Auto','History',100,119,160,7,true,true),
-          ($1,$2,'target-manual','Manual','Human',102,121,170,8,NULL,false)
+    INSERT INTO products(business_id,provider_id,code,name,alias,cost_price,cost_price_tax,sale_price,stock,has_stock,is_active,track_stock)
+    VALUES($1,$2,'target-automatic','Auto','History',100,119,160,7,true,true,true),
+          ($1,$2,'target-manual','Manual','Human',102,121,170,8,NULL,false,false)
     RETURNING id
   `,
     [business, providers[0].id],
@@ -586,11 +587,14 @@ async function ocrRows(source, send, recorder, cash) {
       productInput('manual_match', 'manual', {
         product_id: products[1].id,
         expected_version: 1,
+        track_stock: true,
+        stock_action: { mode: 'replace', quantity: 0 },
       }),
       productInput('create', 'new'),
       productInput('update', 'auto', {
         product_id: products[0].id,
         expected_version: 1,
+        stock_action: { mode: 'add', quantity: 0.125 },
       }),
     ],
   };
@@ -662,6 +666,10 @@ async function ocrRows(source, send, recorder, cash) {
     ),
     committed,
   );
+  const changedAction = structuredClone(command);
+  changedAction.items[2].stock_action.mode = 'replace';
+  response(await send('POST', ocr, '1', multipart(changedAction)), 409,
+    'business:cash_request_key_conflict');
   response(
     await send(
       'POST',
@@ -697,7 +705,7 @@ async function ocrRows(source, send, recorder, cash) {
     [],
   );
   const [manual] = await source.query(
-    'SELECT provider_id, name, alias, has_stock, stock, is_active, sale_price FROM products WHERE id=$1',
+    'SELECT provider_id, name, alias, has_stock, track_stock, stock::float8 AS stock, is_active, sale_price FROM products WHERE id=$1',
     [saved[0].id],
   );
   assert.deepEqual(manual, {
@@ -705,28 +713,31 @@ async function ocrRows(source, send, recorder, cash) {
     name: 'Manual',
     alias: 'Human',
     has_stock: null,
-    stock: 8,
+    track_stock: true,
+    stock: 0,
     is_active: false,
     sale_price: 680,
   });
   const [created] = await source.query(
-    'SELECT provider_id, has_stock, stock, sale_price FROM products WHERE id=$1',
+    'SELECT provider_id, has_stock, track_stock, stock::float8 AS stock, sale_price FROM products WHERE id=$1',
     [saved[1].id],
   );
   assert.deepEqual(created, {
     provider_id: providers[1].id,
-    has_stock: true,
+    has_stock: null,
+    track_stock: false,
     stock: 0,
     sale_price: 690,
   });
   const [updated] = await source.query(
-    'SELECT provider_id, has_stock, stock, sale_price FROM products WHERE id=$1',
+    'SELECT provider_id, has_stock, track_stock, stock::float8 AS stock, sale_price FROM products WHERE id=$1',
     [saved[2].id],
   );
   assert.deepEqual(updated, {
     provider_id: providers[1].id,
     has_stock: true,
-    stock: 7,
+    track_stock: true,
+    stock: 7.125,
     sale_price: 690,
   });
   const logs = await source.query(
@@ -746,6 +757,29 @@ async function ocrRows(source, send, recorder, cash) {
       `${saved[2].id}:update:2:1`,
     ]),
   );
+  const filter = {
+    'q[business_id_eq]': business,
+    'q[tracked_stock_lteq]': '0',
+  };
+  const thresholdPath = (q) => '/products?' + new URLSearchParams({ includes: 'false', ...q });
+  const filtered = response(await send('GET', thresholdPath(filter), '1'), 200);
+  assert.deepEqual(filtered.data.map(({ id, stock, track_stock }) => ({ id, stock, track_stock })),
+    [{ id: saved[0].id, stock: 0, track_stock: true }]);
+  assert.equal(filtered.meta.total_items, 1);
+  assert.equal(response(await send('GET', thresholdPath({
+    ...filter,
+    'q[tracked_stock_lteq]': '',
+  }), '1'), 200).meta.total_items, 3);
+  assert.equal(response(await send('GET', thresholdPath({
+    ...filter,
+    'q[tracked_stock_lteq]': '1.0001',
+  }), '1'), 400).statusCode, 400);
+  const sellable = response(await send('GET', thresholdPath({
+    'q[business_id_eq]': business,
+    'q[sellable_stock_eq]': 'true',
+    'q[is_active_eq]': 'true',
+  }), '1'), 200);
+  assert.deepEqual(new Set(sellable.data.map(({ id }) => id)), new Set([saved[1].id, saved[2].id]));
   return command;
 }
 
@@ -891,6 +925,42 @@ async function recovery(source, send, recorder, prior) {
   assert.equal(retried.status, 'committed');
 }
 
+async function catalogSearch(source, send) {
+  const seeded = await source.query(`
+    INSERT INTO products(business_id, code, barcode, name, alias, cost_price, cost_price_tax, sale_price, is_active)
+    VALUES
+      ($1, 'CAT-%_000007', NULL, 'Código de factura', NULL, 10, 12, 15, true),
+      ($1, NULL, '000007123', 'Código de barras', NULL, 10, 12, 15, true),
+      ($1, 'CAT-ALTERNATIVE', NULL, 'Nombre de origen', 'Alias 000007', 10, 12, 15, true),
+      ($1, NULL, NULL, 'Producto 000007', NULL, 10, 12, 15, true),
+      ($1, 'CAT-A000007', NULL, 'Inactivo 000007', NULL, 10, 12, 15, false)
+    RETURNING id, name
+  `, [business]);
+  const ids = new Map(seeded.map(({ id, name }) => [name, id]));
+  const list = (q) => send('GET', '/products?' + new URLSearchParams({
+    includes: 'false',
+    'q[business_id_eq]': business,
+    'q[is_active_eq]': 'true',
+    'q[s]': 'id asc',
+    ...q,
+  }));
+  const hits = [];
+  for (const page of ['1', '2']) {
+    const result = response(await list({ 'q[catalog_search]': ' 000007 ', limit: '2', page }), 200);
+    assert.equal(result.meta.total_items, 4);
+    assert.equal(result.data.length, 2);
+    hits.push(...result.data.map(({ id }) => id));
+  }
+  assert.deepEqual(new Set(hits), new Set([
+    ids.get('Código de factura'), ids.get('Código de barras'), ids.get('Nombre de origen'), ids.get('Producto 000007'),
+  ]));
+  const literal = response(await list({ 'q[catalog_search]': 'cAt-%_' }), 200);
+  assert.deepEqual(literal.data.map(({ id }) => id), [ids.get('Código de factura')]);
+  const nameOrAlias = response(await list({ 'q[search]': '000007' }), 200);
+  assert.deepEqual(new Set(nameOrAlias.data.map(({ id }) => id)), new Set([ids.get('Nombre de origen'), ids.get('Producto 000007')]));
+  response(await list({ 'q[catalog_search]': 'x'.repeat(256) }), 400);
+}
+
 await withBusinessCashHttpLab(
   {
     database: 'cash04_test',
@@ -902,6 +972,7 @@ await withBusinessCashHttpLab(
       CreateBusinessCashMovements1793700000000,
       LinkBusinessCashInvoiceExpenses1793710000000,
       LinkInvoiceUploadsToCashAttempts1793720000000,
+      TrackProductStock1794030000000,
     ],
     business,
     otherBusiness,
@@ -918,6 +989,7 @@ await withBusinessCashHttpLab(
     const command = await ocrRows(source, send, recorder, replacement);
     await invalidMultipart(send, recorder, command);
     await recovery(source, send, recorder, command);
+    await catalogSearch(source, send);
     console.log(
       JSON.stringify({
         task: 'business_cash_invoice',
@@ -927,6 +999,8 @@ await withBusinessCashHttpLab(
           'real_scoped_http_legacy_compatibility_and_identified_invoice_receipts',
           'single_link_sync_activity_withdraw_restore_history_version_and_totals',
           'atomic_ocr_create_update_and_manual_match_with_logs',
+          'stock_add_replace_and_tracked_native_http_filters',
+          'catalog_search_or_filters_four_fields_before_count_and_pagination',
           'same_key_concurrent_202_no_duplicate_effect_or_upload',
           'multipart_validation_before_external_storage',
           'receipt_failure_rolls_back_products_invoice_cash_and_logs',

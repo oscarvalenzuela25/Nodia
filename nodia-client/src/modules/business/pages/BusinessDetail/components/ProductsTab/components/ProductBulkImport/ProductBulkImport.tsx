@@ -41,6 +41,7 @@ import {
 import PriceSuggestion from "../PriceSuggestion";
 import { calculateProductPricing, validProductTaxRate, type ProductPricingField } from "../ProductModal/productPricing";
 import { MEASUREMENT_UNITS, isMeasurementUnit } from "../../../../../../infrastructure/measurementUnits";
+import { formatStock, parseStockQuantity } from "../../../../../../infrastructure/productStock";
 import {
   useBulkCreateProducts,
   useBulkUpdateProducts,
@@ -82,6 +83,7 @@ const ProductBulkImportEditor: FC<Props> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<ProvisionalRow>>({});
+  const [editStock, setEditStock] = useState("");
   const [editPricingError, setEditPricingError] = useState<ProductPricingField | null>(null);
   const [editTaxRate, setEditTaxRate] = useState<number>(19);
 
@@ -189,6 +191,7 @@ const ProductBulkImportEditor: FC<Props> = ({
     setEditingIndex(index);
     setEditPricingError(null);
     setEditFormData({ ...row });
+    setEditStock(row.stock === undefined ? "" : String(row.stock));
     if (row.cost_price > 0 && row.cost_price_tax > row.cost_price) {
       const derivedTax = Math.round(
         ((row.cost_price_tax - row.cost_price) / row.cost_price) * 100
@@ -219,7 +222,10 @@ const ProductBulkImportEditor: FC<Props> = ({
     if (editingIndex === null || isBusy || Boolean(editPricingError) || !validProductTaxRate(editTaxRate)) return;
 
     const roundedSale = roundSalePrice(editFormData.sale_price ?? Number.NaN);
-    const { errors, isValid } = validateRow({ ...editFormData, sale_price: roundedSale ?? Number.NaN });
+    const stock = editFormData.track_stock === true && editStock.trim()
+      ? parseStockQuantity(editStock) ?? Number.NaN
+      : undefined;
+    const { errors, isValid } = validateRow({ ...editFormData, stock, sale_price: roundedSale ?? Number.NaN });
     if (!isValid) { sileo.error({ title: t("business:pos.invalid_field"), description: errors.join("; ") }); return; }
     const updatedRow: ProvisionalRow = {
       ...rows[editingIndex],
@@ -229,7 +235,7 @@ const ProductBulkImportEditor: FC<Props> = ({
       cost_price: Number(editFormData.cost_price ?? Number.NaN),
       cost_price_tax: Number(editFormData.cost_price_tax ?? Number.NaN),
       sale_price: roundedSale!,
-      stock: rows[editingIndex].stock,
+      stock,
       is_active: editFormData.is_active ?? true,
       errors,
       isValid,
@@ -399,7 +405,7 @@ const ProductBulkImportEditor: FC<Props> = ({
                   <TableCell>{t("product:measurement_unit")}</TableCell>
                   <TableCell align="right">{t("business:product_cost_price")}</TableCell>
                   <TableCell align="right">{t("business:product_sale_price")}</TableCell>
-                  <TableCell align="right">{t("business:pos.availability")}</TableCell>
+                  <TableCell align="right">{t("business:product_stock")}</TableCell>
                   <TableCell align="center">{t("business:provisional_table_type")}</TableCell>
                   <TableCell align="right">{t("core:actions")}</TableCell>
                 </TableRow>
@@ -431,7 +437,9 @@ const ProductBulkImportEditor: FC<Props> = ({
                     <TableCell>{row.measurement_unit ? (isMeasurementUnit(row.measurement_unit) ? t(`product:units.${row.measurement_unit}`) : row.measurement_unit) : t(row.id ? "business:pos.preserve_existing" : "product:units.unit")}</TableCell>
                     <TableCell align="right">${row.cost_price.toLocaleString()}</TableCell>
                     <TableCell align="right" sx={{ fontWeight: 600 }}>${row.sale_price.toLocaleString()}</TableCell>
-                    <TableCell align="right">{typeof row.has_stock === "boolean" ? t(row.has_stock ? "business:pos.available" : "business:pos.unavailable") : t(row.id ? "business:pos.preserve_existing" : "business:pos.availability_unknown")}</TableCell>
+                    <TableCell align="right">{row.track_stock === undefined && row.id
+                      ? t("business:pos.preserve_existing")
+                      : row.stock === undefined ? "—" : formatStock({ ...row, stock: row.stock }, i18n.language)}</TableCell>
                     <TableCell align="center">
                       <Typography variant="caption" sx={{ fontWeight: 600, color: row.id ? "info.main" : "success.main" }}>
                         {row.id ? t("business:provisional_table_type_update") : t("business:provisional_table_type_new")}
@@ -601,13 +609,23 @@ const ProductBulkImportEditor: FC<Props> = ({
               />
             </Grid>
 
-            <Grid size={{ xs: 12 }}>
-              <SelectSingleInput label={t("business:pos.availability")}
-                value={typeof editFormData.has_stock === "boolean" ? String(editFormData.has_stock) : null}
-                options={[{ value: "true", label: t("business:pos.available") }, { value: "false", label: t("business:pos.unavailable") }]}
-                onChange={value => setEditFormData(previous => ({ ...previous, has_stock: value === null ? undefined : value === "true" }))}
-                placeholder={t(editFormData.id ? "business:pos.preserve_existing" : "business:pos.choose_availability")}
-                disabled={isBusy} required={!editFormData.id} />
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <SelectSingleInput label={t("business:stock_tracking.track")}
+                value={editFormData.track_stock === undefined ? (editFormData.id ? null : "false") : String(editFormData.track_stock)}
+                options={[{ value: "true", label: t("business:pos.yes") }, { value: "false", label: t("business:pos.no") }]}
+                onChange={value => {
+                  if (value !== "true") setEditStock("");
+                  setEditFormData(previous => ({ ...previous, track_stock: value === null ? undefined : value === "true" }));
+                }}
+                placeholder={editFormData.id ? t("business:pos.preserve_existing") : undefined}
+                disabled={isBusy} />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextInput name="stock" label={t("business:product_stock")} value={editStock} inputMode="decimal"
+                onChange={event => setEditStock(event.target.value)} disabled={isBusy || editFormData.track_stock !== true}
+                error={editFormData.track_stock === true && editStock.trim() !== "" && parseStockQuantity(editStock) === null}
+                helperText={editFormData.track_stock === true && editStock.trim() !== "" && parseStockQuantity(editStock) === null
+                  ? t("business:stock_tracking.invalid") : undefined} />
             </Grid>
             <Grid size={{ xs: 12 }}>
               <TextInput name="barcode" label={t("business:pos.barcode")} value={editFormData.barcode ?? ""}

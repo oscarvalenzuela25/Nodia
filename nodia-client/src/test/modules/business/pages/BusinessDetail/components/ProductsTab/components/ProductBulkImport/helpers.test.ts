@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseCSV, productImportPayload, exportProductsToCSV, validateRow } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductBulkImport/helpers';
-import type { ProductEntity } from '../../../../../../../../../modules/business/infrastructure/types';
+import { parseCSV, productImportPayload, validateRow } from '../../../../../../../../../modules/business/pages/BusinessDetail/components/ProductsTab/components/ProductBulkImport/helpers';
 
 describe('Product CSV catalog contract', () => {
   it('preserves an omitted alias, clears an explicit blank and requires a version to change the alias', () => {
@@ -21,27 +20,24 @@ describe('Product CSV catalog contract', () => {
     if (valid) expect(productImportPayload(row, 'business')).toMatchObject({ code });
     else expect(() => productImportPayload(row, 'business')).toThrow();
   });
-  it('does not translate legacy quantity into availability and preserves omitted POS fields on updates', () => {
-    const header = 'id,code,name,cost_price,cost_price_tax,sale_price,stock';
-    const [existing] = parseCSV(`${header}\n12,SUP,Existing,10,12,15,1000`);
+  it('ignores legacy availability and stock while preserving omitted fields on updates', () => {
+    const header = 'id,code,name,cost_price,cost_price_tax,sale_price,stock,has_stock';
+    const [existing] = parseCSV(`${header}\n12,SUP,Existing,10,12,15,1000,true`);
     expect(existing.isValid).toBe(true);
     const update = productImportPayload(existing, 'business');
     expect(update).toMatchObject({ id: '12', sale_price: 20 });
-    for (const field of ['stock','has_stock','barcode','offer_price','is_offer_enabled']) expect(update).not.toHaveProperty(field);
-    const [fresh] = parseCSV(`${header}\n,SUP,New,10,12,15,1000`);
-    expect(fresh.isValid).toBe(false);
-    expect(fresh.has_stock).toBeUndefined();
-    expect(() => productImportPayload(fresh, 'business')).toThrow();
-    const [availableFresh] = parseCSV('code,name,cost_price,cost_price_tax,sale_price,has_stock\nSUP,New,10,12,15,true');
-    expect(availableFresh.isValid).toBe(true);
-    const create = productImportPayload(availableFresh, 'business');
-    expect(create).toMatchObject({ code: 'SUP', has_stock: true });
+    for (const field of ['stock', 'has_stock', 'track_stock', 'barcode', 'offer_price', 'is_offer_enabled']) expect(update).not.toHaveProperty(field);
+    const [fresh] = parseCSV(`${header}\n,SUP,New,10,12,15,1000,true`);
+    expect(fresh.isValid).toBe(true);
+    const create = productImportPayload(fresh, 'business');
+    expect(create).toMatchObject({ code: 'SUP', track_stock: false });
+    expect(create).not.toHaveProperty('stock');
     expect(create).not.toHaveProperty('barcode');
   });
   it('keeps quoted names and textual barcodes; false and a higher alternative are explicit values', () => {
-    const [row] = parseCSV('code,name,cost_price,cost_price_tax,sale_price,barcode,offer_price,is_offer_enabled,has_stock\nSUP,"Name, with ""quotes""",0,0,100,00000123,150,true,false');
-    expect(row).toMatchObject({ name: 'Name, with "quotes"', barcode: '00000123', offer_price: 150, is_offer_enabled: true, has_stock: false, isValid: true });
-    expect(productImportPayload(row, 'business')).toMatchObject({ has_stock: false, barcode: '00000123', offer_price: 150 });
+    const [row] = parseCSV('code,name,cost_price,cost_price_tax,sale_price,barcode,offer_price,is_offer_enabled,track_stock\nSUP,"Name, with ""quotes""",0,0,100,00000123,150,true,false');
+    expect(row).toMatchObject({ name: 'Name, with "quotes"', barcode: '00000123', offer_price: 150, is_offer_enabled: true, track_stock: false, isValid: true });
+    expect(productImportPayload(row, 'business')).toMatchObject({ track_stock: false, barcode: '00000123', offer_price: 150 });
   });
   it('rejects malformed booleans and empty money without replacing them with valid defaults', () => {
     const [row] = parseCSV('code,name,cost_price,cost_price_tax,sale_price,has_stock,is_offer_enabled\nSUP,New,,0,1,false,0');
@@ -50,13 +46,13 @@ describe('Product CSV catalog contract', () => {
     expect(row.is_offer_enabled).toBeUndefined();
     expect(row.invalid_fields).toContain('is_offer_enabled');
   });
-  it('round-trips the actual catalog identifiers, alternatives, availability and revision', () => {
-    const product = { id: '12', code: 'SUP', barcode: '00001', name: 'Name, two', cost_price: 0,
-      cost_price_tax: 0, sale_price: 100, offer_price: 150, is_offer_enabled: true,
-      has_stock: false, is_active: true, version: 8 } as ProductEntity;
-    const [row] = parseCSV(exportProductsToCSV([product], 'en'));
-    expect(row).toMatchObject({ id: '12', barcode: '00001', offer_price: 150, is_offer_enabled: true, has_stock: false, version: 8, isValid: true });
-    expect(productImportPayload(row, 'business')).toMatchObject({ id: '12', expected_version: 8 });
+  it('reads the native export format and writes exact stock against its observed revision', () => {
+    const [row] = parseCSV('Code (code),Name (name),Base cost (cost_price),Tax-inclusive cost (cost_price_tax),Sale price (sale_price),Track stock (track_stock),Stock (stock),Active (is_active),ID (id),Barcode (barcode),Alternative price (offer_price),Alternative enabled (is_offer_enabled),Version (version),Measurement unit (measurement_unit),Alias (alias)\nSUP,"Name, two",0,0,100,true,0.125,true,12,00001,150,true,8,kg,');
+    expect(row).toMatchObject({ id: '12', barcode: '00001', offer_price: 150, is_offer_enabled: true, track_stock: true, stock: 0.125, version: 8, isValid: true });
+    expect(productImportPayload(row, 'business')).toMatchObject({ id: '12', expected_version: 8, track_stock: true, stock: 0.125 });
+    expect(validateRow({ ...row, stock: 0 }).isValid).toBe(true);
+    expect(validateRow({ ...row, stock: 0.0001 }).isValid).toBe(false);
+    expect(validateRow({ ...row, version: undefined }).isValid).toBe(false);
   });
   it('creates manual CSV rows without a code and defaults only new omitted measurements to units', () => {
     const [row] = parseCSV('name,cost_price,cost_price_tax,sale_price,has_stock\nSin código,10,12,15,true');
@@ -84,10 +80,8 @@ describe('Product CSV catalog contract', () => {
     expect(validateRow(revised).isValid).toBe(true);
     expect(productImportPayload(revised, 'business')).toMatchObject({ id: '12', measurement_unit: 'kg', expected_version: 7 });
   });
-  it('round-trips a product with no supplier code and a non-default measurement', () => {
-    const product = { id: '12', code: null, name: 'Arroz', measurement_unit: 'kg', cost_price: 10,
-      cost_price_tax: 12, sale_price: 15, has_stock: true, is_active: true, version: 8 } as ProductEntity;
-    const [row] = parseCSV(exportProductsToCSV([product], 'es'));
+  it('imports the Spanish export with no supplier code, no stock control and a non-default measurement', () => {
+    const [row] = parseCSV('Código (code),Nombre (name),Costo base (cost_price),Costo con IVA (cost_price_tax),Precio de venta (sale_price),Usar stock (track_stock),Stock (stock),Activo (is_active),ID (id),Código de barras (barcode),Precio alternativo (offer_price),Alternativo habilitado (is_offer_enabled),Versión (version),Unidad de medida (measurement_unit),Alias (alias)\n,Arroz,10,12,15,false,,true,12,,,,8,kg,');
     expect(row).toMatchObject({ id: '12', code: null, measurement_unit: 'kg', isValid: true });
     expect(productImportPayload(row, 'business')).toMatchObject({ id: '12', code: null, measurement_unit: 'kg', expected_version: 8 });
   });

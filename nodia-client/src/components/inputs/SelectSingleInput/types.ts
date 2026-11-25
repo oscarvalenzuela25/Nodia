@@ -14,6 +14,7 @@ export type SelectSingleInputProps = {
   value: string | null;
   onChange: (value: string | null) => void;
   placeholder?: string;
+  searchable?: boolean;
   searchPlaceholder?: string;
   autoFocusSearch?: boolean;
   disabled?: boolean;

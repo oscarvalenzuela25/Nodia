@@ -64,7 +64,7 @@ export const assignCollaborators = async (
 // ----------------------------------------------------
 // Product Services
 // ----------------------------------------------------
-export const getProductAvailability = async (businessId: string) => (await mainInstance.get<{ total: number; available: number; unavailable: number; unknown: number; activity: string }>(apiPath("/products/availability-summary"), { params: { business_id: businessId, activity: "active" } })).data;
+export const getProductAvailability = async (businessId: string) => (await mainInstance.get<import("./types").ProductAvailabilitySummary>(apiPath("/products/availability-summary"), { params: { business_id: businessId, activity: "active" } })).data;
 export const getProducts = async (
   params?: import("./types").GetProductsParams,
   signal?: AbortSignal
@@ -117,10 +117,7 @@ export const bulkUpdateProducts = async (
   return data;
 };
 
-export const exportProductsCsv = async (params?: {
-  business_id?: string;
-  lang?: string;
-}): Promise<string> => {
+export const exportProductsCsv = async (params?: import("./types").ExportProductsParams): Promise<string> => {
   const { data } = await mainInstance.get<string>(
     apiPath("/products/export-csv"),
     { params, responseType: "text" }

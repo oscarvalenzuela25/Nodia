@@ -3,6 +3,10 @@
   "code_conflict": "El código de factura/proveedor ya existe en esta empresa.",
   "availability_required": "Seleccione la disponibilidad del producto manualmente.",
   "invalid_availability": "La disponibilidad del producto no es válida.",
+  "invalid_stock": "Ingresa un stock válido entre 0 y 2.147.483.647, con hasta tres decimales.",
+  "invalid_stock_tracking": "La configuración de Usar stock no es válida.",
+  "stock_tracking_disabled": "Activa Usar stock para cambiar el saldo.",
+  "stock_quantity_required": "Ingresa el saldo en la nueva unidad de medida.",
   "invalid_activity": "El estado de actividad del producto no es válido.",
   "invalid_barcode": "El código de barras no es válido. Conserve los ceros y quite espacios exteriores.",
   "invalid_offer": "La configuración del precio alternativo no es válida.",
@@ -43,7 +47,7 @@
     "bundle": "atado"
   },
   "bulk_create_unknown": "No pudimos confirmar si los productos nuevos se guardaron. Conservamos las filas y bloqueamos repetir la creación. Revisa el catálogo manualmente para comprobar qué se guardó antes de cerrar y volver a importar.",
-  "table_show_additional_columns": "Mostrar disponibilidad, estado y última actualización",
-  "table_hide_additional_columns": "Ocultar disponibilidad, estado y última actualización",
+  "table_show_additional_columns": "Mostrar estado y última actualización",
+  "table_hide_additional_columns": "Ocultar estado y última actualización",
   "profit_percentage_retired": "El margen guardado ya no se admite. Actualice el formulario y vuelva a revisar el precio de venta."
 }

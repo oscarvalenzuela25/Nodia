@@ -11,7 +11,7 @@ import { printSaleTicket } from "../../../../../../../modules/business/infrastru
 import { getProduct, getProductByBarcode, getSale } from "../../../../../../../modules/business/infrastructure/salesServices";
 import type { ProductEntity } from "../../../../../../../modules/business/infrastructure/types";
 import { createAxiosInstance } from "../../../../../../../config/axiosInstance";
-import { cartTotal } from "../../../../../../../modules/business/infrastructure/salesPolicies";
+import { addCartProduct, cartTotal } from "../../../../../../../modules/business/infrastructure/salesPolicies";
 import { sileo } from "sileo";
 
 vi.mock("../../../../../../../modules/business/infrastructure/printSaleTicket", () => ({ printSaleTicket: vi.fn() }));
@@ -28,13 +28,23 @@ const state = vi.hoisted(() => ({
   registrationComplete: null as ((product: ProductEntity) => void | Promise<void>) | null,
   registrationClose: null as (() => void) | null,
 }));
-vi.mock("@mui/material", async (original) => ({ ...await original<typeof import("@mui/material")>(), useMediaQuery: () => state.mobile }));
+vi.mock("@mui/material", async (original) => ({ ...await original<typeof import("@mui/material")>(), useMediaQuery: (query: string) => query.includes("max-width") && state.mobile }));
 vi.mock("../../../../../../../modules/business/infrastructure/useSaleDraft", async () => {
   const { useState } = await import("react");
   return { useSaleDraft: () => {
     const [barcode, setBarcode] = useState("");
     const [quantityDrafts, setQuantityDrafts] = useState<Record<string, string>>({});
-    return { ...state, barcode, setBarcode, quantityDrafts, setQuantityDrafts, sessions: [{ ...state, id: "local-a", number: 1, quantityDrafts, barcode }] };
+    const addProduct = (product: ProductEntity, { clearBarcode }: { clearBarcode?: boolean } = {}) => {
+      if (!state.setLines(addCartProduct(state.lines, product))) return false;
+      if (clearBarcode) setBarcode("");
+      setQuantityDrafts((previous) => {
+        const next = { ...previous };
+        delete next[product.id];
+        return next;
+      });
+      return true;
+    };
+    return { ...state, barcode, setBarcode, quantityDrafts, setQuantityDrafts, addProduct, sessions: [{ ...state, id: "local-a", number: 1, quantityDrafts, barcode }] };
   } };
 });
 vi.mock("../../../../../../../modules/business/infrastructure/useServices", () => ({ useUpdateProduct: () => ({ isPending: false, mutateAsync: state.updateProduct }) }));
@@ -73,7 +83,7 @@ describe("manual point of sale checkout controls", () => {
     await act(async () => { await complete(registered); await complete(registered); });
     expect(state.setLines).toHaveBeenCalledTimes(1);
     const next: CartLine[] = state.setLines.mock.calls[0][0];
-    expect(next[0]).toEqual(existing); expect(next[1]).toMatchObject({ product_id: registered.id, quantity: 1, expected_unit_price: "1200" });
+    expect(next[0]).toMatchObject({ product_id: registered.id, quantity: 1, expected_unit_price: "1200" }); expect(next[1]).toEqual(existing);
     expect(cartTotal(next)).toBe("3200"); expect(getProduct).not.toHaveBeenCalled();
     await act(async () => state.registrationClose!());
     await waitFor(() => expect(screen.getByLabelText("Escanear o ingresar código de barras")).toHaveFocus());
@@ -261,27 +271,27 @@ describe("manual point of sale checkout controls", () => {
     expect(screen.getByRole("button", { name: "Efectivo" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Confirmar venta" })).toBeDisabled();
   });
-  it("returns mobile payment to scanner focus without remounting the cart or losing local inputs", async () => {
+  it("keeps scanner and payment available together on mobile without remounting or losing local inputs", async () => {
     Object.assign(state, { mobile: true, lines: [line], dirty: true });
     state.setPaymentMethod.mockImplementation((value: PaymentMethod) => { state.paymentMethod = value; });
-    renderWorkspace();
+    const { rerender } = renderWorkspace();
     const scanner = screen.getByLabelText("Escanear o ingresar código de barras");
     const selectedTab = screen.getByRole("tab", { name: /Venta 1/ });
+    const payment = screen.getByRole("region", { name: "Pago y total" });
     await waitFor(() => expect(scanner).toHaveFocus());
     await userEvent.type(scanner, "000123");
     await userEvent.clear(screen.getByLabelText("Cantidad"));
-    await userEvent.click(screen.getByRole("button", { name: /^Pago y total/ }));
-    await userEvent.click(screen.getByRole("button", { name: "Débito" }));
-    await userEvent.click(screen.getByRole("button", { name: "Productos de la venta" }));
-    await waitFor(() => expect(scanner).toHaveFocus());
+    await userEvent.click(within(payment).getByRole("button", { name: "Débito" }));
+    rerender(<MemoryRouter><SalesWorkspace businessId="business-a" section="pos" /></MemoryRouter>);
+    expect(scanner).toBeVisible();
+    expect(payment).toBeVisible();
     expect(screen.getByLabelText("Escanear o ingresar código de barras")).toBe(scanner);
     expect(scanner).toHaveValue("000123");
     expect(screen.getByLabelText("Cantidad")).toHaveValue("");
     expect(screen.getByRole("tab", { name: /Venta 1/ })).toBe(selectedTab);
     expect(selectedTab).toHaveAttribute("aria-selected", "true");
     expect(state.setLines).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole("button", { name: /^Pago y total/ }));
-    expect(screen.getByRole("button", { name: "Débito" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(payment).getByRole("button", { name: "Débito" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Confirmar venta" })).toBeDisabled();
     expect(state.checkout).not.toHaveBeenCalled();
   });
@@ -422,11 +432,18 @@ describe("manual point of sale checkout controls", () => {
     expect(state.checkout).not.toHaveBeenCalled(); expect(state.transition).not.toHaveBeenCalled();
   });
 
-  it("keeps the selected line only on the left and orders total, payment and checkout on the right", () => {
+  it("places the active sale above the scanner and the new sale action before the checkout region", () => {
     Object.assign(state, { lines: [line], dirty: true }); renderWorkspace();
     const products = screen.getByRole("region", { name: "Productos de la venta" });
     expect(within(products).getByText("Producto de prueba", { selector: "p" })).toBeInTheDocument();
     const payment = screen.getByRole("region", { name: "Pago y total" });
+    const newSale = screen.getByRole("button", { name: "Nueva venta" });
+    const activeSale = screen.getByRole("heading", { name: "Venta 1" });
+    const scanner = screen.getByLabelText("Escanear o ingresar código de barras");
+    expect(activeSale.parentElement).toBe(scanner.closest("form")?.parentElement);
+    expect(activeSale.compareDocumentPosition(scanner) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(newSale.parentElement).toBe(payment.parentElement);
+    expect(newSale.compareDocumentPosition(payment) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(payment).queryByText("Producto de prueba")).not.toBeInTheDocument();
     expect(within(payment).queryByRole("spinbutton")).not.toBeInTheDocument();
     expect(within(payment).getAllByRole("button")).toHaveLength(5);

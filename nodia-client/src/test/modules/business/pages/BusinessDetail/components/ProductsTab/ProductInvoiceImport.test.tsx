@@ -929,6 +929,30 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("analyze-invoice-btn"));
     const save = await screen.findByTestId("submit-invoice-products");
     await waitFor(() => expect(save).toBeEnabled());
+    const stockAmountName = i18n.t("business:ocr_stock_amount");
+    const row = await screen.findByTestId("invoice-row-0");
+    expect(within(row).queryByRole("textbox", { name: stockAmountName })).not.toBeInTheDocument();
+    await user.click(screen.getByTestId("invoice-row-actions-0"));
+    await user.click(screen.getByRole("menuitem", { name: "Editar fila" }));
+    const track = within(screen.getByRole("dialog")).getByLabelText(i18n.t("business:stock_tracking.track"));
+    expect(track).not.toBeChecked();
+    await user.click(track);
+    await user.click(screen.getByTestId("save-row-edit"));
+    const stock = await within(row).findByRole("textbox", { name: stockAmountName });
+    expect(stock).toHaveValue("1");
+    expect(within(row).getByText(/Saldo guardado: 0/)).toBeInTheDocument();
+    fireEvent.change(stock, { target: { value: "1,2345" } });
+    expect(stock).toHaveAttribute("aria-invalid", "true");
+    expect(stock).toHaveAccessibleDescription(i18n.t("business:stock_tracking.invalid"));
+    fireEvent.change(stock, { target: { value: "12345" } });
+    expect(stock).toHaveValue("12345");
+    expect(stock).toHaveAttribute("aria-invalid", "false");
+    expect(stock).toHaveAccessibleDescription(/Saldo resultante/);
+    await user.clear(stock);
+    await user.click(within(row).getByRole("button", { name: /Sumar al stock/ }));
+    await user.type(stock, "0");
+    expect(within(row).getByRole("button", { name: /Reemplazar el stock/ })).toBeInTheDocument();
+    expect(within(row).getByText(/Saldo resultante: 0/)).toBeInTheDocument();
     await user.click(save);
 
     const check = await screen.findByRole("button", { name: i18n.t("business:cash.receipt_check") });
@@ -941,7 +965,9 @@ describe("ProductInvoiceImport Component", () => {
     const [business, requestKey, command] = vi.mocked(cashServices.sendCashMutation).mock.calls[0];
     expect(cashServices.getCashReceipt).toHaveBeenCalledWith(business, requestKey, command);
     expect(command).toMatchObject({ operation: "invoice_ocr_confirm",
-      fields: { invoice: { provider_id: "8", code: "FAC-RETRY" }, items: [{ kind: "create" }] } });
+      fields: { invoice: { provider_id: "8", code: "FAC-RETRY" }, items: [{
+        kind: "create", line: { quantity: 1 }, track_stock: true, stock_action: { mode: "replace", quantity: 0 },
+      }] } });
     if (command.operation !== "invoice_ocr_confirm") throw new Error("Wrong confirmation command");
     expect(command.file).toBe(file);
     expect(command.fields.invoice).not.toHaveProperty("issue_date");
@@ -960,7 +986,7 @@ describe("ProductInvoiceImport Component", () => {
     const catalogProduct = {
       id: "21", business_id: cashBusinessId, code: "SKU-CAS", name: "Catalog product",
       alias: "Catalog alias", version: 7, cost_price: 100, cost_price_tax: 119, sale_price: 150,
-      stock: 10, is_active: true,
+      stock: 10, track_stock: true, is_active: true,
     };
     const refreshedCatalog = deferred<Awaited<ReturnType<typeof businessServices.getProducts>>>();
     vi.mocked(businessServices.getProducts)
@@ -979,6 +1005,11 @@ describe("ProductInvoiceImport Component", () => {
     await user.click(screen.getByTestId("analyze-invoice-btn"));
     const save = await screen.findByTestId("submit-invoice-products");
     await waitFor(() => expect(save).toBeEnabled());
+    const stock = within(screen.getByTestId("invoice-row-0")).getByRole("textbox", { name: i18n.t("business:ocr_stock_amount") });
+    expect(stock).toHaveValue("1");
+    await user.clear(stock);
+    await user.type(stock, "1,125");
+    expect(screen.getByText(/Saldo resultante: 11,125/)).toBeInTheDocument();
     fireEvent.change(screen.getByDisplayValue("FAC-CAS"), { target: { value: "FAC-CAS-REVIEWED" } });
     await user.click(save);
 
@@ -989,24 +1020,27 @@ describe("ProductInvoiceImport Component", () => {
     expect(cashServices.sendCashMutation).toHaveBeenCalledTimes(1);
     expect(mockOnSuccess).not.toHaveBeenCalled();
     refreshedCatalog.resolve({
-      data: [{ ...catalogProduct, name: "Updated catalog product", version: 8 }],
+      data: [{ ...catalogProduct, name: "Updated catalog product", version: 8, stock: 8 }],
       meta: cashPage,
     });
     const accept = await screen.findByRole("button", { name: i18n.t("business:cash.ocr_use_reviewed_product") });
     expect(screen.getByText(/Updated catalog product/)).toBeInTheDocument();
+    expect(screen.getByText(/^Saldo guardado: 8$/)).toBeInTheDocument();
     expect(save).toBeDisabled();
     await user.click(accept);
     await waitFor(() => expect(save).toBeEnabled());
+    expect(stock).toHaveValue("1,125");
+    expect(screen.getByText(/Saldo resultante: 9,125/)).toBeInTheDocument();
     await user.click(save);
     await waitFor(() => expect(mockOnSuccess).toHaveBeenCalledTimes(1));
 
     const [, oldKey, oldCommand] = vi.mocked(cashServices.sendCashMutation).mock.calls[0];
     const [, newKey, newCommand] = vi.mocked(cashServices.sendCashMutation).mock.calls[1];
     expect(newKey).not.toBe(oldKey);
-    expect(oldCommand).toMatchObject({ fields: { items: [{ product_id: "21", expected_version: 7 }] } });
+    expect(oldCommand).toMatchObject({ fields: { items: [{ product_id: "21", expected_version: 7, stock_action: { mode: "add", quantity: 1.125 } }] } });
     expect(newCommand).toMatchObject({ operation: "invoice_ocr_confirm", fields: {
       invoice: { code: "FAC-CAS-REVIEWED" },
-      items: [{ product_id: "21", expected_version: 8 }],
+      items: [{ product_id: "21", expected_version: 8, stock_action: { mode: "add", quantity: 1.125 } }],
     } });
     expect(newCommand.operation === "invoice_ocr_confirm" && newCommand.file).toBe(file);
     expect(businessServices.analyzeInvoice).toHaveBeenCalledTimes(1);
@@ -1184,7 +1218,7 @@ describe("ProductInvoiceImport Component", () => {
     expect(screen.queryByTestId("edit-field-margin")).not.toBeInTheDocument();
   }, 15_000);
 
-  it("keeps quantity after alias with aligned history and no availability or details control", async () => {
+  it("shows only the stock column after alias and keeps the historical cells aligned", async () => {
     vi.mocked(businessServices.analyzeInvoice).mockResolvedValueOnce({
       business_id: "biz-123", provider_id: "prov-1", code: "FAC-DETAILS", total_amount: 5000,
       data: { items: [{ code: "SKU-EXISTING", name: "Producto existente", quantity: 3, unit_price: 1000, total_price: 3000 }] },
@@ -1198,10 +1232,12 @@ describe("ProductInvoiceImport Component", () => {
     const headings = screen.getAllByRole("columnheader").map(cell => cell.textContent);
     const aliasIndex = headings.indexOf(i18n.t("business:product_alias"));
     expect(aliasIndex).toBeGreaterThan(-1);
-    expect(headings[aliasIndex + 1]).toBe(i18n.t("business:pos.invoice_quantity"));
+    expect(headings).not.toContain(i18n.t("business:pos.invoice_quantity"));
+    expect(headings[aliasIndex + 1]).toBe(i18n.t("business:product_stock"));
     expect(within(row).getAllByRole("cell")).toHaveLength(10);
     expect(within(history).getAllByRole("cell")).toHaveLength(10);
-    expect(within(row).getAllByRole("cell")[aliasIndex + 1]).toHaveTextContent("3");
+    expect(within(row).getAllByRole("cell")[aliasIndex + 1]).toHaveTextContent("—");
+    expect(within(row).queryByRole("textbox", { name: i18n.t("business:ocr_stock_amount") })).not.toBeInTheDocument();
     expect(screen.queryByRole("columnheader", { name: "Disponibilidad" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /cantidad de la factura y disponibilidad/ })).not.toBeInTheDocument();
     expect(screen.getByDisplayValue("FAC-DETAILS")).toBeInTheDocument();
@@ -2058,7 +2094,7 @@ describe("ProductInvoiceImport Component", () => {
   });
   it("preserves zero quantities and flags absent or infinite extraction values", () => {
     const base = { code: "ZERO", name: "Zero stock", quantity: 0, cost_price: 0, cost_price_tax: 0 };
-    expect(mapExtractedItemsToRows([base], [])[0]).toMatchObject({ quantity: 0, cost_price: 0, cost_price_tax: 0, sale_price: 0, has_stock: true, isValid: true });
+    expect(mapExtractedItemsToRows([base], [])[0]).toMatchObject({ quantity: 0, cost_price: 0, cost_price_tax: 0, sale_price: 0, stockReview: { tracking: false, observedBalance: 0 }, isValid: true });
     expect(mapExtractedItemsToRows([{ ...base, quantity: null }], [])[0].isValid).toBe(false);
     expect(mapExtractedItemsToRows([{ ...base, quantity: Infinity }], [])[0].isValid).toBe(false);
     expect(mapExtractedItemsToRows([{ ...base, cost_price: Infinity, cost_price_tax: null }], [])[0].isValid).toBe(false);

@@ -1,4 +1,6 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { FilterProductDto } from './filter-product.dto.js';
 
 export class ExportProductsCsvDto {
   @IsOptional()
@@ -8,4 +10,9 @@ export class ExportProductsCsvDto {
   @IsOptional()
   @IsString()
   lang?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => FilterProductDto)
+  q?: FilterProductDto;
 }

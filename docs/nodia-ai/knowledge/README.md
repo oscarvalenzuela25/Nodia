@@ -1,5 +1,13 @@
 # Contexto funcional de productos para NodiaAI
 
+## Stock opcional de Negocios — 2026-11-25
+
+La [ficha candidata de stock](businesses/features/product-stock-tracking.md)
+enlaza la implementación local del control por producto, ajustes de
+Facturas OCR, descuento al confirmar en POS y filtro por saldo. Las escrituras
+corresponden a los flujos nativos de Negocios. La revisión 4 de las lecturas
+de catálogo e historial admite los saldos decimales. [Plan94 §45](../../mvp/94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto).
+
 ## Punto de lectura de Teacher sin conexión — 2026-11-21
 
 La [ficha candidata de avance](studies/features/offline-reading-progress.md)

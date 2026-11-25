@@ -1,5 +1,16 @@
 # Progreso del MVP — Nodia
 
+**Punto de venta y búsqueda de Productos — 2026-11-25.** Client implementa
+el diseño aprobado del POS con carritos laterales, cobro compacto y el último
+producto agregado al inicio de su carrito. La cabecera y la búsqueda de
+Productos se incluyen en la entrega local. [Plan94 §46](94-business-point-of-sale-and-product-refactor.md#46-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
+
+**Stock opcional de Negocios — 2026-11-25.** Client y Server implementan
+seguimiento por producto, descuento al confirmar en POS, ajuste en Facturas
+OCR y filtro por stock máximo. PostgreSQL 16 aislado verificó la migración y
+los efectos transaccionales. La activación operativa y el retiro de la
+columna anterior quedan en [Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-stock-opcional-por-producto).
+
 **Experiencia del lector offline de Teacher — 2026-11-21.** En producción
 se sirven la presentación formateada, la acción persistente para abrir la
 copia y la comparación de los puntos en conflicto. Chrome comprobó el

@@ -9,6 +9,7 @@ import { clearBusinessSaleRecoveryStorage, readSaleJournal, saleJournalKey, save
 import { loadSaleWorkspace, saleWorkspaceKey, writeSaleWorkspace } from "../../../../config/businessSaleWorkspaceStorage";
 import useAuthStore from "../../../../store/authStore";
 import type { CartLine, Sale } from "../../../../modules/business/infrastructure/salesTypes";
+import type { ProductEntity } from "../../../../modules/business/infrastructure/types";
 
 vi.mock("../../../../modules/business/infrastructure/salesServices", () => ({ mutateSale: vi.fn(), getSaleReceipt: vi.fn() }));
 vi.mock("sileo", () => ({ sileo: { success: vi.fn(), error: vi.fn(), info: vi.fn() } }));
@@ -16,9 +17,57 @@ const sale: Sale = { id: "sale-id", business_id: "business-a", status: "draft", 
   total_amount: "0", version: 1, created_at: "2026-10-28T12:00:00Z", updated_at: "2026-10-28T12:00:00Z", completed_at: null, cancelled_at: null, cancellation_reason: null, items: [] };
 const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })}>{children}</QueryClientProvider>;
 const line: CartLine = { product_id: "product-a", name: "Synthetic product", code: "invoice-code", barcode: "000123", quantity: 2, expected_product_version: 7, expected_unit_price: "1200", regular_price: "1500", offer_price: "1200", price_source: "offer" };
+const catalogProduct: ProductEntity = {
+  id: line.product_id, name: line.name, business_id: sale.business_id, code: line.code, barcode: line.barcode,
+  is_active: true, has_stock: true, track_stock: false, stock: 0, cost_price: 0, cost_price_tax: 0, sale_price: 1500,
+  offer_price: 1200, effective_price: "1200", price_source: "offer", is_offer_enabled: true, version: 7,
+};
 const completed: Sale = { ...sale, status: "completed", total_amount: "2400", completed_at: "2026-10-29T12:00:00Z" };
 describe("sale draft recovery", () => {
   beforeEach(() => { vi.clearAllMocks(); sessionStorage.clear(); useAuthStore.setState({ user: { id: "actor-a", name: "Synthetic actor" }, token: "synthetic-session", sessionStatus: "authenticated", expiresAt: Date.now() + 60000 }); });
+  it("commits each addition against the current cart and restores its order with the scanner state", () => {
+    const { result, unmount } = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    const second = { ...catalogProduct, id: "product-b", barcode: "000124" };
+    const addBeforeRerender = result.current.addProduct;
+    const unrelatedDraft = { "product-c": "1." };
+    act(() => {
+      result.current.setBarcode("000123");
+      result.current.setQuantityDrafts({ ...unrelatedDraft, [catalogProduct.id]: "", [second.id]: "03" });
+      expect(addBeforeRerender(catalogProduct)).toBe(true);
+      expect(addBeforeRerender(second)).toBe(true);
+    });
+    expect(result.current.lines.map((item) => item.product_id)).toEqual([second.id, catalogProduct.id]);
+    expect(result.current.quantityDrafts).toEqual(unrelatedDraft);
+    expect(result.current.barcode).toBe("000123");
+
+    const write = vi.spyOn(Storage.prototype, "setItem");
+    try {
+      act(() => { expect(addBeforeRerender(catalogProduct, { clearBarcode: true })).toBe(true); });
+      expect(write).toHaveBeenCalledTimes(1);
+    } finally { write.mockRestore(); }
+    const expected = { barcode: "", quantityDrafts: unrelatedDraft, dirty: true };
+    expect(loadSaleWorkspace("actor-a", "business-a")?.sessions[0]).toMatchObject(expected);
+
+    unmount();
+    const reopened = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    expect(reopened.result.current).toMatchObject(expected);
+    expect(reopened.result.current.lines.map(({ product_id, quantity }) => [product_id, quantity]))
+      .toEqual([[catalogProduct.id, 2], [second.id, 1]]);
+  });
+  it("leaves the saved cart and reader input intact when availability rejects an addition", () => {
+    const { result } = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    act(() => {
+      result.current.setBarcode("000123");
+      result.current.setQuantityDrafts({ [catalogProduct.id]: "1." });
+    });
+    const original = loadSaleWorkspace("actor-a", "business-a");
+    expect(() => result.current.addProduct({ ...catalogProduct, track_stock: true }, { clearBarcode: true }))
+      .toThrow("insufficient_stock");
+    expect(() => result.current.addProduct({ ...catalogProduct, business_id: "other-business" }))
+      .toThrow("unavailable_product");
+    expect(loadSaleWorkspace("actor-a", "business-a")).toEqual(original);
+    expect(result.current).toMatchObject({ barcode: "000123", quantityDrafts: { [catalogProduct.id]: "1." }, lines: [] });
+  });
   it("discards all local carts explicitly into Sale1 while preserving alternation before exit", () => {
     const { result } = renderHook(() => useSaleDraft("business-a"), { wrapper });
     const first = result.current.activeId;
@@ -86,6 +135,29 @@ describe("sale draft recovery", () => {
     await act(async () => { await result.current.save(); });
     expect(mutateSale).toHaveBeenCalledTimes(1);
     expect(loadSaleWorkspace("actor-a", "business-a")?.sessions[0].pending).not.toBeNull();
+  });
+  it("requires explicit review on stock conflict and keeps quantities and request recovery independent", async () => {
+    const conflict = Object.assign(new AxiosError("stock conflict"), { response: { status: 409, data: { message: "business:sale_stock_insufficient" } } });
+    vi.mocked(mutateSale).mockRejectedValueOnce(conflict).mockResolvedValueOnce(completed);
+    const { result } = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    const original = { ...line, stock_available: 3, unit_price_override: "800" };
+    act(() => { result.current.setLines([original]); });
+    await act(async () => { await result.current.checkout(); });
+    expect(result.current.catalogConflict).toBe(true);
+    expect(result.current.pending).toBeNull();
+    expect(result.current.lines).toEqual([original]);
+    await act(async () => { await result.current.checkout(); });
+    expect(mutateSale).toHaveBeenCalledTimes(1);
+    await act(async () => { await result.current.reviewCatalog([{ ...original, expected_product_version: 8, stock_available: 1 }]); });
+    expect(result.current.lines[0]).toMatchObject({ quantity: 2, stock_available: 1, expected_product_version: 8, unit_price_override: "800" });
+    await act(async () => { await result.current.checkout(); });
+    expect(mutateSale).toHaveBeenCalledTimes(1);
+    act(() => { result.current.setLines([{ ...result.current.lines[0], quantity: 1 }]); });
+    await act(async () => { await result.current.checkout(); });
+    const commands = vi.mocked(mutateSale).mock.calls.map(([, mutation]) => mutation.command);
+    expect(commands[1].request_key).not.toBe(commands[0].request_key);
+    expect(commands[1].items?.[0]).toMatchObject({ quantity: 1, expected_product_version: 8, unit_price_override: "800" });
+    expect(commands[1].items?.[0]).not.toHaveProperty("stock_available");
   });
   it("checks out exact observed prices once, with cash by default and no intermediate draft", async () => {
     vi.mocked(mutateSale).mockResolvedValue(completed);
