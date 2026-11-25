@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Nodia CV Agentic — plan del 2026-11-25.** La rama
+`codex/nodia-cv-agentic` registra la continuación de CV-03. El primer
+paso es comprobar el runtime Codex y la selección GPT-6.2 Sol en Alto
+en la VM antes de integrar el transporte de CV.
+[Plan113 §17](113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
+
 **Desconexión de Gemini Agentic — 2026-11-24.** La implementación
 validada en laboratorio queda en
 [`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d).

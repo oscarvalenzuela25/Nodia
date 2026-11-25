@@ -147,7 +147,7 @@ Integrar en orden **CV-00 → CV-01 → CV-02 → CV-03 → CV-04 → CV-05 → 
 
 - [x] Implementar caso de uso, prompt/esquema versionados, validación de evidencia, recuperación de borradores y catálogo sanitizado. Integrar owner CV y Worker común con un único responsable del cambio compartido. Verificar claims competidores, presupuesto, pre/post-dispatch, cierre, restauración y revocación.
 - [x] Ejecutar una inferencia real con API key, perfil y oferta sintéticos y cierre por selección exacta. Registrar evidencia limitada a la combinación y entorno probados.
-- [ ] Agentic requiere descriptor, transporte restringido y prueba de cierre propios de CV. La comprobación del modo devolvió `agentic_transport_unavailable` con cero despachos.
+- [ ] Agentic requiere descriptor, transporte restringido y prueba de cierre propios de CV. La comprobación del modo devolvió `agentic_transport_unavailable` con cero despachos. Retomar por [la secuencia de §17](#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 - [x] Probar texto de terceros, respuesta inválida, citas o referencias ajenas, hechos conservados, resultado incierto y recuperación sin reenviar. **Salida API key:** borrador estructurado y recuperación privada comprobada.
 - [ ] Completar la matriz de timeout, cuota y reinicio por transporte en el entorno de destino junto con CV-06.
 
@@ -505,3 +505,170 @@ completa del cambio de cuenta de Gemini queda en
 [`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d)
 para actualizar el adaptador y sus consumidores en una entrega coordinada.
 Esta promoción usa la protección de CD existente.
+
+## 17. Continuación de CV-03 — generación Agentic — 2026-11-25
+
+**Estado: plan de implementación.** Rama `codex/nodia-cv-agentic` desde
+`development` en `7e589613`. Retomar el 26 de noviembre por el paso 1.
+El entregable inicial es un borrador válido desde **Generar CV** en la VM
+con **ChatGPT / Agentic / GPT-6.2 Sol / Alto** (`gpt-6.2-sol`, `high`).
+Después, verificar Gemini Agentic de forma independiente con un modelo
+y nivel explícitos del catálogo vivo de su cuenta. Los modelos de este
+plan son objetivos de prueba. La configuración y el catálogo siguen
+resolviendo los IDs que puede ejecutar cada conexión.
+
+El catálogo de CV proyecta modelos y modos de IA. La elegibilidad
+devuelve `agentic_transport_unavailable` y el worker exige `api_key`.
+La ruta textual común envía Agentic al servicio de Teacher, cuyo
+descriptor, journal y recibo pertenecen a Teacher. El módulo CV ya tiene
+prompt, esquema, verificador de evidencia, worker, ledger con
+`owner_kind='cv'`, vista previa y ambas plantillas.
+[ADR119](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md) ·
+[Plan91](91-ai-provider-onboarding-verification.md#matriz-de-aceptación) ·
+[Contrato de proveedores](ai-provider-feature-contract.md).
+
+### Secuencia de implementación
+
+#### 1. Confirmar la línea base y elegir el transporte de Codex
+
+Desde la raíz de la rama, una vez instaladas las dependencias bloqueadas:
+
+```sh
+git status --short --branch
+npm --prefix nodia-server test -- src/nodia-cv/nodia-cv-selection.service.spec.ts src/nodia-cv/engine/engine.spec.ts
+```
+
+- [ ] Revisar `nodia-cv-selection.service.ts`, `nodia-cv-generation.worker.ts`,
+  `nodia-cv-generation.store.ts` y la migración `179398`. Trazar en una
+  tabla qué pieza resuelve configuración, admisión, despacho, conciliación
+  y ACK para API key. Identificar las columnas y restricciones Agentic ya
+  existentes en el ledger antes de proponer otra migración.
+- [ ] Comparar los contratos de proceso de Codex y Teacher en
+  `ai-generation/` y `common/ai/codex/`. Comprobar en la VM el runtime
+  instalado, el host restringido si corresponde, la sesión registrada y el
+  descubrimiento exacto de `gpt-6.2-sol` con `high`. Hacer esta observación
+  sin inferencia. Registrar qué componentes faltan con fuente, huella y
+  entorno. Mantener evidencia separada de runtime, sesión, catálogo y
+  disponibilidad generativa.
+- [ ] Reproducir el bloqueo actual en la selección de CV y comprobar que
+  deja cero despachos. Ejecutar la regresión de generaciones por API key
+  con transporte sintético y almacenar únicamente el resultado saneado.
+  **Salida**: línea base, puntos de integración y transporte candidato
+  delimitados. Si el host necesario falta, resolver su preparación aislada
+  antes del probe real. La implementación y pruebas sintéticas pueden
+  continuar durante esa preparación.
+
+#### 2. Fijar el contrato de CV y la validación previa al envío
+
+- [ ] Definir un descriptor versionado y un recibo nativo de CV. Vincular
+  el dueño, actor, generación/intento, revisión, hash del payload, recurso
+  Agentic y generación de configuración y sesión. Registrar también
+  proveedor, conexión, modelo, esfuerzo y versiones de propósito, prompt,
+  esquema, política y runtime. Probar rechazo de un recibo de otro
+  intento, sesión, configuración, modelo, esfuerzo o dueño.
+- [ ] Resolver la selección explícita mediante el catálogo real y las
+  restricciones de la conexión. Separar observación del runtime y de la
+  sesión, transporte disponible para CV y calificación generativa. Hacer
+  la observación externa fuera de las transacciones de autoridad y
+  comparar la identidad antes de persistir. Elegibilidad y consultas de
+  catálogo se mantienen sin inferencia.
+- [ ] Fijar una respuesta de texto estructurado y acotado para el
+  pipeline de `cv-tailoring/1`. Reusar el minimizador y el verificador de
+  evidencia de CV. Tratar la oferta como datos externos. Permitir solo
+  el mecanismo necesario para devolver la salida si el adaptador lo
+  exige, con cero herramientas de trabajo, adjuntos o acceso a archivos.
+  Separar falta de evidencia profesional de un fallo del proveedor.
+  **Salida**: contrato y pruebas unitarias de identidad, límites y salida.
+
+#### 3. Integrar Codex con la cola y la recuperación de CV
+
+- [ ] Reusar la sesión, primitivas de proceso y slot común con el
+  propietario técnico de CV. Añadir la selección explícita de transporte
+  al worker. Usar los campos existentes si cubren el ciclo y, si falta
+  alguno, hacer una migración aditiva compatible con operaciones previas.
+  Integrar esquema, contrato, DI y worker en ese orden.
+- [ ] Revalidar sesión, módulo, titular, revisión del perfil y selección
+  al admitir, al reclamar, antes de despachar y antes de publicar. Fijar
+  descriptor, lease/fence y presupuesto antes del intercambio. Mantener
+  un solo despacho por intención, incluyendo doble clic, reinicio,
+  concurrencia y relectura del recibo. La misma clave con otro insumo
+  conserva el 409.
+- [ ] Distinguir error previo al envío, rechazo definitivo, respuesta
+  inválida, cierre local no probado y resultado remoto `unknown`.
+  Conciliar por la identidad del intento y cerrar el proceso con evidencia
+  nativa. Persistir el terminal y su resultado antes del ACK al adaptador.
+  Recuperar un ACK pendiente por su referencia exacta, con cero reenvíos
+  generativos y sin cambio automático de proveedor o modo. Mantener los
+  slots y el bloqueo del perfil hasta el hito que corresponda al contrato
+  común. Ensayar la restauración con trabajo pendiente en una copia
+  desechable y demostrar que conserva el recibo para conciliación sin
+  volver a despachar. **Salida**: PostgreSQL aislado demuestra un envío,
+  cierre, recuperación tras reinicio y regresión API key.
+
+#### 4. Calificar Codex con una generación real y conectar la UI
+
+- [ ] Ejecutar el probe administrativo de CV en la VM con perfil y
+  oferta sintéticos. Incluir un requisito respaldado y otro ausente.
+  Comprobar un intercambio Agentic, respuesta estructurada válida,
+  evidencia literal, brecha visible, cierre nativo, persistencia y ACK.
+  La calificación se habilita únicamente al verificar el recibo exacto de
+  CV, asociado a esa combinación y entorno. Probar que el cambio de
+  nivel o sesión vuelve a pedir calificación para la nueva selección.
+- [ ] Usar el popover actual de `CvModelSelector`. Mostrar estados
+  distintos para runtime ausente, sesión pendiente, modelo o esfuerzo
+  ausente, selección sin calificar y selección elegible. Mantener
+  **Aplicar configuración** y **Generar borrador** sujetos a la respuesta
+  del Server para esa selección, al perfil guardado y a la oferta. El
+  feedback ES/EN conserva perfil, oferta, foco y evaluación al reintentar
+  o cancelar. El cambio de modelo durante una lectura ignora resultados
+  anteriores. Verificar teclado, foco, 320 px y escritorio.
+- [ ] Completar el recorrido de usuario con una intención nueva tras la
+  calificación. Verificar borrador, preview, revisión y render de Clásica
+  y Compacta con texto extraído. Reabrir o descargar el PDF guardado por
+  acción explícita y comprobar el mismo hash. Registrar la lectura ATS
+  con el alcance del verificador utilizado. **Salida**: Codex habilitado
+  en la VM solo para la selección comprobada.
+
+#### 5. Integrar y calificar Gemini por el mismo contrato de CV
+
+- [ ] Comparar el adaptador privado de Gemini con el contrato del paso 2.
+  Reusar su admisión exclusiva y cierre verificable con descriptor de CV.
+  Confirmar la disponibilidad del ID y nivel exactos en la cuenta de la
+  VM. Mantener las agrupaciones de modelo y razonamiento existentes.
+- [ ] Repetir aislamiento, cuota, caída, timeout, cierre y reinicio con
+  las garantías del transporte Gemini. Después ejecutar su probe y
+  recorrido por UI con datos sintéticos. Registrar el alcance por
+  combinación. **Salida**: Gemini anuncia solo lo validado. Un bloqueo
+  de Gemini queda documentado sin impedir la entrega validada de Codex.
+
+#### 6. Preparar la entrega y verificar adopción
+
+- [ ] Ejecutar en Server `npm test -- src/nodia-cv`, `npm run lint`,
+  `npm run build`, `npm run knowledge:check` y la integración
+  `npm run test:nodia-cv:generations` sobre PostgreSQL aislado. Correr
+  `npm run test:nodia-cv:pdf-versions` para el recorrido de artefactos.
+  En Client ejecutar `npm run typecheck`, `npm run lint`, las pruebas
+  focales de CV y el build. Si cambia el adaptador Gemini, ejecutar
+  `run_tests.py` en su entorno aislado.
+- [ ] Completar las celdas aplicables del [Plan91](91-ai-provider-onboarding-verification.md#matriz-de-aceptación)
+  y registrar SHA, entorno, tupla, código terminal y alcance en
+  `docs/evidence/`. Matriz mínima para ambos carriles: sin perfil,
+  usuario ajeno, revocación, selección inválida, sesión ausente, cuota,
+  salida inválida/excesiva, duplicación, timeout antes y después del
+  despacho, reinicio antes del cierre y reinicio antes del ACK. Registrar
+  por separado pruebas sintéticas, inferencia real y adopción.
+- [ ] Abrir PR a `development` y conciliar CI por SHA. La promoción a
+  `master` se realiza después de la validación de VM y por el proceso
+  autorizado de entrega. Si cambia el árbol Gemini, aplicar el
+  [rollout coordinado](../../ops/production/ai-runtime/README.md#actualización-coordinada-del-adaptador-gemini--2026-11-24)
+  y verificar el recibo del VPS antes de promover. Si cambia un host
+  Codex, documentar su preparación y reversión bajo el runbook operativo
+  antes de activar el carril. Pasar CI/CD y comprobar en destino el
+  selector y el resultado del smoke autorizado. Actualizar progreso,
+  [pendientes](TODO.md#cola-actual) y
+  [ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md#agentic-previsto)
+  con evidencia real y estado por proveedor.
+
+El primer cambio de código corresponde al paso 2, después de completar
+la línea base del paso 1. Integrar un paso con sus pruebas antes de abrir
+el siguiente cambio en archivos compartidos de worker, ledger o contratos.

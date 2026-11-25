@@ -56,6 +56,15 @@ la [guía UI](../../../../features/nodia-cv/ui-design.md) y el
 [ADR119 propuesto](../../../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md)
 describen el flujo implementado y los pendientes de aceptación.
 
+## Agentic previsto
+
+La generación Agentic de CV sigue pendiente en este corte. El selector
+puede mostrar modelos configurados y la elegibilidad de CV determina si se
+pueden usar para generar. La calificación se vinculará a conexión, modo,
+modelo, esfuerzo y sesión mediante un recibo de generación de CV. La persona
+aplicará la selección y solicitará el borrador desde **Generar CV**.
+[Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
+
 ## Solicitudes en lenguaje natural
 
 | Solicitud ilustrativa | Intención | Datos faltantes/ambigüedad | Aclaración esperada |
