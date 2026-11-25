@@ -860,6 +860,7 @@
     "remove_product": "Quitar {{name}} de esta venta",
     "quantity": "Cantidad",
     "payment_method": "Medio de pago",
+    "payment_selected": "Seleccionado",
     "payment_cash": "Efectivo",
     "payment_bank_transfer": "Transferencia",
     "payment_debit_card": "Débito",

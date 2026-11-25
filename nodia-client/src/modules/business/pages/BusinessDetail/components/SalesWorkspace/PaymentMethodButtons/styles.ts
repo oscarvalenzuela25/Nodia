@@ -1,17 +1,25 @@
 import { Box, Button, Typography } from "@mui/material";
-import { alpha, decomposeColor, recomposeColor, rgbToHex, styled } from "@mui/material/styles";
-import { mixColor, readableColor } from "../../../../../../../themes/contrast";
+import { decomposeColor, recomposeColor, rgbToHex, styled } from "@mui/material/styles";
+import { mixColor, readableColor, readableForeground } from "../../../../../../../themes/contrast";
 import { spaciousCheckout, wideCheckout } from "../styles";
 
 export const MethodLabel = styled(Typography)(({ theme }) => ({
-  fontSize: "1rem", fontWeight: 700, marginBottom: theme.spacing(.75),
-  [wideCheckout]: { fontSize: "1.25rem" },
-  [spaciousCheckout]: { fontSize: "1.375rem", marginBottom: theme.spacing(1) },
+  fontSize: "1.25rem", fontWeight: 700, marginBottom: theme.spacing(1.25),
+  [spaciousCheckout]: { fontSize: "1.5rem" },
 }));
 
 export const MethodGrid = styled(Box)(({ theme }) => ({
-  display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: theme.spacing(.75),
-  [spaciousCheckout]: { gap: theme.spacing(1) },
+  display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: theme.spacing(1.25),
+  [wideCheckout]: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
+  [spaciousCheckout]: { gap: theme.spacing(1.5) },
+}));
+
+export const MethodName = styled("span")({ gridArea: "name", minWidth: 0, maxWidth: "100%" });
+
+export const MethodSelectionMark = styled("span")(({ theme }) => ({
+  gridArea: "selection", minWidth: 0, maxWidth: "100%", display: "flex", flexWrap: "wrap",
+  alignItems: "center", justifyContent: "inherit", gap: theme.spacing(.5), fontSize: "1rem", lineHeight: 1.25,
+  "& svg": { flexShrink: 0, fontSize: "1.125rem" },
 }));
 
 type PaymentTone = "success" | "primary" | "warning" | "info";
@@ -23,32 +31,52 @@ export const MethodButton = styled(Button, { shouldForwardProp: (prop) => prop !
   const surface = toOpaqueHex(palette.background.paper);
   const accent = toOpaqueHex(color.main);
   const baseFill = mixColor(surface, accent, .09);
-  const selectedFill = mixColor(surface, accent, .21);
-  const hoverFill = mixColor(surface, accent, .26);
-  const ink = readableColor(accent, [baseFill, selectedFill, hoverFill]);
+  const hoverFill = mixColor(surface, accent, .18);
+  const accentInk = readableColor(accent, [surface, baseFill, hoverFill]);
+  const ink = readableColor(toOpaqueHex(palette.text.primary), [baseFill, hoverFill]);
+  const selectedInk = readableForeground(accent);
+  const selectedFill = readableColor(accent, [selectedInk], 7.1);
   return {
     minWidth: 0,
-    minHeight: 44,
-    padding: theme.spacing(.5),
-    display: "flex",
-    gap: theme.spacing(.5),
+    minHeight: 68,
+    padding: theme.spacing(1, 1.5),
+    display: "grid",
+    gridTemplateColumns: "auto minmax(0, 1fr)",
+    gridTemplateAreas: '"icon name" "icon selection"',
+    justifyContent: "start",
+    alignContent: "center",
+    gap: theme.spacing(0, 1),
+    textAlign: "start",
     color: ink,
     backgroundColor: baseFill,
-    borderColor: alpha(accent, .6),
-    fontSize: ".875rem",
-    lineHeight: 1.2,
+    border: `2px solid ${accentInk}`,
+    fontSize: "1.125rem",
+    lineHeight: 1.25,
     fontWeight: 700,
     textTransform: "none",
     overflowWrap: "anywhere",
     borderRadius: theme.spacing(1),
-    [wideCheckout]: { minHeight: 50, fontSize: "1.125rem" },
-    "& > .MuiSvgIcon-root": { flexShrink: 0, fontSize: 16 },
-    [spaciousCheckout]: {
-      minHeight: 56, fontSize: "1.1875rem", paddingInline: theme.spacing(.25),
-      "& > .MuiSvgIcon-root": { fontSize: 18 },
+    // Keep the foreground, fill, and border in sync when the selection changes.
+    transition: theme.transitions.create("box-shadow"),
+    "& > .payment-method-icon": { gridArea: "icon", alignSelf: "center", color: accentInk, fontSize: "1.75rem" },
+    [wideCheckout]: {
+      minHeight: 104, padding: theme.spacing(1, .75), gridTemplateColumns: "minmax(0, 1fr)",
+      gridTemplateAreas: '"icon" "name" "selection"', gridTemplateRows: "auto auto minmax(1.25rem, auto)",
+      justifyItems: "center", justifyContent: "center", textAlign: "center", rowGap: theme.spacing(.5),
     },
-    "&[aria-pressed='true']": { borderColor: ink, backgroundColor: selectedFill },
+    [spaciousCheckout]: {
+      minHeight: 112, fontSize: "1.25rem",
+      "& > .payment-method-icon": { fontSize: "2rem" },
+    },
+    "&.Mui-disabled": { opacity: .65 },
     "&:hover:not(.Mui-disabled)": { borderColor: ink, backgroundColor: hoverFill },
-    "&.Mui-focusVisible": { outline: `2px solid ${ink}`, outlineOffset: 2 },
+    "&[aria-pressed='true']": {
+      color: selectedInk, borderColor: selectedInk, backgroundColor: selectedFill,
+      "& > .payment-method-icon": { color: "inherit" },
+      "&:hover:not(.Mui-disabled)": {
+        backgroundColor: selectedFill, borderColor: selectedInk, boxShadow: `inset 0 0 0 1px ${selectedInk}`,
+      },
+    },
+    "&.Mui-focusVisible": { outline: `3px solid ${palette.text.primary}`, outlineOffset: 2, zIndex: 1 },
   };
 });
