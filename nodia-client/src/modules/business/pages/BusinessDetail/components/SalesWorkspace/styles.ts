@@ -12,13 +12,24 @@ export const PointOfSaleGrid = styled(Box)(({ theme }) => ({
 }));
 export const SalePanels = styled(PointOfSaleGrid)(({ theme }) => ({
   minWidth: 0,
-  [theme.breakpoints.up("lg")]: { gridTemplateColumns: "minmax(0, 1fr) minmax(224px, 264px)" },
+  [theme.breakpoints.up("lg")]: { gridTemplateColumns: "minmax(0, 1fr) clamp(19rem, 24vw, 24rem)" },
 }));
+export const wideCheckout = "@container pos-checkout (min-width: 21rem)";
+export const spaciousCheckout = "@container pos-checkout (min-width: 23rem)";
+
 export const CheckoutColumn = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "minmax(0, 1fr)",
   gap: theme.spacing(1),
+  containerType: "inline-size",
+  containerName: "pos-checkout",
+  [theme.breakpoints.up("lg")]: { gap: theme.spacing(1.5) },
 }));
+export const NewSaleButton = styled(Button)({
+  minHeight: 44, fontSize: "1rem", fontWeight: 700,
+  [wideCheckout]: { minHeight: 52, fontSize: "1.25rem" },
+  [spaciousCheckout]: { minHeight: 56 },
+});
 const Panel = styled(Paper)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -45,12 +56,16 @@ export const ScannerFields = styled(Box)(({ theme }) => ({
 }));
 export const CartPanel = styled(Panel)(({ theme }) => ({
   gap: theme.spacing(1.25),
+  [wideCheckout]: { gap: theme.spacing(1.5) },
+  [spaciousCheckout]: { padding: theme.spacing(2.5), gap: theme.spacing(2) },
   "&:focus-visible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
 }));
 export const CompleteSaleButton = styled(Button)(({ theme }) => {
   const fill = theme.palette.success.main;
   return {
-    minHeight: 44,
+    minHeight: 48, fontSize: "1rem", lineHeight: 1.2, fontWeight: 700,
+    [wideCheckout]: { minHeight: 56, fontSize: "1.25rem" },
+    [spaciousCheckout]: { minHeight: 60, fontSize: "1.375rem" },
     color: getContrastRatio(theme.palette.common.black, fill) >= 4.5
       ? theme.palette.common.black
       : theme.palette.common.white,
@@ -64,9 +79,16 @@ export const TotalRow = styled(Box)(({ theme }) => ({
   gap: theme.spacing(.5, 1),
   minWidth: 0,
 }));
-export const TotalLabel = styled(Typography)({ fontSize: "1rem", lineHeight: 1.25, fontWeight: 700 });
+export const TotalLabel = styled(Typography)({
+  fontSize: "1.375rem", lineHeight: 1.25, fontWeight: 700,
+  [wideCheckout]: { fontSize: "1.75rem" },
+  [spaciousCheckout]: { fontSize: "1.875rem" },
+});
 export const TotalAmount = styled(Typography)({
-  fontSize: "1.5rem", lineHeight: 1.2, fontWeight: 800, fontVariantNumeric: "tabular-nums", overflowWrap: "anywhere", minWidth: 0,
+  fontSize: "1.75rem", lineHeight: 1.2, fontWeight: 800, fontVariantNumeric: "tabular-nums", overflowWrap: "anywhere", minWidth: 0,
+  marginInlineStart: "auto", textAlign: "end",
+  [wideCheckout]: { fontSize: "2rem" },
+  [spaciousCheckout]: { fontSize: "2.25rem" },
 });
 export const Actions = styled(Box)(({ theme }) => ({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: theme.spacing(1),
   [theme.breakpoints.down("sm")]: {

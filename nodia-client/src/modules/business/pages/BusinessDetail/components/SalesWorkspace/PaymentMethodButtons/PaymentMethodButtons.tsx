@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import PaymentsOutlined from "@mui/icons-material/PaymentsOutlined";
 import CreditCardOutlined from "@mui/icons-material/CreditCardOutlined";
 import CreditScoreOutlined from "@mui/icons-material/CreditScoreOutlined";
@@ -7,7 +7,7 @@ import CheckCircleOutlined from "@mui/icons-material/CheckCircleOutlined";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import type { PaymentMethod } from "../../../../../infrastructure/salesTypes";
-import { MethodButton, MethodGrid } from "./styles";
+import { MethodButton, MethodGrid, MethodLabel } from "./styles";
 
 const methods = [
   { value: "cash", Icon: PaymentsOutlined, tone: "success" },
@@ -20,7 +20,7 @@ export default function PaymentMethodButtons({ value, onChange, disabled }: { va
   const { t } = useTranslation("business");
   const labelId = useId();
   return <Box>
-    <Typography id={labelId} variant="body2" sx={{ fontWeight: 700, mb: .75 }}>{t("business:pos.payment_method")}</Typography>
+    <MethodLabel id={labelId} variant="body2">{t("business:pos.payment_method")}</MethodLabel>
     <MethodGrid role="group" aria-labelledby={labelId}>
       {methods.map(({ value: method, Icon, tone }) => <MethodButton key={method} type="button" variant="outlined" tone={tone} aria-pressed={method === value} disabled={disabled} onClick={() => onChange(method)}>
         {method === value ? <CheckCircleOutlined /> : <Icon />}

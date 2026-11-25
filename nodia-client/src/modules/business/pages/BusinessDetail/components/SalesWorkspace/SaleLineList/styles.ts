@@ -22,37 +22,57 @@ export const EmptyHelp = styled(Typography)(({ theme }) => ({
   fontSize: "1rem", lineHeight: 1.6, color: theme.palette.text.secondary, maxWidth: "36ch",
 }));
 export const Line = styled("li")(({ theme }) => ({
-  display: "grid", gridTemplateColumns: "min(24%, calc(var(--pos-picture-size) * var(--sale-font-scale, 1))) minmax(0, 1fr) 44px",
-  gridTemplateAreas: '"picture copy remove" "controls controls controls"',
-  "--pos-picture-size": "56px", "--pos-item-font-size": "1rem",
-  alignItems: "center", gap: theme.spacing(1), padding: theme.spacing(1), minWidth: 0,
+  "--pos-line-control-size": "44px",
+  "--pos-item-font-size": ".875rem",
+  display: "grid",
+  gridTemplateColumns: "40px minmax(0, 1fr) var(--pos-line-control-size)",
+  gridTemplateAreas: '"picture copy copy" "controls controls remove"',
+  alignItems: "center", gap: theme.spacing(.75, 1), padding: theme.spacing(.75, 1), minWidth: 0,
   "& + &": { borderTop: `1px solid ${theme.palette.divider}` },
-  "&[data-price-editing='true']": { gridTemplateAreas: '"picture . remove" "copy copy copy" "controls controls controls"' },
-  "@container (min-width: 600px)": {
-    "--pos-picture-size": "80px", "--pos-item-font-size": "1.125rem",
+  "&[data-price-editing='true']": { gridTemplateAreas: '"picture . ." "copy copy copy" "controls controls remove"' },
+  "@container (min-width: 34rem)": {
     "[data-enlarged='false'] &[data-price-editing='false']": {
-      gridTemplateColumns: "80px minmax(0, 1fr) minmax(0, 45%) 44px",
+      gridTemplateColumns: "40px minmax(0, 1fr) min(48%, 16rem) var(--pos-line-control-size)",
       gridTemplateAreas: '"picture copy controls remove"',
+      "@media (hover: hover) and (pointer: fine) and (not (any-pointer: coarse))": {
+        "--pos-line-control-size": "32px",
+      },
     },
   },
 }));
 export const PictureSlot = styled(Box)({ gridArea: "picture", minWidth: 0 });
 export const Picture = styled(Avatar)(({ theme }) => ({
-  width: "min(100%, calc(var(--pos-picture-size) * var(--sale-font-scale, 1)))", height: "auto", aspectRatio: "1",
+  width: "100%", height: "auto", aspectRatio: "1",
   borderRadius: theme.spacing(1), backgroundColor: theme.palette.action.hover, color: theme.palette.text.secondary,
   "& img": { objectFit: "contain" },
 }));
 export const LineControls = styled(Box)(({ theme }) => ({
-  gridArea: "controls", display: "flex", flexWrap: "wrap", alignItems: "center", gap: theme.spacing(1), minWidth: 0,
+  gridArea: "controls", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-end",
+  gap: theme.spacing(.5, .75), minWidth: 0,
+  "@container (min-width: 34rem)": { columnGap: theme.spacing(1.5) },
 }));
 export const Copy = styled(Box)(({ theme }) => ({
-  gridArea: "copy", display: "grid", gap: theme.spacing(.5), minWidth: 0, overflowWrap: "anywhere",
+  gridArea: "copy", display: "grid", gap: theme.spacing(.25), minWidth: 0, overflowWrap: "anywhere",
+}));
+export const LineIdentity = styled(Box)(({ theme }) => ({
+  display: "grid", gap: theme.spacing(.25), minWidth: 0,
+  "[data-price-editing='false'] &": {
+    "--pos-price-display-layout": "contents",
+    gridTemplateColumns: "minmax(0, 1fr)", gridTemplateRows: "auto auto", gridAutoFlow: "column",
+  },
+  "@container (min-width: 42rem)": {
+    "[data-enlarged='false'] [data-price-editing='false'] &": {
+      "--pos-price-display-layout": "flex",
+      display: "flex", flexWrap: "wrap", alignItems: "center", columnGap: theme.spacing(1.5),
+    },
+  },
 }));
 export const LineTotal = styled(Typography)({
-  marginInlineStart: "auto", minWidth: 0, textAlign: "end", overflowWrap: "anywhere", fontWeight: 700,
+  position: "relative", minWidth: 0, maxWidth: "100%", textAlign: "end", overflowWrap: "anywhere", fontWeight: 700,
   fontSize: "calc(.875rem * var(--sale-font-scale, 1))", fontVariantNumeric: "tabular-nums",
+  "@container (min-width: 17rem)": { minWidth: "4.75rem" },
 });
-export const RemoveAction = styled("span")({ gridArea: "remove", justifySelf: "end", alignSelf: "start" });
+export const RemoveAction = styled("span")({ gridArea: "remove", justifySelf: "end", display: "inline-flex" });
 export const ActionButton = styled(IconButton)(({ theme }) => ({
   width: 44, height: 44, borderRadius: theme.spacing(1.5), color: theme.palette.primary.main,
   border: `1px solid ${alpha(theme.palette.primary.main, .3)}`, backgroundColor: alpha(theme.palette.primary.main, .08),
@@ -61,8 +81,9 @@ export const ActionButton = styled(IconButton)(({ theme }) => ({
   "&.Mui-disabled": { backgroundColor: theme.palette.action.disabledBackground, borderColor: "transparent" },
 }));
 export const RemoveButton = styled(IconButton)(({ theme }) => ({
-  width: 44, height: 44, borderRadius: theme.spacing(1.5), color: theme.palette.error.main,
-  backgroundColor: alpha(theme.palette.error.main, .08), border: `1px solid ${alpha(theme.palette.error.main, .3)}`,
+  width: "var(--pos-line-control-size)", height: "var(--pos-line-control-size)",
+  borderRadius: theme.spacing(1), color: theme.palette.error.main,
+  "& svg": { width: 18, height: 18 },
   "&:hover": { backgroundColor: alpha(theme.palette.error.main, .16) },
   "&.Mui-focusVisible": { outline: `2px solid ${theme.palette.error.main}`, outlineOffset: 2 },
 }));
