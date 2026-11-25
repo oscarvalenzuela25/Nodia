@@ -249,19 +249,31 @@ export async function publishPages({ environment = process.env, metadata, direct
       { sourceSha: metadata.source_sha, marker: desired });
     record({ status: 'submitted', deployment_requested: true, deployment_id: deployment.id });
   }
-  for (let index = 0; index < pollLimit; index++) {
+  const deploymentId = deployment.id;
+  const complete = () => {
+    record({ status: 'complete', deployment_requested: true, deployment_id: deploymentId });
+    return { status: 'complete', source_sha: metadata.source_sha, deployment_id: deploymentId, deployment_requested: true };
+  };
+  for (let attempt = 0; ; attempt++) {
     requireCd(!['failure', 'canceled'].includes(deployment.latest_stage.status), 'pages_deployment_failed_requires_reconciliation');
     if (deployment.latest_stage.name === 'deploy' && deployment.latest_stage.status === 'success') {
       const final = await readPages(environment, { request });
-      requireCd(final.deployment_id === deployment.id && final.recorded_marker === desired, 'pages_canonical_version_mismatch');
-      record({ status: 'complete', deployment_requested: true, deployment_id: deployment.id });
-      return { status: 'complete', source_sha: metadata.source_sha, deployment_id: deployment.id, deployment_requested: true };
+      requireCd(final.deployment_id === deploymentId && final.recorded_marker === desired, 'pages_canonical_version_mismatch');
+      return complete();
     }
+    requireCd(attempt < pollLimit, 'pages_status_deadline_requires_reconciliation');
     await sleep(5_000);
-    deployment = validateDeployment((await client.api(`${client.projectPath}/deployments/${deployment.id}`)).result,
-      { sourceSha: metadata.source_sha, marker: desired });
+    try {
+      const status = (await client.api(`${client.projectPath}/deployments/${deploymentId}`)).result;
+      deployment = validateDeployment(status, { sourceSha: metadata.source_sha, marker: desired });
+      requireCd(deployment.id === deploymentId, 'pages_deployment_identity_invalid');
+    } catch (error) {
+      // Cloudflare can temporarily hide a deployment's detail after acknowledging creation.
+      if (!(error instanceof CdRejected) || error.message !== 'pages_read_failed_deployment_status_http_404_cf_8000009') throw error;
+      const canonical = await readPages(environment, { request });
+      if (canonical.deployment_id === deploymentId && canonical.recorded_marker === desired) return complete();
+    }
   }
-  throw new CdRejected('pages_status_deadline_requires_reconciliation');
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
