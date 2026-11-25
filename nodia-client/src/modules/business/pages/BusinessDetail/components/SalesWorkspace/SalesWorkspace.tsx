@@ -424,7 +424,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
               <PaymentMethodButtons value={draft.paymentMethod} disabled={controlsDisabled} onChange={(method) => { if (!priceEditor.blocksChange()) draft.setPaymentMethod(method); }} />
               {draft.paymentMethod === "other" && (draft.sale ? <Typography variant="body2">{t("business:pos.payment_other")}{draft.description ? ` · ${draft.description}` : ""}</Typography> : <Alert severity="warning">{t("business:pos.legacy_other_select")}</Alert>)}
               {busy && <LinearProgress />}
-              {(!draft.sale || draft.sale.status === "draft") && <CompleteSaleButton fullWidth variant="contained" color="success" startIcon={<CheckOutlined />} disabled={!canComplete} onClick={() => setConfirm("complete")}>{t("business:pos.complete")}</CompleteSaleButton>}
+              {(!draft.sale || draft.sale.status === "draft") && <CompleteSaleButton fullWidth variant="contained" color="inherit" startIcon={<CheckOutlined />} disabled={!canComplete} onClick={() => setConfirm("complete")}>{t("business:pos.complete")}</CompleteSaleButton>}
               {draft.sale?.status === "completed" && <>
                 <Button variant="contained" color="error" sx={{ minHeight: 44 }} disabled={busy || Boolean(draft.pending)} onClick={() => setConfirm("cancel")}>{t("business:pos.cancel_sale")}</Button>
                 <Button variant="contained" sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || Boolean(draft.pending)} onClick={() => { if (draft.sale) void ticketPrinting.print(draft.sale, false); }}>{t("business:ticket.print_summary")}</Button>

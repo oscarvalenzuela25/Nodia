@@ -7,7 +7,7 @@ import CheckCircleOutlined from "@mui/icons-material/CheckCircleOutlined";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import type { PaymentMethod } from "../../../../../infrastructure/salesTypes";
-import { MethodButton, MethodGrid, MethodLabel } from "./styles";
+import { MethodButton, MethodGrid, MethodLabel, MethodName, MethodSelectionMark } from "./styles";
 
 const methods = [
   { value: "cash", Icon: PaymentsOutlined, tone: "success" },
@@ -23,8 +23,12 @@ export default function PaymentMethodButtons({ value, onChange, disabled }: { va
     <MethodLabel id={labelId} variant="body2">{t("business:pos.payment_method")}</MethodLabel>
     <MethodGrid role="group" aria-labelledby={labelId}>
       {methods.map(({ value: method, Icon, tone }) => <MethodButton key={method} type="button" variant="outlined" tone={tone} aria-pressed={method === value} disabled={disabled} onClick={() => onChange(method)}>
-        {method === value ? <CheckCircleOutlined /> : <Icon />}
-        <span>{t(`business:pos.payment_${method}`)}</span>
+        <Icon className="payment-method-icon" />
+        <MethodName>{t(`business:pos.payment_${method}`)}</MethodName>
+        {method === value && <MethodSelectionMark aria-hidden="true">
+          <CheckCircleOutlined />
+          {t("business:pos.payment_selected")}
+        </MethodSelectionMark>}
       </MethodButton>)}
     </MethodGrid>
   </Box>;
