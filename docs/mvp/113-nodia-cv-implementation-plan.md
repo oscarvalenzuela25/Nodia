@@ -531,13 +531,12 @@ prompt, esquema, verificador de evidencia, worker, ledger con
 
 #### 1. Confirmar la línea base y elegir el transporte de Codex
 
-**Línea base del 2026-11-25.** La VM mostró `gpt-6.2-sol` y `high` en
-el catálogo de Codex `0.171.0` aislado. La conexión configurada del
-laboratorio sigue con `codex_session_required` y su API usa `0.161.0`.
+**Línea base del 2026-11-25.** La VM usa Codex `0.171.0`. El sondeo
+dentro del namespace de montajes de la API confirmó la sesión existente
+y el catálogo autenticado de OpenAI con `gpt-6.2-sol` en `high` (Alto).
 El servicio de CV compilado reprodujo `agentic_transport_unavailable`
 con cero despachos. La evidencia incluye el mapa de fronteras y el CHECK
-de descriptor que requiere una extensión para CV. Retomar la observación
-autenticada al preparar el runtime y la sesión de la VM.
+de descriptor que requiere una extensión para CV.
 [Evidencia del paso 1](../evidence/nodia-cv-agentic-baseline-vm-20261125.md).
 
 Desde la raíz de la rama, una vez instaladas las dependencias bloqueadas:
@@ -552,13 +551,12 @@ npm --prefix nodia-server test -- src/nodia-cv/nodia-cv-selection.service.spec.t
   tabla qué pieza resuelve configuración, admisión, despacho, conciliación
   y ACK para API key. Identificar las columnas y restricciones Agentic ya
   existentes en el ledger antes de proponer otra migración.
-- [ ] Comparar los contratos de proceso de Codex y Teacher en
-  `ai-generation/` y `common/ai/codex/`. Comprobar en la VM el runtime
-  instalado, el host restringido si corresponde, la sesión registrada y el
-  descubrimiento exacto de `gpt-6.2-sol` con `high`. Hacer esta observación
-  sin inferencia. Registrar qué componentes faltan con fuente, huella y
-  entorno. Mantener evidencia separada de runtime, sesión, catálogo y
-  disponibilidad generativa.
+- [x] Comprobar en la VM el runtime instalado, la sesión registrada y el
+  descubrimiento exacto de `gpt-6.2-sol` con `high`, sin inferencia.
+- [ ] Completar la comparación de los contratos de proceso de Codex y
+  Teacher en `ai-generation/` y `common/ai/codex/`. Registrar qué
+  componentes necesita CV, incluido el host restringido si corresponde,
+  con fuente, huella y entorno.
 - [ ] Reproducir el bloqueo actual en la selección de CV y comprobar que
   deja cero despachos. Ejecutar la regresión de generaciones por API key
   con transporte sintético y almacenar únicamente el resultado saneado.
