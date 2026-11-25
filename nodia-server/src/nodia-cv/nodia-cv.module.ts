@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AiGenerationModule } from '../ai-generation/ai-generation.module.js';
+import { NodiaAiAdapterTransport } from '../nodia-ai-adapter/nodia-ai-adapter.service.js';
 import { NodiaAiRuntimePolicyModule } from '../nodia-ai-runtime/config/runtime-policy.module.js';
 import { AuthorizationModule } from '../authorization/authorization.module.js';
 import { NodiaAiJournalModule } from '../nodia-ai-recovery/nodia-ai-journal.module.js';
+import { CodexRuntimeModule } from '../common/ai/codex/codex-runtime.module.js';
+import { CodexRuntimeService } from '../common/ai/codex/codex-runtime.service.js';
+import { CodexChatRuntime } from '../common/ai/codex/codex-chat-runtime.js';
+import { NodiaCvCodexSelection } from './agentic/nodia-cv-codex-selection.js';
+import { NodiaCvCodexTransport } from './agentic/nodia-cv-codex-transport.js';
+import { NodiaCvGeminiTransport } from './agentic/nodia-cv-gemini-transport.js';
 import { NodiaCvProfileCreateReceiptEntity } from './entities/nodia-cv-profile-create-receipt.entity.js';
 import { NodiaCvProfileEntity } from './entities/nodia-cv-profile.entity.js';
 import { NodiaCvProfilesController } from './nodia-cv-profiles.controller.js';
@@ -26,6 +33,7 @@ import { NodiaCvPdfVersionsUseCase } from './use-case/nodia-cv-pdf-versions.use-
     AiGenerationModule,
     NodiaAiJournalModule,
     NodiaAiRuntimePolicyModule,
+    CodexRuntimeModule,
     TypeOrmModule.forFeature([
       NodiaCvProfileEntity,
       NodiaCvProfileCreateReceiptEntity,
@@ -39,6 +47,18 @@ import { NodiaCvPdfVersionsUseCase } from './use-case/nodia-cv-pdf-versions.use-
   providers: [
     NodiaCvProfilesService,
     NodiaCvProfilesUseCase,
+    NodiaAiAdapterTransport,
+    NodiaCvGeminiTransport,
+    NodiaCvCodexSelection,
+    {
+      provide: NodiaCvCodexTransport,
+      inject: [NodiaCvCodexSelection, CodexRuntimeService, CodexChatRuntime],
+      useFactory: (
+        selection: NodiaCvCodexSelection,
+        runtime: CodexRuntimeService,
+        chat: CodexChatRuntime,
+      ) => new NodiaCvCodexTransport(selection, runtime, chat.journal),
+    },
     NodiaCvSelectionService,
     NodiaCvGenerationScope,
     NodiaCvGenerationStore,

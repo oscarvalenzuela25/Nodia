@@ -1,4 +1,4 @@
-"""Closed private Teacher commands. No account, profile, SDK or IO on import."""
+"""Closed Teacher and CV text commands. No account, profile, SDK or IO on import."""
 from datetime import datetime
 from hashlib import sha256
 import json
@@ -8,17 +8,22 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, model_validator
 
 CONTRACT = "teacher-agentic-text/1"
+CV_CONTRACT = "cv-agentic-text/1"
+TextContract = Literal["teacher-agentic-text/1", "cv-agentic-text/1"]
 Hex64 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 UuidString = Annotated[str, Field(pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")]
 DecimalId = Annotated[str, Field(pattern=r"^[1-9][0-9]{0,18}$")]
+
+
+def owner_namespace(contract: TextContract) -> Literal["teacher", "cv"]:
+    return "cv" if contract == CV_CONTRACT else "teacher"
 
 
 class Closed(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, frozen=True)
 
 
-class TeacherObserve(Closed):
-    contract: Literal["teacher-agentic-text/1"]
+class TextSelection(Closed):
     model_id: str = Field(min_length=1, max_length=1024)
     effort_id: str | None = Field(max_length=256)
     configuration_generation: Hex64
@@ -31,6 +36,14 @@ class TeacherObserve(Closed):
         if value is not None and len(value.encode("utf-8")) > (1024 if info.field_name == "model_id" else 256):
             raise ValueError("Exact option byte budget exceeded")
         return value
+
+
+class TeacherObserve(TextSelection):
+    contract: Literal["teacher-agentic-text/1"]
+
+
+class CvObserve(TextSelection):
+    contract: Literal["cv-agentic-text/1"]
 
 
 KnownTool = Literal["finish", "ask_permission", "view_file", "task_boundary", "notify_user",
@@ -76,7 +89,7 @@ class TeacherCatalogInspection(Closed):
     binary_sha512: str = Field(pattern=r"^[0-9a-f]{128}$")
 
 
-class TeacherReference(TeacherObserve):
+class _TextOwner(Closed):
     operation_id: UuidString
     session_id: UuidString
     job_id: UuidString
@@ -104,6 +117,17 @@ class TeacherReference(TeacherObserve):
         return value
 
 
+class TeacherReference(TeacherObserve, _TextOwner):
+    pass
+
+
+class CvReference(CvObserve, _TextOwner):
+    owner_digest: Hex64
+
+
+TextReference = TeacherReference | CvReference
+StoredTextReference = Annotated[TextReference, Field(discriminator="contract")]
+
 def canonical_hash(value: dict[str, object]) -> str:
     """Node canonical JSON: sorted ASCII keys, literal Unicode, compact UTF-8."""
     return sha256(json.dumps(value,
@@ -114,7 +138,7 @@ def command_hash(command: dict[str, object]) -> str:
     return canonical_hash({k: v for k, v in command.items() if k != "request_hash"})
 
 
-class TeacherStart(TeacherReference):
+class _TextCommand(Closed):
     prompt: str = Field(min_length=1, max_length=131072)
     deadline_at: str = Field(min_length=1, max_length=64,
         pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$")
@@ -135,22 +159,45 @@ class TeacherStart(TeacherReference):
         return value
 
     @model_validator(mode="after")
-    def exact_hash(self) -> "TeacherStart":
+    def exact_hash(self) -> "_TextCommand":
         if self.request_hash != command_hash(self.model_dump()):
             raise ValueError("Command hash mismatch")
         return self
 
+
+class TeacherStart(TeacherReference, _TextCommand):
     def reference(self) -> TeacherReference:
         return TeacherReference.model_validate(self.model_dump(exclude={"prompt", "deadline_at"}))
 
 
-class TeacherAck(TeacherReference):
+class CvStart(CvReference, _TextCommand):
+    def reference(self) -> CvReference:
+        return CvReference.model_validate(self.model_dump(exclude={"prompt", "deadline_at"}))
+
+
+TextStart = TeacherStart | CvStart
+
+
+class _TextAck(Closed):
     terminal_proof_id: UuidString
     response_hash: Hex64 | None
 
 
+class TeacherAck(TeacherReference, _TextAck):
+    def reference(self) -> TeacherReference:
+        return TeacherReference.model_validate(self.model_dump(exclude={"terminal_proof_id", "response_hash"}))
+
+
+class CvAck(CvReference, _TextAck):
+    def reference(self) -> CvReference:
+        return CvReference.model_validate(self.model_dump(exclude={"terminal_proof_id", "response_hash"}))
+
+
+TextAck = TeacherAck | CvAck
+
+
 class TeacherDispatchExclusion(Closed):
-    contract: Literal["teacher-agentic-text/1"] = CONTRACT
+    contract: TextContract = CONTRACT
     operation_id: UuidString
     request_hash: Hex64
     session_generation: str = Field(pattern=r"^[0-9a-f]{32}$")
@@ -172,8 +219,7 @@ class TeacherAnswer(Closed):
         return value
 
 
-class TeacherObservation(Closed):
-    contract: Literal["teacher-agentic-text/1"] = CONTRACT
+class _TextObservation(Closed):
     available: bool
     reason: str | None
     observed_at: str
@@ -186,7 +232,15 @@ class TeacherObservation(Closed):
     native_io: Literal[False] = False
 
 
-class TeacherTerminalProof(TeacherReference):
+class TeacherObservation(_TextObservation):
+    contract: Literal["teacher-agentic-text/1"] = CONTRACT
+
+
+class CvObservation(_TextObservation):
+    contract: Literal["cv-agentic-text/1"] = CV_CONTRACT
+
+
+class _TextTerminalProof(Closed):
     terminal_proof_id: UuidString
     process_closed: Literal[True]
     remote_outcome: Literal["completed", "unknown"]
@@ -194,14 +248,30 @@ class TeacherTerminalProof(TeacherReference):
     observed_at: str
 
 
-class TeacherSnapshot(Closed):
-    contract: Literal["teacher-agentic-text/1"] = CONTRACT
+class TeacherTerminalProof(TeacherReference, _TextTerminalProof):
+    pass
+
+
+class CvTerminalProof(CvReference, _TextTerminalProof):
+    pass
+
+
+class _TextSnapshot(Closed):
     operation_id: UuidString
     state: Literal["running", "completed", "unknown"]
     text: str | None = Field(max_length=32768)
-    terminal_proof: TeacherTerminalProof | None
 
     @field_validator("text")
     @classmethod
     def response_bytes(cls, value: str | None) -> str | None:
         return TeacherAnswer(text=value).text if value is not None else None
+
+
+class TeacherSnapshot(_TextSnapshot):
+    contract: Literal["teacher-agentic-text/1"] = CONTRACT
+    terminal_proof: TeacherTerminalProof | None
+
+
+class CvSnapshot(_TextSnapshot):
+    contract: Literal["cv-agentic-text/1"] = CV_CONTRACT
+    terminal_proof: CvTerminalProof | None

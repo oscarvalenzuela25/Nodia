@@ -1,16 +1,14 @@
 import { useTranslation } from "react-i18next";
 import AiComposerSelector, { type AiComposerSelectorProps } from "../../../../components/AiComposerSelector";
-import type { NodiaAiConnection, NodiaAiSelection } from "../../../nodiaAi/infrastructure/types";
+import type { NodiaAiConnection } from "../../../nodiaAi/infrastructure/types";
+import { cvEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
+import type { CvEligibility } from "../../infrastructure/generationSchema";
 
 export type CvModelConnection = Omit<NodiaAiConnection, "modes"> & {
   modes: (NodiaAiConnection["modes"][number] & { cv_transport: "available" | "unsupported" })[];
 };
 
-export interface CvModelEligibility {
-  selection: NodiaAiSelection;
-  eligible: boolean;
-  reason_code: "agentic_transport_unavailable" | "configuration_unavailable" | "qualification_required" | "qualified";
-}
+export type CvModelEligibility = Pick<CvEligibility, "selection" | "eligible" | "reason_code">;
 
 export type CvModelSelectorProps = Omit<AiComposerSelectorProps<CvModelConnection>, "labels" | "unavailableMode" | "eligibility"> & {
   eligibility: CvModelEligibility | null;
@@ -37,14 +35,7 @@ export default function CvModelSelector({ eligibility, ...props }: CvModelSelect
         scope: t("model_selector.scope"),
         noConnections: t("model_selector.no_connections"),
         selectionMissing: t("model_selector.selection_missing"),
-        unavailableReason: reason => {
-          switch (reason) {
-            case "agentic_transport_unavailable": return t("model_selector.agentic_transport_unavailable");
-            case "configuration_unavailable": return t("model_selector.configuration_unavailable");
-            case "qualification_required": return t("model_selector.qualification_required");
-            default: return t("model_selector.selection_unavailable");
-          }
-        },
+        unavailableReason: reason => t(cvEligibilityReasonKey(reason)),
       }} />
   );
 }

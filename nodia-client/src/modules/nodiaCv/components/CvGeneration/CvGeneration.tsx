@@ -11,6 +11,7 @@ import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import TextInput from "../../../../components/inputs/TextInput";
 import { getHttpErrorMessage } from "../../../../config/httpFeedback";
 import type { NodiaAiSelection } from "../../../nodiaAi/infrastructure/types";
+import { cvEligibilityReasonKey } from "../../infrastructure/eligibilityPresentation";
 import {
   cvInputIdentity,
   cvOfferSchema,
@@ -56,7 +57,8 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   const profiles = useCvProfilesForGeneration(active);
   const profileDetail = useProfileDetail(active ? profileId : null);
   const catalog = useCvCatalog(active);
-  const eligibility = useCvEligibility(workingSelection ?? selection, active);
+  const candidateSelection = workingSelection ?? selection;
+  const eligibility = useCvEligibility(candidateSelection, active);
   const workflow = useCvGenerationWorkflow(active, onDenial);
   const visibleProfileId = workflow.visible?.receipt.profile_id;
   const previousProfile = useProfileDetail(
@@ -118,13 +120,13 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
       workflow.uncertain),
   );
   const unknownSame = identity !== null && workflow.hasUnknown(identity);
-  const eligible = Boolean(
-    eligibility.data?.eligible &&
-    sameCvSelection(eligibility.data.selection, selection) &&
-    !eligibility.isFetching &&
-    !eligibility.isError,
-  );
+  const appliedEligibility =
+    eligibility.isSuccess && sameCvSelection(eligibility.data.selection, selection)
+      ? eligibility.data
+      : null;
+  const eligible = appliedEligibility?.eligible === true && !eligibility.isFetching;
   const blocked =
+    !active ||
     !draftInput ||
     !profileOption ||
     profileDetail.isFetching ||
@@ -177,6 +179,16 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     if (reviewReady && draftView) setReviewTarget({ view: draftView, requirement });
   };
   const candidateError = eligibility.error ? getHttpErrorMessage(eligibility.error) : null;
+  const showAppliedAgenticStatus =
+    active &&
+    selection?.mode === "agentic" &&
+    sameCvSelection(candidateSelection, selection) &&
+    selectionListed &&
+    !selectionDirty &&
+    !catalog.isError &&
+    !catalog.isFetching &&
+    !eligibility.isFetching &&
+    (appliedEligibility !== null || eligibility.isError);
   const restoreSaved = async () => {
     const restored = await workflow.recover();
     if (!restored) return;
@@ -382,6 +394,28 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
             </Stack>
             {selection && catalog.isSuccess && !catalog.isFetching && !selectionListed && !selectionDirty && (
               <Alert severity="warning">{t("model_selector.selection_missing")}</Alert>
+            )}
+            {showAppliedAgenticStatus && (
+              <Alert severity={eligibility.isError ? "error" : eligible ? "success" : "info"} role="status">
+                <Stack spacing={1} sx={{ alignItems: { xs: "stretch", sm: "flex-start" } }}>
+                  <Typography variant="body2">
+                    {eligibility.isError
+                      ? (candidateError ?? t("core:server_error_alert"))
+                      : t(cvEligibilityReasonKey(appliedEligibility?.reason_code ?? null))}
+                  </Typography>
+                  {!eligible && (
+                    <Button
+                      color="inherit"
+                      variant="outlined"
+                      sx={primaryAction}
+                      disabled={eligibility.isFetching || workflow.busy || workflow.working}
+                      onClick={() => { void eligibility.refetch(); }}
+                    >
+                      {t("nodiaAi:configuration.check_again")}
+                    </Button>
+                  )}
+                </Stack>
+              </Alert>
             )}
             {profileOption && profile && !profileRevisionCurrent && !profileDetail.isFetching && (
               <Alert

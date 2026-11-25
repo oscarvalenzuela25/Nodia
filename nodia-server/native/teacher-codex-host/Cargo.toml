@@ -9,6 +9,7 @@ publish = false
 [features]
 default = ["codex"]
 codex = ["dep:codex-core", "dep:codex-config", "dep:codex-exec-server", "dep:codex-extension-api", "dep:codex-login", "dep:codex-protocol", "dep:codex-thread-store", "dep:toml", "dep:futures", "dep:async-stream"]
+cv = ["codex"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  cvEligibilitySchema,
   cvGenerationSchema,
   cvInputIdentity,
   cvOfferMaxBytes,
@@ -44,6 +45,29 @@ const receipt = {
 };
 
 describe("Nodia CV generation contract", () => {
+  it("accepts preflight failures without treating them as qualified and requires a complete accepted receipt", () => {
+    const selection = { ...input.selection, mode: "agentic" as const };
+    const pending = { selection, configured: null, qualified: false, eligible: false, checked_at: null };
+    for (const reason_code of [
+      "agentic_transport_unavailable",
+      "codex_runtime_unavailable",
+      "codex_session_required",
+      "codex_session_unverified",
+      "codex_model_unavailable",
+      "codex_effort_unavailable",
+      "codex_profile_busy",
+      "codex_usage_unavailable",
+      "qualification_required",
+    ]) {
+      expect(cvEligibilitySchema.safeParse({ ...pending, reason_code }).success).toBe(true);
+      expect(cvEligibilitySchema.safeParse({ ...pending, reason_code, qualified: true }).success).toBe(false);
+    }
+    const accepted = { ...pending, reason_code: "qualified", configured: true, qualified: true, eligible: true };
+    expect(cvEligibilitySchema.safeParse(accepted).success).toBe(false);
+    expect(cvEligibilitySchema.safeParse({ ...accepted, checked_at: receipt.created_at }).success).toBe(true);
+    expect(cvEligibilitySchema.safeParse({ ...pending, reason_code: "qualified" }).success).toBe(false);
+  });
+
   it("distinguishes edits of the offer, revision, and exact selection without comparing request keys", () => {
     const current = cvInputIdentity(input);
     const duplicate = { ...input, request_key: "different" };

@@ -1,11 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import type { EntityManager } from 'typeorm';
 import type { ActorReference } from '../../authorization/authority-transaction.js';
 import { ApiTextGenerationService } from '../../ai-generation/api-text-generation.service.js';
 import {
   NODIA_AI_RUNTIME_POLICY,
   type NodiaAiRuntimePolicy,
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
+import { CV_CODEX_HOST_MAX_PROMPT_BYTES } from '../agentic/nodia-cv-codex-wire.js';
 import type { UpdateNodiaCvDraftDto } from '../dto/nodia-cv-draft.dto.js';
 import type {
   NodiaCvSelectionDto,
@@ -23,7 +25,10 @@ import {
   NodiaCvProfilesService,
   profileSummary,
 } from '../nodia-cv-profiles.service.js';
-import { NodiaCvSelectionService } from '../nodia-cv-selection.service.js';
+import {
+  NodiaCvSelectionService,
+  type CvAgenticObservation,
+} from '../nodia-cv-selection.service.js';
 import { prepareCvDraftReview } from '../policies/nodia-cv-draft-review.js';
 import { cvGenerationError } from '../policies/nodia-cv-generation-errors.js';
 import {
@@ -84,10 +89,22 @@ export class NodiaCvGenerationsUseCase {
     });
   }
 
-  eligibility(actor: ActorReference, selection: NodiaCvSelectionDto) {
+  async eligibility(actor: ActorReference, selection: NodiaCvSelectionDto) {
+    let observation: CvAgenticObservation = null;
+    if (selection.mode === 'agentic') {
+      await this.scope.transaction((manager) =>
+        this.scope.authorize(manager, actor),
+      );
+      observation = await this.selections.observeAgentic(
+        selection,
+        AbortSignal.timeout(
+          this.policy.timing.provider_dispatch_seconds * 1_000,
+        ),
+      );
+    }
     return this.scope.transaction(async (manager) => {
       await this.scope.authorize(manager, actor);
-      return this.selections.eligibility(manager, selection);
+      return this.selections.eligibility(manager, selection, observation);
     });
   }
 
@@ -158,61 +175,110 @@ export class NodiaCvGenerationsUseCase {
     return this.admit(actor, input, false);
   }
 
-  /** Internal synthetic canary. There is deliberately no HTTP handler for admission of a probe. */
+  /** Internal admin-only canary with designated synthetic inputs. */
   startProbe(actor: ActorReference, input: StartNodiaCvGenerationDto) {
     return this.admit(actor, input, true);
   }
 
-  private admit(
+  private async admissionContext(
+    manager: EntityManager,
     actor: ActorReference,
     input: StartNodiaCvGenerationDto,
+    requestHash: string,
     qualification: boolean,
   ) {
-    const requestHash = cvGenerationIntent(input);
-    return this.scope.transaction(async (manager) => {
-      const current = await this.scope.authorize(manager, actor);
-      if (qualification && !current.isSuperAdmin)
-        cvGenerationError('generation_probe_forbidden', 403);
-      const previous = await this.store.status(manager, current.actorId, {
-        key: input.request_key,
-      });
-      if (previous) {
-        const visible = visibleGeneration(previous);
-        if (
-          previous.request_hash !== requestHash ||
-          previous.qualification !== qualification
-        )
-          cvGenerationError('request_key_conflict');
-        return visible;
-      }
-
-      const profile = await this.profiles.find(
-        manager,
-        input.profile_id,
-        current.actorId,
-        'read',
-      );
-      if (!profile) cvGenerationError('profile_not_found', 404);
-      if (profile.revision !== input.profile_revision)
-        cvGenerationError('stale_profile');
+    const current = await this.scope.authorize(manager, actor);
+    if (qualification && !current.isSuperAdmin)
+      cvGenerationError('generation_probe_forbidden', 403);
+    const previous = await this.store.status(manager, current.actorId, {
+      key: input.request_key,
+    });
+    if (previous) {
+      const visible = visibleGeneration(previous);
       if (
-        qualification &&
-        (input.offer_text !== CV_PROBE_OFFER ||
-          input.language !== 'en' ||
-          profile.full_name !== CV_PROBE_CANDIDATE ||
-          profile.data.main_stack.join(',') !== 'TypeScript')
-      )
-        cvGenerationError('generation_probe_invalid', 400);
+        previous.request_hash !== requestHash ||
+        previous.qualification !== qualification
+      ) {
+        cvGenerationError('request_key_conflict');
+      }
+      return { state: 'previous', visible } as const;
+    }
 
-      const snapshot = { ...profileSummary(profile), ...profile.data };
+    const profile = await this.profiles.find(
+      manager,
+      input.profile_id,
+      current.actorId,
+      'read',
+    );
+    if (!profile) cvGenerationError('profile_not_found', 404);
+    if (profile.revision !== input.profile_revision)
+      cvGenerationError('stale_profile');
+    if (
+      qualification &&
+      (input.offer_text !== CV_PROBE_OFFER ||
+        input.language !== 'en' ||
+        profile.full_name !== CV_PROBE_CANDIDATE ||
+        profile.data.main_stack.join(',') !== 'TypeScript')
+    )
+      cvGenerationError('generation_probe_invalid', 400);
+    return {
+      state: 'new',
+      current,
+      snapshot: { ...profileSummary(profile), ...profile.data },
+    } as const;
+  }
+
+  private async admit(
+    actor: ActorReference,
+    request: StartNodiaCvGenerationDto,
+    qualification: boolean,
+  ) {
+    const input = structuredClone(request);
+    const requestHash = cvGenerationIntent(input);
+    let observation: CvAgenticObservation = null;
+    if (input.selection.mode === 'agentic') {
+      const context = await this.scope.transaction((manager) =>
+        this.admissionContext(
+          manager,
+          actor,
+          input,
+          requestHash,
+          qualification,
+        ),
+      );
+      if (context.state === 'previous') return context.visible;
+      observation = await this.selections.observeAgentic(
+        input.selection,
+        AbortSignal.timeout(
+          this.policy.timing.provider_dispatch_seconds * 1_000,
+        ),
+      );
+    }
+    return this.scope.transaction(async (manager) => {
+      const context = await this.admissionContext(
+        manager,
+        actor,
+        input,
+        requestHash,
+        qualification,
+      );
+      if (context.state === 'previous') return context.visible;
+      const { current, snapshot } = context;
       try {
         const prepared = prepareCvTailoring({
           profile: snapshot,
           offer: input.offer_text,
           locale: input.language,
         });
-        const measured = this.api.measure(cvGenerationPrompt(prepared));
-        if (measured.utf8Bytes > measured.maximumUtf8Bytes)
+        const prompt = cvGenerationPrompt(prepared);
+        const { utf8Bytes, maximumUtf8Bytes } =
+          input.selection.mode === 'agentic'
+            ? {
+                utf8Bytes: Buffer.byteLength(prompt),
+                maximumUtf8Bytes: CV_CODEX_HOST_MAX_PROMPT_BYTES,
+              }
+            : this.api.measure(prompt);
+        if (utf8Bytes > maximumUtf8Bytes)
           cvGenerationError('generation_input_too_large', 413);
       } catch (error) {
         if (error instanceof CvTailoringError)
@@ -226,7 +292,14 @@ export class NodiaCvGenerationsUseCase {
       }
 
       await this.store.checkQueue(manager, current.actorId, this.policy);
-      const config = await this.selections.configure(input.selection, manager);
+      const config =
+        input.selection.mode === 'agentic'
+          ? await this.selections.configureAgentic(
+              input.selection,
+              manager,
+              observation,
+            )
+          : await this.selections.configure(input.selection, manager);
       const scopeHash = this.selections.scopeHash(input.selection, config);
       if (
         !qualification &&

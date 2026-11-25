@@ -9,7 +9,7 @@ from typing import Protocol
 from uuid import uuid4
 
 from service_errors import ServiceError
-from teacher_text_contract import TeacherObserve, TeacherReference
+from teacher_text_contract import TextSelection, TextReference
 from teacher_text_execution import policy_hash, runtime_hash, verified_binary, process_closed
 
 
@@ -38,13 +38,13 @@ class TeacherRuntimeBackend(Protocol):
 
     def unverified_identity(self) -> TeacherRuntimeIdentity: ...
 
-    async def validate_selection(self, command: TeacherObserve) -> None: ...
+    async def validate_selection(self, command: TextSelection) -> None: ...
 
     def process_closed(self) -> bool: ...
 
-    def recover_local_closure(self, reference: TeacherReference) -> bool: ...
+    def recover_local_closure(self, reference: TextReference) -> bool: ...
 
-    def cleanup_owned(self, reference: TeacherReference) -> None: ...
+    def cleanup_owned(self, reference: TextReference) -> None: ...
 
 
 class LegacyAgenticSource(Protocol):
@@ -101,7 +101,7 @@ class LegacyTeacherBackend:
         binary = await verified_binary(self.runner)
         return TeacherRuntimeIdentity(binary, runtime_hash(binary, self._version()), policy_hash())
 
-    async def validate_selection(self, command: TeacherObserve) -> None:
+    async def validate_selection(self, command: TextSelection) -> None:
         if not self._agentic.is_available() or self.runner is None:
             raise _unavailable("agentic_unavailable")
         status = await self._agentic.get_status()
@@ -120,10 +120,10 @@ class LegacyTeacherBackend:
     def process_closed(self) -> bool:
         return process_closed(self.runner)
 
-    def recover_local_closure(self, reference: TeacherReference) -> bool:
+    def recover_local_closure(self, reference: TextReference) -> bool:
         # Empty handles in a replacement process never attest an old owner.
         return False
 
-    def cleanup_owned(self, reference: TeacherReference) -> None:
+    def cleanup_owned(self, reference: TextReference) -> None:
         # The historical CLI has no separate durable owned-process journal.
         return None

@@ -140,18 +140,24 @@ export function useCvCatalog(active: boolean) {
   });
 }
 
+export const cvEligibilityQueryKey = (
+  scope: ReturnType<typeof useProfileScope>["scope"],
+  selection: NodiaAiSelection | null,
+) => [...scope, "generation-eligibility", selection] as const;
+
 export function useCvEligibility(selection: NodiaAiSelection | null, active: boolean) {
   const { scope, active: session } = useProfileScope();
   return useQuery({
-    queryKey: [...scope, "generation-eligibility", selection] as const,
+    queryKey: cvEligibilityQueryKey(scope, selection),
     queryFn: async ({ signal, queryKey }) => {
-      if (!selection) throw new Error("Missing Nodia CV model selection");
+      const requested = queryKey[4];
+      if (!requested) throw new Error("Missing Nodia CV model selection");
       const response = await mainInstance.get<unknown>(`${root}/ai-selection/eligibility`, {
         ...scopeHeaders(queryKey[2], signal),
-        params: { ...selection, effort_id: selection.effort_id ?? undefined },
+        params: { ...requested, effort_id: requested.effort_id ?? undefined },
       });
       const result = cvEligibilitySchema.parse(response.data);
-      if (!sameCvSelection(result.selection, selection))
+      if (!sameCvSelection(result.selection, requested))
         throw new Error("Unexpected Nodia CV model selection");
       return result;
     },

@@ -17,7 +17,7 @@ from pydantic import Field, model_validator
 from login_cgroups import LoginCgroups, boot_id, supervisor_certificate, supervisor_alive
 from owned_process import OwnedProcessOwner
 from service_errors import ServiceError
-from teacher_text_contract import Closed, Hex64, UuidString, TeacherReference
+from teacher_text_contract import CONTRACT, Closed, Hex64, UuidString, StoredTextReference, TextReference, owner_namespace
 
 RECORD_LIMIT = 8192
 STDOUT_LIMIT = 2 * 1024 * 1024
@@ -56,7 +56,7 @@ class TeacherSDKOwnerRecord(Closed):
     action: Literal["observe", "execute"]
     manifest_sha256: Hex64
     stdin_sha256: Hex64
-    reference: TeacherReference | None
+    reference: StoredTextReference | None
     owner: SupervisorProof
     root_scope: TeacherSDKParentRootProof
     containment: ContainmentProof | None = None
@@ -240,7 +240,7 @@ class TeacherSDKOwner(OwnedProcessOwner):
             raise fail("teacher_sdk_invalid_command", 422)
 
     async def run(self, sdk_command: list[str], *, operation_id: str, action: Literal["observe", "execute"],
-                  manifest_sha256: str, reference: TeacherReference | None, stdin: bytes,
+                  manifest_sha256: str, reference: TextReference | None, stdin: bytes,
                   env: dict[str, str], timeout: float) -> tuple[bytes, int]:
         if (sys.platform != "linux" or self._closed or self._admission.locked()
                 or not isinstance(stdin, bytes) or len(stdin) > (16384 if action == "observe" else 800000)
@@ -254,7 +254,7 @@ class TeacherSDKOwner(OwnedProcessOwner):
         async with self._admission:
             self._prepare_directory()
             _private_directory(self.workdir, private=False)
-            retired = self.directory.parent / "teacher_retired" / (operation_id + ".json")
+            retired = self._retired_path(operation_id, reference)
             try:
                 retired.lstat()
             except FileNotFoundError:
@@ -458,7 +458,7 @@ class TeacherSDKOwner(OwnedProcessOwner):
         except (OSError, ValueError, ServiceError):
             return False
 
-    def recover_local_closure(self, reference: TeacherReference) -> bool:
+    def recover_local_closure(self, reference: TextReference) -> bool:
         record = self.read(reference.operation_id)
         if record is None or record.action != "execute" or record.reference != reference:
             return False
@@ -490,14 +490,18 @@ class TeacherSDKOwner(OwnedProcessOwner):
         self._path(record.operation_id).unlink()
         self._sync(self.directory)
 
-    def cleanup_owned(self, reference: TeacherReference) -> None:
+    def _retired_path(self, operation_id: str, reference: TextReference | None) -> Path:
+        namespace = owner_namespace(reference.contract if reference is not None else CONTRACT)
+        return self.directory.parent / (namespace + "_retired") / (operation_id + ".json")
+
+    def cleanup_owned(self, reference: TextReference) -> None:
         try:
             record = self.read(reference.operation_id)
             if record is None:
                 return
             if record.reference != reference or record.action != "execute":
                 raise ValueError()
-            retired = _private_json(self.directory.parent / "teacher_retired" / (reference.operation_id + ".json"))
+            retired = _private_json(self._retired_path(reference.operation_id, reference))
             if (not {"operation_id", "attempt_id", "request_hash", "ack_digest"} <= retired.keys()
                     or retired.keys() - {"operation_id", "attempt_id", "request_hash", "ack_digest", "failure"}
                     or any(retired[key] != getattr(reference, key) for key in ("operation_id", "attempt_id", "request_hash"))

@@ -23,6 +23,7 @@ export class NodiaAiAdapterTransport {
     try {
       response = await fetch(new URL(path, envs.GEMINI_MICROSERVICE_URL), {
         method: 'POST',
+        ...(path.startsWith('/cv/agentic-text/') ? { redirect: 'error' } : {}),
         headers: {
           'Content-Type': 'application/json',
           'X-Nodia-Service-Token': envs.GEMINI_SERVICE_TOKEN,
@@ -46,7 +47,7 @@ export class NodiaAiAdapterTransport {
     let bytes = 0;
     const maximumResponseBytes = dispatch && response.ok && path === '/nodia-ai/agentic/image/turn'
       ? Math.ceil(16777216 / 3) * 4 + 65536
-      : /^\/teacher\/agentic-text\/(start|status|reconcile)$/.test(path) ? 262144 : 131072;
+      : /^\/(?:teacher|cv)\/agentic-text\/(start|status|reconcile)$/.test(path) ? 262144 : 131072;
     try {
       while (true) {
         const item = await reader.read();
