@@ -1811,15 +1811,16 @@ revisar catálogo y el contraste del cobro en los dos modos de Nodia.
 En Punto de venta, el título del negocio queda disponible para lectores de
 pantalla y se retira del flujo visual. Las demás pestañas conservan su
 encabezado. El panel se ensancha en escritorio y muestra **Total** como
-etiqueta. Desde 21 rem de ancho del panel, **Nueva venta**, **Medio de pago**
-y sus opciones usan 20, 20 y 18 px respectivamente. La etiqueta **Total**
-usa 28 px y su importe 32 px. **Confirmar venta** ocupa todo el ancho, con
-texto de 20 px y altura mínima de 56 px. En escritorio, el panel puede llegar
-a 24 rem. Desde 23 rem de ancho del panel, el relleno y la separación interior
-aumentan. La etiqueta **Total** y su importe usan 30 y 36 px, los medios de
-pago tienen botones de al menos 56 px y **Confirmar venta** llega a 60 px.
-En tamaños menores, la tipografía se adapta al espacio. Es un cambio de presentación del POS nativo sin
-impacto sobre los contratos de negocio ni el contexto publicado de NodiaAI.
+etiqueta. En escritorio, el panel puede llegar a 26 rem. Desde 23 rem de
+ancho del panel, **Total** y su importe usan 32 y 42 px, los medios de pago
+tienen etiquetas de 20 px e iconos de 32 px, y **Confirmar venta** mide al
+menos 68 px. Los medios se apilan si el panel tiene menos de 21 rem de
+ancho. El seleccionado conserva su icono y se destaca con fondo sólido,
+una marca y la etiqueta **Seleccionado**. Se refuerzan los bordes y el
+contorno de foco de los botones. **Confirmar venta** usa un fondo neutro de
+alto contraste. **Efectivo** es la selección inicial de una venta nueva.
+El cambio es de presentación del POS nativo y conserva los contratos de
+negocio y el contexto publicado de NodiaAI.
 
 ### Filas compactas del carrito
 
