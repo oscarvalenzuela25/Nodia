@@ -4,6 +4,14 @@ type ModelSelection = { model_id: string; effort_id: string | null };
 type ModelVariant<T> = { model: T; effort: string };
 export type CatalogModelOption<T> = { value: string; label: string; variants: ModelVariant<T>[]; model: T };
 
+/** Antigravity's visible Extra level uses xhigh on the wire. */
+export function modelVariantLabel(label: string) {
+  const match = /^(\S(?:.*\S)?) \(([^()]+)\)$/.exec(label);
+  if (!match) return undefined;
+  const effort = match[2].toLowerCase();
+  return { label: match[1], effort: effort === "extra" || effort === "extra high" ? "xhigh" : effort };
+}
+
 /** Present explicit catalog variants together without creating an executable family ID. */
 export function catalogModelOptions<T extends CatalogVariantModel>(
   models: T[], groupVariants: boolean, current: ModelSelection,
@@ -12,15 +20,15 @@ export function catalogModelOptions<T extends CatalogVariantModel>(
   if (!groupVariants) return models.map(flat);
   const groups = new Map<string, { label: string; variants: ModelVariant<T>[] }>();
   for (const model of models) {
-    const label = /^(\S(?:.*\S)?) \(([^()]+)\)$/.exec(model.label);
-    if (!label) continue;
-    const matches = model.efforts.filter(item => item.effort_id.toLowerCase() === label[2].toLowerCase());
+    const variant = modelVariantLabel(model.label);
+    if (!variant) continue;
+    const matches = model.efforts.filter(item => item.effort_id.toLowerCase() === variant.effort);
     const effort = matches.length === 1 ? matches[0] : undefined;
     if (!effort || !model.model_id.endsWith(`-${effort.effort_id}`)) continue;
     const baseId = model.model_id.slice(0, -effort.effort_id.length - 1);
     if (!baseId) continue;
-    const key = JSON.stringify([baseId, label[1]]);
-    const group = groups.get(key) ?? { label: label[1], variants: [] };
+    const key = JSON.stringify([baseId, variant.label]);
+    const group = groups.get(key) ?? { label: variant.label, variants: [] };
     group.variants.push({ model, effort: effort.effort_id });
     groups.set(key, group);
   }

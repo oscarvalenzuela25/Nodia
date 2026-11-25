@@ -1,4 +1,4 @@
-import { openAiApiReasoningPreferences } from "../../../../../../../generalSettings/pages/AiProviders/infrastructure/modelCards";
+import { isGeminiAgenticExtraVariant, openAiApiReasoningPreferences } from "../../../../../../../generalSettings/pages/AiProviders/infrastructure/modelCards";
 import type { VerifyIaProviderItem, InvoiceAiConnectionMode, InvoiceAiModel } from "../../../../../../infrastructure/types";
 
 export type InvoiceAiMode = InvoiceAiConnectionMode;
@@ -89,7 +89,8 @@ export const resolveInvoiceAiConfiguration = (
     ? typeof level === "string" && /^[a-z][a-z0-9_-]{0,31}$/.test(level) ? level : undefined
     : typeof level === "string" && (provider?.key === "openai" && mode === "api_key"
       ? openAiApiReasoningPreferences.some(item => item === level)
-      : ["low", "medium", "high"].includes(level)) ? level : undefined;
+      : ["low", "medium", "high"].includes(level)
+        || (provider?.key === "gemini" && mode === "agentic" && level === "xhigh")) ? level : undefined;
   const observedMode = provider?.active_mode
     ?? (isInvoiceAiMode(provider?.default_mode) ? provider.default_mode : isInvoiceAiMode(provider?.mode) ? provider.mode : null);
   return {
@@ -137,16 +138,25 @@ export const getInvoiceAiSelectionOptions = (
   }
   const modelInfo = models.find(item => item.id === configuration.model);
   const codex = provider?.key === "openai" && mode === "agentic";
+  const geminiAgentic = provider?.key === "gemini" && mode === "agentic";
+  const observedExtra = geminiAgentic && observedModels !== undefined && modelInfo
+    && isGeminiAgenticExtraVariant(modelInfo);
   const efforts = !configuration.model || !models.length ? [] : codex
     ? (modelInfo?.supportedReasoningEfforts ?? []).filter(item => typeof item === "string" && /^[a-z][a-z0-9_-]{0,31}$/.test(item))
     : provider?.key === "openai" && mode === "api_key" ? [...openAiApiReasoningPreferences]
+    : observedExtra ? ["xhigh"]
     : provider?.key === "gemini" ? ["low", "medium", "high"] : [];
   const thinkingOptions = Array.from(new Set(efforts)).map(value => ({ value, label: value }));
   if (configuration.thinkingLevel && !thinkingOptions.some(item => item.value === configuration.thinkingLevel)) {
     thinkingOptions.unshift({ value: configuration.thinkingLevel, label: configuration.thinkingLevel });
   }
   const modelUnavailable = observedModels !== undefined && (!modelInfo || (codex && !modelInfo.inputModalities?.includes("image")));
-  const effortUnavailable = Boolean(codex && configuration.thinkingLevel && observedModels !== undefined && !efforts.includes(configuration.thinkingLevel));
+  const effortUnavailable = Boolean(
+    configuration.thinkingLevel && (
+      (codex && observedModels !== undefined && !efforts.includes(configuration.thinkingLevel))
+      || (geminiAgentic && (configuration.thinkingLevel === "xhigh" ? !observedExtra : observedExtra))
+    ),
+  );
   return {
     ...configuration, modelOptions, thinkingOptions, defaultModel,
     modelUnavailable, effortUnavailable,

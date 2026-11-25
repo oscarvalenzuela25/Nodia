@@ -8,6 +8,31 @@ const firstModel = (fields: Record<string, unknown>) =>
   (fields.available_models as Record<string, unknown>[])[0];
 
 describe('configured model selector metadata', () => {
+  it('offers Extra only for the exact Gemini Agentic variant, with separate API preferences', () => {
+    const available_models = [
+      { id: 'fixture-extended-xhigh', name: 'Fixture Extended (XHigh)' },
+      { id: 'fixture-standard-high', name: 'Fixture Standard (High)' },
+      { id: 'fixture-unlabelled-xhigh', name: 'Fixture Unlabelled' },
+    ];
+    const fields = {
+      agentic: { available_models, thinking_level: 'xhigh' },
+      api_key: { available_models },
+    };
+    const connection = projectNodiaAiConnection({
+      id: '1', label: 'Fixture connection', provider_key: 'gemini', is_active: true,
+      is_default: false, default_mode: 'agentic', catalog_active: true,
+      use_agentic: true, use_api_key: true, can_use_agentic: true, can_use_api_key: true, fields,
+    });
+    const agentic = connection.modes.find(mode => mode.mode === 'agentic')!;
+    expect(agentic.models.map(model => model.efforts)).toEqual([
+      [{ effort_id: 'xhigh', label: 'Extra' }],
+      [{ effort_id: 'high', label: 'high' }],
+      ['low', 'medium', 'high'].map(level => ({ effort_id: level, label: level })),
+    ]);
+    const api = connection.modes.find(mode => mode.mode === 'api_key')!;
+    expect(api.models[0].efforts.map(item => item.effort_id)).toEqual(['low', 'medium', 'high']);
+  });
+
   it('preserves dynamic effort choices through GET projection and a preference update without restoring observed capabilities', () => {
     const modelId = 'fixture-future-model';
     const fields = {

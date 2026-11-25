@@ -30,7 +30,7 @@ import {
 } from "../../../../infrastructure/useServices";
 import type { DiscoveredModelItem } from "../../../../infrastructure/types";
 import type { SyncModelsModalProps } from "./types";
-import { modelCardContains, modelCardEffort, providerModelCards } from "../../../../infrastructure/modelCards";
+import { compareGeminiAgenticEfforts, geminiAgenticEffortTranslation, modelCardContains, modelCardEffort, providerModelCards } from "../../../../infrastructure/modelCards";
 import { selectSyncCards, syncCardSelected, syncModelsFieldsPatch, syncRoleOptions, validDiscoveredModels, type SyncModelCard } from "../../../../infrastructure/syncModelSelection";
 import {
   ModalContentContainer,
@@ -280,7 +280,8 @@ const SyncModelsEditor: FC<SyncModelsModalProps> = ({
         label={t("ai_providers:detail.reasoning_model_label", { model: card.label })}
         value={value}
         placeholder={t("ai_providers:modal_sync_models.choose_reasoning")}
-        options={card.variants.map(item => ({ value: item.effort, label: t(`ai_providers:detail.level_${item.effort}`) }))}
+        options={card.variants.map(item => item.effort).sort(compareGeminiAgenticEfforts)
+          .map(effort => ({ value: effort, label: t(geminiAgenticEffortTranslation(effort)) }))}
         clearable={false}
         disabled={isSubmitting || isLoadingDiscovery}
         onChange={value => {

@@ -1,5 +1,25 @@
 # Contrato funcional de conexiones IA y regresiones
 
+## Gemini 4 en el selector Agentic — 2026-11-24
+
+La migración `1794020000000` amplía la política de las conexiones Gemini
+que todavía permiten sólo Hydrogen High. El selector puede mostrar las
+familias **Gemini 4 Neon**, **Gemini 4 Carbon** y **Gemini 4 Hydrogen**.
+Actualizar modelos cruza los IDs configurados con los del catálogo vivo de
+la cuenta. Cada familia agrupa únicamente las variantes explícitas que
+devuelve ese catálogo. Neon e Hydrogen pueden ofrecer Low, Medium, High y
+Extra (`xhigh`). Carbon publica Low, Medium y High. Los IDs y niveles
+provienen del [catálogo de Antigravity CLI](https://antigravity.google/docs/cli/headless/#select-a-model-effort-or-agent).
+
+La migración conserva las selecciones y los modelos activos existentes.
+La activación de las familias en Ajustes utiliza los datos sincronizados y
+es independiente de asignar un modelo principal o el foco OCR. API key y
+Codex conservan políticas separadas. La selección Extra usa el ID exacto
+de la variante y el adaptador mantiene el preflight sin inferencia del CLI.
+El catálogo y esas comprobaciones no califican la generación real ni
+amplían las modalidades de cada módulo.
+[Ficha candidata](../nodia-ai/knowledge/general-settings/features/ai-provider-interface-and-module-access.md#gemini-4-en-el-selector-agentic--2026-11-24).
+
 ## Catálogos de Agentic por conexión — 2026-11-24
 
 Una conexión puede guardar `fields.agentic.allowed_model_ids` con los IDs

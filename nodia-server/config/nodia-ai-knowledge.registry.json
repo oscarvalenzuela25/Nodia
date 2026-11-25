@@ -5803,7 +5803,7 @@
         },
         {
           "path": "nodia-server/src/common/ai/gemini.service.ts",
-          "sha256": "d1d68a9dd196adf1dc24fd5e86af18ed8d50f2637b9f946f6c69e48560193073"
+          "sha256": "0685601f1aaa3c505907b69024fbe75ecdb65eb97f925c54bd1b4f7f11dabd8a"
         },
         {
           "path": "nodia-server/src/common/ai/invoice-extraction.ts",
