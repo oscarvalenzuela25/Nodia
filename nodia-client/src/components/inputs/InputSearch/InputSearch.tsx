@@ -30,6 +30,7 @@ const InputSearch: FC<InputSearchProps> = ({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onChangeRef = useRef(onChange);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const initialFocusRef = useRef<{ origin: Element | null; handled: boolean } | null>(null);
   const isFocusedRef = useRef<boolean>(false);
   const wasFocusedBeforeDisabledRef = useRef<boolean>(false);
 
@@ -41,6 +42,20 @@ const InputSearch: FC<InputSearchProps> = ({
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!autoFocus || !input || initialFocusRef.current?.handled) return;
+
+    const { activeElement, body } = input.ownerDocument;
+    const initialFocus = initialFocusRef.current ??= { origin: activeElement, handled: false };
+    if (disabled) return;
+
+    initialFocus.handled = true;
+    if (activeElement === initialFocus.origin || activeElement === body) {
+      input.focus({ preventScroll: true });
+    }
+  }, [autoFocus, disabled]);
 
   // Cleanup pending timer on unmount
   useEffect(() => {
@@ -59,8 +74,11 @@ const InputSearch: FC<InputSearchProps> = ({
       }
     } else if (wasFocusedBeforeDisabledRef.current) {
       wasFocusedBeforeDisabledRef.current = false;
-      isFocusedRef.current = true;
-      inputRef.current?.focus();
+      const input = inputRef.current;
+      if (input && input.ownerDocument.activeElement === input.ownerDocument.body) {
+        input.focus({ preventScroll: true });
+      }
+      isFocusedRef.current = input !== null && input.ownerDocument.activeElement === input;
     }
   }, [disabled]);
 
@@ -120,7 +138,6 @@ const InputSearch: FC<InputSearchProps> = ({
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      autoFocus={autoFocus}
       placeholder={placeholder ?? t("search", "Buscar...")}
       disabled={disabled}
       fullWidth={fullWidth}

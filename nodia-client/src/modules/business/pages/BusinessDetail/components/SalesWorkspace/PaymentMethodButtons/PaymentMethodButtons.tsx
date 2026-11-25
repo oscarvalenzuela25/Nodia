@@ -10,22 +10,21 @@ import type { PaymentMethod } from "../../../../../infrastructure/salesTypes";
 import { MethodButton, MethodGrid } from "./styles";
 
 const methods = [
-  { value: "cash", Icon: PaymentsOutlined },
-  { value: "debit_card", Icon: CreditCardOutlined },
-  { value: "credit_card", Icon: CreditScoreOutlined },
-  { value: "bank_transfer", Icon: AccountBalanceOutlined },
+  { value: "cash", Icon: PaymentsOutlined, tone: "success" },
+  { value: "debit_card", Icon: CreditCardOutlined, tone: "primary" },
+  { value: "credit_card", Icon: CreditScoreOutlined, tone: "warning" },
+  { value: "bank_transfer", Icon: AccountBalanceOutlined, tone: "info" },
 ] as const;
 
 export default function PaymentMethodButtons({ value, onChange, disabled }: { value: PaymentMethod; onChange: (value: PaymentMethod) => void; disabled: boolean }) {
   const { t } = useTranslation("business");
   const labelId = useId();
   return <Box>
-    <Typography id={labelId} sx={{ fontWeight: 600, mb: 1 }}>{t("business:pos.payment_method")}</Typography>
+    <Typography id={labelId} variant="body2" sx={{ fontWeight: 700, mb: .75 }}>{t("business:pos.payment_method")}</Typography>
     <MethodGrid role="group" aria-labelledby={labelId}>
-      {methods.map(({ value: method, Icon }) => <MethodButton key={method} type="button" variant={method === value ? "contained" : "outlined"} aria-pressed={method === value} disabled={disabled} onClick={() => onChange(method)}>
-        <Icon sx={{ fontSize: 28 }} />
+      {methods.map(({ value: method, Icon, tone }) => <MethodButton key={method} type="button" variant="outlined" tone={tone} aria-pressed={method === value} disabled={disabled} onClick={() => onChange(method)}>
+        {method === value ? <CheckCircleOutlined /> : <Icon />}
         <span>{t(`business:pos.payment_${method}`)}</span>
-        {method === value && <CheckCircleOutlined sx={{ position: "absolute", top: 5, right: 5, fontSize: 16 }} />}
       </MethodButton>)}
     </MethodGrid>
   </Box>;

@@ -19,7 +19,13 @@ export function salesFixture(request: InternalAxiosRequestConfig, products: Prod
   const url = request.url ?? "";
   const response = (data: unknown, status = 200) => ({ config: request, data, status, statusText: "Synthetic POS QA", headers: {} });
   const reject = (status: number, message: string): never => { throw new AxiosError(message, "ERR_BAD_RESPONSE", request, undefined, response({ message }, status)); };
-  if (url.endsWith("/products/availability-summary")) return response({ total: 27, available: 25, unavailable: 1, unknown: 1, activity: "active" });
+  if (url.endsWith("/products/availability-summary")) {
+    const active = products.filter((product) => product.is_active);
+    const tracked = active.filter((product) => product.track_stock);
+    return response({ total: active.length, tracked: tracked.length, untracked: active.length - tracked.length,
+      in_stock: tracked.filter((product) => product.stock > 0).length,
+      out_of_stock: tracked.filter((product) => product.stock === 0).length, activity: "active" });
+  }
   if (url.endsWith("/products/by-barcode")) {
     const product = products.find((item) => item.barcode === request.params?.barcode);
     return product ? response(product) : reject(404, "Código no vinculado (fixture)");
@@ -96,7 +102,7 @@ export function salesFixture(request: InternalAxiosRequestConfig, products: Prod
     const product = products.find((item) => item.id === line.product_id);
     const scaled = quantityThousandths(line.quantity);
     if (scaled === null || scaled <= 0n) return reject(400, "Cantidad inválida (fixture)");
-    if (!product || product.business_id !== businessId || !product.is_active || product.has_stock !== true || product.version !== line.expected_product_version || product.effective_price !== line.expected_unit_price) return reject(409, "El producto cambió (fixture)");
+    if (!product || product.business_id !== businessId || !product.is_active || product.version !== line.expected_product_version || product.effective_price !== line.expected_unit_price) return reject(409, "business:sale_product_changed");
     return { id: crypto.randomUUID(), product_id: product.id, position: index, quantity: line.quantity, product_version: product.version!, product_code_snapshot: product.code, product_barcode_snapshot: product.barcode ?? null,
       product_name_snapshot: product.name, measurement_unit_snapshot: product.measurement_unit ?? "unit", regular_unit_price: String(product.sale_price), offer_price_snapshot: product.offer_price === null || product.offer_price === undefined ? null : String(product.offer_price), is_offer_enabled_snapshot: product.is_offer_enabled ?? false,
       price_source: line.unit_price_override == null ? (product.is_offer_enabled ? "offer" : "regular") : "manual", unit_price: line.unit_price_override ?? line.expected_unit_price, line_total: lineSubtotal(line.unit_price_override ?? line.expected_unit_price, line.quantity) };
@@ -104,7 +110,24 @@ export function salesFixture(request: InternalAxiosRequestConfig, products: Prod
   if (command.payment_method) sale.payment_method = command.payment_method;
   if (command.payment_method_description !== undefined) sale.payment_method_description = command.payment_method_description;
   sale.total_amount = String(sale.items.reduce((sum, item) => sum + BigInt(item.line_total), 0n));
-  if (checkout || url.endsWith("/complete")) { if (BigInt(sale.total_amount) === 0n) return reject(400, "Total cero (fixture)"); sale.status = "completed"; sale.completed_at = now; }
+  if (checkout || url.endsWith("/complete")) {
+    if (BigInt(sale.total_amount) === 0n) return reject(400, "Total cero (fixture)");
+    const deductions = sale.items.flatMap((line) => {
+      const product = products.find((candidate) => candidate.id === line.product_id);
+      if (!product || product.version !== line.product_version) return reject(409, "business:sale_product_changed");
+      if (!product.track_stock) return [];
+      const quantity = quantityThousandths(line.quantity) ?? 0n;
+      const stock = quantityThousandths(product.stock) ?? 0n;
+      if (stock < quantity) return reject(409, "business:sale_stock_insufficient");
+      return [{ product, stock: Number(stock - quantity) / 1000 }];
+    });
+    for (const deduction of deductions) {
+      deduction.product.stock = deduction.stock;
+      deduction.product.version = (deduction.product.version ?? 0) + 1;
+    }
+    sale.status = "completed";
+    sale.completed_at = now;
+  }
   if (url.endsWith("/cancel")) { sale.status = "cancelled"; sale.cancelled_at = now; sale.cancellation_reason = command.cancellation_reason ?? null; }
   if (request.method === "delete") sale.status = "discarded";
   if (id) sale.version++;

@@ -11,6 +11,7 @@ import {
   saleCommandHash,
   saleMoney,
   saleItemInputsFromSnapshots,
+  saleStockDeductions,
   snapshotSaleItems,
 } from './sale-policy.js';
 
@@ -30,7 +31,8 @@ const product = (change: Partial<ProductSaleRow> = {}): ProductSaleRow => ({
   cost_price_tax: '952',
   version: 2,
   is_active: true,
-  has_stock: true,
+  track_stock: false,
+  stock: 0,
   ...change,
 });
 const input = (change: Partial<SaleItemInput> = {}): SaleItemInput => ({
@@ -357,14 +359,12 @@ describe('sale snapshots and transitions', () => {
       expect(() => snapshotSaleItems([manual], [product(change)])).toThrow(
         'business:sale_product_changed',
       );
-    for (const change of [
-      { has_stock: false },
-      { has_stock: null },
-      { is_active: false },
-    ])
-      expect(() => snapshotSaleItems([manual], [product(change)])).toThrow(
-        'business:sale_product_unavailable',
-      );
+    expect(() =>
+      snapshotSaleItems([manual], [product({ is_active: false })]),
+    ).toThrow('business:sale_product_unavailable');
+    expect(() =>
+      snapshotSaleItems([manual], [product({ track_stock: true, stock: 0 })]),
+    ).toThrow('business:sale_stock_insufficient');
     expect(() =>
       snapshotSaleItems(
         [input({ expected_unit_price: '900', unit_price_override: '900' })],
@@ -472,14 +472,28 @@ describe('sale snapshots and transitions', () => {
       ),
     ).toThrow('business:sale_product_price_missing');
   });
-  it.each([{ has_stock: false }, { has_stock: null }, { is_active: false }])(
-    'rejects unavailable or inactive product %j',
-    (patch) => {
-      expect(() => snapshotSaleItems([input()], [product(patch)])).toThrow(
-        'business:sale_product_unavailable',
-      );
-    },
-  );
+  it('rejects an inactive product even when it has a balance', () => {
+    expect(() =>
+      snapshotSaleItems([input()], [product({ is_active: false, stock: 10 })]),
+    ).toThrow('business:sale_product_unavailable');
+  });
+  it('accepts untracked products at zero and never deducts their balances', () => {
+    const products = [product({ stock: 0 })];
+    const items = snapshotSaleItems([input()], products);
+    expect(saleStockDeductions(items, products)).toEqual([]);
+  });
+  it('deducts exact fractional quantities and permits the last fraction', () => {
+    const products = [product({ track_stock: true, stock: 0.3 })];
+    const partial = snapshotSaleItems([input({ quantity: 0.1 })], products);
+    expect(saleStockDeductions(partial, products)).toEqual([{
+      product_id: '1', quantity: 0.1, stock_before: 0.3, stock_after: 0.2,
+    }]);
+    const all = snapshotSaleItems([input({ quantity: 0.3 })], products);
+    expect(saleStockDeductions(all, products)[0].stock_after).toBe(0);
+    expect(() =>
+      snapshotSaleItems([input({ quantity: 0.301 })], products),
+    ).toThrow('business:sale_stock_insufficient');
+  });
   it('rejects foreign/missing products and stale price/version observations', () => {
     expect(() => snapshotSaleItems([input()], [])).toThrow();
     expect(() =>

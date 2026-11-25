@@ -33,7 +33,7 @@ describe("POS catalogue shared infinite reader", () => {
     products.mockResolvedValueOnce(page([item("1"), item("2")], 1, 2)).mockReturnValueOnce(next.promise);
     const { result } = renderHook(() => usePosCatalog("business-a"), { wrapper: Wrapper });
     await waitFor(() => expect(result.current.products).toHaveLength(2));
-    expect(products).toHaveBeenCalledExactlyOnceWith({ page: 1, limit: 24, includes: true, q: { business_id_eq: "business-a", is_active_eq: true, has_stock_eq: true, search: undefined, s: "name asc" } });
+    expect(products).toHaveBeenCalledExactlyOnceWith({ page: 1, limit: 24, includes: true, q: { business_id_eq: "business-a", is_active_eq: true, sellable_stock_eq: true, search: undefined, s: "name asc" } });
     expect(result.current.hasNextPage).toBe(true); // Two returned rows are not the global total.
     let loading!: Promise<void>;
     act(() => { loading = result.current.loadMore(); void result.current.loadMore(); });

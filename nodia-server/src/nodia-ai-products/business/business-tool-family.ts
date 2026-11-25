@@ -38,7 +38,7 @@ const definitions: readonly [BusinessReadOperation, string, string, string][] =
       'products_get',
       'Products',
       'Get',
-      'Read current product prices, stock and commercial associations.',
+      'Read current prices and commercial associations. Stock is operational only with track_stock enabled.',
     ],
     [
       'products_list',
@@ -46,7 +46,8 @@ const definitions: readonly [BusinessReadOperation, string, string, string][] =
       'List',
       'List catalog products and selling prices for an accessible business, with code, name, provider, stock and price-variation filters. ' +
         'Productos del catálogo del negocio, listado con nombre, precio de venta regular y precio vigente con oferta. ' +
-        'Resolve the business with nodia_businesses_list if needed, filter by q.business_id_eq and check meta.total_pages for a complete list.',
+        'Resolve the business with nodia_businesses_list if needed, filter by q.business_id_eq and check meta.total_pages for a complete list. ' +
+        'Stock is operational only with track_stock enabled. has_stock is a former availability classification.',
     ],
     [
       'product_logs_get',
@@ -97,7 +98,7 @@ export function createNodiaAiBusinessToolFamily(
       const resourceKey = operation.replace(/_(get|list|query)$/, '');
       return {
         capabilityId: `nodia_${operation}`,
-        revision: resourceKey === 'products' || resourceKey === 'product_logs' ? 3 : 2,
+        revision: resourceKey === 'products' || resourceKey === 'product_logs' ? 4 : 2,
         publication: 'published',
         toolName: `nodia_${operation}`,
         kind: 'read',

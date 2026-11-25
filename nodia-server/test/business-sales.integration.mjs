@@ -14,6 +14,12 @@ import {
 import { AddProductPosCatalog1793400000000 } from '../dist/migrations/1793400000000-AddProductPosCatalog.js';
 import { CreateBusinessSales1793410000000 } from '../dist/migrations/1793410000000-CreateBusinessSales.js';
 import { AddDirectSaleCheckout1793420000000 } from '../dist/migrations/1793420000000-AddDirectSaleCheckout.js';
+import { AddProductMeasurementUnits1793430000000 } from '../dist/migrations/1793430000000-AddProductMeasurementUnits.js';
+import { AddFractionalSaleQuantities1793440000000 } from '../dist/migrations/1793440000000-AddFractionalSaleQuantities.js';
+import { AddManualSaleLinePrices1793450000000 } from '../dist/migrations/1793450000000-AddManualSaleLinePrices.js';
+import { RemoveProductProfitPercentage1793620000000 } from '../dist/migrations/1793620000000-RemoveProductProfitPercentage.js';
+import { AddProductAlias1793660000000 } from '../dist/migrations/1793660000000-AddProductAlias.js';
+import { TrackProductStock1794030000000 } from '../dist/migrations/1794030000000-TrackProductStock.js';
 import { verifyDirectSaleCheckout } from './business-sales-checkout.integration.mjs';
 import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-module-access.use-case.js';
 import { ModuleAccessGuard } from '../dist/authorization/module-access.guard.js';
@@ -162,12 +168,37 @@ try {
     );
   });
   await db.query(
-    `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,barcode,has_stock)
-    VALUES($1,'invoice-a','A',800,952,30,1500,'001234',true),($1,'invoice-b','B',200,238,30,500,'005678',true),
-    ($1,'unclassified','Unclassified',0,0,0,100,null,null),($1,'zero','Zero',0,0,0,0,null,true),
-    ($2,'private','Private',0,0,0,100,'001234',true)`,
+    `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,barcode,has_stock,stock)
+    VALUES($1,'invoice-a','A',800,952,30,1500,'001234',true,0),($1,'invoice-b','B',200,238,30,500,'005678',true,0),
+    ($1,'unclassified','Unclassified',0,0,0,100,null,null,-2),($1,'zero','Zero',0,0,0,0,null,true,0),
+    ($2,'private','Private',0,0,0,100,'001234',true,0)`,
     [business, foreign],
   );
+  for (const instance of [
+    new AddProductMeasurementUnits1793430000000(),
+    new AddFractionalSaleQuantities1793440000000(),
+    new AddManualSaleLinePrices1793450000000(),
+    new RemoveProductProfitPercentage1793620000000(),
+    new AddProductAlias1793660000000(),
+  ]) await migration(instance, 'up');
+  const tracking = new TrackProductStock1794030000000();
+  await check('stock migration preserves historical values and supports reversal before use', async () => {
+    await migration(tracking, 'up');
+    await migration(tracking, 'down');
+    await migration(tracking, 'up');
+    assert.deepEqual(
+      (await db.query('SELECT track_stock, stock FROM products WHERE id=3'))[0],
+      { track_stock: false, stock: '-2' },
+    );
+    await assert.rejects(
+      () => db.query('UPDATE products SET track_stock=true WHERE id=3'),
+      /ck_products_stock_balance/,
+    );
+    await assert.rejects(
+      () => db.query('UPDATE products SET stock=0.0001 WHERE id=3'),
+      /ck_products_stock_balance/,
+    );
+  });
   const modules = new CheckModuleAccessUseCase(db),
     store = new SaleService();
   const mutate = new MutateSaleUseCase(db, store, modules),
@@ -367,9 +398,9 @@ try {
     },
   );
   await check(
-    'unknown availability and foreign items never become sale lines',
+    'legacy availability has no effect on untracked products and foreign products stay out',
     async () => {
-      await assert.rejects(() => create([item('3', 1, '100')]), /unavailable/);
+      assert.equal((await create([item('3', 1, '100')])).items[0].product_id, '3');
       await assert.rejects(() => create([item('5', 1, '100')]), /unavailable/);
       assert.equal(
         (await db.query('SELECT has_stock FROM products WHERE id=3'))[0]
@@ -565,8 +596,8 @@ try {
       const ids = [];
       for (let index = 0; index < 35; index++) {
         const [p] = await db.query(
-          `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,has_stock)
-        VALUES($1,$2,$3,0,0,0,$4,true) RETURNING id::text`,
+          `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price)
+        VALUES($1,$2,$3,0,0,$4) RETURNING id::text`,
           [business, `rank-${index}`, `Rank ${index}`, index + 1],
         );
         const saleId = randomUUID();
@@ -844,8 +875,8 @@ try {
     'completion reads fresh lines after waiting for a concurrent draft update',
     async () => {
       const rows = await db.query(
-        `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,profit_percentage,sale_price,has_stock)
-      VALUES($1,$2,'Before wait',0,0,0,100,true),($1,$3,'After wait',0,0,0,100,true) RETURNING id::text`,
+        `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price)
+      VALUES($1,$2,'Before wait',0,0,100),($1,$3,'After wait',0,0,100) RETURNING id::text`,
         [business, randomUUID(), randomUUID()],
       );
       const sale = await create([item(rows[0].id, 1, '100')]);
@@ -865,7 +896,7 @@ try {
         await writer.query('UPDATE sales SET version=version+1 WHERE id=$1', [
           sale.id,
         ]);
-        await writer.query('UPDATE products SET has_stock=false WHERE id=$1', [
+        await writer.query('UPDATE products SET is_active=false WHERE id=$1', [
           rows[1].id,
         ]);
         completion = transition(
@@ -907,7 +938,7 @@ try {
     },
   );
   await check(
-    'catalog snapshots ignore availability/alternative but preserve cost-only changes',
+    'catalog price snapshots ignore stock tracking and alternatives but preserve cost-only changes',
     async () => {
       const products = domainContext.get(ProductService);
       const created = await products.createProduct(
@@ -918,9 +949,9 @@ try {
           name: 'Synthetic catalog fixture',
           cost_price: 100,
           cost_price_tax: 119,
-          profit_percentage: 30,
           sale_price: 500,
-          has_stock: true,
+          track_stock: true,
+          stock: 12.5,
         },
         undefined,
         actor,
@@ -933,7 +964,7 @@ try {
       );
       current = await products.updateProduct(
         created.id,
-        { has_stock: false, expected_version: current.version },
+        { track_stock: false, expected_version: current.version },
         undefined,
         actor,
       );
@@ -958,7 +989,7 @@ try {
       assert.equal(observed.effective_price, '900');
       current = await products.updateProduct(
         created.id,
-        { cost_price: 110, has_stock: true, expected_version: current.version },
+        { cost_price: 110, track_stock: true, stock: 12.5, expected_version: current.version },
         undefined,
         actor,
       );
@@ -986,7 +1017,7 @@ try {
         () =>
           products.updateProduct(
             created.id,
-            { has_stock: false, expected_version: current.version },
+            { track_stock: false, expected_version: current.version },
             undefined,
             actor,
           ),
@@ -995,11 +1026,60 @@ try {
       await db.query('UPDATE user_modules SET is_active=true WHERE user_id=1');
       assert.equal(
         (await products.findByBarcode(business, '000987654321', actor))
-          .has_stock,
+          .track_stock,
         true,
       );
     },
   );
+  await check('checkout waits for a concurrent OCR stock replacement and rejects the stale cart', async () => {
+    const [product] = await db.query(
+      `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price,track_stock,stock)
+       VALUES($1,$2,'OCR stock',0,0,1000,true,2.75) RETURNING id::text`,
+      [business, randomUUID()],
+    );
+    const ocr = db.createQueryRunner();
+    await ocr.connect();
+    await ocr.startTransaction();
+    let checkout;
+    try {
+      const [{ pid }] = await ocr.query('SELECT pg_backend_pid() AS pid');
+      const save = await domainContext.get(ProductService).prepareOcrConfirmation(
+        ocr.manager, business, null, [{
+          kind: 'manual_match',
+          product_id: product.id,
+          expected_version: 1,
+          line: { invoice_code: null, name: 'OCR stock', alias: 'OCR stock', alias_reviewed: true, cost_price: 0, quantity: 4 },
+          changes: {},
+          stock_action: { mode: 'replace', quantity: 1.125 },
+        }], actor,
+      );
+      await save();
+      const intent = { request_key: randomUUID(), items: [item(product.id, 1, '1000')] };
+      checkout = mutate.execute(business, 'checkout', intent, actor)
+        .then((result) => ({ result }), (error) => ({ error }));
+      let waiting = false;
+      for (let attempt = 0; attempt < 100 && !waiting; attempt++) {
+        const [state] = await db.query(
+          'SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE $1::int=ANY(pg_blocking_pids(pid))) AS waiting',
+          [pid],
+        );
+        waiting = state.waiting;
+        if (!waiting) await delay(10);
+      }
+      assert.equal(waiting, true);
+      await ocr.commitTransaction();
+      assert.match((await checkout).error?.message ?? '', /sale_product_changed/);
+      assert.deepEqual(await read.receipt(business, intent.request_key, actor), { status: 'unconfirmed' });
+      assert.deepEqual(
+        (await db.query('SELECT stock,version FROM products WHERE id=$1', [product.id]))[0],
+        { stock: '1.125', version: 2 },
+      );
+    } finally {
+      if (ocr.isTransactionActive) await ocr.rollbackTransaction();
+      await checkout;
+      await ocr.release();
+    }
+  });
   process.stdout.write(
     JSON.stringify({
       task: 'business-pos-sales',

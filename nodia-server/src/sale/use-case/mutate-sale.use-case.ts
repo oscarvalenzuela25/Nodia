@@ -13,6 +13,7 @@ import {
   normalizeSaleCommand,
   saleCommandHash,
   saleItemInputsFromSnapshots,
+  saleStockDeductions,
   snapshotSaleItems,
   saleUuid,
 } from '../policies/sale-policy.js';
@@ -21,6 +22,7 @@ import type {
   SaleMutationCommand,
   SaleItemSnapshot,
   SaleOperation,
+  SaleStockDeduction,
   SaleView,
 } from '../types/sale.types.js';
 
@@ -109,14 +111,18 @@ export class MutateSaleUseCase {
           operation,
         );
         let snapshots: SaleItemSnapshot[] | undefined;
+        let deductions: SaleStockDeduction[] = [];
         let total = '0';
         if (command.items !== undefined) {
           const products = await this.store.products(
             tx,
             businessId,
             command.items.map((item) => item.product_id),
+            operation === 'checkout',
           );
           snapshots = snapshotSaleItems(command.items, products);
+          if (operation === 'checkout')
+            deductions = saleStockDeductions(snapshots, products);
           total = snapshots
             .reduce((sum, item) => sum + BigInt(item.line_total), 0n)
             .toString();
@@ -171,13 +177,17 @@ export class MutateSaleUseCase {
             tx,
             businessId,
             previous.items.map((item) => item.product_id),
+            true,
           );
           // Validate saved observations; confirming never silently refreshes a stale cart.
           snapshotSaleItems(
             saleItemInputsFromSnapshots(previous.items),
             products,
           );
+          deductions = saleStockDeductions(previous.items, products);
         }
+        if (deductions.length)
+          await this.store.applyStockDeductions(tx, businessId, deductions);
         if (operation !== 'checkout' && command.payment_method !== undefined)
           await tx.query(
             'UPDATE sales SET payment_method=$3 WHERE business_id=$1 AND id=$2',
@@ -239,6 +249,7 @@ export class MutateSaleUseCase {
               to_status: result.status,
               total_amount: result.total_amount,
               item_count: result.items.length,
+              ...(deductions.length ? { stock_deductions: deductions } : {}),
               ...(result.items.some((item) => item.price_source === 'manual')
                 ? {
                     manual_prices: result.items

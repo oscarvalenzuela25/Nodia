@@ -111,7 +111,8 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
             name: { type: 'varchar' },
             alias: { type: 'varchar', nullable: true },
             barcode: { type: 'varchar', nullable: true },
-            stock: { type: 'integer' },
+            stock: { type: 'numeric' },
+            track_stock: { type: 'boolean' },
             cost_price: { type: 'integer' },
             cost_price_tax: { type: 'integer' },
 
@@ -349,6 +350,8 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
           code_not_in: ['A'],
           provider_id_not_null: 'true',
           stock_gteq: '0',
+          tracked_stock_lteq: '0',
+          sellable_stock_eq: 'true',
           search: 'Alias',
           code_presence: 'missing',
           barcode_presence: 'present',
@@ -365,11 +368,14 @@ describe('GetAllProductsUseCase: Ransack query contract', () => {
     expect(query.getQuery()).toContain('"product"."name" ILIKE :productSearch OR "product"."alias" ILIKE :productSearch');
     expect(query.getQuery()).toContain('NULLIF(BTRIM("product"."code", :productIdentifierWhitespace), \'\') IS NULL');
     expect(query.getQuery()).toContain('NULLIF(BTRIM("product"."barcode", :productIdentifierWhitespace), \'\') IS NOT NULL');
+    expect(query.getQuery()).toContain('"product"."track_stock" = true AND "product"."stock" <= :maxTrackedStock');
     expect(query.getParameters()).toMatchObject({
       productSearch: '%Alias%',
       ransack_0: 'x',
       ransack_1: ['A'],
       ransack_2: 0,
+      maxTrackedStock: 0,
+      sellableStock: true,
     });
   });
 });

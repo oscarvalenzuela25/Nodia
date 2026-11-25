@@ -3,6 +3,7 @@ import i18n from "../../../../../../../../translate";
 import { cashCatalogIdSchema, cashVersionSchema } from "../../../../../../infrastructure/cashSchemas";
 import { normalizeProductAlias, productAliasFits } from "../../../../../../infrastructure/productAliases";
 import { PRODUCT_PRICE_MAX, suggestedProductPrice } from "../ProductModal/productPricing";
+import { observeInvoiceStock, reviewLatestInvoiceStock, type InvoiceStockReview } from "./invoiceStock";
 import type {
   ExtractedInvoiceItem,
   ProductEntity,
@@ -28,7 +29,7 @@ export interface HistoricalProductData {
   cost_price: number;
   cost_price_tax: number;
   sale_price: number;
-  stock: number;
+  controlledStock?: number;
   created_at?: string;
 }
 
@@ -59,9 +60,8 @@ export interface InvoiceProvisionalRow {
   cost_price_tax: number;
   sale_price: number;
   quantity: number;
-  has_stock?: boolean;
   version?: number;
-  stock?: number; // Legacy type compatibility only, never assigned from invoice quantity.
+  stockReview?: InvoiceStockReview;
   is_active: boolean;
   isUpdate: boolean;
   isLocked?: boolean;
@@ -228,7 +228,7 @@ export const mapExtractedItemsToRows = (
         cost_price: Number(logMatch.cost_price ?? 0),
         cost_price_tax: Number(logMatch.cost_price_tax ?? 0),
         sale_price: Number(logMatch.sale_price ?? 0),
-        stock: Number(logMatch.stock ?? 0),
+        controlledStock: logMatch.track_stock === true ? logMatch.stock : undefined,
         created_at: logMatch.created_at,
       };
     } else if (existing) {
@@ -240,7 +240,7 @@ export const mapExtractedItemsToRows = (
         cost_price: Number(existing.cost_price ?? 0),
         cost_price_tax: Number(existing.cost_price_tax ?? 0),
         sale_price: Number(existing.sale_price ?? 0),
-        stock: Number(existing.stock ?? 0),
+        controlledStock: existing.track_stock === true ? existing.stock : undefined,
         created_at: existing.created_at,
       };
     }
@@ -262,7 +262,7 @@ export const mapExtractedItemsToRows = (
     const sale_price = suggestedProductPrice(cost_price_tax, 30) ?? Number.NaN;
     const name = (item.name || "").trim();
     const alias = normalizeProductAlias(existing ? existing.alias : name);
-    const quantity = item.quantity === null || item.quantity === undefined ? Number.NaN : Number(item.quantity);
+    const quantity = typeof item.quantity === "number" ? item.quantity : Number.NaN;
 
     const priceDiff = calculatePriceDiff(sale_price, historicalProduct?.sale_price);
 
@@ -277,7 +277,7 @@ export const mapExtractedItemsToRows = (
       cost_price_tax,
       sale_price,
       quantity,
-      has_stock: existing ? existing.has_stock ?? undefined : true,
+      stockReview: observeInvoiceStock(existing),
       version: existing?.version,
       is_active: existing?.is_active ?? true,
       isUpdate: Boolean(existing?.id),
@@ -299,7 +299,7 @@ export const mapExtractedItemsToRows = (
       cost_price_tax: rowData.cost_price_tax ?? 0,
       sale_price: rowData.sale_price ?? 0,
       quantity: rowData.quantity ?? Number.NaN,
-      has_stock: rowData.has_stock,
+      stockReview: rowData.stockReview,
       version: rowData.version,
       is_active: rowData.is_active ?? true,
       isUpdate: Boolean(rowData.isUpdate),
@@ -328,11 +328,12 @@ export function updateInvoiceProductRevision(row: InvoiceProvisionalRow, product
   if (!canBindInvoiceProduct(product, businessId) || row.id !== product.id) {
     throw new Error(i18n.t("business:invoice_match_invalid_product"));
   }
-  if (row.manual_match) return bindInvoiceRow(row, product, row.manual_match.fields, businessId);
+  const stockReview = reviewLatestInvoiceStock(observeInvoiceStock(product), row.stockReview);
+  if (row.manual_match) return { ...bindInvoiceRow(row, product, row.manual_match.fields, businessId), stockReview };
   return {
     ...row,
     version: product.version,
-    has_stock: product.has_stock ?? undefined,
+    stockReview,
     historicalProduct: {
       id: product.id,
       code: product.code,
@@ -341,7 +342,7 @@ export function updateInvoiceProductRevision(row: InvoiceProvisionalRow, product
       cost_price: Number(product.cost_price),
       cost_price_tax: Number(product.cost_price_tax),
       sale_price: Number(product.sale_price),
-      stock: Number(product.stock),
+      controlledStock: product.track_stock === true ? product.stock : undefined,
       created_at: product.updated_at,
     },
     priceDiff: calculatePriceDiff(row.sale_price, Number(product.sale_price)),
@@ -349,7 +350,7 @@ export function updateInvoiceProductRevision(row: InvoiceProvisionalRow, product
 }
 
 export function bindInvoiceRow(row: InvoiceProvisionalRow, product: ProductEntity, fields: readonly InvoiceUpdateField[], businessId: string): InvoiceProvisionalRow {
-  if (!canBindInvoiceProduct(product, businessId) || !fields.length || fields.some(field => !INVOICE_UPDATE_FIELDS.includes(field)) ||
+  if (!canBindInvoiceProduct(product, businessId) || fields.some(field => !INVOICE_UPDATE_FIELDS.includes(field)) ||
     fields.includes('code') && !row.code.trim()) {
     throw new Error(i18n.t('business:invoice_match_invalid_product'));
   }
@@ -359,9 +360,9 @@ export function bindInvoiceRow(row: InvoiceProvisionalRow, product: ProductEntit
     alias: typeof product.alias === 'string' && product.alias.trim() ? product.alias.trim() : null,
     alias_reviewed: typeof product.alias === 'string' && !!product.alias.trim() && productAliasFits(product.alias),
     cost_price: Number(product.cost_price), cost_price_tax: Number(product.cost_price_tax), sale_price: Number(product.sale_price),
-    version: product.version, has_stock: product.has_stock ?? undefined, is_active: product.is_active, isUpdate: true,
+    version: product.version, stockReview: observeInvoiceStock(product), is_active: product.is_active, isUpdate: true,
     manual_match: { product_id: product.id, business_id: businessId, expected_version: Number(product.version), fields: selected },
-    historicalProduct: { id: product.id, code: product.code, name: product.name, alias: product.alias ?? null, cost_price: Number(product.cost_price), cost_price_tax: Number(product.cost_price_tax), sale_price: Number(product.sale_price), stock: Number(product.stock), created_at: product.updated_at },
+    historicalProduct: { id: product.id, code: product.code, name: product.name, alias: product.alias ?? null, cost_price: Number(product.cost_price), cost_price_tax: Number(product.cost_price_tax), sale_price: Number(product.sale_price), controlledStock: product.track_stock === true ? product.stock : undefined, created_at: product.updated_at },
   };
   for (const field of selected) {
     if (field === 'alias') { next.alias = row.alias; next.alias_reviewed = row.alias_reviewed; }

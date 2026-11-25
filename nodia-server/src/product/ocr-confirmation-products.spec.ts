@@ -40,6 +40,25 @@ const manual = {
 };
 
 describe('Reviewed product confirmation command', () => {
+  it('keeps stock intent out of the legacy command shape and invoice quantity', () => {
+    const [legacy] = normalizeOcrProducts([initial]);
+    expect(Object.keys(legacy)).toEqual(['kind', 'line', 'product']);
+    const [reviewed] = normalizeOcrProducts([{
+      ...manual,
+      changes: {},
+      track_stock: true,
+      stock_action: { mode: 'replace', quantity: 0 },
+    }]);
+    expect(reviewed).toMatchObject({
+      changes: {},
+      track_stock: true,
+      stock_action: { mode: 'replace', quantity: 0 },
+    });
+    const invoice = buildOcrInvoiceData([reviewed], [{ id: '15', version: 5 }]);
+    expect(invoice.extracted_items[0]).toMatchObject({ quantity: 1.25, selected_update_fields: [] });
+    expect(invoice.extracted_items[0]).not.toHaveProperty('stock_action');
+  });
+
   it('normalizes canonical intent and keeps supplier code and fractional quantity in the invoice snapshot', () => {
     const items = normalizeOcrProducts([manual, initial]);
     expect(items[0]).toMatchObject({
@@ -97,6 +116,10 @@ describe('Reviewed product confirmation command', () => {
       [{ ...initial, product: { ...product, alias: 'Unreviewed' } }],
       [{ ...initial, product: { ...product, sale_price: 2147483645 } }],
       [{ ...manual, changes: {} }],
+      [{ ...manual, track_stock: false, stock_action: { mode: 'add', quantity: 1 } }],
+      [{ ...manual, stock_action: { mode: 'add', quantity: 0.0001 } }],
+      [{ ...manual, stock_action: { mode: 'add', quantity: 1, stock: 2 } }],
+      [{ ...initial, stock_action: { mode: 'add', quantity: 0 } }],
       [{ ...manual, changes: { cost_price: 441 } }],
       [{ ...manual, changes: { provider_id: '9' } }],
       [{ ...update, product_id: '0012' }],

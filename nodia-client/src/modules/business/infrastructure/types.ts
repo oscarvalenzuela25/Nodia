@@ -107,6 +107,7 @@ export interface ProductEntity {
   offer_price?: number | null;
   is_offer_enabled?: boolean;
   has_stock?: boolean | null;
+  track_stock?: boolean;
   version?: number;
   effective_price?: string | null;
   price_source?: "regular" | "offer" | null;
@@ -132,7 +133,9 @@ export interface CreateProductPayload {
   barcode?: string | null;
   offer_price?: number | null;
   is_offer_enabled?: boolean;
-  has_stock: boolean;
+  has_stock?: boolean;
+  track_stock?: boolean;
+  stock?: number;
   name: string;
   alias?: string | null;
   cost_price: number;
@@ -147,6 +150,8 @@ export interface UpdateProductPayload {
   offer_price?: number | null;
   is_offer_enabled?: boolean;
   has_stock?: boolean;
+  track_stock?: boolean;
+  stock?: number;
   provider_id?: string | null;
   code?: string | null;
   measurement_unit?: MeasurementUnit;
@@ -167,6 +172,21 @@ export interface GetProductsResponse {
   meta: PaginationMeta;
 }
 
+export interface ProductAvailabilitySummary {
+  total: number;
+  activity: string;
+  tracked?: number;
+  in_stock?: number;
+  out_of_stock?: number;
+  untracked?: number;
+}
+
+export interface ExportProductsParams {
+  business_id?: string;
+  lang?: string;
+  q?: GetProductsParams["q"];
+}
+
 export interface GetProductsParams {
   page?: number;
   limit?: number;
@@ -174,6 +194,7 @@ export interface GetProductsParams {
   includes?: boolean;
   q?: {
     search?: string;
+    catalog_search?: string;
     code_presence?: "present" | "missing";
     barcode_presence?: "present" | "missing";
     id_in?: string | string[];
@@ -188,6 +209,8 @@ export interface GetProductsParams {
     name_cont?: string;
     name_in?: string[];
     is_active_eq?: boolean;
+    sellable_stock_eq?: boolean;
+    tracked_stock_lteq?: number;
     stock_status_in?: string[];
     price_change_in?: string[];
     s?: string;
@@ -467,6 +490,7 @@ export interface ProductLogEntity {
   offer_price?: number | null;
   is_offer_enabled?: boolean | null;
   has_stock?: boolean | null;
+  track_stock?: boolean | null;
   product_version?: number | null;
   name: string;
   alias?: string | null;

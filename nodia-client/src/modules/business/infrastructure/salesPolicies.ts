@@ -1,6 +1,7 @@
 import type { ProductEntity } from "./types";
 import type { CartLine, Sale } from "./salesTypes";
 import { measurementUnit } from "./measurementUnits";
+import { isStockQuantity } from "./productStock";
 import { lineSubtotal, quantityThousandths, stepSaleQuantity } from "./saleQuantities";
 export { MAX_SALE_QUANTITY, quantityFromInput } from "./saleQuantities";
 
@@ -32,28 +33,51 @@ export const cartTotal = (lines: CartLine[]): string => {
   if (total > MAX_TOTAL) throw new Error("cart_overflow");
   return String(total);
 };
-export const productToCartLine = (product: ProductEntity): CartLine => {
+const observeProduct = (product: ProductEntity): CartLine => {
   const regular = moneyInteger(product.sale_price);
   const alternate = moneyInteger(product.offer_price);
   const selected = product.is_offer_enabled ? alternate : regular;
   const reported = moneyInteger(product.effective_price);
-  if (!product.is_active || product.has_stock !== true || typeof product.is_offer_enabled !== "boolean" || !Number.isSafeInteger(product.version) || !product.version || selected === null || regular === null || reported !== selected || product.price_source !== (product.is_offer_enabled ? "offer" : "regular")) throw new Error("unavailable_product");
+  const legacyUnavailable = product.track_stock === undefined && product.has_stock !== true;
+  if (!product.is_active || legacyUnavailable || typeof product.is_offer_enabled !== "boolean" || !Number.isSafeInteger(product.version) || !product.version || selected === null || regular === null || reported !== selected || product.price_source !== (product.is_offer_enabled ? "offer" : "regular")) throw new Error("unavailable_product");
+  if (product.track_stock === true && !isStockQuantity(product.stock)) throw new Error("unavailable_product");
   return { product_id: product.id, quantity: 1, expected_product_version: product.version,
     expected_unit_price: selected, name: product.name, code: product.code, barcode: product.barcode ?? null,
-    regular_price: regular, offer_price: alternate, price_source: product.is_offer_enabled ? "offer" : "regular", measurement_unit: measurementUnit(product.measurement_unit) };
+    regular_price: regular, offer_price: alternate, price_source: product.is_offer_enabled ? "offer" : "regular", measurement_unit: measurementUnit(product.measurement_unit),
+    ...(product.track_stock === true ? { stock_available: product.stock } : {}) };
+};
+export class InsufficientStockError extends Error {
+  readonly available: number;
+  constructor(available: number) {
+    super("insufficient_stock");
+    this.available = available;
+  }
+}
+export const exceedsObservedStock = (line: Pick<CartLine, "stock_available">, quantity: number): boolean =>
+  line.stock_available !== undefined && quantity > line.stock_available;
+
+export const productToCartLine = (product: ProductEntity): CartLine => {
+  const line = observeProduct(product);
+  if (line.stock_available === 0) throw new InsufficientStockError(0);
+  // A fractional remainder needs an explicit quantity, especially on a scan.
+  return exceedsObservedStock(line, line.quantity) ? { ...line, quantity: 0 } : line;
 };
 export const addCartProduct = (lines: CartLine[], product: ProductEntity): CartLine[] => {
   const incoming = productToCartLine(product);
   const found = lines.find((line) => line.product_id === incoming.product_id);
   if (found && (found.expected_product_version !== incoming.expected_product_version || found.expected_unit_price !== incoming.expected_unit_price || measurementUnit(found.measurement_unit) !== incoming.measurement_unit)) throw new Error("price_changed");
-  const result = found ? lines.map((line) => line === found ? { ...line, quantity: stepSaleQuantity(line.quantity, 1) } : line) : [...lines, incoming];
+  const quantity = found ? stepSaleQuantity(found.quantity, 1) : incoming.quantity;
+  if (incoming.stock_available !== undefined && exceedsObservedStock(incoming, quantity)) throw new InsufficientStockError(incoming.stock_available);
+  const result = found ? [{ ...found, quantity }, ...lines.filter((line) => line !== found)] : [incoming, ...lines];
   cartTotal(result);
   return result;
 };
 export const setCartQuantity = (lines: CartLine[], productId: string, quantity: number): CartLine[] => {
   if (quantityThousandths(quantity) === null) throw new Error("invalid_cart");
-  if (!lines.some((line) => line.product_id === productId)) return lines;
-  const result = lines.map((line) => line.product_id === productId ? { ...line, quantity } : line);
+  const target = lines.find((line) => line.product_id === productId);
+  if (!target) return lines;
+  if (target.stock_available !== undefined && quantity >= target.quantity && exceedsObservedStock(target, quantity)) throw new InsufficientStockError(target.stock_available);
+  const result = lines.map((line) => line === target ? { ...line, quantity } : line);
   cartTotal(result);
   return result;
 };
@@ -89,7 +113,7 @@ export const refreshCartPrices = async (businessId: string, lines: CartLine[], f
     const product = products.get(line.product_id);
     if (!product || product.business_id !== businessId) throw new Error("unavailable_product");
     if (measurementUnit(product.measurement_unit) !== measurementUnit(line.measurement_unit)) throw new Error("unit_changed");
-    return { ...productToCartLine(product), quantity: line.quantity, ...(line.unit_price_override == null ? {} : { unit_price_override: line.unit_price_override }) };
+    return { ...observeProduct(product), quantity: line.quantity, ...(line.unit_price_override == null ? {} : { unit_price_override: line.unit_price_override }) };
   });
   cartTotal(result);
   return result;

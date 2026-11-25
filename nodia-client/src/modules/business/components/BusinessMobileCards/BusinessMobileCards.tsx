@@ -1,5 +1,6 @@
 import { Box, Chip } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { formatStock } from "../../infrastructure/productStock";
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import BlockOutlined from "@mui/icons-material/BlockOutlined";
 import CheckCircleOutlined from "@mui/icons-material/CheckCircleOutlined";
@@ -244,7 +245,7 @@ export function ProductMobileCard({
   onToggle: (product: ProductEntity) => void;
   onImage?: (product: ProductEntity) => void;
 }) {
-  const { t } = useTranslation("business");
+  const { t, i18n } = useTranslation("business");
   const actions = useRecordActions(product, onEdit, onToggle);
   const comparable = !historical || priceMeasurementsComparable(product, historical);
   const diff = comparable ? calculatePriceDiff(product.sale_price, historical?.sale_price) : null;
@@ -264,6 +265,7 @@ export function ProductMobileCard({
       value: <ProductSalePrice measurementUnit={item.measurement_unit} salePrice={item.sale_price} offerPrice={current ? item.offer_price : undefined} offerEnabled={current && item.is_offer_enabled === true} />,
       fullWidth: true,
     },
+    { key: "stock", label: t("product_stock"), value: formatStock(item, i18n.language) },
     {
       key: "updated",
       label: t("product_updated_at"),

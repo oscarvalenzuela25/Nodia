@@ -4,6 +4,7 @@ import type { OcrConfirmationFields, OcrConfirmationItem } from "../../../../../
 import { isCashCivilDate } from "../../../../../../infrastructure/cashValues";
 import { PRODUCT_PRICE_MAX } from "../ProductModal/productPricing";
 import { INVOICE_UPDATE_FIELDS, invoiceAliasNeedsReview, type InvoiceProvisionalRow } from "./helpers";
+import { evaluateInvoiceStock, invoiceStockTrackingChange } from "./invoiceStock";
 
 export const MAX_OCR_CONFIRMATION_ROWS = 500;
 const MAX_INVOICE_CODE_LENGTH = 255;
@@ -46,6 +47,13 @@ export function invoiceConfirmationItem(row: InvoiceProvisionalRow, businessId: 
   const alias = productText(row.alias ?? "", "business:invoice_alias_required");
   if (!isInvoiceTotal(row.cost_price)) invalid("business:invoice_validation_cost");
   if (!Number.isFinite(row.quantity) || row.quantity < 0) invalid("business:invoice_validation_quantity");
+  const stock = evaluateInvoiceStock(row.stockReview, row.quantity);
+  if (stock.error) invalid(stock.error);
+  const trackingChange = invoiceStockTrackingChange(row.stockReview);
+  const stockFields = {
+    ...(trackingChange === undefined ? {} : { track_stock: trackingChange }),
+    ...(stock.action ? { stock_action: stock.action } : {}),
+  };
   const line = {
     invoice_code: productText(row.invoice_code ?? row.code, "business:invoice_validation_code") || null,
     name,
@@ -65,7 +73,7 @@ export function invoiceConfirmationItem(row: InvoiceProvisionalRow, businessId: 
   if (row.id === undefined) {
     if (match || row.isUpdate) invalid("business:invoice_match_invalid_product");
     if (code === null) invalid("business:invoice_validation_code");
-    return { kind: "create", line, product: { code, name, alias, cost_price: row.cost_price,
+    return { kind: "create", line, ...stockFields, product: { code, name, alias, cost_price: row.cost_price,
       cost_price_tax: row.cost_price_tax, sale_price: changedSale, is_active: row.is_active } };
   }
 
@@ -75,12 +83,15 @@ export function invoiceConfirmationItem(row: InvoiceProvisionalRow, businessId: 
   }
   const target = { product_id: row.id, expected_version: revision.data };
   if (!match) {
-    return { kind: "update", line, ...target, product: { code, name, alias, cost_price: row.cost_price,
+    return { kind: "update", line, ...target, ...stockFields, product: { code, name, alias, cost_price: row.cost_price,
       cost_price_tax: row.cost_price_tax, sale_price: changedSale, is_active: row.is_active } };
   }
   if (row.id !== match.product_id || businessId !== match.business_id || revision.data !== match.expected_version ||
-    !match.fields.length || match.fields.some((field) => !INVOICE_UPDATE_FIELDS.includes(field))) {
+    match.fields.some((field) => !INVOICE_UPDATE_FIELDS.includes(field))) {
     invalid("business:invoice_match_invalid_product");
+  }
+  if (!match.fields.length && trackingChange === undefined && !stock.action) {
+    invalid("business:ocr_stock_manual_change_required");
   }
   const changes = {
     ...(submitted("code") ? { code } : {}),
@@ -90,7 +101,7 @@ export function invoiceConfirmationItem(row: InvoiceProvisionalRow, businessId: 
     ...(submitted("cost_price_tax") ? { cost_price_tax: row.cost_price_tax } : {}),
     ...(submitted("sale_price") ? { sale_price: changedSale } : {}),
   };
-  return { kind: "manual_match", line, ...target, changes };
+  return { kind: "manual_match", line, ...target, ...stockFields, changes };
 }
 
 export function prepareInvoiceConfirmation(

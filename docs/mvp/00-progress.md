@@ -1,5 +1,16 @@
 # Progreso del MVP — Nodia
 
+**Punto de venta y búsqueda de Productos — 2026-11-25.** Client implementa
+el diseño aprobado del POS con carritos laterales, cobro compacto y el último
+producto agregado al inicio de su carrito. La cabecera y la búsqueda de
+Productos se incluyen en la entrega local. [Plan94 §48](94-business-point-of-sale-and-product-refactor.md#48-cabecera-de-negocios-búsqueda-de-productos-y-rediseño-del-pos--2026-11-25).
+
+**Stock opcional de Negocios — 2026-11-25.** Client y Server implementan
+seguimiento por producto, descuento al confirmar en POS, ajuste en Facturas
+OCR y filtro por stock máximo. PostgreSQL 16 aislado verificó la migración y
+los efectos transaccionales. La activación operativa y el retiro de la
+columna anterior quedan en [Plan94 §47](94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
+
 **Desconexión de Gemini Agentic — 2026-11-24.** La implementación
 validada en laboratorio queda en
 [`codex/nodia-cv`](https://github.com/oscarvalenzuela25/Nodia/tree/a08ed9d5d905831b8522687fc24cee40524aca7d).
@@ -123,7 +134,7 @@ lectura acotado. El candidato aislado en la VM resolvió el negocio por
 nombre y devolvió los once precios con una sola lectura de Productos.
 El perfil avanza de página sólo cuando quedan registros y entrega al
 modelo una vista acotada a los precios. [Diagnóstico y verificación](../evidence/nodia-ai-gemini-products-recovery-20261121.md#relecturas-del-catálogo-completo).
-[Plan94 §45](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
+[Plan94 §47](94-business-point-of-sale-and-product-refactor.md#45-cerrar-el-aviso-de-venta-guardada--2026-11-21)
 y [catálogo40](40-nodia-ai-tool-catalog-v1.md#descubrimiento-de-productos-y-precios--2026-11-21).
 
 **Horarios de Proveedores y Web Push — 2026-11-21.** El lote PWA-004 se

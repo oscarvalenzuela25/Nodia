@@ -51,9 +51,7 @@ describe('POS catalog invariants', () => {
         true,
       ),
     ).not.toThrow();
-    expect(() =>
-      validateCatalogProduct({ stock: 100, sale_price: 1 }, true),
-    ).toThrow('product:availability_required');
+    expect(() => validateCatalogProduct({ sale_price: 1 }, true)).not.toThrow();
   });
   it.each([50, 100, 150])(
     'uses configured alternative %i without comparing with the normal price',
@@ -114,11 +112,7 @@ describe('POS catalog invariants', () => {
           sale_price: 1,
         }),
       ),
-    ).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ property: 'has_stock' }),
-      ]),
-    );
+    ).toEqual([]);
   });
   it('writes an exact post-change snapshot without fabricating legacy availability', () => {
     const product = Object.assign(new Product(), {
@@ -127,6 +121,7 @@ describe('POS catalog invariants', () => {
       barcode: '0001',
       version: 4,
       has_stock: null,
+      track_stock: true,
       stock: 0,
       sale_price: 100,
       offer_price: 150,
@@ -140,6 +135,7 @@ describe('POS catalog invariants', () => {
       barcode: '0001',
       product_version: 4,
       has_stock: null,
+      track_stock: true,
       stock: 0,
       sale_price: 100,
       offer_price: 150,

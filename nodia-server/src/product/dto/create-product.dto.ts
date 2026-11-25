@@ -14,6 +14,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PRODUCT_BARCODE_PATTERN } from '../product-catalog.js';
+import { IsProductStockQuantity } from './product-stock-validation.js';
 import {
   PRODUCT_MEASUREMENT_UNITS,
   type ProductMeasurementUnit,
@@ -78,12 +79,16 @@ export class CreateProductDto {
   @IsBoolean()
   is_offer_enabled?: boolean;
 
-  @IsBoolean()
-  has_stock: boolean;
-
   @IsOptional()
-  @IsInt()
-  @Min(0)
+  @IsBoolean()
+  has_stock?: boolean;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsBoolean()
+  track_stock?: boolean;
+
+  @ValidateIf((_object, value) => value !== undefined)
+  @IsProductStockQuantity()
   stock?: number;
 
   @IsOptional()

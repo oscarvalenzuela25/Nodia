@@ -12,10 +12,9 @@ export default function PosProductRegistration({ businessId, barcode, onClose, o
   const update = useUpdateProduct();
   const providers = usePagedProviderOptions(businessId);
   const save = async (data: ProductFormData, target?: ProductSaveTarget): Promise<ProductEntity> => {
-    const { expected_version, has_stock, ...fields } = data;
-    if (has_stock === null) throw new Error("product:availability_required");
-    if (target) return update.mutateAsync({ id: target.id, payload: { ...fields, has_stock, expected_version: target.version ?? expected_version } });
-    return create.mutateAsync({ ...fields, business_id: businessId, has_stock });
+    const { expected_version, ...fields } = data;
+    if (target) return update.mutateAsync({ id: target.id, payload: { ...fields, expected_version: target.version ?? expected_version } });
+    return create.mutateAsync({ ...fields, business_id: businessId });
   };
   return <ProductModal open businessId={businessId} initialBarcode={barcode} onClose={onClose} onSubmit={save} onSaved={onRegistered}
     providers={providers.providers} isSubmitting={create.isPending || update.isPending}

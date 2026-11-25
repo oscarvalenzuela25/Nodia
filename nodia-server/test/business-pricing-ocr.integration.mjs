@@ -14,6 +14,7 @@ import { CreateProviderContacts1791220000000 } from '../dist/migrations/17912200
 import { CreateBusinessCashCategories1793690000000 } from '../dist/migrations/1793690000000-CreateBusinessCashCategories.js';
 import { CreateBusinessCashMovements1793700000000 } from '../dist/migrations/1793700000000-CreateBusinessCashMovements.js';
 import { LinkBusinessCashInvoiceExpenses1793710000000 } from '../dist/migrations/1793710000000-LinkBusinessCashInvoiceExpenses.js';
+import { TrackProductStock1794030000000 } from '../dist/migrations/1794030000000-TrackProductStock.js';
 import { ProductService } from '../dist/product/product.service.js';
 import { Product } from '../dist/product/entities/product.entity.js';
 import { ProductLog } from '../dist/product/entities/product-log.entity.js';
@@ -85,6 +86,34 @@ try {
   checks.push('real_migration_preserves_legacy_provider_and_invoice_bytes_default_false_nullable_folio');
   const alarmRunner = db.createQueryRunner();
   try { await new AddProviderVisitAlarmTime1793840000000().up(alarmRunner); } finally { await alarmRunner.release(); }
+  const [legacyProduct] = await db.query(`
+    INSERT INTO products(business_id, name, cost_price, cost_price_tax, sale_price, has_stock, stock)
+    VALUES($1, 'Legacy', 1, 1, 20, true, -2) RETURNING id
+  `, [business]);
+  const [legacyLog] = await db.query(`
+    INSERT INTO product_logs(product_id, name, cost_price, cost_price_tax, sale_price, has_stock, stock)
+    VALUES($1, 'Legacy', 1, 1, 20, true, -2) RETURNING id
+  `, [legacyProduct.id]);
+  const stockRunner = db.createQueryRunner();
+  try {
+    await stockRunner.startTransaction();
+    await new TrackProductStock1794030000000().up(stockRunner);
+    await stockRunner.commitTransaction();
+  } finally {
+    if (stockRunner.isTransactionActive) await stockRunner.rollbackTransaction();
+    await stockRunner.release();
+  }
+  assert.deepEqual(await db.query(
+    'SELECT has_stock,track_stock,stock FROM products WHERE id=$1', [legacyProduct.id],
+  ), [{ has_stock: true, track_stock: false, stock: '-2' }]);
+  assert.deepEqual(await db.query(
+    'SELECT has_stock,track_stock,stock FROM product_logs WHERE id=$1', [legacyLog.id],
+  ), [{ has_stock: true, track_stock: null, stock: '-2' }]);
+  await assert.rejects(() => db.query('UPDATE products SET track_stock=true WHERE id=$1', [legacyProduct.id]),
+    /ck_products_stock_balance/);
+  await assert.rejects(() => db.query('UPDATE products SET stock=1.0001 WHERE id=$1', [legacyProduct.id]),
+    /ck_products_stock_balance/);
+  checks.push('stock_migration_preserves_legacy_balance_and_guards_precision_and_activation');
   const actor = { userId: '3', sessionId: businessAccessTestSession('3') };
   const suppliers = new ProviderService(db.getRepository(Provider));
   const normal = await suppliers.create({ business_id: business, name: 'Manual supplier' }, undefined, actor);

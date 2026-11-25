@@ -19,6 +19,7 @@
     "docs/nodia-ai/knowledge/businesses/features/product-alias-and-code-completeness.md",
     "docs/nodia-ai/knowledge/businesses/features/product-logs.md",
     "docs/nodia-ai/knowledge/businesses/features/product-price-calculator-and-invoice-binding.md",
+    "docs/nodia-ai/knowledge/businesses/features/product-stock-tracking.md",
     "docs/nodia-ai/knowledge/businesses/features/product-units-and-fractional-sales.md",
     "docs/nodia-ai/knowledge/businesses/features/products.md",
     "docs/nodia-ai/knowledge/businesses/features/sale-line-price-adjustments.md",
@@ -1147,22 +1148,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "BusinessesGetInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "BusinessesGetResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -1187,22 +1188,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "BusinessesListInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "BusinessesListResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2277,22 +2278,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "InvoicesGetInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "InvoicesGetResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2317,22 +2318,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "InvoicesListInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "InvoicesListResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2849,7 +2850,7 @@
     },
     {
       "capability_id": "nodia_product_logs_get",
-      "revision": 3,
+      "revision": 4,
       "publication": "published",
       "kind": "read",
       "required_module_routes": [
@@ -2858,23 +2859,23 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
+          "sha256": "a6ec8e023febe82ea751d89f63ac682e94c9c5f580a303dffb9de119865c6f9d"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
+          "sha256": "53536dc97fa02afd4c688be7ae5525c50a8dbb121fa047cb8548ce91d8e01bf7"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -2882,18 +2883,18 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
+          "sha256": "64d232fb8e2b3d3c2de5882aa7594c16a8e08fb6aef003247c79edb2f30f399e"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductLogsGetInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductLogsGetResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -2909,7 +2910,7 @@
     },
     {
       "capability_id": "nodia_product_logs_list",
-      "revision": 3,
+      "revision": 4,
       "publication": "published",
       "kind": "read",
       "required_module_routes": [
@@ -2918,23 +2919,23 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
+          "sha256": "a6ec8e023febe82ea751d89f63ac682e94c9c5f580a303dffb9de119865c6f9d"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
+          "sha256": "53536dc97fa02afd4c688be7ae5525c50a8dbb121fa047cb8548ce91d8e01bf7"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -2942,18 +2943,18 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
+          "sha256": "64d232fb8e2b3d3c2de5882aa7594c16a8e08fb6aef003247c79edb2f30f399e"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductLogsListInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductLogsListResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3053,7 +3054,7 @@
     },
     {
       "capability_id": "nodia_product_logs_query",
-      "revision": 3,
+      "revision": 4,
       "publication": "published",
       "kind": "read",
       "required_module_routes": [
@@ -3062,23 +3063,23 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
+          "sha256": "a6ec8e023febe82ea751d89f63ac682e94c9c5f580a303dffb9de119865c6f9d"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
+          "sha256": "53536dc97fa02afd4c688be7ae5525c50a8dbb121fa047cb8548ce91d8e01bf7"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3086,18 +3087,18 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
+          "sha256": "64d232fb8e2b3d3c2de5882aa7594c16a8e08fb6aef003247c79edb2f30f399e"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductLogsQueryInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductLogsQueryResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3126,15 +3127,15 @@
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
+          "sha256": "a6ec8e023febe82ea751d89f63ac682e94c9c5f580a303dffb9de119865c6f9d"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
+          "sha256": "53536dc97fa02afd4c688be7ae5525c50a8dbb121fa047cb8548ce91d8e01bf7"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3142,11 +3143,11 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
+          "sha256": "64d232fb8e2b3d3c2de5882aa7594c16a8e08fb6aef003247c79edb2f30f399e"
         },
         {
           "path": "nodia-server/src/product/use-case/export-products-csv.use-case.ts",
-          "sha256": "47067a608d6c69f00bffafa30a195e7f6b99562eb8b848ce70f5c74b3993fb1b"
+          "sha256": "dc1bdf6baae5c7785f796203c43d1a4aacd146f4b75a842083fe2dec0a5501e0"
         }
       ],
       "input_schema": {
@@ -3173,7 +3174,7 @@
     },
     {
       "capability_id": "nodia_products_get",
-      "revision": 3,
+      "revision": 4,
       "publication": "published",
       "kind": "read",
       "required_module_routes": [
@@ -3182,23 +3183,23 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
+          "sha256": "a6ec8e023febe82ea751d89f63ac682e94c9c5f580a303dffb9de119865c6f9d"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
+          "sha256": "53536dc97fa02afd4c688be7ae5525c50a8dbb121fa047cb8548ce91d8e01bf7"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3206,18 +3207,18 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
+          "sha256": "64d232fb8e2b3d3c2de5882aa7594c16a8e08fb6aef003247c79edb2f30f399e"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductsGetInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductsGetResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3233,7 +3234,7 @@
     },
     {
       "capability_id": "nodia_products_list",
-      "revision": 3,
+      "revision": 4,
       "publication": "published",
       "kind": "read",
       "required_module_routes": [
@@ -3242,23 +3243,23 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         },
         {
           "path": "nodia-server/src/product/entities/product-log.entity.ts",
-          "sha256": "11c6d8934dbc74edf26f561b275ad4a948e4317395c23936d5359fe0818e3a0a"
+          "sha256": "a6ec8e023febe82ea751d89f63ac682e94c9c5f580a303dffb9de119865c6f9d"
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-catalog.ts",
-          "sha256": "b57caeba772508ca9b07a6ecfdd500ea968a5dbb5584f440b5f1d5578e5a9c96"
+          "sha256": "53536dc97fa02afd4c688be7ae5525c50a8dbb121fa047cb8548ce91d8e01bf7"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -3266,18 +3267,18 @@
         },
         {
           "path": "nodia-server/src/product/product.service.ts",
-          "sha256": "f85efebc07515ea11fdf8899e8d91194baaa469be87dac88eca1e43fee5d5e30"
+          "sha256": "64d232fb8e2b3d3c2de5882aa7594c16a8e08fb6aef003247c79edb2f30f399e"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductsListInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProductsListResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3426,22 +3427,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProviderContactsListInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProviderContactsListResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3628,22 +3629,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProvidersGetInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProvidersGetResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -3668,22 +3669,22 @@
       "implementation_sources": [
         {
           "path": "nodia-server/src/nodia-ai-products/business/business-tool-family.ts",
-          "sha256": "4dd75b6839e4100ebdbae05ae135788f552c252174b30b65d67f3438be848d47"
+          "sha256": "dd9e478082ccb80b0f0c20b8bb463d6810cebb2b36f0b1830389edc44af54964"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/use-case/read-nodia-ai-business.use-case.ts",
-          "sha256": "897ce404503ab69852fe5ba79ef6c0332cb453837732dedfcfedf02dc9947b9f"
+          "sha256": "b251e40792c3328f795fc06a35787db0a5d26c0c2df65a86d958dfd2318db29f"
         }
       ],
       "input_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProvidersListInput",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "output_schema": {
         "path": "nodia-server/src/nodia-ai-products/contracts/business.schema.json",
         "definition": "ProvidersListResult",
-        "sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+        "sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
       },
       "evidence_paths": [
         "docs/evidence/nodia-ai-ai15-postgres-integration.json",
@@ -5891,7 +5892,7 @@
         },
         {
           "path": "nodia-server/src/product/entities/product.entity.ts",
-          "sha256": "8d690bdaa82f7a255de4a748d147961b6617db537c2ddb0f2d234f4ef658770d"
+          "sha256": "b82f70aa69dea3acd5e7c7ae49b89216d68b37d64fc98bd5475ac1c6a97f92f9"
         },
         {
           "path": "nodia-server/src/product/product-measurement-unit.ts",
@@ -5949,7 +5950,7 @@
         },
         {
           "path": "nodia-server/src/sale/policies/sale-policy.ts",
-          "sha256": "9a7bc587474fa3ed07724bf9ddba7498efc655f34b5cdee163f330f35cd939c2"
+          "sha256": "fb89178f380a6201f00452f5eb48667ded129a0107c847092e252375fff3f3d6"
         },
         {
           "path": "nodia-server/src/sale/policies/sale-quantity.ts",
@@ -5965,11 +5966,11 @@
         },
         {
           "path": "nodia-server/src/sale/sale.service.ts",
-          "sha256": "27bf4e83f17f3249560a327e08430f9c81fc8508b6dbebc4b74a5a1e49fc3c60"
+          "sha256": "daa29338903b862ce9253cd8403237dedd96b2da67e115e49d9fae896567ab5e"
         },
         {
           "path": "nodia-server/src/sale/types/sale.types.ts",
-          "sha256": "12ede689cd5f9efab9288fe62fbb9d69ff78f1b824ff3eca9ac4fccd4186b249"
+          "sha256": "3bb8897e0cb612453722597c39cebfb6630d84b351310d38134e87211ac74cb6"
         },
         {
           "path": "nodia-server/src/sale/use-case/read-sales.use-case.ts",
@@ -6025,7 +6026,7 @@
         },
         {
           "path": "nodia-server/src/sale/policies/sale-policy.ts",
-          "sha256": "9a7bc587474fa3ed07724bf9ddba7498efc655f34b5cdee163f330f35cd939c2"
+          "sha256": "fb89178f380a6201f00452f5eb48667ded129a0107c847092e252375fff3f3d6"
         },
         {
           "path": "nodia-server/src/sale/policies/sale-quantity.ts",
@@ -6041,11 +6042,11 @@
         },
         {
           "path": "nodia-server/src/sale/sale.service.ts",
-          "sha256": "27bf4e83f17f3249560a327e08430f9c81fc8508b6dbebc4b74a5a1e49fc3c60"
+          "sha256": "daa29338903b862ce9253cd8403237dedd96b2da67e115e49d9fae896567ab5e"
         },
         {
           "path": "nodia-server/src/sale/types/sale.types.ts",
-          "sha256": "12ede689cd5f9efab9288fe62fbb9d69ff78f1b824ff3eca9ac4fccd4186b249"
+          "sha256": "3bb8897e0cb612453722597c39cebfb6630d84b351310d38134e87211ac74cb6"
         },
         {
           "path": "nodia-server/src/sale/use-case/read-sales.use-case.ts",
@@ -7682,14 +7683,14 @@
         {
           "capability_id": "nodia_businesses_get",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         },
         {
           "capability_id": "nodia_businesses_list",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         }
       ],
       "required_module_routes": [
@@ -7829,14 +7830,14 @@
         {
           "capability_id": "nodia_invoices_get",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         },
         {
           "capability_id": "nodia_invoices_list",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         }
       ],
       "required_module_routes": [
@@ -7853,21 +7854,21 @@
       "requires": [
         {
           "capability_id": "nodia_product_logs_get",
-          "revision": 3,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "revision": 4,
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         },
         {
           "capability_id": "nodia_product_logs_list",
-          "revision": 3,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "revision": 4,
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         },
         {
           "capability_id": "nodia_product_logs_query",
-          "revision": 3,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "revision": 4,
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         }
       ],
       "required_module_routes": [
@@ -7890,15 +7891,15 @@
         },
         {
           "capability_id": "nodia_products_get",
-          "revision": 3,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "revision": 4,
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         },
         {
           "capability_id": "nodia_products_list",
-          "revision": 3,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "revision": 4,
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         }
       ],
       "required_module_routes": [
@@ -7916,8 +7917,8 @@
         {
           "capability_id": "nodia_provider_contacts_list",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         }
       ],
       "required_module_routes": [
@@ -7941,14 +7942,14 @@
         {
           "capability_id": "nodia_providers_get",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         },
         {
           "capability_id": "nodia_providers_list",
           "revision": 2,
-          "input_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd",
-          "output_schema_sha256": "644366931bbc2fc5aec775d10c4be045f22957dbb39b0e50033f8b80553914dd"
+          "input_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080",
+          "output_schema_sha256": "71145b358d0208541b1d4feeaaa351f122879951444d63204e9e257371b24080"
         }
       ],
       "required_module_routes": [

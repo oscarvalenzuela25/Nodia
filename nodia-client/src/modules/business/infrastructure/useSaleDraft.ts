@@ -2,6 +2,7 @@ import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import useAuthStore from "../../../store/authStore";
 import { SaleWorkspaceEngine } from "./saleWorkspaceEngine";
+import type { ProductEntity } from "./types";
 
 /** One mounted engine owns every local cart and its durable request identity. */
 export function useSaleDraft(businessId: string) {
@@ -9,7 +10,10 @@ export function useSaleDraft(businessId: string) {
   const sessionVersion = useAuthStore((state) => state.sessionVersion);
   const queryClient = useQueryClient();
   const engine = useMemo(() => new SaleWorkspaceEngine(actorId, businessId, sessionVersion, async () => {
-    await queryClient.invalidateQueries({ queryKey: ["business-sales", businessId] });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["business-sales", businessId] }),
+      queryClient.invalidateQueries({ queryKey: ["products"] }),
+    ]);
   }), [actorId, businessId, sessionVersion, queryClient]);
   useEffect(() => engine.mount(), [engine]);
   const state = useSyncExternalStore(engine.subscribe, engine.getSnapshot, engine.getSnapshot);
@@ -20,12 +24,15 @@ export function useSaleDraft(businessId: string) {
   return {
     ...active,
     busy: state.busyIds.includes(id), storageError: state.storageError,
+    catalogConflict: state.catalogConflictIds.includes(id),
     sessions: workspace.sessions.map((entry) => ({ ...entry, busy: state.busyIds.includes(entry.id) })),
     activeId: id, activeNumber: active.number,
     canDiscardWorkspace: !state.storageError && state.busyIds.length === 0 && !workspace.sessions.some((entry) => entry.pending),
     hasUnsaved: workspace.sessions.some((entry) => entry.dirty || Boolean(entry.pending) || Boolean(entry.barcode) || Object.keys(entry.quantityDrafts).length > 0),
     newSale: () => engine.newSale(), selectSale: (target: string) => engine.selectSale(target), closeSale: (target: string) => engine.closeSale(target),
+    addProduct: (product: ProductEntity, options?: { clearBarcode?: boolean }) => engine.addProduct(id, product, options),
     setLines: (value: typeof active.lines) => engine.edit(id, { lines: value, dirty: true }),
+    reviewCatalog: (value: typeof active.lines) => engine.reviewCatalog(id, value),
     setPaymentMethod: (value: typeof active.paymentMethod) => engine.setPaymentMethod(id, value),
     setDescription: (value: string) => engine.edit(id, { description: value, dirty: true }),
     setBarcode: (value: string) => engine.edit(id, { barcode: value }),

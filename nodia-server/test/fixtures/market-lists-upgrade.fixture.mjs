@@ -215,7 +215,13 @@ export async function verifyMarketListsUpgrade(cleanDb, options, check) {
         (await candidate.runMigrations({ transaction: 'all' })).length === 0,
       'Production postcheck accepts the exact applied ledger and a second ORM run makes no changes',
     );
-    assert.deepEqual(await existingRows(candidate), rowsBefore);
+    assert.deepEqual(
+      await existingRows(candidate),
+      rowsBefore.map((row) => ({
+        ...row,
+        product: { ...row.product, track_stock: false },
+      })),
+    );
     const columns = (connection) =>
       connection.query(`SELECT table_name,column_name,data_type,is_nullable,
       character_maximum_length,numeric_precision,numeric_scale,column_default FROM information_schema.columns
