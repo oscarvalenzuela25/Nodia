@@ -138,4 +138,21 @@ describe("invoice model and intensity choices", () => {
     expect(result.thinkingOptions.map(item => item.value)).toEqual(["low", "medium", "high", "xhigh", "max"]);
     expect(result.thinkingLevel).toBe("max");
   });
+  it("uses Gemini Extra only with an exact live Agentic variant and retains unavailable saved preferences", () => {
+    const model = { id: "fixture-gemini-xhigh", name: "Fixture Gemini (Extra)" };
+    const connection: VerifyIaProviderItem = { ...first, active_mode: "agentic",
+      fields: { agentic: { selected_model: model.id, thinking_levels: { [model.id]: "xhigh" }, available_models: [model] } } };
+    const verified = getInvoiceAiSelectionOptions(connection, "agentic", {}, [model]);
+    expect(verified).toMatchObject({ model: model.id, thinkingLevel: "xhigh", effortUnavailable: false, canAnalyze: true });
+    expect(verified.thinkingOptions).toEqual([{ value: "xhigh", label: "xhigh" }]);
+    expect(getInvoiceAiSelectionOptions(connection, "agentic", { thinkingLevel: "high" }, [model]))
+      .toMatchObject({ thinkingLevel: "high", effortUnavailable: true, canAnalyze: false });
+    for (const catalog of [undefined, [], [{ ...model, name: "Fixture Gemini (High)" }]]) {
+      expect(getInvoiceAiSelectionOptions(connection, "agentic", {}, catalog))
+        .toMatchObject({ model: model.id, thinkingLevel: "xhigh", effortUnavailable: true, canAnalyze: false });
+    }
+    const api = { ...connection, active_mode: "api_key" as const, fields: { api_key: connection.fields?.agentic } };
+    expect(getInvoiceAiSelectionOptions(api, "api_key", {}, [model]).thinkingOptions.map(item => item.value))
+      .toEqual(["low", "medium", "high"]);
+  });
 });

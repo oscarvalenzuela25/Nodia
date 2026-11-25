@@ -16,7 +16,7 @@ import {
   configuredNodiaAiSelection,
 } from './nodia-ai-configured-selection.js';
 import { apiReasoningPreferences } from '../../common/ai/api-reasoning.js';
-import { agenticReasoningPreferences } from '../../common/ai/agentic-reasoning.js';
+import { agenticReasoningPreferences, geminiAgenticVariantEffort } from '../../common/ai/agentic-reasoning.js';
 export { configurationRecord } from './nodia-ai-configured-selection.js';
 import {
   NodiaAiConnectionsService,
@@ -46,7 +46,8 @@ function effortPreferences(preferred: unknown, provider?: string, mode?: string)
     ? agenticReasoningPreferences(provider ?? '')
     : mode === 'api_key' && provider === 'openai'
       ? apiReasoningPreferences(provider) : ['low', 'medium', 'high']);
-  if (identifier(preferred, 256)) options.add(preferred);
+  if (identifier(preferred, 256) && !(mode === 'agentic' && provider === 'gemini' && preferred === 'xhigh'))
+    options.add(preferred);
   return Array.from(options, (effort_id) => ({ effort_id, label: effort_id }));
 }
 function codexEfforts(value: unknown, preferred: unknown) {
@@ -132,17 +133,19 @@ export function projectNodiaAiConnection(row: NodiaAiConnectionConfiguration) {
         const preferred = Object.hasOwn(levels, model.id)
           ? levels[model.id]
           : modeFields.thinking_level;
+        const label = identifier(model.displayName, 1024) ? model.displayName
+          : identifier(model.name, 1024) ? model.name : model.id;
+        const geminiVariant = row.provider_key === 'gemini' && mode === 'agentic'
+          ? geminiAgenticVariantEffort(model.id, label) : undefined;
         modelMap.set(model.id, {
           model_id: model.id,
-          label: identifier(model.displayName, 1024)
-            ? model.displayName
-            : identifier(model.name, 1024)
-              ? model.name
-              : model.id,
+          label,
           efforts:
             row.provider_key === 'openai' && mode === 'agentic'
               ? codexEfforts(model.supportedReasoningEfforts, preferred)
-              : effortPreferences(preferred, row.provider_key, mode),
+              : geminiVariant
+                ? [{ effort_id: geminiVariant, label: geminiVariant === 'xhigh' ? 'Extra' : geminiVariant }]
+                : effortPreferences(preferred, row.provider_key, mode),
         });
       }
       if (selected && !modelMap.has(selected))

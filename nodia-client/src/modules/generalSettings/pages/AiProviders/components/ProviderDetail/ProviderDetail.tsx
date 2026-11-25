@@ -49,7 +49,7 @@ import {
   useSelectableModels,
 } from "../../infrastructure/useServices";
 import type { SupportedModelDef } from "../../infrastructure/types";
-import { providerModelCards, modelCardContains, modelCardEffort, openAiApiReasoningPreferences } from "../../infrastructure/modelCards";
+import { compareGeminiAgenticEfforts, geminiAgenticEffortTranslation, providerModelCards, modelCardContains, modelCardEffort, openAiApiReasoningPreferences } from "../../infrastructure/modelCards";
 import {
   getObservedSessionStatus,
 } from "../../infrastructure/observations";
@@ -1557,8 +1557,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                               }}
                             >
                               {(card.variants.length
-                                ? card.variants.map(variant => variant.effort).sort((left, right) =>
-                                  ["low", "medium", "high"].indexOf(left) - ["low", "medium", "high"].indexOf(right))
+                                ? card.variants.map(variant => variant.effort).sort(compareGeminiAgenticEfforts)
                                 : providerKey === "openai" &&
                               activeTab === "agentic"
                                 ? (model.supportedReasoningEfforts ?? [])
@@ -1569,7 +1568,7 @@ const ProviderDetail: FC<ProviderDetailProps> = ({
                                   value={level}
                                   data-testid={`thinking-level-${level}-${model.id}`}
                                 >
-                                  {t(`ai_providers:detail.level_${level}`, {
+                                  {t(card.variants.length ? geminiAgenticEffortTranslation(level) : `ai_providers:detail.level_${level}`, {
                                     defaultValue: level,
                                   })}
                                 </ToggleButton>

@@ -64,6 +64,10 @@
     {
       "path": "nodia-server/src/migrations/1794010000000-CurateExistingAgenticModelCatalogs.ts",
       "kind": "implementation"
+    },
+    {
+      "path": "nodia-server/src/migrations/1794020000000-ExpandGeminiAgenticModelCatalog.ts",
+      "kind": "implementation"
     }
   ],
   "verification": {
@@ -81,6 +85,15 @@
 ---
 
 # Interfaz de proveedores, variantes y acceso a NodiaAI
+
+## Gemini 4 en el selector Agentic — 2026-11-24
+
+Ajustes puede mostrar Neon, Carbon e Hydrogen cuando la sesión Gemini
+descubre sus IDs permitidos. Las variantes forman una opción por familia.
+Extra se presenta cuando el catálogo incluye la variante exacta `xhigh`.
+Al cambiar el razonamiento, Nodia usa el ID de esa variante. Activar una
+familia es independiente de asignarle el rol principal o de OCR.
+[Contrato de conexiones](../../../../mvp/ai-provider-feature-contract.md#gemini-4-en-el-selector-agentic--2026-11-24).
 
 ## Catálogo Agentic por conexión — 2026-11-24
 

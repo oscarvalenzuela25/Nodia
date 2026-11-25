@@ -1011,8 +1011,8 @@ describe("ProviderDetail Component", () => {
   });
 
   it("groups Gemini variants into one card and saves the exact effort ID atomically without changing OCR or API settings", async () => {
-    const variants = ["high", "medium", "low"].map(effort => ({
-      id: `fixture-family-${effort}`, displayName: `Fixture Family (${effort})`,
+    const variants = ["high", "xhigh", "medium", "low"].map(effort => ({
+      id: `fixture-family-${effort}`, displayName: `Fixture Family (${effort === "xhigh" ? "Extra" : effort})`,
     }));
     const fields = {
       selected_model: variants[0].id,
@@ -1035,20 +1035,20 @@ describe("ProviderDetail Component", () => {
     expect(await screen.findByText("Fixture Family")).toBeVisible();
     expect(screen.queryByText("Fixture Family (medium)")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Medium" })).toHaveLength(1);
-    const medium = screen.getByTestId("thinking-level-medium-fixture-family-high");
-    await waitFor(() => expect(medium).toBeEnabled());
-    await user.click(medium);
+    const extra = screen.getByRole("button", { name: "Extra" });
+    await waitFor(() => expect(extra).toBeEnabled());
+    await user.click(extra);
     await waitFor(() => expect(aiServices.updateAiProvider).toHaveBeenCalledOnce());
     expect(aiServices.updateAiProvider).toHaveBeenCalledWith("prov-1", {
       fields: {
         ...fields,
         selected_model: variants[1].id,
-        thinking_level: "medium",
+        thinking_level: "xhigh",
         agentic: {
           ...fields.agentic,
           selected_model: variants[1].id,
-          thinking_level: "medium",
-          thinking_levels: { ...fields.agentic.thinking_levels, [variants[1].id]: "medium" },
+          thinking_level: "xhigh",
+          thinking_levels: { ...fields.agentic.thinking_levels, [variants[1].id]: "xhigh" },
         },
       },
     });

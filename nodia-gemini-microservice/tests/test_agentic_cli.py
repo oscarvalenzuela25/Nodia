@@ -17,6 +17,7 @@ from agentic_service import AntigravityAgentService
 from agentic_tool_gate import decide
 from native_execution_agents import NATIVE_READER_AGENT
 from service_errors import ServiceError
+from schemas import AnalysisOptions
 from test_support import RESULT, HEADERS
 
 
@@ -88,6 +89,31 @@ class AgenticCliTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("low", generation.args[0])
         self.assertFalse(generation.kwargs["cwd"].exists())
         self.assertTrue(invoice.exists())
+
+    async def test_extra_effort_requires_exact_discovered_variant_and_keeps_its_wire_value(self):
+        model = "observed-model-xhigh"
+        options = AnalysisOptions(model=model, thinking_level="xhigh")
+        with self.assertRaises(ServiceError) as rejected:
+            await self.service.analyze_invoice(self.home / "unused.pdf", model="observed-model",
+                                               thinking_level=options.thinking_level)
+        self.assertEqual(rejected.exception.code, "agentic_invalid_option")
+        self.runner.run.assert_not_awaited()
+
+        async def selected_variant(args, **kwargs):
+            if args == ["models"]:
+                return f"{model}\tObserved model (XHigh)\n", 0
+            if "/model" in args:
+                return report("model", {"id": "observed-model-high"}), 0
+            return await self.run_command(args, **kwargs)
+
+        self.runner.run.side_effect = selected_variant
+        with self.assertRaises(ServiceError) as mismatched:
+            await self.service.analyze_invoice(self.home / "unused.pdf", model=options.model,
+                                               thinking_level=options.thinking_level)
+        self.assertEqual(mismatched.exception.code, "agentic_model_option_mismatch")
+        cmd = self.runner.run.await_args.args[0]
+        self.assertEqual(cmd[-4:], ["--model", model, "--effort", "xhigh"])
+        self.assertFalse(any("--input-format" in call.args[0] for call in self.runner.run.await_args_list))
 
     async def test_invoice_transport_finishes_once_after_schema_without_changing_selection(self):
         invoice = self.home / "source.pdf"

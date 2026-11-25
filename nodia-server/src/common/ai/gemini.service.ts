@@ -25,6 +25,7 @@ import {
 import { envs } from '../../config/envs.config.js';
 import { randomUUID } from 'node:crypto';
 import type { AnalysisProgress } from './analysis-progress.js';
+import type { GeminiAgenticEffort } from './agentic-reasoning.js';
 import { observeGeminiProgress } from './gemini-progress-bridge.js';
 import { parseGeminiInvoiceExtraction } from './invoice-extraction.js';
 import {
@@ -563,7 +564,7 @@ export class GeminiService {
     selectedModel?: string,
     extendedThinking?: boolean,
     engine?: GeminiExecutionEngine,
-    thinkingLevel?: 'low' | 'medium' | 'high',
+    thinkingLevel?: GeminiAgenticEffort,
     callerSignal?: AbortSignal,
     progress?: AnalysisProgress,
   ): Promise<ExtractedInvoiceData> {

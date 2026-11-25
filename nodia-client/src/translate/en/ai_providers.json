@@ -442,6 +442,7 @@
     "agentic_reasoning_preference": "Configure Low, Medium or High. Saving a preference does not enable the adapter or verify reasoning.",
     "reasoning_model_label": "Reasoning for {{model}}",
     "level_xhigh": "Xhigh",
+    "level_extra": "Extra",
     "level_max": "Max",
     "level_ultra": "Ultra",
     "api_effort_unsupported": "Ultra is not an accepted effort in the OpenAI API; the Agentic connection uses its own catalog.",
