@@ -497,6 +497,11 @@ ID, deployment/marcador y últimos estados/flags/código de error. No subir el
 directorio privado completo, ZIPs, tokens, configuración o respuestas remotas.
 El recibo permite conciliar fallos parciales; no autoriza un replay.
 
+Si el detalle de un despliegue ya aceptado devuelve HTTP 404 con código
+Cloudflare 8000009, el CD consulta el despliegue canónico. Puede confirmar la
+publicación cuando el estado es exitoso y coinciden su ID y marcador exactos.
+Las consultas restantes usan el límite de espera existente y solo hacen GET.
+
 No se reintenta un envio incierto. Backend consulta su operation ID determinista
 antes de enviar. Pages registra el intento antes de su unico POST de creacion.
 El receptor rechaza rerun CD run_attempt > 1 y consulta historial CD del mismo CI;
