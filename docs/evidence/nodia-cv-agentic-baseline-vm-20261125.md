@@ -86,3 +86,38 @@ El candidato para el siguiente corte es un transporte textual restringido que
 reutilice la sesión y las primitivas nativas de Codex. El laboratorio ya
 acredita la pareja modelo/esfuerzo en su catálogo autenticado y reproduce
 el bloqueo de CV.
+
+## Paso 2. Transporte y pruebas sintéticas
+
+| Frontera | Comportamiento en la rama |
+| --- | --- |
+| Selección | Lee la configuración, observa sesión y catálogo con el lease común y vuelve a comprobar la generación de configuración. Exige el modelo exacto, su esfuerzo y la política Agentic de la conexión. La observación declara `qualified:false`. |
+| Identidad | El descriptor `cv-agentic-text/1` liga actor, perfil y revisión, generación e intento, huella del payload, recurso, configuración, sesión y selección. También liga propósito, prompt, esquema, política y runtime. El recibo valida esa identidad exacta y la huella de la respuesta. |
+| Envío y cierre | El supervisor verifica el host y usa el perfil compartido bajo exclusión. La barrera se ejecuta antes de escribir una sola trama. Se verifican binding, nonce, huella de texto y cierre del grupo. La salida separa rechazo previo, resultado remoto incierto, respuesta fuera del esquema y borrador válido. La barrera terminal precede a la liberación del perfil. |
+| Datos | Se usan el minimizador y el verificador existentes de `cv-tailoring/1`. El host recibe sólo texto. Su protocolo limita el prompt a 128 KiB y la respuesta a 32 KiB. Carece de herramientas, adjuntos y entornos, y bloquea continuaciones y reintentos. |
+
+El adaptador privado usa el protocolo compilado de
+[teacher-codex-host](../../nodia-server/native/teacher-codex-host/README.md).
+CV conserva sus propios descriptor y recibo. El binario restringido se
+compila contra Codex Core `0.161.0` en
+`979011409de0a60b52f179721948e65531d26144`. Su [catálogo incorporado](https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/models-manager/models.json)
+carece de `gpt-6.2-sol`. El host consulta el catálogo inicial y rechaza
+metadatos de respaldo antes de generar. El catálogo de sesión confirmado en
+`0.171.0` y la huella del host actual acreditan fases distintas. El paso 3
+debe preparar una versión restringida que resuelva la selección exacta,
+además de integrar la cola, las barreras persistentes y la recuperación.
+
+- **TypeScript.** 111 pruebas en siete suites. El proceso sintético
+  cubre una habilidad respaldada y una brecha, identidades cambiadas,
+  rechazo de admisión, una sola trama, salida inválida, aborto y cierre
+  sin prueba. Pasaron lint focalizado, formato y compilación de Server.
+- **Rust.** 11 pruebas del host en Docker `--network none`, con
+  `cargo test --locked --offline` y proveedor sintético de loopback.
+  Comprueban herramientas vacías, selección exacta, un único envío y cierre.
+- **Regresión de CV.** PostgreSQL 16 desechable con transporte API key
+  sintético. Cumplió calificación acotada, generación, revocación,
+  recuperación y purga. El acceso público Agentic siguió bloqueado
+  antes de la admisión y con cero despachos. La base se descartó al terminar.
+
+La entrega del paso 2 conserva la UI y el despliegue del laboratorio.
+Durante la validación se ejecutaron cero inferencias reales.

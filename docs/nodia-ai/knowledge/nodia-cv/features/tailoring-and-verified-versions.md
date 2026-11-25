@@ -4,11 +4,11 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. Lectura pública OneATS verificada para ambos PDF EN del piloto. Agentic y adopción en destino pendientes."
+    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. Transporte de Codex Agentic validado con datos sintéticos, pendiente de cola, calificación y activación."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -31,9 +31,9 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-24",
-    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md"],
-    "notes": "La VM aislada completó el flujo con una API key real y dos cuentas sintéticas. OneATS público coincidió en 9 de 10 comprobaciones en ambos PDF EN. El restore aislado preservó las bajas."
+    "checked_on": "2026-11-25",
+    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md"],
+    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El transporte Codex usa simulaciones, sin calificación real."
   },
   "approval": null
 }
@@ -58,11 +58,11 @@ describen el flujo implementado y los pendientes de aceptación.
 
 ## Agentic previsto
 
-La generación Agentic de CV sigue pendiente en este corte. El selector
-puede mostrar modelos configurados y la elegibilidad de CV determina si se
-pueden usar para generar. La calificación se vinculará a conexión, modo,
-modelo, esfuerzo y sesión mediante un recibo de generación de CV. La persona
-aplicará la selección y solicitará el borrador desde **Generar CV**.
+El transporte Codex pasó pruebas sintéticas y Agentic sigue pendiente de
+activación en **Generar CV**. El selector puede mostrar modelos
+configurados. La habilitación requiere una generación calificada de CV
+con la misma conexión, modo, modelo, esfuerzo y sesión. También requiere
+integrar la cola y la recuperación del intento con el contrato de CV.
 [Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 
 ## Solicitudes en lenguaje natural

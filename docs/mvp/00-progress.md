@@ -11,10 +11,11 @@ OCR y filtro por stock máximo. PostgreSQL 16 aislado verificó la migración y
 los efectos transaccionales. La activación operativa y el retiro de la
 columna anterior quedan en [Plan94 §47](94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
 
-**Nodia CV Agentic — línea base del 2026-11-25.** La VM ejecuta Codex
-`0.171.0` y el catálogo de la sesión existente confirma GPT-6.2 Sol en
-Alto. El servicio de CV reprodujo el bloqueo con cero despachos. Queda
-pendiente el transporte de generación Agentic de CV.
+**Nodia CV Agentic — paso 2 del 2026-11-25.** Transporte de borradores
+implementado y verificado con datos sintéticos. La VM confirma GPT-6.2
+Sol en Alto en el catálogo de la sesión con Codex `0.171.0`. El host
+restringido necesita compatibilidad con esa selección. Quedan la cola,
+la recuperación, la calificación real y la habilitación de la interfaz.
 [Plan113 §17](113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25) ·
 [Evidencia](../evidence/nodia-cv-agentic-baseline-vm-20261125.md).
 

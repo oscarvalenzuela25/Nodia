@@ -508,8 +508,8 @@ Esta promoción usa la protección de CD existente.
 
 ## 17. Continuación de CV-03 — generación Agentic — 2026-11-25
 
-**Estado: plan de implementación.** Rama `codex/nodia-cv-agentic` desde
-`development` en `7e589613`. Retomar el 26 de noviembre por el paso 1.
+**Estado: paso 2 validado localmente con datos sintéticos.** Rama
+`codex/nodia-cv-agentic`, basada en `development`.
 El entregable inicial es un borrador válido desde **Generar CV** en la VM
 con **ChatGPT / Agentic / GPT-6.2 Sol / Alto** (`gpt-6.2-sol`, `high`).
 Después, verificar Gemini Agentic de forma independiente con un modelo
@@ -553,11 +553,11 @@ npm --prefix nodia-server test -- src/nodia-cv/nodia-cv-selection.service.spec.t
   existentes en el ledger antes de proponer otra migración.
 - [x] Comprobar en la VM el runtime instalado, la sesión registrada y el
   descubrimiento exacto de `gpt-6.2-sol` con `high`, sin inferencia.
-- [ ] Completar la comparación de los contratos de proceso de Codex y
+- [x] Completar la comparación de los contratos de proceso de Codex y
   Teacher en `ai-generation/` y `common/ai/codex/`. Registrar qué
   componentes necesita CV, incluido el host restringido si corresponde,
   con fuente, huella y entorno.
-- [ ] Reproducir el bloqueo actual en la selección de CV y comprobar que
+- [x] Reproducir el bloqueo actual en la selección de CV y comprobar que
   deja cero despachos. Ejecutar la regresión de generaciones por API key
   con transporte sintético y almacenar únicamente el resultado saneado.
   **Salida**: línea base, puntos de integración y transporte candidato
@@ -567,19 +567,27 @@ npm --prefix nodia-server test -- src/nodia-cv/nodia-cv-selection.service.spec.t
 
 #### 2. Fijar el contrato de CV y la validación previa al envío
 
-- [ ] Definir un descriptor versionado y un recibo nativo de CV. Vincular
+El transporte aislado está en `nodia-server/src/nodia-cv/agentic/`.
+Las pruebas pasan por la admisión, el protocolo nativo, la prueba de
+cierre y el verificador de CV. El host base ofrece aislamiento y un
+solo turno, pero su catálogo incorporado de Codex Core `0.161.0`
+carece de GPT-6.2 Sol. La compatibilidad del host que se use para esa
+selección y la persistencia de las barreras corresponden al paso 3.
+[Evidencia del transporte](../evidence/nodia-cv-agentic-baseline-vm-20261125.md#paso-2-transporte-y-pruebas-sintéticas).
+
+- [x] Definir un descriptor versionado y un recibo nativo de CV. Vincular
   el dueño, actor, generación/intento, revisión, hash del payload, recurso
   Agentic y generación de configuración y sesión. Registrar también
   proveedor, conexión, modelo, esfuerzo y versiones de propósito, prompt,
   esquema, política y runtime. Probar rechazo de un recibo de otro
   intento, sesión, configuración, modelo, esfuerzo o dueño.
-- [ ] Resolver la selección explícita mediante el catálogo real y las
+- [x] Resolver la selección explícita mediante el catálogo real y las
   restricciones de la conexión. Separar observación del runtime y de la
   sesión, transporte disponible para CV y calificación generativa. Hacer
   la observación externa fuera de las transacciones de autoridad y
   comparar la identidad antes de persistir. Elegibilidad y consultas de
   catálogo se mantienen sin inferencia.
-- [ ] Fijar una respuesta de texto estructurado y acotado para el
+- [x] Fijar una respuesta de texto estructurado y acotado para el
   pipeline de `cv-tailoring/1`. Reusar el minimizador y el verificador de
   evidencia de CV. Tratar la oferta como datos externos. Permitir solo
   el mecanismo necesario para devolver la salida si el adaptador lo
