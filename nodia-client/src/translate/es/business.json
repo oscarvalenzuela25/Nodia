@@ -867,6 +867,7 @@
     "payment_other": "Otro",
     "payment_description": "Descripción opcional del medio",
     "total": "Total CLP",
+    "checkout_total": "Total",
     "informative_payment": "El medio es informativo. Registrar esta venta no realiza ni acredita un cobro.",
     "save_draft": "Guardar borrador",
     "complete": "Confirmar venta",

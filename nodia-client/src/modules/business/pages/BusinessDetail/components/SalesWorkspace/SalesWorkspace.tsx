@@ -37,7 +37,7 @@ import SaleLineList from "./SaleLineList";
 import { permanentSalePricePatch } from "./SaleLinePrice/priceChange";
 import SaleTicket from "./SaleTicket";
 import { useSaleLineImages } from "../../../../infrastructure/useSaleLineImages";
-import { Actions, CartPanel, CatalogPanel, CheckoutColumn, CompleteSaleButton, PointOfSaleGrid, SalePanels, ScannerFields, TotalAmount, TotalLabel, TotalRow, Workspace } from "./styles";
+import { Actions, CartPanel, CatalogPanel, CheckoutColumn, CompleteSaleButton, NewSaleButton, PointOfSaleGrid, SalePanels, ScannerFields, TotalAmount, TotalLabel, TotalRow, Workspace } from "./styles";
 
 export default function SalesWorkspace({ businessId, section, businessName }: { businessId: string; section: SaleSection; businessName?: string }) {
   const { t, i18n } = useTranslation(["business", "core"]);
@@ -415,9 +415,9 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
               onRemove={readonly ? undefined : (id) => { if (!controlsDisabled && !priceEditor.blocksChange() && draft.setLines(removeCartProduct(draft.lines, id))) { clearQuantityInput(id); sileo.success({ title: t("business:pos.product_removed") }); } }} />
           </CatalogPanel>
           <CheckoutColumn>
-            <Button fullWidth variant="contained" sx={{ minHeight: 44 }} startIcon={<AddOutlined />} disabled={busy || editingPrice || unknownBarcode !== null || draft.storageError} onClick={newSale}>{t("business:pos.new_sale")}</Button>
+            <NewSaleButton fullWidth variant="contained" startIcon={<AddOutlined />} disabled={busy || editingPrice || unknownBarcode !== null || draft.storageError} onClick={newSale}>{t("business:pos.new_sale")}</NewSaleButton>
             <CartPanel ref={checkoutPanel} role="region" aria-label={t("business:pos.payment_summary")} tabIndex={-1}>
-              <TotalRow><TotalLabel as="h2">{t("business:pos.total")}</TotalLabel><TotalAmount>{total === null ? "—" : currency(total)}</TotalAmount></TotalRow>
+              <TotalRow><TotalLabel as="h2">{t("business:pos.checkout_total")}</TotalLabel><TotalAmount>{total === null ? "—" : currency(total)}</TotalAmount></TotalRow>
               {total === null && <Alert severity="error">{t("business:pos.invalid_price")}</Alert>}
               {draft.catalogConflict && <Alert severity="warning" sx={{ flexWrap: "wrap", "& .MuiAlert-action": { pl: 0 } }} action={<Button disabled={reviewDisabled} onClick={() => void loadCatalogReview()}>{t("business:stock_tracking.review_cart")}</Button>}>{t("business:stock_tracking.review_required")}</Alert>}
               <Divider />

@@ -2,7 +2,8 @@ import { Box, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 export const PriceDisplay = styled(Box)(({ theme }) => ({
-  display: "flex", flexWrap: "wrap", alignItems: "center", gap: theme.spacing(.5), minWidth: 0,
+  display: "var(--pos-price-display-layout, flex)", flexWrap: "wrap", alignItems: "center", gap: theme.spacing(.5), minWidth: 0,
+  "& > span": { gridColumn: 2, gridRow: "1 / -1", alignSelf: "center", display: "inline-flex" },
 }));
 
 export const PriceEditor = styled(Box)(({ theme }) => ({

@@ -1,9 +1,10 @@
 import { Alert, Box, Button, Tooltip, Typography } from "@mui/material";
 import ImageOutlined from "@mui/icons-material/ImageOutlined";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
-import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import CloseRounded from "@mui/icons-material/CloseRounded";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import RemoveOutlined from "@mui/icons-material/RemoveOutlined";
+import { visuallyHidden } from "@mui/utils";
 import { Skeleton } from "boneyard-js/react";
 import { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,7 +14,7 @@ import { cartLinePrice, exceedsObservedStock, formatClp, quantityFromInput } fro
 import { formatQuantity, lineSubtotal, quantityThousandths } from "../../../../../infrastructure/saleQuantities";
 import SaleLinePrice from "../SaleLinePrice";
 import QuantityStepper from "../QuantityStepper";
-import { ActionButton, Copy, EmptyHelp, EmptyState, EmptyTitle, Line, LineControls, Lines, LineTotal, Picture, PictureSlot, RemoveAction, RemoveButton } from "./styles";
+import { ActionButton, Copy, EmptyHelp, EmptyState, EmptyTitle, Line, LineControls, LineIdentity, Lines, LineTotal, Picture, PictureSlot, RemoveAction, RemoveButton } from "./styles";
 
 interface Props {
   lines: CartLine[];
@@ -63,12 +64,15 @@ export default function SaleLineList({ lines, images, disabled, imageLoading, im
             const insufficient = requested !== null && exceedsObservedStock(line, requested);
             const stockThousandths = quantityThousandths(line.stock_available);
             const currentQuantity = quantityThousandths(line.quantity);
+            const subtotal = formatClp(lineSubtotal(cartLinePrice(line), line.quantity), i18n.language);
             return <Line key={line.product_id} data-price-editing={editingProductId === line.product_id}>
             <PictureSlot><Skeleton loading={imageLoading}><Picture variant="rounded" src={images[line.product_id]?.url} alt="" slotProps={{ img: { loading: "lazy" } }}><ImageOutlined /></Picture></Skeleton></PictureSlot>
             <Copy>
-              <Typography sx={{ fontSize: "calc(var(--pos-item-font-size, 1.125rem) * var(--sale-font-scale, 1))", fontWeight: 700 }}>{line.name}</Typography>
-              <SaleLinePrice key={`${editingScope ?? ""}:${line.product_id}`} line={line} disabled={(priceDisabled ?? disabled) || (editingProductId != null && editingProductId !== line.product_id)} onSave={onPrice}
-                onEditingChange={(editing) => onPriceEditingChange?.(line.product_id, editing)} />
+              <LineIdentity>
+                <Typography sx={{ fontSize: "calc(1rem * var(--sale-font-scale, 1))", fontWeight: 700 }}>{line.name}</Typography>
+                <SaleLinePrice key={`${editingScope ?? ""}:${line.product_id}`} line={line} disabled={(priceDisabled ?? disabled) || (editingProductId != null && editingProductId !== line.product_id)} onSave={onPrice}
+                  onEditingChange={(editing) => onPriceEditingChange?.(line.product_id, editing)} />
+              </LineIdentity>
               {line.stock_available !== undefined && <Typography variant="body2" color={insufficient ? "error" : "text.secondary"}>
                 {t(insufficient ? "business:stock_tracking.insufficient" : "business:stock_tracking.available_balance", { stock: formatQuantity(line.stock_available, i18n.language) })}
               </Typography>}
@@ -78,9 +82,12 @@ export default function SaleLineList({ lines, images, disabled, imageLoading, im
               <QuantityStepper name={line.name} quantity={line.quantity} inputValue={quantityDrafts[line.product_id]} disabled={disabled}
                 incrementDisabled={stockThousandths !== null && currentQuantity !== null && currentQuantity + 1000n > stockThousandths}
                 onIncrement={() => onStep(line.product_id, 1)} onDecrement={() => onStep(line.product_id, -1)} onInputChange={(raw) => onQuantity(line.product_id, raw)} />
-              <LineTotal variant="body2">{t("business:pos.line_total", { total: formatClp(lineSubtotal(cartLinePrice(line), line.quantity), i18n.language) })}</LineTotal>
+              <LineTotal variant="body2">
+                <Box component="span" sx={visuallyHidden}>{t("business:pos.line_total", { total: subtotal })}</Box>
+                <span aria-hidden="true">{subtotal}</span>
+              </LineTotal>
             </LineControls>
-            {onRemove && <Tooltip title={t("business:pos.remove_product", { name: line.name })}><RemoveAction><RemoveButton aria-label={t("business:pos.remove_product", { name: line.name })} disabled={disabled} onClick={() => onRemove(line.product_id)}><DeleteOutlined /></RemoveButton></RemoveAction></Tooltip>}
+            {onRemove && <Tooltip title={t("business:pos.remove_product", { name: line.name })}><RemoveAction><RemoveButton aria-label={t("business:pos.remove_product", { name: line.name })} disabled={disabled} onClick={() => onRemove(line.product_id)}><CloseRounded /></RemoveButton></RemoveAction></Tooltip>}
           </Line>;
           })}
         </Box>}

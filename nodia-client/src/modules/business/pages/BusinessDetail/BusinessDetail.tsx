@@ -1,4 +1,5 @@
 import { useMediaQuery, useTheme } from "@mui/material";
+import { visuallyHidden } from "@mui/utils";
 import type { FC, SyntheticEvent } from "react";
 import { BUSINESS_ROUTE } from "../../constants/routes";
 import { useId, useState } from "react";
@@ -268,7 +269,7 @@ const BusinessDetail: FC = () => {
       <Typography
         component="h1"
         variant="h5"
-        sx={{ textAlign: "start", fontWeight: 700, overflowWrap: "anywhere" }}
+        sx={selectedSection === "pos" ? visuallyHidden : { textAlign: "start", fontWeight: 700, overflowWrap: "anywhere" }}
       >
         {business?.name ?? t("business:detail_title")}
       </Typography>
