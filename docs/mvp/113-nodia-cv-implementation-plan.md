@@ -722,7 +722,7 @@ El [PR 118](https://github.com/oscarvalenzuela25/Nodia/pull/118) promovió
 CV Agentic. Se comprobaron el backend activo
 `backend-89db0f0deb8a-51d8cf48b46f`, API y worker activos, ambos
 recibos de instalación y el Client de Pages. El
-[CD de la versión activa](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45734973451)
+[CD de la versión previa](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45734973451)
 terminó correctamente.
 
 En el navegador autenticado, ChatGPT mostró GPT-6.2 Sol/Alto y rechazó
@@ -753,7 +753,41 @@ PostgreSQL aislado reprodujo el bloqueo con el código publicado. La
 prueba exige cero envíos mientras el job de Chat está incierto y un
 envío cuando termina, con su proyección histórica intacta. Pasaron
 la integración Agentic con el arreglo, el build y 161 pruebas focales
-de Server. Tras la publicación, conciliar la
-primera admisión por su clave, acreditar ambas selecciones con el
-worker activo y comprobar el guardado, reapertura y descarga desde
-la interfaz autenticada.
+de Server. La integración de generación por API key también pasó en
+una base PostgreSQL 16 desechable.
+
+### Publicación y prueba en navegador
+
+El [PR 125](https://github.com/oscarvalenzuela25/Nodia/pull/125)
+entró a master en `1239145f` y pasó
+[CI de publicación](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45840722196).
+El [CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45843244723)
+perdió el sondeo de estado con `backend_poll_outcome_unknown`. La
+consulta restringida de la operación `aa145def13ea7721ae58c91cfd6fe50c`
+confirmó `complete`. El VPS confirmó el release
+`backend-1239145f21a8-d29282c456cd`, ambos servicios activos y sin
+bloqueo. El CD omitió Pages. El artefacto candidato y el Pages ya
+publicado coinciden en los 289 recursos, la configuración pública y
+la huella de árbol `9aac600d7b79e9ee3cd23217a1d7e682927789bcca9a08091a04b2c19d887c9a`.
+La prueba del navegador usó ese origen público con el backend nuevo.
+El [PR 126](https://github.com/oscarvalenzuela25/Nodia/pull/126)
+devolvió el cambio a development. Su
+[CI del merge](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45841565208)
+pasó.
+
+| Selección exacta | Inferencia de calificación en producción | Recorrido ordinario |
+| --- | --- | --- |
+| ChatGPT `2 / gpt-6.2-sol / high` | `3f11a17b-8510-4e9d-b6b7-be0bc322ebc0` · un intercambio, borrador válido, cierre, ACK y elegibilidad | Se aplicó Agentic en Alto, se generó y se verificaron TypeScript con evidencia y Kubernetes como brecha. Se guardó la versión 1 en Clásica y español, se reabrió después de recargar y se descargó el PDF verificado. |
+| Gemini `1 / gemini-4-hydrogen-high / high` | `dae7a714-4cb4-4e99-95c6-f93dcfe18a67` · un intercambio, cierre y ACK, resultado remoto `unknown` | El selector permanece bloqueado para Gemini. El diagnóstico interno registró un HTTP 200 y `reply_finish_missing` con cierre local comprobado. Se conservó el intento sin reenvío. |
+
+El primer intento de ChatGPT en el release anterior venció en cola y
+carecía de intento de proveedor. La prueba del release nuevo tuvo
+una clave propia. El PDF descargado tras reabrir la versión de QA
+contiene una página A4 y 13 331 bytes. Su SHA-256 es
+`1b0ab6bc7f6df09d6202232516aaf878cb5ac5c401aeaa3f3855faf3170a0994`.
+La interfaz confirmó la lectura de esos bytes y mostró TypeScript
+en el texto extraído.
+
+El primer pendiente de Agentic es resolver la falta de finalización
+estructurada de Gemini, con evidencia propia de su transporte. La
+respuesta anterior no habilita la selección ni autoriza su replay.
