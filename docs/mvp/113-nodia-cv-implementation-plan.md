@@ -977,3 +977,28 @@ en la sección 18.
 [Guía UI](../features/nodia-cv/ui-design.md) ·
 [Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md) ·
 [Verificación en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#limpiar-campos-y-editar-una-copia-guardada).
+
+## 24. Oferta extensa y entrega de Gemini Agentic — 2026-11-26
+
+La oferta reportada tiene 4.688 bytes en UTF-8 y conserva sus barras
+de escape. Producción admitió la misma oferta con GPT-6.1 Sol Agentic,
+GPT-6.1 Terra por API key y Gemini 4 Hydrogen Agentic. Sol y Terra
+produjeron borradores y PDF comprobables. Hydrogen devolvió
+`provider_outcome_unknown`. La prueba usa un perfil sintético y permite
+identificar el resultado por selección. El código público de Hydrogen
+deja abierta la causa concreta de ese recibo. El recibo distinto de la
+sección 18 sí registró `reply_finish_missing`.
+
+El adaptador Gemini de CV indica cómo entregar el JSON en `text` con
+una única llamada al terminador `finish`. La instrucción precede a la
+oferta y delimita el alcance de las instrucciones comunes de contenido.
+El presupuesto de bytes se calcula sobre el comando efectivo. El hash
+del comando, la validación de salida y el cierre verificado preservan la
+identidad de cada ejecución. La conciliación de solicitudes previas lee
+su recibo registrado y conserva el contrato de envío único.
+
+En el recorrido equivalente de Codex, el harness solicita el formato de
+salida por su propio contrato. Nodia mantiene el mismo objetivo en cada
+transporte y adapta únicamente la entrega técnica. La persona sigue
+eligiendo una selección compatible desde el primer intento.
+[Prueba en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#oferta-extensa-y-gemini-agentic).
