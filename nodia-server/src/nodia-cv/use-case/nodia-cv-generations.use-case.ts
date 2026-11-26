@@ -8,17 +8,24 @@ import {
   type NodiaAiRuntimePolicy,
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
 import { CV_CODEX_HOST_MAX_PROMPT_BYTES } from '../agentic/nodia-cv-codex-wire.js';
-import type { UpdateNodiaCvDraftDto } from '../dto/nodia-cv-draft.dto.js';
+import type {
+  StartNodiaCvAiEditDto,
+  UpdateNodiaCvDraftDto,
+} from '../dto/nodia-cv-draft.dto.js';
 import type {
   NodiaCvSelectionDto,
   StartNodiaCvGenerationDto,
 } from '../dto/nodia-cv-generation.dto.js';
 import {
+  CV_EDIT_PROMPT_VERSION,
+  CV_EDIT_PURPOSE,
   CV_TAILORING_PROMPT_VERSION,
   CV_TAILORING_PURPOSE,
   CvTailoringError,
+  prepareCvEdit,
   prepareCvTailoring,
 } from '../engine/index.js';
+import { minimizeCvText } from '../engine/evidence.js';
 import { NodiaCvGenerationScope } from '../nodia-cv-generation-scope.service.js';
 import { NodiaCvGenerationStore } from '../nodia-cv-generation.store.js';
 import {
@@ -29,15 +36,27 @@ import {
   NodiaCvSelectionService,
   type CvAgenticObservation,
 } from '../nodia-cv-selection.service.js';
-import { prepareCvDraftReview } from '../policies/nodia-cv-draft-review.js';
+import {
+  prepareCvDraftReview,
+  requireCvEditBase,
+} from '../policies/nodia-cv-draft-review.js';
 import { cvGenerationError } from '../policies/nodia-cv-generation-errors.js';
 import {
   CV_PROBE_CANDIDATE,
   CV_PROBE_OFFER,
+  cvEditIntent,
   cvGenerationIntent,
   cvGenerationPrompt,
 } from '../policies/nodia-cv-generation.js';
 import type { CvGenerationRow } from '../types/nodia-cv-generation.types.js';
+
+type Admission =
+  | {
+      kind: 'generate';
+      input: StartNodiaCvGenerationDto;
+      qualification: boolean;
+    }
+  | { kind: 'edit'; input: StartNodiaCvAiEditDto; baseId: string };
 
 function visibleGeneration(row: CvGenerationRow) {
   if (
@@ -59,12 +78,23 @@ function visibleGeneration(row: CvGenerationRow) {
     vacancy_company: row.vacancy_company,
     error_code: row.error_code,
     draft: row.draft,
+    ...(row.edit_input
+      ? {
+          edit: {
+            base_generation_id: row.edit_input.base_generation_id,
+            base_revision: row.edit_input.base_revision,
+          },
+        }
+      : {}),
     review:
       row.review && row.review_revision !== null
         ? {
             revision: row.review_revision,
             included_fact_ids: row.review.included_fact_ids,
             evidence: row.review.evidence,
+            ...(row.review.section_order
+              ? { section_order: row.review.section_order }
+              : {}),
           }
         : null,
   };
@@ -158,7 +188,11 @@ export class NodiaCvGenerationsUseCase {
       if (visible.review.revision !== input.revision)
         cvGenerationError('stale_draft');
 
-      const review = prepareCvDraftReview(visible.draft, input);
+      const review = prepareCvDraftReview(
+        visible.draft,
+        input,
+        visible.review.section_order,
+      );
       const updated = await this.store.updateReview(
         manager,
         current.actorId,
@@ -172,26 +206,31 @@ export class NodiaCvGenerationsUseCase {
   }
 
   start(actor: ActorReference, input: StartNodiaCvGenerationDto) {
-    return this.admit(actor, input, false);
+    return this.admit(actor, { kind: 'generate', input, qualification: false });
   }
 
   /** Internal admin-only canary with designated synthetic inputs. */
   startProbe(actor: ActorReference, input: StartNodiaCvGenerationDto) {
-    return this.admit(actor, input, true);
+    return this.admit(actor, { kind: 'generate', input, qualification: true });
+  }
+
+  startEdit(actor: ActorReference, id: string, input: StartNodiaCvAiEditDto) {
+    return this.admit(actor, { kind: 'edit', input, baseId: id.toLowerCase() });
   }
 
   private async admissionContext(
     manager: EntityManager,
     actor: ActorReference,
-    input: StartNodiaCvGenerationDto,
+    request: Admission,
     requestHash: string,
     qualification: boolean,
+    lockBase = false,
   ) {
     const current = await this.scope.authorize(manager, actor);
     if (qualification && !current.isSuperAdmin)
       cvGenerationError('generation_probe_forbidden', 403);
     const previous = await this.store.status(manager, current.actorId, {
-      key: input.request_key,
+      key: request.input.request_key,
     });
     if (previous) {
       const visible = visibleGeneration(previous);
@@ -204,6 +243,31 @@ export class NodiaCvGenerationsUseCase {
       return { state: 'previous', visible } as const;
     }
 
+    let base = null;
+    let input: StartNodiaCvGenerationDto;
+    if (request.kind === 'edit') {
+      base = requireCvEditBase(
+        await this.store.status(
+          manager,
+          current.actorId,
+          { id: request.baseId },
+          lockBase,
+        ),
+        request.input.revision,
+      );
+      input = {
+        request_key: request.input.request_key,
+        profile_id: base.profile_id,
+        profile_revision: base.profile_revision,
+        language: base.language,
+        offer_text: base.offer_text,
+        vacancy_title: base.vacancy_title ?? undefined,
+        vacancy_company: base.vacancy_company ?? undefined,
+        selection: request.input.selection,
+      };
+    } else {
+      input = request.input;
+    }
     const profile = await this.profiles.find(
       manager,
       input.profile_id,
@@ -224,31 +288,36 @@ export class NodiaCvGenerationsUseCase {
     return {
       state: 'new',
       current,
-      snapshot: { ...profileSummary(profile), ...profile.data },
+      input,
+      base,
+      snapshot: base?.profile_snapshot ?? {
+        ...profileSummary(profile),
+        ...profile.data,
+      },
     } as const;
   }
 
-  private async admit(
-    actor: ActorReference,
-    request: StartNodiaCvGenerationDto,
-    qualification: boolean,
-  ) {
-    const input = structuredClone(request);
-    const requestHash = cvGenerationIntent(input);
+  private async admit(actor: ActorReference, admission: Admission) {
+    const request = structuredClone(admission);
+    const qualification = request.kind === 'generate' && request.qualification;
+    const requestHash =
+      request.kind === 'edit'
+        ? cvEditIntent(request.baseId, request.input)
+        : cvGenerationIntent(request.input);
     let observation: CvAgenticObservation = null;
-    if (input.selection.mode === 'agentic') {
+    if (request.input.selection.mode === 'agentic') {
       const context = await this.scope.transaction((manager) =>
         this.admissionContext(
           manager,
           actor,
-          input,
+          request,
           requestHash,
           qualification,
         ),
       );
       if (context.state === 'previous') return context.visible;
       observation = await this.selections.observeAgentic(
-        input.selection,
+        request.input.selection,
         AbortSignal.timeout(
           this.policy.timing.provider_dispatch_seconds * 1_000,
         ),
@@ -258,18 +327,37 @@ export class NodiaCvGenerationsUseCase {
       const context = await this.admissionContext(
         manager,
         actor,
-        input,
+        request,
         requestHash,
         qualification,
+        true,
       );
       if (context.state === 'previous') return context.visible;
-      const { current, snapshot } = context;
+      const { current, snapshot, input, base } = context;
+      const editInput =
+        base && request.kind === 'edit'
+          ? {
+              base_generation_id: base.id,
+              base_revision: request.input.revision,
+              instructions: minimizeCvText(snapshot)(
+                request.input.instructions,
+              ),
+            }
+          : null;
       try {
-        const prepared = prepareCvTailoring({
-          profile: snapshot,
-          offer: input.offer_text,
-          locale: input.language,
-        });
+        const prepared =
+          base && editInput
+            ? prepareCvEdit({
+                profile: snapshot,
+                draft: base.draft,
+                review: base.review,
+                instructions: editInput.instructions,
+              })
+            : prepareCvTailoring({
+                profile: snapshot,
+                offer: input.offer_text,
+                locale: input.language,
+              });
         const prompt = cvGenerationPrompt(prepared);
         const { utf8Bytes, maximumUtf8Bytes } =
           input.selection.mode === 'agentic'
@@ -291,6 +379,15 @@ export class NodiaCvGenerationsUseCase {
         throw error;
       }
 
+      if (
+        editInput &&
+        (await this.store.hasUnresolvedEdit(
+          manager,
+          current.actorId,
+          requestHash,
+        ))
+      )
+        cvGenerationError('edit_in_progress');
       await this.store.checkQueue(manager, current.actorId, this.policy);
       const config =
         input.selection.mode === 'agentic'
@@ -310,10 +407,14 @@ export class NodiaCvGenerationsUseCase {
           config,
           scopeHash: this.selections.scopeHash(input.selection, config),
           requestHash,
-          purposeVersion: CV_TAILORING_PURPOSE,
-          promptVersion: CV_TAILORING_PROMPT_VERSION,
+          purposeVersion: editInput ? CV_EDIT_PURPOSE : CV_TAILORING_PURPOSE,
+          promptVersion: editInput
+            ? CV_EDIT_PROMPT_VERSION
+            : CV_TAILORING_PROMPT_VERSION,
           qualification,
           waitSeconds: this.policy.queue.wait_seconds,
+          editInput,
+          baseExpiresAt: base?.expires_at ?? null,
         }),
       );
     }, true);

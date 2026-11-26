@@ -28,12 +28,14 @@ import {
   useCvProfilesForGeneration,
 } from "../../infrastructure/generations";
 import { useProfileDetail } from "../../infrastructure/profiles";
+import type { CvPdfTemplate } from "../../infrastructure/pdfVersions";
 import { useCvDraftExit } from "../../infrastructure/useCvDraftExit";
 import {
   useCvGenerationWorkflow,
   type CvGenerationView,
 } from "../../infrastructure/useCvGenerationWorkflow";
 import CvModelSelector from "../CvModelSelector";
+import { CvAiEditDialog } from "../CvAiEditDialog/CvAiEditDialog";
 import CvDraftPdf, { type CvDraftPdfHandle } from "../CvDraftPdf/CvDraftPdf";
 import CvRequirements from "../CvRequirements/CvRequirements";
 import CvDraftDocument from "./CvDraftDocument";
@@ -62,10 +64,13 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   const [workingSelection, setWorkingSelection] = useState<NodiaAiSelection | null>(null);
   const [selectionDirty, setSelectionDirty] = useState(false);
   const [reviewTarget, setReviewTarget] = useState<ReviewTarget | null>(null);
+  const [editTarget, setEditTarget] = useState<CvGenerationView | null>(null);
   const [savedRevision, setSavedRevision] = useState<string | null>(null);
+  const [template, setTemplate] = useState<CvPdfTemplate>("classic");
   const [writingVersion, setWritingVersion] = useState(false);
   const pdfRef = useRef<CvDraftPdfHandle>(null);
   if (!active && reviewTarget) setReviewTarget(null);
+  if (!active && editTarget) setEditTarget(null);
 
   const profiles = useCvProfilesForGeneration(active);
   const profileDetail = useProfileDetail(active ? profileId : null);
@@ -549,10 +554,18 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
               </Typography>
             )}
           </Stack>
+          {draftView && review && (
+            <Button variant="outlined" startIcon={<AutoAwesomeOutlined />}
+              disabled={!reviewReady || Boolean(reviewTarget)} onClick={() => setEditTarget(draftView)}
+              sx={{ ...primaryAction, alignSelf: { sm: "flex-start" } }}>
+              {t("ai_edit.open")}
+            </Button>
+          )}
           {visible && visibleReview && (
             <Box hidden={!forPreviewAvailable}>
               <CvDraftPdf key={revisionKey} ref={pdfRef} generationId={visible.receipt.id}
                 revision={visibleReview.revision} language={visible.receipt.language} active={active}
+                initialTemplate={template} onTemplateChange={setTemplate}
                 disabled={!pdfReady || Boolean(reviewTarget)} onDenial={onDenial}
                 onSaved={() => setSavedRevision(revisionKey)} onSavingChange={setWritingVersion}
                 onRefresh={() => { void workflow.status.refetch(); }} onOpenVersions={onOpenVersions} />
@@ -584,6 +597,13 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
           )}
         </Stack>
       </Box>
+      {active && editTarget && (
+        <CvAiEditDialog base={editTarget} selection={editTarget.receipt.selection}
+          connectionLabel={connections.find(item => item.connection_id === editTarget.receipt.selection.connection_id)?.label}
+          onDenial={onDenial} onClose={() => setEditTarget(null)}
+          onApply={(next) => workflow.applyEdit(editTarget, next)}
+        />
+      )}
       {exit.open && (
         <BaseModal open size="xs" title={t("draft_exit_title")} subtitle={t("draft_exit_description")}
           onClose={exit.keepEditing} showCloseButton={false} disableEscapeKeyDown={exit.saving}

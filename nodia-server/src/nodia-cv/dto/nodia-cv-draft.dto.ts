@@ -7,12 +7,15 @@ import {
   IsNotEmpty,
   IsObject,
   IsString,
+  IsUUID,
   Matches,
   Max,
   MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
+import { NodiaCvSelectionDto } from './nodia-cv-generation.dto.js';
+import { CV_EDIT_MAX_INSTRUCTIONS_BYTES } from '../engine/types.js';
 import type { CvDraftReviewEvidence } from '../types/nodia-cv-generation.types.js';
 
 const trimText = Transform(({ value }: { value: unknown }) =>
@@ -64,4 +67,30 @@ export class UpdateNodiaCvDraftDto {
   @ValidateNested({ each: true })
   @Type(() => NodiaCvReviewEvidenceDto)
   evidence!: NodiaCvReviewEvidenceDto[];
+}
+
+export class StartNodiaCvAiEditDto {
+  @ApiProperty({ type: String, format: 'uuid' })
+  @IsUUID('4')
+  request_key!: string;
+
+  @ApiProperty({ type: Number, minimum: 1, maximum: 2147483647 })
+  @IsInt()
+  @Min(1)
+  @Max(2147483647)
+  revision!: number;
+
+  @ApiProperty({ type: String, maxLength: CV_EDIT_MAX_INSTRUCTIONS_BYTES })
+  @trimText
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(CV_EDIT_MAX_INSTRUCTIONS_BYTES)
+  @Matches(/^(?:[^\p{Cc}\p{Cs}\p{Bidi_Control}]|\n)+$/u)
+  instructions!: string;
+
+  @ApiProperty({ type: NodiaCvSelectionDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => NodiaCvSelectionDto)
+  selection!: NodiaCvSelectionDto;
 }

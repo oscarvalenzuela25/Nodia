@@ -45,6 +45,7 @@ describe('HTTP module policy', () => {
       ['GET', 'generations/:id'],
       ['GET', 'generations/requests/:key'],
       ['PUT', 'drafts/:id'],
+      ['POST', 'drafts/:id/ai-edits'],
       ['POST', 'drafts/:id/pdf'],
       ['GET', 'drafts/:id/pdf/:artifactId'],
       ['GET', 'versions'],

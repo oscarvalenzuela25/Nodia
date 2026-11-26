@@ -17,6 +17,7 @@ import {
 } from "./generations";
 import {
   cvInputIdentity,
+  receivedCvIntent,
   type CvGeneration,
   type CvGenerationInput,
   type CvReviewSave,
@@ -285,6 +286,35 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     setTracked(current => current?.receipt.id === id ? null : current);
   };
 
+  const applyEdit = async (base: CvReviewTarget, next: TrackedCvGeneration): Promise<"applied" | "stale" | "unavailable"> => {
+    const revision = base.receipt.review?.revision;
+    const edit = next.receipt.edit;
+    if (!visible || visible.receipt.id !== base.receipt.id || visible.receipt.review?.revision !== revision ||
+      next.receipt.state !== "ready" || Date.parse(next.receipt.expires_at) <= Date.now() ||
+      !receivedCvIntent(next.receipt, next.intent) || cvInputIdentity(base.intent) !== cvInputIdentity(next.intent) ||
+      edit?.base_generation_id !== base.receipt.id || edit.base_revision !== revision) return "stale";
+
+    const controller = beginCommand();
+    if (!controller) return "unavailable";
+    try {
+      const latest = await readCvGeneration(base.receipt.id, base.intent, scope[2], controller.signal);
+      if (!sameActor() || controller.signal.aborted) return "unavailable";
+      queryClient.setQueryData(cvGenerationQueryKey(scope, latest.id), latest);
+      if (latest.state !== "ready" || latest.review?.revision !== revision) return "stale";
+
+      forget(base.intent.request_key);
+      localReceipts.current.add(next.intent.request_key);
+      if (actorId) rememberCvReceipt(actorId, next.intent.request_key);
+      accept({ input: next.intent, profile: visible.profile }, next.receipt);
+      return "applied";
+    } catch (error) {
+      if (!controller.signal.aborted) reportError(error);
+      return "unavailable";
+    } finally {
+      finishCommand();
+    }
+  };
+
   const reloadReview = async (view: CvReviewTarget) => {
     const value = await readCvGeneration(view.receipt.id, view.intent, scope[2]);
     if (!sameActor()) throw new Error("Session changed");
@@ -323,6 +353,7 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     priorRequest: priorRequest?.state ?? null,
     expired,
     discardDraft,
+    applyEdit,
     hasUnknown,
     generate: (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord) => startGeneration(input, profile),
     resumeMissing: (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord) => {

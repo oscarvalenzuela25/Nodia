@@ -26,6 +26,7 @@ const nodiaCvErrors = new Set([
   'nodiaCv:generation_expired',
   'nodiaCv:draft_not_ready',
   'nodiaCv:stale_draft',
+  'nodiaCv:edit_in_progress',
   'nodiaCv:invalid_draft_review',
   'nodiaCv:pdf_not_found',
   'nodiaCv:pdf_stale',

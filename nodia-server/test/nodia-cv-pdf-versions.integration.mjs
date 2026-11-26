@@ -434,6 +434,31 @@ try {
   );
   const es = await readyDraft('es', false);
   const en = await readyDraft('en', true);
+  const editPath = '/drafts/' + es.generationId + '/ai-edits';
+  const editRequest = {
+    request_key: randomUUID(),
+    revision: 1,
+    instructions: 'Pon las competencias primero',
+    selection: {
+      connection_id: '501',
+      mode: 'api_key',
+      model_id: 'synthetic-unused',
+      effort_id: null,
+    },
+  };
+  await json(request('POST', editPath, null, editRequest), 401);
+  await json(request('POST', editPath, unassigned, editRequest), 403);
+  await json(request('POST', editPath, other, editRequest), 404, 'generation_not_found');
+  await json(
+    request('POST', editPath, owner, { ...editRequest, revision: 2 }),
+    409,
+    'stale_draft',
+  );
+  await json(
+    request('POST', editPath, owner, { ...editRequest, instructions: 'á'.repeat(1025) }),
+    400,
+    'generation_invalid_input',
+  );
   const pair = await Promise.all([
     prepare(es.generationId, 'classic'),
     prepare(es.generationId, 'classic'),

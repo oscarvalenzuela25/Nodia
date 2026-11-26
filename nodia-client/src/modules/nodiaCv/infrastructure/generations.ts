@@ -78,8 +78,8 @@ async function fetchCvReceipt(id: string, version: number, signal?: AbortSignal)
   return result;
 }
 
-export async function readCvGeneration(id: string, intent: CvGenerationInput, version: number) {
-  const result = await fetchCvReceipt(id, version);
+export async function readCvGeneration(id: string, intent: CvGenerationInput, version: number, signal?: AbortSignal) {
+  const result = await fetchCvReceipt(id, version, signal);
   if (!receivedCvIntent(result, intent)) throw new Error("Unexpected Nodia CV generation identity");
   return result;
 }
