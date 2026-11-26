@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Nodia CV — copia editable y limpieza del formulario, 2026-11-26.**
+La versión guardada puede aportar el contenido de una copia para editar
+con IA. **Limpiar campos** permite empezar con los insumos vacíos y la
+selección puede cambiarse ante una generación de resultado incierto.
+[Plan113 §23](113-nodia-cv-implementation-plan.md#23-editar-un-cv-guardado-y-limpiar-el-formulario--2026-11-26).
+
 **Nodia CV — borrador editable con IA, 2026-11-26.** Producción verificó
 el desbloqueo con una referencia antigua, guardado y descarte al salir,
 edición aplicada con GPT-6.1 Sol Agentic y conservación del original

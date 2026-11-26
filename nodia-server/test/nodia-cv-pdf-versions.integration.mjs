@@ -424,6 +424,9 @@ try {
   assert.ok(
     migrations.some((migration) => migration.timestamp === 1794060000000),
   );
+  assert.ok(
+    migrations.some((migration) => migration.timestamp === 1794090000000),
+  );
   const cvModule = await seedAuthority();
   await openHttp();
   await json(request('GET', '/versions', null), 401);
@@ -788,6 +791,82 @@ try {
     await json(request('GET', path, unassigned), 403);
   }
   await json(request('DELETE', versionPath(first), other), 404);
+
+  // Open a copy after its original temporary generation and profile were removed.
+  const copyPath = versionPath(first) + '/draft-copy';
+  const copyInput = { request_key: randomUUID() };
+  for (const [actor, status] of [
+    [null, 401],
+    [unassigned, 403],
+    [other, 404],
+  ])
+    await json(request('POST', copyPath, actor, copyInput), status);
+  const [copy, replay] = await Promise.all([
+    json(request('POST', copyPath, owner, copyInput), 200),
+    json(request('POST', copyPath, owner, copyInput), 200),
+  ]);
+  assert.deepEqual(copy, replay);
+  assert.equal(copy.state, 'ready');
+  assert.equal(copy.selection, null);
+  assert.equal(copy.profile_id, es.profile.id);
+  assert.equal(copy.recovery.offer_text, '');
+  assert.deepEqual(copy.source_version, {
+    id: first.id,
+    template: first.template,
+  });
+  assert.deepEqual(copy.draft.requirements, first.analysis.requirements);
+  await json(
+    request('POST', versionPath(third) + '/draft-copy', owner, copyInput),
+    409,
+  );
+
+  await db.query('UPDATE nodia_cv_versions SET analysis=NULL WHERE id=$1', [
+    third.id,
+  ]);
+  const legacy = await json(
+    request('POST', versionPath(third) + '/draft-copy', owner, {
+      request_key: randomUUID(),
+    }),
+    200,
+  );
+  assert.deepEqual(legacy.draft.requirements, []);
+  assert.ok(third.analysis.evidence.length > 0);
+  assert.deepEqual(legacy.review.evidence, third.analysis.evidence);
+  for (const [draft, original, artifact] of [
+    [copy, first, esClassic],
+    [legacy, { ...third, analysis: null }, revised],
+  ]) {
+    const pdf = await json(
+      request('POST', draftPdf(draft.id), owner, {
+        revision: draft.review.revision,
+        template: original.template,
+      }),
+      200,
+    );
+    assert.equal(pdf.extracted_text, original.extracted_text);
+    assert.deepEqual(
+      await json(request('GET', versionPath(original)), 200),
+      original,
+    );
+    assert.deepEqual(
+      await readPdf(versionPath(original) + '/pdf', original.sha256),
+      artifacts.get(artifact.id),
+    );
+    if (draft === legacy) {
+      const resaved = await save(bodyFor(pdf));
+      assert.deepEqual(resaved.analysis, {
+        requirements: [],
+        facts: [],
+        evidence: [],
+      });
+      const [row] = await db.query(
+        "SELECT snapshot->'evidence' AS evidence FROM nodia_cv_versions WHERE id=$1",
+        [resaved.id],
+      );
+      assert.deepEqual(row.evidence, legacy.review.evidence);
+    }
+  }
+
   await db.query(
     'UPDATE user_modules SET is_active=false WHERE user_id=$1 AND module_id=$2',
     [owner, cvModule],

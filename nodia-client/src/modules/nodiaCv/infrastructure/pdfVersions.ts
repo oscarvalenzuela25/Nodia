@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { mainInstance } from "../../../config/api";
 import { apiPath } from "../../../config/apiPath";
-import { cvSavedAnalysisSchema } from "./generationSchema";
+import { cvPdfTemplateSchema as template, cvSavedAnalysisSchema } from "./generationSchema";
 
 const root = apiPath("/nodia-cv");
-const template = z.enum(["classic", "compact"]);
 const language = z.enum(["es", "en"]);
 const pdfDetails = z.object({
   format: z.literal("a4"),

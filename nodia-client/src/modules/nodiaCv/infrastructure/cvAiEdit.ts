@@ -8,6 +8,7 @@ import {
   type CvDraftFact,
   type CvGeneration,
   type CvGenerationInput,
+  type CvGenerationIntent,
 } from "./generationSchema";
 
 export const cvAiEditMaxBytes = 2048;
@@ -26,7 +27,7 @@ export type CvAiEditRequest = {
   selection: NodiaAiSelection;
 };
 
-export function matchesAiEdit(receipt: CvGeneration, target: CvAiEditTarget, intent: CvGenerationInput) {
+export function matchesAiEdit(receipt: CvGeneration, target: CvAiEditTarget, intent: CvGenerationIntent) {
   return receipt.id !== target.baseId &&
     receipt.edit?.base_generation_id === target.baseId &&
     receipt.edit.base_revision === target.revision &&

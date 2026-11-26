@@ -186,7 +186,8 @@ function SelectionEditor<Connection extends NodiaAiConnection>({
 }
 
 export default function AiComposerSelector<Connection extends NodiaAiConnection>(props: AiComposerSelectorProps<Connection>) {
-  const summary = useRef<HTMLButtonElement | null>(null);
+  const localSummary = useRef<HTMLButtonElement | null>(null);
+  const summary = props.triggerRef ?? localSummary;
   const completedFocus = useRef<string | null>(null);
   const [confirmedFocus, setConfirmedFocus] = useState<string | null>(null);
   const key = selectionKey(props.selection);
@@ -196,7 +197,7 @@ export default function AiComposerSelector<Connection extends NodiaAiConnection>
       summary.current?.focus();
       completedFocus.current = confirmedFocus;
     }
-  }, [confirmedFocus, key, summaryBusy]);
+  }, [confirmedFocus, key, summary, summaryBusy]);
   const apply = async (selection: NodiaAiSelection) => {
     completedFocus.current = null;
     setConfirmedFocus(null);

@@ -18,16 +18,16 @@ import { useCvHttpNotice } from "../../infrastructure/generations";
 import { cvPdfErrorMessage, notifyCvPdfError } from "../../infrastructure/pdfFeedback";
 import { cvVersionsPageSize, deleteCvVersion, listCvVersions, readCvVersion, type CvVersionSummary } from "../../infrastructure/pdfVersions";
 import { profileAccessDenied, useProfileScope } from "../../infrastructure/profiles";
-import { cvHttpStatus } from "../../infrastructure/useCvGenerationWorkflow";
+import { cvHttpStatus, type CvGenerationView } from "../../infrastructure/useCvGenerationWorkflow";
 import { cvPrimaryHover } from "../CvGeneration/styles";
 import CvSavedVersionDetail from "./CvSavedVersionDetail";
 import { cvVersionLabel } from "./versionPresentation";
 
 const touch = { minWidth: 44, minHeight: 44 };
 const wrap = { overflowWrap: "anywhere" };
-type Props = { onDenial: () => void; onGoToGeneration: () => void };
+type Props = { onDenial: () => void; onGoToGeneration: () => void; onEditCopy: (copy: CvGenerationView) => void };
 
-export default function CvSavedVersions({ onDenial, onGoToGeneration }: Props) {
+export default function CvSavedVersions({ onDenial, onGoToGeneration, onEditCopy }: Props) {
   const { t, i18n } = useTranslation("nodiaCv");
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -216,7 +216,7 @@ export default function CvSavedVersions({ onDenial, onGoToGeneration }: Props) {
         </Stack>
       )}
       {opened && <CvSavedVersionDetail key={opened.id} target={opened} onClose={() => setOpened(null)}
-        onMissing={onDetailMissing} onDelete={() => requestRemoval(opened)} onDenial={onDenial} />}
+        onMissing={onDetailMissing} onDelete={() => requestRemoval(opened)} onDenial={onDenial} onEditCopy={onEditCopy} />}
       {target && (
         <ConfirmDialog open title={t("version_delete")} confirmText={t("version_delete")}
           message={t("version_delete_message", { version: cvVersionLabel(target, t), profile: target.profile_name })}

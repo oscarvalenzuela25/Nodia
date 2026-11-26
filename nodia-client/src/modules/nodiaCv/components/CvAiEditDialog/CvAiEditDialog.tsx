@@ -54,12 +54,14 @@ export function CvAiEditDialog({ base, selection, connectionLabel, onApply, onCl
   const checkNeeded = edit.pending && !edit.missing && (
     !edit.tracked || edit.unresolved || edit.invalid || Boolean(edit.error)
   );
-  const effort = selection.effort_id;
+  const displayedModel = edit.observedModel ?? selection;
+  const label = displayedModel.connection_id === selection.connection_id ? connectionLabel : undefined;
+  const effort = displayedModel.effort_id;
   const effortKey = `nodiaAi:effort_levels.${effort}`;
   const selectionLabel = [
-    connectionLabel ?? t("ai_edit.connection", { id: selection.connection_id }),
-    selection.model_id,
-    t(`nodiaAi:modes.${selection.mode}`),
+    label ?? t("ai_edit.connection", { id: displayedModel.connection_id }),
+    displayedModel.model_id,
+    t(`nodiaAi:modes.${displayedModel.mode}`),
     effort && (i18n.exists(effortKey) ? t(effortKey) : effort),
   ].filter(Boolean).join(" · ");
 

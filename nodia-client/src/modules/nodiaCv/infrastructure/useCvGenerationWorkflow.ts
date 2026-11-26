@@ -20,6 +20,7 @@ import {
   receivedCvIntent,
   type CvGeneration,
   type CvGenerationInput,
+  type CvGenerationIntent,
   type CvReviewSave,
 } from "./generationSchema";
 import type { ProfileRecord } from "./profileSchema";
@@ -30,17 +31,17 @@ type Intent = { input: CvGenerationInput; profile: ProfileRecord };
 export type CvGenerationView = TrackedCvGeneration & { profile: ProfileRecord };
 export type CvReviewTarget = Pick<CvGenerationView, "intent" | "receipt">;
 type UncertainAdmission = { intent: Intent; receiptMissing: boolean };
-type PriorRequest = { state: "working" | "unknown" } | { state: "missing"; key: string };
+type PriorRequest = { state: "working" } | { state: "missing"; key: string };
 
 export function cvHttpStatus(error: unknown) {
   return isAxiosError(error) ? (error.response?.status ?? null) : null;
 }
 
-export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
+export function useCvGenerationWorkflow(active: boolean, onDenial: () => void, initialCopy: CvGenerationView | null = null) {
   const queryClient = useQueryClient();
   const { scope } = useProfileScope();
   const actorId = scope[1];
-  const [tracked, setTracked] = useState<CvGenerationView | null>(null);
+  const [tracked, setTracked] = useState<CvGenerationView | null>(initialCopy);
   const [dismissedRequest, setDismissedRequest] = useState<string | null>(null);
   const [uncertain, setUncertain] = useState<UncertainAdmission | null>(null);
   const [admissionError, setAdmissionError] = useState<unknown>(null);
@@ -143,7 +144,7 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     recovering.current = null;
     if (sameActor()) setBusy(false);
   };
-  const accept = (intent: Intent, value: CvGeneration) => {
+  const accept = (intent: { input: CvGenerationIntent; profile: ProfileRecord }, value: CvGeneration) => {
     queryClient.setQueryData(cvGenerationQueryKey(scope, value.id), value);
     setTracked({ intent: intent.input, profile: intent.profile, receipt: value });
     setUncertain(null);
@@ -202,7 +203,7 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
       let verifiedMissingKey: string | undefined;
       const keys = new Set([...cvRecoveryKeys(actorId), ...localReceipts.current]);
       for (const key of keys) {
-        let previous: { input: CvGenerationInput; receipt: CvGeneration };
+        let previous: { input: CvGenerationIntent; receipt: CvGeneration };
         try {
           previous = receipt && key === tracked?.intent.request_key
             ? { input: tracked.intent, receipt }
@@ -231,7 +232,8 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
         const state = previous.receipt.state;
         if (state === "ready" || state === "failed") forget(key);
         else if (cvInputIdentity(previous.input) === identity) {
-          setPriorRequest({ state: state === "unknown" ? "unknown" : "working" });
+          if (state === "unknown") accept({ input: previous.input, profile }, previous.receipt);
+          else setPriorRequest({ state: "working" });
           return;
         }
       }
@@ -286,12 +288,24 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     setTracked(current => current?.receipt.id === id ? null : current);
   };
 
+  const clearPresentation = () => {
+    if (!sameActor()) return;
+    if (tracked && (receipt?.state === "ready" || receipt?.state === "failed" || expired)) {
+      forget(tracked.intent.request_key);
+    }
+    setTracked(null);
+    setUncertain(null);
+    setPriorRequest(null);
+    setAdmissionError(null);
+  };
+
   const applyEdit = async (base: CvReviewTarget, next: TrackedCvGeneration): Promise<"applied" | "stale" | "unavailable"> => {
     const revision = base.receipt.review?.revision;
     const edit = next.receipt.edit;
+    const expected = base.intent.source_version ? { ...base.intent, selection: next.intent.selection } : base.intent;
     if (!visible || visible.receipt.id !== base.receipt.id || visible.receipt.review?.revision !== revision ||
       next.receipt.state !== "ready" || Date.parse(next.receipt.expires_at) <= Date.now() ||
-      !receivedCvIntent(next.receipt, next.intent) || cvInputIdentity(base.intent) !== cvInputIdentity(next.intent) ||
+      !next.intent.selection || !receivedCvIntent(next.receipt, next.intent) || cvInputIdentity(expected) !== cvInputIdentity(next.intent) ||
       edit?.base_generation_id !== base.receipt.id || edit.base_revision !== revision) return "stale";
 
     const controller = beginCommand();
@@ -353,6 +367,7 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     priorRequest: priorRequest?.state ?? null,
     expired,
     discardDraft,
+    clearPresentation,
     applyEdit,
     hasUnknown,
     generate: (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord) => startGeneration(input, profile),

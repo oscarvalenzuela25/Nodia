@@ -13,6 +13,8 @@ export const cvSelectionSchema = z.object({
   model_id: z.string().min(1).max(1024),
   effort_id: z.string().min(1).max(256).nullable(),
 });
+export const cvPdfTemplateSchema = z.enum(["classic", "compact"]);
+const savedSource = z.object({ id: z.uuidv4(), template: cvPdfTemplateSchema });
 
 const catalogMode = z.object({
   mode,
@@ -158,7 +160,7 @@ export const cvGenerationSchema = z
     profile_id: z.uuidv4(),
     profile_revision: z.int().positive(),
     language: z.enum(["es", "en"]),
-    selection: cvSelectionSchema,
+    selection: cvSelectionSchema.nullable(),
     created_at: z.iso.datetime(),
     expires_at: z.iso.datetime(),
     vacancy_title: z.string().nullable(),
@@ -173,14 +175,18 @@ export const cvGenerationSchema = z
       base_generation_id: z.uuidv4(),
       base_revision: z.int().positive(),
     }).optional(),
+    source_version: savedSource.optional(),
   })
   .refine((result) => {
     if (result.edit?.base_generation_id === result.id) return false;
+    if (result.selection === null &&
+        (!result.source_version || result.state !== "ready" || !result.review || result.edit)) return false;
     if (!result.draft) return result.state !== "ready" && !result.review;
     if (result.state !== "ready" || result.language !== result.draft.locale) return false;
     const facts = [...result.draft.selectedFacts, ...result.draft.remainingFacts];
     const knownFacts = new Set(facts.map((item) => item.id));
     const knownRequirements = new Set(result.draft.requirements.map((item) => item.id));
+    const archivedWithoutRequirements = result.source_version && knownRequirements.size === 0;
     return (
       knownFacts.size === facts.length &&
       knownRequirements.size === result.draft.requirements.length &&
@@ -189,7 +195,7 @@ export const cvGenerationSchema = z
         (unique(result.review.included_fact_ids) &&
           unique(result.review.evidence.map((item) => item.requirement_id)) &&
           result.review.included_fact_ids.every((id) => knownFacts.has(id)) &&
-          result.review.evidence.every((item) => knownRequirements.has(item.requirement_id))))
+          (archivedWithoutRequirements || result.review.evidence.every((item) => knownRequirements.has(item.requirement_id)))))
     );
   });
 
@@ -217,12 +223,14 @@ export type CvSavedAnalysis = z.output<typeof cvSavedAnalysisSchema>;
 export type CvGeneration = z.output<typeof cvGenerationSchema>;
 export type CvCatalog = z.output<typeof cvCatalogSchema>;
 export type CvEligibility = z.output<typeof cvEligibilitySchema>;
-export type CvGenerationInput = CvOffer & {
+export type CvGenerationIntent = CvOffer & {
   request_key: string;
   profile_id: string;
   profile_revision: number;
-  selection: NodiaAiSelection;
+  selection: NodiaAiSelection | null;
+  source_version?: CvGeneration["source_version"];
 };
+export type CvGenerationInput = CvGenerationIntent & { selection: NodiaAiSelection };
 
 export function sameCvSelection(a: NodiaAiSelection | null, b: NodiaAiSelection | null) {
   return (
@@ -238,7 +246,7 @@ export function sameCvSelection(a: NodiaAiSelection | null, b: NodiaAiSelection 
   );
 }
 
-export function cvInputIdentity(input: Omit<CvGenerationInput, "request_key">) {
+export function cvInputIdentity(input: Omit<CvGenerationIntent, "request_key">) {
   const { selection } = input;
   return JSON.stringify([
     input.profile_id,
@@ -247,20 +255,24 @@ export function cvInputIdentity(input: Omit<CvGenerationInput, "request_key">) {
     input.offer_text,
     input.vacancy_title,
     input.vacancy_company,
-    selection.connection_id,
-    selection.mode,
-    selection.model_id,
-    selection.effort_id,
+    selection?.connection_id,
+    selection?.mode,
+    selection?.model_id,
+    selection?.effort_id,
+    input.source_version?.id,
+    input.source_version?.template,
   ]);
 }
 
-export function receivedCvIntent(receipt: CvGeneration, input: CvGenerationInput) {
+export function receivedCvIntent(receipt: CvGeneration, input: CvGenerationIntent) {
   return (
     receipt.profile_id === input.profile_id &&
     receipt.profile_revision === input.profile_revision &&
     receipt.language === input.language &&
     receipt.vacancy_title === (input.vacancy_title || null) &&
     receipt.vacancy_company === (input.vacancy_company || null) &&
+    receipt.source_version?.id === input.source_version?.id &&
+    receipt.source_version?.template === input.source_version?.template &&
     sameCvSelection(receipt.selection, input.selection)
   );
 }

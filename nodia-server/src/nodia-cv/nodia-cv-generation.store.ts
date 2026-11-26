@@ -16,6 +16,11 @@ import {
 import type { CvTailoringDraft } from './engine/index.js';
 import type { StartNodiaCvGenerationDto } from './dto/nodia-cv-generation.dto.js';
 import { cvGenerationError } from './policies/nodia-cv-generation-errors.js';
+import { cvGenerationProfileId } from './policies/nodia-cv-generation-status.js';
+import {
+  CV_VERSION_COPY_PURPOSE,
+  type prepareCvVersionDraft,
+} from './policies/nodia-cv-version-draft.js';
 import type {
   CvDraftReviewContent,
   CvAgenticCustody,
@@ -25,6 +30,7 @@ import type {
   CvGenerationConfiguration,
   CvGenerationRow,
   CvOperation,
+  CvSourceVersion,
 } from './types/nodia-cv-generation.types.js';
 import type { NodiaCvProfileDetail } from './types/nodia-cv-profile.types.js';
 
@@ -43,6 +49,17 @@ type Admission = {
   waitSeconds: number;
   editInput: CvEditInput | null;
   baseExpiresAt: Date | null;
+  sourceVersion: CvSourceVersion | null;
+};
+
+type VersionCopy = ReturnType<typeof prepareCvVersionDraft> & {
+  id: string;
+  owner: string;
+  sessionId: string;
+  requestKey: string;
+  requestHash: string;
+  vacancyTitle: string | null;
+  vacancyCompany: string | null;
 };
 
 const expireCoreFields = `state='expired',profile_id=NULL,profile_revision=NULL,auth_session_public_id=NULL,
@@ -93,10 +110,41 @@ export class NodiaCvGenerationStore {
         UPDATE nodia_cv_generations SET review=$4::jsonb,review_revision=review_revision+1,
           review_updated_by_actor_id=$1,updated_at=clock_timestamp()
         WHERE owner_user_id=$1 AND id=$2 AND review_revision=$3
-          AND state='ready' AND profile_id IS NOT NULL AND expires_at>clock_timestamp()
+          AND state='ready' AND (profile_id IS NOT NULL OR source_version IS NOT NULL)
+          AND expires_at>clock_timestamp()
         RETURNING *
       ) SELECT * FROM changed`,
       [owner, id, revision, JSON.stringify(review)],
+    );
+    return row ?? null;
+  }
+
+  async copyVersion(manager: EntityManager, a: VersionCopy) {
+    const [row] = await manager.query<CvGenerationRow[]>(
+      `INSERT INTO nodia_cv_generations (id,owner_user_id,auth_session_public_id,profile_revision,
+         request_key,request_hash,state,language,purpose_version,prompt_version,profile_snapshot,offer_text,
+         vacancy_title,vacancy_company,configuration_generation,session_generation,resource_key,scope_hash,
+         draft,review,review_revision,queue_expires_at,expires_at,source_version)
+       VALUES ($1,$2,$3,$4,$5,$6,'ready',$7,$8,'',$9::jsonb,'',$10,$11,'','','',$6,
+         $12::jsonb,$13::jsonb,1,clock_timestamp(),clock_timestamp()+interval '24 hours',$14::jsonb)
+       ON CONFLICT (owner_user_id,request_key) DO NOTHING
+       RETURNING *`,
+      [
+        a.id,
+        a.owner,
+        a.sessionId,
+        a.profile.revision,
+        a.requestKey,
+        a.requestHash,
+        a.draft.locale,
+        CV_VERSION_COPY_PURPOSE,
+        JSON.stringify(a.profile),
+        a.vacancyTitle,
+        a.vacancyCompany,
+        JSON.stringify(a.draft),
+        JSON.stringify(a.review),
+        JSON.stringify(a.source),
+      ],
     );
     return row ?? null;
   }
@@ -106,16 +154,16 @@ export class NodiaCvGenerationStore {
       `INSERT INTO nodia_cv_generations (id,owner_user_id,auth_session_public_id,profile_id,profile_revision,
          request_key,request_hash,state,language,purpose_version,prompt_version,profile_snapshot,offer_text,vacancy_title,
          vacancy_company,selection_snapshot,configuration_generation,session_generation,resource_key,
-         scope_hash,qualification,queue_expires_at,expires_at,edit_input)
+         scope_hash,qualification,queue_expires_at,expires_at,edit_input,source_version)
        VALUES ($1,$2,$3,$4,$5,$6,$7,'queued',$8,$9,$10,$11::jsonb,$12,$13,$14,$15::jsonb,$16,$17,
          $18,$19,$20,clock_timestamp()+$21*interval '1 second',
-         least(clock_timestamp()+interval '24 hours',$22::timestamptz),$23::jsonb)
+         least(clock_timestamp()+interval '24 hours',$22::timestamptz),$23::jsonb,$24::jsonb)
        RETURNING *`,
       [
         a.id,
         a.owner,
         a.sessionId,
-        a.profile.id,
+        a.sourceVersion ? null : a.profile.id,
         a.profile.revision,
         a.input.request_key,
         a.requestHash,
@@ -135,6 +183,7 @@ export class NodiaCvGenerationStore {
         a.waitSeconds,
         a.baseExpiresAt,
         a.editInput ? JSON.stringify(a.editInput) : null,
+        a.sourceVersion ? JSON.stringify(a.sourceVersion) : null,
       ],
     );
     return row;
@@ -216,7 +265,7 @@ export class NodiaCvGenerationStore {
         descriptor.provider !== configuration.providerKey ||
         descriptor.generation_id !== row.id ||
         descriptor.actor_id !== row.owner_user_id ||
-        descriptor.profile_id !== row.profile_id ||
+        descriptor.profile_id !== cvGenerationProfileId(row) ||
         descriptor.profile_revision !== row.profile_revision ||
         descriptor.connection_id !== configuration.connectionId ||
         descriptor.model_id !== selection.model_id ||
@@ -290,7 +339,7 @@ export class NodiaCvGenerationStore {
     const [row] = await manager.query<CvOperation[]>(
       `SELECT o.id,o.phase,o.started_exchanges,o.request_hash,o.runtime_fence,o.api_owner_identity,
         o.agentic_transport_descriptor,o.cv_agentic_native,o.cv_gemini_request_hash,o.terminal_proof,
-        (s.state='held' AND g.state='running' AND g.profile_id IS NOT NULL AND
+        (s.state='held' AND g.state='running' AND (g.profile_id IS NOT NULL OR g.source_version IS NOT NULL) AND
           g.deadline_at>clock_timestamp() AND g.lease_until>clock_timestamp()) AS valid_lease
        FROM ai_generation_operations o JOIN nodia_cv_generations g ON g.id=o.cv_generation_id
        JOIN nodia_ai_runtime_slots s ON s.resource_key=o.resource_key AND s.generation_operation_id=o.id
@@ -689,7 +738,7 @@ export class NodiaCvGenerationStore {
     );
     await manager.query(
       `WITH due AS (SELECT id FROM nodia_cv_generations WHERE state<>'expired'
-        AND (expires_at<=clock_timestamp() OR profile_id IS NULL)
+        AND (expires_at<=clock_timestamp() OR (profile_id IS NULL AND source_version IS NULL))
         ORDER BY expires_at,id LIMIT 30 FOR UPDATE SKIP LOCKED)
        UPDATE nodia_cv_generations g SET ${expireFields} FROM due WHERE g.id=due.id`,
     );
