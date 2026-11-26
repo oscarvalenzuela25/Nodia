@@ -27,6 +27,8 @@ export interface AiComposerSelectorProps<Connection extends NodiaAiConnection = 
   isFetching: boolean;
   isSaving: boolean;
   readOnly: boolean;
+  /** An active turn blocks the trigger and closes the panel without changing the draft. */
+  locked?: boolean;
   error: string | null;
   onRetry: () => void;
   hasMore: boolean;

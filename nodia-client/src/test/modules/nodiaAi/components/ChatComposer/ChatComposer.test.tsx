@@ -225,6 +225,48 @@ describe("ChatComposer", () => {
     expect(draft.clear).not.toHaveBeenCalled();
   });
 
+  it("closes the attachment menu and keeps only the owner-supplied Stop action available during a turn", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<ChatComposer {...props} />);
+    const add = screen.getByRole("button", { name: "Añadir al mensaje" });
+    await user.click(add);
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+
+    rerender(<ChatComposer {...props} turnInProgress />);
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Enviar mensaje" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Detener respuesta" })).not.toBeInTheDocument();
+    const stop = vi.fn();
+    const sendAction = <button type="button" onClick={stop}>Detener respuesta</button>;
+    rerender(<ChatComposer {...props} turnInProgress sendAction={sendAction} />);
+    expect(add).toBeDisabled();
+    expect(add).toHaveAttribute("aria-expanded", "false");
+    const message = screen.getByRole("textbox", { name: "Mensaje" });
+    expect(message).toBeDisabled();
+    expect(message).toHaveValue(props.text);
+    expect(screen.getByRole("button", { name: "Dictar mensaje" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Enviar mensaje" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Detener respuesta" }));
+    expect(stop).toHaveBeenCalledOnce();
+    fireEvent.submit(screen.getByRole("form", { name: "Escribir un mensaje" }));
+    expect(props.onSend).not.toHaveBeenCalled();
+    expect(draft.add).not.toHaveBeenCalled();
+
+    rerender(<ChatComposer {...props} turnInProgress recovering sendAction={sendAction} />);
+    const recover = screen.getByRole("button", { name: "Comprobar el mismo envío" });
+    expect(recover).toBeEnabled();
+    expect(recover.closest("[data-composer-toolbar]")).toBeNull();
+    expect(screen.getByRole("button", { name: "Detener respuesta" })).toBeEnabled();
+    await user.click(recover);
+    expect(props.onSend).toHaveBeenCalledOnce();
+    rerender(<ChatComposer {...props} turnInProgress recovering sendDisabled sendAction={sendAction} />);
+    expect(recover).toBeDisabled();
+    rerender(<ChatComposer {...props} />);
+    expect(add).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Dictar mensaje" })).toBeEnabled();
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
   it("sends with Enter once and preserves Shift+Enter as a newline", async () => {
     const user = userEvent.setup();
     render(<ControlledComposer value={props} />);

@@ -57,6 +57,16 @@ describe('productCatalogPricePage', () => {
     });
   });
 
+  it('keeps the total across pages when the product count reads one row', () => {
+    const first = { page: 1, limit: 1, total_items: 127, total_pages: 127 };
+    const result = productCatalogPricePage({
+      data: [{ id: '1', name: 'Harina' }],
+      meta: first,
+    });
+
+    expect(result).toEqual({ data: [{ name: 'Harina' }], meta: first });
+  });
+
   it.each<NodiaAiJsonObject>([
     { error: 'nodia_ai:unavailable' },
     { data: [] },

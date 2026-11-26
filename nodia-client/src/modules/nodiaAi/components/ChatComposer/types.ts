@@ -8,6 +8,7 @@ export interface ChatComposerProps {
   onTextChange: (text: string) => void;
   draft: AttachmentPanelProps["draft"];
   disabled: boolean;
+  turnInProgress?: boolean;
   sendDisabled: boolean;
   sendAction?: ReactNode;
   recovering: boolean;
