@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Nodia CV — borrador editable con IA, 2026-11-26.** Producción verificó
+el desbloqueo con una referencia antigua, guardado y descarte al salir,
+edición aplicada con GPT-6.1 Sol Agentic y conservación del original
+con GPT-6.1 Terra por API key. Se reabrió el PDF de la revisión editada.
+[Pruebas en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md).
+
 **FreeLLMAPI después de OpenCode — 2026-11-26.** El
 [plan116](116-freellmapi-integration-plan.md) define ocho pruebas de piloto
 y la integración posterior por API key. La primera comprobación exige una
