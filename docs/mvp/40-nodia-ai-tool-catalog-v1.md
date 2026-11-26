@@ -108,6 +108,16 @@ esa vista. Solicitudes mixtas o que requieren otras capacidades siguen el
 descubrimiento automático. La selección del perfil no sustituye la
 autorización vigente del negocio en cada consulta. [Evidencia de la VM](../evidence/nodia-ai-gemini-products-recovery-20261121.md).
 
+El mismo perfil admite preguntas inequívocas de cantidad, por ejemplo
+«¿Cuántos productos tiene la tienda mercado norte?». Tras identificar
+el negocio por nombre con la lectura de negocios, consulta Productos
+con el filtro `q.business_id_eq`, la página 1 y un límite de una fila.
+El total de productos activos proviene de `meta.total_items` de esa
+consulta. El modelo utiliza ese total y termina sin pedir otras páginas.
+Si hay varios negocios posibles, pide aclaración. El perfil exige MCP
+observado para la selección exacta y conserva la autoridad de las
+lecturas publicadas de Negocios y Productos.
+
 ## Cómo conoce NodiaAI los productos
 
 Cada módulo registra una descripción funcional, recursos, operaciones, esquemas públicos, reglas de ámbito y medidas admitidas. NodiaAI descubre las capacidades relevantes y pide el detalle necesario; no necesita cargar 156 definiciones en cada turno. La publicación real incluye sólo herramientas verificadas y autorizadas para la sesión, el modo y el modelo seleccionados.

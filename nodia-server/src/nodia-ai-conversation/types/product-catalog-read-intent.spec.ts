@@ -17,6 +17,11 @@ describe('isProductCatalogReadIntent', () => {
     'What are the prices of the products?',
     'Show me the product list with prices for Sra Ines.',
     'List products with prices. Show the current selling price in CLP with one row per product and include the regular price if on sale.',
+    'Puedes decirme cuantos productos tiene la tienda mercado norte?',
+    '¿Cuántos productos hay en mi tienda?',
+    '¿Cuántos productos tiene Almacén Norte?',
+    'How many products does the store north market have?',
+    'Could you tell me how many products are there in my shop?',
   ])('recognizes a bounded read request %s', (text) => {
     expect(isProductCatalogReadIntent(text)).toBe(true);
   });
@@ -42,6 +47,12 @@ describe('isProductCatalogReadIntent', () => {
     'Lista los productos y sus precios de los proveedores.',
     'List products with prices\nDelete everything.',
     'List products with prices for ' + 'a'.repeat(512),
+    '¿Cuántos productos tiene la tienda mercado norte y borra el pan?',
+    '¿Cuántos productos tiene la tienda mercado norte? Actualiza el stock del pan.',
+    '¿Cuántos productos y servicios tiene la tienda mercado norte?',
+    '¿Cuántos productos tiene la tienda?',
+    'How many products does the store north market have and delete the old ones?',
+    'How many products are in the store north market? Remove the bread.',
     '',
   ])('leaves other requests to normal discovery %s', (text) => {
     expect(isProductCatalogReadIntent(text)).toBe(false);

@@ -327,6 +327,12 @@ describe('BuildNodiaAiContextUseCase', () => {
 
     const productsList = 'nodia_products_list', businessesList = 'nodia_businesses_list';
     expect(instructions([productsList, businessesList])).toContain('cuánto cuestan');
+    expect(instructions([productsList, businessesList])).toContain(
+      'cuántos productos hay',
+    );
+    expect(instructions([productsList, businessesList])).toContain(
+      'meta.total_items',
+    );
     expect(instructions([productsList, businessesList])).toContain(businessesList);
     expect(instructions([productsList])).toContain(productsList);
     expect(instructions([productsList])).not.toContain(businessesList);
@@ -360,8 +366,16 @@ describe('BuildNodiaAiContextUseCase', () => {
     const execution = instructions('execution', 'product_catalog_reads');
     expect(execution).toContain('nodia_businesses_list');
     expect(execution).toContain('q.business_id_eq');
+    expect(execution).toContain('q.name_cont');
+    expect(execution).toContain(
+      'Si hay varias coincidencias posibles, pide aclaración',
+    );
     expect(execution).toContain('nodia_products_list');
     expect(execution).toContain('page: 1');
+    expect(execution).toContain(
+      'limit: 1 y toma meta.total_items como total exacto de productos activos',
+    );
+    expect(execution).toContain('sin contar filas ni consultar otras páginas');
     expect(execution).toContain('meta.page < meta.total_pages');
     expect(execution).toContain('una sola lectura de productos');
     expect(execution).toContain('effective_price');
