@@ -490,6 +490,7 @@ La aprobación explícita del ERD27 del 2026-10-04 no aprueba por extensión con
 | --- | --- |
 | Proveedores y regresiones | [Contrato funcional](ai-provider-feature-contract.md), [entrevista15](15-ai-providers-interview.md), [especificación16](16-ai-provider-management-handoff.md) y [verificación91](91-ai-provider-onboarding-verification.md) |
 | Catastro de modelos y OpenCode | [Recorridos de QA](114-ai-model-usage-inventory.md) y [plan Agentic/API key](115-opencode-provider-implementation-plan.md) |
+| FreeLLMAPI después de OpenCode | [Piloto con ruta fija e integración completa](116-freellmapi-integration-plan.md) |
 | Modos vigentes y API chat | [Agentic/API key y retiro Web90](90-agentic-api-only-web-retirement.md), [paridad API92](92-nodia-ai-api-chat-parity.md), [runbook Agentic](agentic-cli-runbook.md) y [plan CLI32](32-agentic-cli-implementation-plan.md) |
 | NodiaAI: alcance e implementación | [Investigación38](38-nodia-ai-research-and-v1-plan.md), [inventario39](39-nodia-ai-current-capabilities-inventory.md), [plan45](45-nodia-ai-implementation-plan.md) y [cobertura82](82-nodia-ai-ai36-integral-coverage.md) |
 | Herramientas, contratos y ejecución | [Catálogo40](40-nodia-ai-tool-catalog-v1.md), [contratos41](41-nodia-ai-v1-contracts.md), [ERD42](42-nodia-ai-erd.md), [arquitectura43](43-nodia-ai-execution-architecture.md), [autoridad54](54-nodia-ai-ai08-transversal-authority.md) y [política50](50-nodia-ai-ai04-runtime-policy.md) |
