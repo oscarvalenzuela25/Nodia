@@ -114,9 +114,13 @@ el negocio por nombre con la lectura de negocios, consulta Productos
 con el filtro `q.business_id_eq`, la página 1 y un límite de una fila.
 El total de productos activos proviene de `meta.total_items` de esa
 consulta. El modelo utiliza ese total y termina sin pedir otras páginas.
-Si hay varios negocios posibles, pide aclaración. El perfil exige MCP
-observado para la selección exacta y conserva la autoridad de las
-lecturas publicadas de Negocios y Productos.
+Si el nombre es coloquial, busca el término distintivo sin el
+tratamiento ni el descriptor genérico del negocio. Si no hay
+coincidencias, puede probar una variante que sólo cambie la tilde
+del término. Si ningún resultado identifica el negocio, pide el
+nombre registrado o una aclaración entre las coincidencias. El perfil
+exige MCP observado para la selección exacta y conserva la autoridad
+de las lecturas publicadas de Negocios y Productos.
 
 ## Cómo conoce NodiaAI los productos
 
