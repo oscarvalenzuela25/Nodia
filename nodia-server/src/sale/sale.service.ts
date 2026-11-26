@@ -1,9 +1,16 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import { stockQuantityTransformer } from '../common/utils/stock-quantity.js';
 import type {
   ProductSaleRow,
   SaleItemSnapshot,
+  SalePayment,
+  SalePaymentRecord,
   SaleStockDeduction,
   SaleView,
 } from './types/sale.types.js';
@@ -18,23 +25,41 @@ const itemProjection = `jsonb_build_object(
 export const SALE_PUBLIC_SELECT = `s.id::text, s.business_id::text, s.status, s.currency,
   s.payment_method, s.payment_method_description, s.total_amount::text, s.version,
   s.created_at, s.updated_at, s.completed_at, s.cancelled_at, s.cancellation_reason,
+  CASE WHEN s.payment_method='mixed' THEN (
+    SELECT jsonb_agg(jsonb_build_object('payment_method',p.payment_method,'amount',p.amount::text)
+      ORDER BY CASE p.payment_method WHEN 'cash' THEN 1 WHEN 'card' THEN 2 ELSE 3 END)
+    FROM sale_payments p WHERE p.business_id=s.business_id AND p.sale_id=s.id
+  ) END AS payments,
   COALESCE((SELECT jsonb_agg(${itemProjection} ORDER BY i.position)
     FROM sale_items i WHERE i.business_id=s.business_id AND i.sale_id=s.id),'[]'::jsonb) AS items`;
 
 type SaleRow = Omit<
   SaleView,
-  'created_at' | 'updated_at' | 'completed_at' | 'cancelled_at'
+  | 'created_at'
+  | 'updated_at'
+  | 'completed_at'
+  | 'cancelled_at'
+  | 'payments'
+  | 'record_payment'
 > & {
+  payments?: SalePayment[] | null;
+  record_payment?: SalePaymentRecord | null;
   created_at: Date | string;
   updated_at: Date | string;
   completed_at: Date | string | null;
   cancelled_at: Date | string | null;
 };
-export function publicSale(row: SaleRow): SaleView {
+export function publicSale({
+  payments,
+  record_payment,
+  ...row
+}: SaleRow): SaleView {
   const instant = (value: Date | string) =>
     value instanceof Date ? value.toISOString() : new Date(value).toISOString();
   return {
     ...row,
+    ...(payments ? { payments } : {}),
+    ...(record_payment ? { record_payment } : {}),
     created_at: instant(row.created_at),
     updated_at: instant(row.updated_at),
     completed_at: row.completed_at === null ? null : instant(row.completed_at),
@@ -69,6 +94,48 @@ export class SaleService {
     if (!rows[0]) throw new NotFoundException('business:resource_not_found');
     return publicSale(rows[0]);
   }
+
+  async loadPaymentRecord(
+    manager: EntityManager,
+    businessId: string,
+    id: string,
+  ): Promise<SaleView> {
+    const [payment]: (SalePaymentRecord & { sale_id: string })[] =
+      await manager.query(
+        `SELECT id,sale_id,payment_method,amount::text
+         FROM sale_payments WHERE business_id=$1 AND id=$2`,
+        [businessId, id],
+      );
+    if (!payment) return this.load(manager, businessId, id);
+    const { sale_id, ...record } = payment;
+    return {
+      ...(await this.load(manager, businessId, sale_id)),
+      record_payment: record,
+    };
+  }
+
+  async insertPayments(
+    manager: EntityManager,
+    businessId: string,
+    saleId: string,
+    payments: readonly SalePayment[],
+  ): Promise<void> {
+    await manager.query(
+      `INSERT INTO sale_payments (id,business_id,sale_id,payment_method,amount)
+       SELECT p.id,$1,$2,p.payment_method,p.amount
+       FROM jsonb_to_recordset($3::jsonb) AS p(id uuid,payment_method varchar,amount bigint)`,
+      [
+        businessId,
+        saleId,
+        JSON.stringify(
+          payments.map((payment) => ({
+            id: randomUUID(),
+            ...payment,
+          })),
+        ),
+      ],
+    );
+  }
   async products(
     manager: EntityManager,
     businessId: string,
@@ -76,13 +143,14 @@ export class SaleService {
     writeStock = false,
   ): Promise<ProductSaleRow[]> {
     if (!ids.length) return [];
-    const rows: (Omit<ProductSaleRow, 'stock'> & { stock: string })[] = await manager.query(
-      `SELECT p.id::text,p.business_id::text,p.code,p.barcode,p.name,p.sale_price::text,p.offer_price::text,
+    const rows: (Omit<ProductSaleRow, 'stock'> & { stock: string })[] =
+      await manager.query(
+        `SELECT p.id::text,p.business_id::text,p.code,p.barcode,p.name,p.sale_price::text,p.offer_price::text,
       is_offer_enabled,cost_price::text,cost_price_tax::text,version,is_active,track_stock,stock::text,measurement_unit
       FROM products p WHERE p.business_id=$1 AND p.id=ANY($2::bigint[]) ORDER BY p.id
       ${writeStock ? 'FOR NO KEY UPDATE' : 'FOR SHARE'}`,
-      [businessId, ids],
-    );
+        [businessId, ids],
+      );
     return rows.map((row) => ({
       ...row,
       stock: stockQuantityTransformer.from(row.stock),

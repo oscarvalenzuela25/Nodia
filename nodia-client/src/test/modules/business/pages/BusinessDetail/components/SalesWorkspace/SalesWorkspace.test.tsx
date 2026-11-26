@@ -21,7 +21,7 @@ vi.mock("../../../../../../../modules/business/infrastructure/salesServices", as
 const state = vi.hoisted(() => ({
   sale: null as Sale | null, lines: [] as CartLine[], paymentMethod: "cash" as PaymentMethod, mobile: false,
   description: "", dirty: false, busy: false, pending: null, storageError: false,
-  checkout: vi.fn(), transition: vi.fn(), reset: vi.fn(), setLines: vi.fn(), setPaymentMethod: vi.fn(), setDescription: vi.fn(),
+  checkout: vi.fn(), transition: vi.fn(), reset: vi.fn(), setLines: vi.fn(), setPaymentMethod: vi.fn(), setCombinedPayments: vi.fn(), setDescription: vi.fn(),
   activeId: "local-a", activeNumber: 1, hasUnsaved: false, newSale: vi.fn(), selectSale: vi.fn(), closeSale: vi.fn(), retryStorage: vi.fn(),
   load: vi.fn(), reconcile: vi.fn(), retry: vi.fn(), save: vi.fn(),
   updateProduct: vi.fn(),
@@ -201,7 +201,7 @@ describe("manual point of sale checkout controls", () => {
     await userEvent.click(screen.getByRole("button", { name: "Editar precio Producto de prueba" }));
     await userEvent.clear(screen.getByLabelText("Precio CLP"));
     await userEvent.type(screen.getByLabelText("Precio CLP"), "800");
-    await userEvent.click(screen.getByRole("button", { name: "Modificar sólo para esta venta" }));
+    await userEvent.click(screen.getByRole("button", { name: "Aplicar a esta venta" }));
     expect(state.setLines).toHaveBeenLastCalledWith([expect.objectContaining({ expected_unit_price: "1200", unit_price_override: "800" })]);
     expect(getProduct).not.toHaveBeenCalled();
     expect(state.updateProduct).not.toHaveBeenCalled();
@@ -215,7 +215,7 @@ describe("manual point of sale checkout controls", () => {
     await userEvent.click(screen.getByRole("button", { name: "Editar precio Producto de prueba" }));
     await userEvent.clear(screen.getByLabelText("Precio CLP"));
     await userEvent.type(screen.getByLabelText("Precio CLP"), "13000");
-    await userEvent.click(screen.getByRole("button", { name: "Guardar precio normal del producto y desactivar la oferta" }));
+    await userEvent.click(screen.getByRole("button", { name: "Guardar en catálogo" }));
     await waitFor(() => expect(state.updateProduct).toHaveBeenCalledWith({ id: line.product_id, payload: { expected_version: 3, sale_price: 13000, is_offer_enabled: false } }));
     await waitFor(() => expect(state.setLines).toHaveBeenCalled());
     const saved = state.setLines.mock.lastCall?.[0][0];
@@ -229,7 +229,7 @@ describe("manual point of sale checkout controls", () => {
     await userEvent.click(screen.getByRole("button", { name: "Editar precio Producto de prueba" }));
     await userEvent.clear(screen.getByLabelText("Precio CLP"));
     await userEvent.type(screen.getByLabelText("Precio CLP"), "900");
-    await userEvent.click(screen.getByRole("button", { name: "Guardar precio normal del producto y desactivar la oferta" }));
+    await userEvent.click(screen.getByRole("button", { name: "Guardar en catálogo" }));
     await waitFor(() => expect(screen.getByLabelText("Precio CLP")).toBeEnabled());
     expect(screen.getByLabelText("Precio CLP")).toHaveValue("900");
     expect(state.updateProduct).not.toHaveBeenCalled();
@@ -241,7 +241,7 @@ describe("manual point of sale checkout controls", () => {
     vi.mocked(getProduct).mockImplementation(() => new Promise(resolve => { resolveProduct = resolve; }));
     renderWorkspace();
     await userEvent.click(screen.getByRole("button", { name: "Editar precio Producto de prueba" }));
-    await userEvent.click(screen.getByRole("button", { name: "Guardar precio normal del producto y desactivar la oferta" }));
+    await userEvent.click(screen.getByRole("button", { name: "Guardar en catálogo" }));
     expect(screen.getByLabelText("Precio CLP")).toBeDisabled();
     useAuthStore.setState({ sessionVersion: useAuthStore.getState().sessionVersion + 1 });
     resolveProduct(structuredClone(product));
@@ -281,7 +281,7 @@ describe("manual point of sale checkout controls", () => {
     await waitFor(() => expect(scanner).toHaveFocus());
     await userEvent.type(scanner, "000123");
     await userEvent.clear(screen.getByLabelText("Cantidad"));
-    await userEvent.click(within(payment).getByRole("button", { name: "Débito" }));
+    await userEvent.click(within(payment).getByRole("button", { name: "Tarjeta" }));
     rerender(<MemoryRouter><SalesWorkspace businessId="business-a" section="pos" /></MemoryRouter>);
     expect(scanner).toBeVisible();
     expect(payment).toBeVisible();
@@ -291,7 +291,7 @@ describe("manual point of sale checkout controls", () => {
     expect(screen.getByRole("tab", { name: /Venta 1/ })).toBe(selectedTab);
     expect(selectedTab).toHaveAttribute("aria-selected", "true");
     expect(state.setLines).not.toHaveBeenCalled();
-    expect(within(payment).getByRole("button", { name: "Débito" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(payment).getByRole("button", { name: "Tarjeta" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Confirmar venta" })).toBeDisabled();
     expect(state.checkout).not.toHaveBeenCalled();
   });
@@ -475,12 +475,39 @@ describe("manual point of sale checkout controls", () => {
     expect(newSale.compareDocumentPosition(payment) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(payment).queryByText("Producto de prueba")).not.toBeInTheDocument();
     expect(within(payment).queryByRole("spinbutton")).not.toBeInTheDocument();
-    expect(within(payment).getAllByRole("button")).toHaveLength(5);
+    expect(within(payment).getAllByRole("button")).toHaveLength(4);
     const total = within(payment).getByRole("heading", { name: /^Total$/ });
     const methods = within(payment).getByRole("group", { name: "Medio de pago" });
     const checkout = within(payment).getByRole("button", { name: "Confirmar venta" });
-    expect(total.compareDocumentPosition(methods) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(methods.compareDocumentPosition(checkout) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(methods.compareDocumentPosition(total) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(total.compareDocumentPosition(checkout) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("distinguishes the selected payment record and the full transaction before cancellation", async () => {
+    const payments = [{ payment_method: "cash", amount: "400" }, { payment_method: "card", amount: "800" }] as const;
+    Object.assign(state, {
+      sale: { ...completed, payment_method: "mixed", payments: [...payments], record_payment: { id: "synthetic-share", ...payments[1] } },
+      lines: [line],
+    });
+    renderWorkspace();
+    const payment = within(screen.getByRole("region", { name: "Pago y total" }));
+    expect(payment.getByText("Pago de esta fila · Tarjeta · $800")).toBeVisible();
+    expect(payment.getByText("Transacción · saved-sale")).toBeVisible();
+    expect(payment.getByText("$1.200")).toBeVisible();
+    expect(payment.queryByRole("switch", { name: "Combinar pagos" })).not.toBeInTheDocument();
+    await userEvent.click(payment.getByRole("button", { name: "Anular transacción" }));
+    expect(screen.getByRole("dialog")).toHaveTextContent("Se anulará la transacción completa y todos sus medios de pago.");
+    expect(state.transition).not.toHaveBeenCalled();
+  });
+
+  it("uses Tarjeta in checkout review when a local cart restores a historical card selection", async () => {
+    Object.assign(state, { lines: [line], paymentMethod: "debit_card" });
+    renderWorkspace();
+    expect(screen.getByRole("button", { name: "Tarjeta" })).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(screen.getByRole("button", { name: "Confirmar venta" }));
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveTextContent(/medio de pago: tarjeta/i);
+    expect(state.checkout).not.toHaveBeenCalled();
   });
 
 });

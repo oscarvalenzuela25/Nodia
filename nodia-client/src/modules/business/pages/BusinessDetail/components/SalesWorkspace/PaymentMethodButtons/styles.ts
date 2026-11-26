@@ -1,16 +1,37 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, Typography } from "@mui/material";
 import { decomposeColor, recomposeColor, rgbToHex, styled } from "@mui/material/styles";
 import { mixColor, readableColor, readableForeground } from "../../../../../../../themes/contrast";
 import { spaciousCheckout, wideCheckout } from "../styles";
 
-export const MethodLabel = styled(Typography)(({ theme }) => ({
-  fontSize: "1.25rem", fontWeight: 700, marginBottom: theme.spacing(1.25),
+export const MethodHeader = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+  columnGap: theme.spacing(1),
+  marginBottom: theme.spacing(1.25),
+}));
+
+export const MethodLabel = styled(Typography)({
+  fontSize: "1.25rem", fontWeight: 700,
   [spaciousCheckout]: { fontSize: "1.5rem" },
+});
+
+export const PaymentSwitch = styled(FormControlLabel)(({ theme }) => ({
+  minHeight: 44,
+  margin: 0,
+  "& .MuiFormControlLabel-label": { ...theme.typography.body2, fontWeight: 600 },
+}));
+
+export const MethodHint = styled(Typography)(({ theme }) => ({
+  ...theme.typography.body2,
+  color: theme.palette.text.secondary,
+  marginBlockStart: theme.spacing(1),
 }));
 
 export const MethodGrid = styled(Box)(({ theme }) => ({
-  display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: theme.spacing(1.25),
-  [wideCheckout]: { gridTemplateColumns: "repeat(2, minmax(0, 1fr))" },
+  display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: theme.spacing(1.25),
+  "& > :first-of-type": { gridColumn: "1 / -1" },
   [spaciousCheckout]: { gap: theme.spacing(1.5) },
 }));
 
@@ -22,7 +43,7 @@ export const MethodSelectionMark = styled("span")(({ theme }) => ({
   "& svg": { flexShrink: 0, fontSize: "1.125rem" },
 }));
 
-type PaymentTone = "success" | "primary" | "warning" | "info";
+type PaymentTone = "success" | "primary" | "info";
 const toOpaqueHex = (value: string) => rgbToHex(recomposeColor(decomposeColor(value))).slice(0, 7);
 
 export const MethodButton = styled(Button, { shouldForwardProp: (prop) => prop !== "tone" })<{ tone: PaymentTone }>(({ theme, tone }) => {
@@ -39,14 +60,15 @@ export const MethodButton = styled(Button, { shouldForwardProp: (prop) => prop !
   return {
     minWidth: 0,
     minHeight: 68,
-    padding: theme.spacing(1, 1.5),
+    padding: theme.spacing(.5, .75),
     display: "grid",
-    gridTemplateColumns: "auto minmax(0, 1fr)",
-    gridTemplateAreas: '"icon name" "icon selection"',
-    justifyContent: "start",
+    gridTemplateColumns: "minmax(0, 1fr)",
+    gridTemplateAreas: '"icon" "name" "selection"',
+    gridTemplateRows: "auto auto minmax(1.25rem, auto)",
+    justifyItems: "center",
+    justifyContent: "center",
     alignContent: "center",
-    gap: theme.spacing(0, 1),
-    textAlign: "start",
+    textAlign: "center",
     color: ink,
     backgroundColor: baseFill,
     border: `2px solid ${accentInk}`,
@@ -58,12 +80,8 @@ export const MethodButton = styled(Button, { shouldForwardProp: (prop) => prop !
     borderRadius: theme.spacing(1),
     // Keep the foreground, fill, and border in sync when the selection changes.
     transition: theme.transitions.create("box-shadow"),
-    "& > .payment-method-icon": { gridArea: "icon", alignSelf: "center", color: accentInk, fontSize: "1.75rem" },
-    [wideCheckout]: {
-      minHeight: 104, padding: theme.spacing(1, .75), gridTemplateColumns: "minmax(0, 1fr)",
-      gridTemplateAreas: '"icon" "name" "selection"', gridTemplateRows: "auto auto minmax(1.25rem, auto)",
-      justifyItems: "center", justifyContent: "center", textAlign: "center", rowGap: theme.spacing(.5),
-    },
+    "& > .payment-method-icon": { gridArea: "icon", alignSelf: "center", color: accentInk, fontSize: "1.25rem" },
+    [wideCheckout]: { minHeight: 104, padding: theme.spacing(1, .75), rowGap: theme.spacing(.5), "& > .payment-method-icon": { fontSize: "1.75rem" } },
     [spaciousCheckout]: {
       minHeight: 112, fontSize: "1.25rem",
       "& > .payment-method-icon": { fontSize: "2rem" },

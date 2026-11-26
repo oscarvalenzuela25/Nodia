@@ -15,6 +15,19 @@ export const TableTopBar = styled(Box)(({ theme }) => ({ display: "flex", alignI
   [theme.breakpoints.down("sm")]: { alignItems: "stretch", "& > *": { width: "100%" } },
 }));
 export const SearchArea = styled(Box)(({ theme }) => ({ width: 320, minWidth: 0, [theme.breakpoints.down("sm")]: { width: "100%" } }));
+export const FilteredTotal = styled(Box)(({ theme }) => ({
+  minWidth: 0,
+  textAlign: "end",
+  overflowWrap: "anywhere",
+  fontVariantNumeric: "tabular-nums",
+  [theme.breakpoints.down("sm")]: { textAlign: "start" },
+}));
+export const FilterDates = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 11rem), 1fr))",
+  gap: theme.spacing(1),
+  "& > *": { minWidth: 0 },
+}));
 export const RecordsPanel = styled(Paper)(({ theme }) => ({ position: "relative", borderRadius: TABLE_PANEL_RADIUS, border: `1px solid ${theme.palette.divider}`, boxShadow: "none", overflow: "hidden", minWidth: 0,
   [theme.breakpoints.down("sm")]: { background: "transparent", border: "none", overflow: "visible" },
 }));

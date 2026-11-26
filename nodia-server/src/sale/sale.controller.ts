@@ -55,14 +55,26 @@ export class SaleController {
     @Query() query: QuerySalesDto,
     @Req() req: AuthRequest,
   ) {
-    return this.read.list(businessId, query, actorReference(req.auth));
+    return this.read.list(
+      businessId,
+      query,
+      actorReference(req.auth),
+      undefined,
+      'payment_records',
+    );
   }
   @Get('sales/:id') get(
     @Param('businessId', ParseUUIDPipe) businessId: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: AuthRequest,
   ) {
-    return this.read.get(businessId, id, actorReference(req.auth));
+    return this.read.get(
+      businessId,
+      id,
+      actorReference(req.auth),
+      undefined,
+      'payment_records',
+    );
   }
   @Post('sales') create(
     @Param('businessId', ParseUUIDPipe) businessId: string,

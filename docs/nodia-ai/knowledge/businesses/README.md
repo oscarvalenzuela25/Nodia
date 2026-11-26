@@ -858,3 +858,9 @@ El selector individual mantiene su altura al limpiar el valor. La evaluación
 de impacto se limita al Client. Las consultas de NodiaAI conservan el
 significado de sus rangos explícitos, códigos y folios opcionales. La ficha
 firmada de Caja registra el valor inicial histórico del día.
+
+## Pagos combinados y filtro de Ventas — 2026-11-25
+
+La [ficha candidata](features/combined-sale-payments.md) describe el
+checkout nativo, la presentación por medio y la compatibilidad de las
+consultas de solo lectura con las transacciones combinadas.

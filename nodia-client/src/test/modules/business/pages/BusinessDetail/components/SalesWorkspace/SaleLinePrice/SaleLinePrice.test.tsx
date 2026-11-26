@@ -15,15 +15,18 @@ describe("sale line price editor", () => {
     fireEvent.click(screen.getByRole("button", { name: "Editar precio Synthetic product" }));
     expect(editing.mock.calls).toEqual([[true]]);
     fireEvent.change(screen.getByLabelText("Precio CLP"), { target: { value: "800" } });
-    fireEvent.click(screen.getByRole("button", { name: "Modificar sólo para esta venta" }));
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar a esta venta" }));
     await waitFor(() => expect(save).toHaveBeenCalledWith("10", "800", false));
     await waitFor(() => expect(screen.getByLabelText("Precio CLP")).toBeEnabled());
     expect(screen.getByLabelText("Precio CLP")).toHaveValue("800");
     expect(editing.mock.calls).toEqual([[true]]);
-    fireEvent.click(screen.getByRole("button", { name: "Guardar precio normal del producto y desactivar la oferta" }));
+    const saveCatalog = screen.getByRole("button", { name: "Guardar en catálogo" });
+    expect(saveCatalog).toHaveAccessibleDescription("Guardar precio normal del producto y desactivar la oferta");
+    fireEvent.click(saveCatalog);
     await waitFor(() => expect(save).toHaveBeenLastCalledWith("10", "800", true));
     await waitFor(() => expect(screen.queryByLabelText("Precio CLP")).not.toBeInTheDocument());
     expect(editing.mock.calls).toEqual([[true], [false]]);
+    expect(screen.getByRole("button", { name: "Editar precio Synthetic product" })).toHaveFocus();
   });
   it("cancels without applying a price and blocks malformed or overflowing input", () => {
     const save = vi.fn();
@@ -31,11 +34,12 @@ describe("sale line price editor", () => {
     render(<SaleLinePrice line={line} disabled={false} onSave={save} onEditingChange={editing} />);
     fireEvent.click(screen.getByRole("button", { name: "Editar precio Synthetic product" }));
     fireEvent.change(screen.getByLabelText("Precio CLP"), { target: { value: "1.5" } });
-    expect(screen.getByRole("button", { name: "Modificar sólo para esta venta" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Aplicar a esta venta" })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(save).not.toHaveBeenCalled();
     expect(screen.queryByLabelText("Precio CLP")).not.toBeInTheDocument();
     expect(editing.mock.calls).toEqual([[true], [false]]);
+    expect(screen.getByRole("button", { name: "Editar precio Synthetic product" })).toHaveFocus();
   });
   it("keeps the edit lock and disables its own controls until an outstanding save succeeds", async () => {
     const user = userEvent.setup();
@@ -46,17 +50,29 @@ describe("sale line price editor", () => {
     await user.click(screen.getByRole("button", { name: "Editar precio Synthetic product" }));
     await user.clear(screen.getByLabelText("Precio CLP"));
     await user.type(screen.getByLabelText("Precio CLP"), "0");
-    await user.click(screen.getByRole("button", { name: "Modificar sólo para esta venta" }));
+    await user.click(screen.getByRole("button", { name: "Aplicar a esta venta" }));
     expect(save).toHaveBeenCalledWith("10", "0", false);
     expect(screen.getByLabelText("Precio CLP")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Modificar sólo para esta venta" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Guardar precio normal del producto y desactivar la oferta" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Aplicar a esta venta" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Guardar en catálogo" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
     expect(editing.mock.calls).toEqual([[true]]);
     resolveSave(true);
     await waitFor(() => expect(screen.queryByLabelText("Precio CLP")).not.toBeInTheDocument());
     expect(save).toHaveBeenCalledTimes(1);
     expect(editing.mock.calls).toEqual([[true], [false]]);
+  });
+  it("cancels from the keyboard and returns focus to the opener", async () => {
+    const user = userEvent.setup();
+    const save = vi.fn();
+    render(<SaleLinePrice line={line} disabled={false} onSave={save} />);
+    screen.getByRole("button", { name: "Editar precio Synthetic product" }).focus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByLabelText("Precio CLP")).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByLabelText("Precio CLP")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Editar precio Synthetic product" })).toHaveFocus();
+    expect(save).not.toHaveBeenCalled();
   });
   it("does not release an open edit when its callback changes and releases it on unmount", async () => {
     const user = userEvent.setup();

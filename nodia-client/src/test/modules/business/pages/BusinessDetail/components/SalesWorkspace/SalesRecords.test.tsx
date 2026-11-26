@@ -6,6 +6,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PropsWithChildren } from "react";
 import SalesRecords from "../../../../../../../modules/business/pages/BusinessDetail/components/SalesWorkspace/SalesRecords";
+import { formatClp } from "../../../../../../../modules/business/infrastructure/salesPolicies";
 import { getSales } from "../../../../../../../modules/business/infrastructure/salesServices";
 import type { Sale, SalesResponse } from "../../../../../../../modules/business/infrastructure/salesTypes";
 import useAuthStore from "../../../../../../../store/authStore";
@@ -15,8 +16,12 @@ import { mobileViewport } from "./mobileViewport";
 vi.mock("../../../../../../../modules/business/infrastructure/salesServices", () => ({ getSales: vi.fn() }));
 
 const sale: Sale = { id: "synthetic-sale-a", business_id: "business-a", status: "draft", currency: "CLP", payment_method: "other", payment_method_description: "Historical method", total_amount: "0", version: 1, created_at: "2026-10-01T15:00:00Z", updated_at: "2026-10-01T15:00:00Z", completed_at: null, cancelled_at: null, cancellation_reason: null, items: [] };
-const response = (value = sale, total = 51, page = 1): SalesResponse => ({ data: [value], meta: { total, page, limit: 25, total_pages: Math.ceil(total / 25) } });
+const response = (value = sale, total = 51, page = 1, totalAmount?: string): SalesResponse => ({
+  data: [value],
+  meta: { total, page, limit: 25, total_pages: Math.ceil(total / 25), ...(totalAmount === undefined ? {} : { total_amount: totalAmount }) },
+});
 const t = (key: string) => i18n.t(key);
+const saleDetails = () => screen.findByRole("button", { name: t("business:pos.open_sale") });
 function setup(businessId = "business-a") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false, gcTime: 0 } } });
   const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}><LocalizationProvider dateAdapter={AdapterDayjs}>{children}</LocalizationProvider></QueryClientProvider>;
@@ -65,12 +70,12 @@ describe("SalesRecords applied filters and scoped reads", () => {
     expect(vi.mocked(getSales).mock.lastCall?.[1]).toMatchObject({ page: 2, limit: 25, status: "completed" });
   });
   it("keeps modal edits local, applies state and dates together, and restores applied values after cancelling", async () => {
-    setup(); const user = userEvent.setup(); await screen.findByText(sale.id);
+    setup(); const user = userEvent.setup(); await saleDetails();
     expect(screen.queryByRole("heading", { name: t("business:pos.sales") })).not.toBeInTheDocument();
     let dialog = await openFilter(user); await chooseStatus(user, dialog, "completed");
     fireEvent.change(within(dialog).getByRole("textbox", { name: t("business:pos.from") }), { target: { value: "2026-10-01" } });
     expect(within(dialog).getByRole("button", { name: t("core:filter_action") })).toBeDisabled();
-    fireEvent.change(within(dialog).getByRole("textbox", { name: t("business:pos.through") }), { target: { value: "2026-10-31" } });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: t("business:pos.sales_through") }), { target: { value: "2026-10-31" } });
     expect(getSales).toHaveBeenCalledTimes(1);
     await filterAction(user, dialog, "core:filter_action");
     await waitFor(() => expect(vi.mocked(getSales).mock.lastCall?.[1]).toMatchObject({ page: 1, status: "completed", from: "2026-10-01T03:00:00Z", to_exclusive: "2026-11-01T03:00:00Z" }));
@@ -83,7 +88,7 @@ describe("SalesRecords applied filters and scoped reads", () => {
     expect(within(dialog).getByRole("textbox", { name: t("business:pos.from") })).toHaveValue("2026-10-01");
   });
   it("keeps search on the server and resets pagination when applying or clearing filters", async () => {
-    setup(); const user = userEvent.setup(); await screen.findByText(sale.id);
+    setup(); const user = userEvent.setup(); await saleDetails();
     await user.click(screen.getByRole("button", { name: t("core:pagination.page_next") }));
     await waitFor(() => expect(vi.mocked(getSales).mock.lastCall?.[1].page).toBe(2));
     await user.type(screen.getByRole("textbox", { name: t("business:pos.sales_search_label") }), "  00123  ");
@@ -97,10 +102,10 @@ describe("SalesRecords applied filters and scoped reads", () => {
     await waitFor(() => expect(vi.mocked(getSales).mock.lastCall?.[1]).toEqual({ page: 1, limit: 25, search: "00123" }));
   });
   it("removes only the selected predicate chip and preserves the other applied predicate", async () => {
-    setup(); const user = userEvent.setup(); await screen.findByText(sale.id);
+    setup(); const user = userEvent.setup(); await saleDetails();
     const dialog = await openFilter(user); await chooseStatus(user, dialog, "completed");
     fireEvent.change(within(dialog).getByRole("textbox", { name: t("business:pos.from") }), { target: { value: "2026-10-01" } });
-    fireEvent.change(within(dialog).getByRole("textbox", { name: t("business:pos.through") }), { target: { value: "2026-10-01" } });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: t("business:pos.sales_through") }), { target: { value: "2026-10-01" } });
     await filterAction(user, dialog, "core:filter_action");
     await waitFor(() => expect(vi.mocked(getSales).mock.lastCall?.[1].status).toBe("completed"));
     await user.click(screen.getAllByTestId("filter-chip-action")[0]);
@@ -108,31 +113,34 @@ describe("SalesRecords applied filters and scoped reads", () => {
   });
   it("never exposes a late previous-business result as the new business's rows", async () => {
     let resolveA!: (value: SalesResponse) => void;
-    const b = { ...sale, id: "synthetic-sale-b", business_id: "business-b" };
+    const b = { ...sale, id: "synthetic-sale-b", business_id: "business-b", payment_method: "cash" } satisfies Sale;
     vi.mocked(getSales).mockImplementationOnce(() => new Promise((done) => { resolveA = done; })).mockResolvedValueOnce(response(b));
     const view = setup();
     view.rerender(<SalesRecords businessId="business-b" onOpen={view.onOpen} />);
-    await screen.findByText(b.id);
+    await screen.findByText(t("business:pos.payment_cash"));
     await act(async () => { resolveA(response()); });
-    expect(screen.queryByText(sale.id)).not.toBeInTheDocument();
+    expect(screen.queryByText(t("business:pos.payment_other"))).not.toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole("button", { name: t("business:pos.open_sale") }));
     expect(view.onOpen).toHaveBeenCalledWith(b);
   });
   it("does not reuse the previous actor's rows or filters across a session change", async () => {
-    setup(); await screen.findByText(sale.id);
+    const view = setup(); await screen.findByText(t("business:pos.payment_other"));
     let resolveB!: (value: SalesResponse) => void;
     vi.mocked(getSales).mockImplementationOnce(() => new Promise((done) => { resolveB = done; }));
     act(() => { useAuthStore.setState((state) => ({ user: { id: "actor-b", name: "Other synthetic actor" }, sessionVersion: state.sessionVersion + 1 })); });
-    expect(screen.queryByText(sale.id)).not.toBeInTheDocument();
-    const other = { ...sale, id: "other-actor-authorized-sale" };
+    expect(screen.queryByText(t("business:pos.payment_other"))).not.toBeInTheDocument();
+    const other = { ...sale, id: "other-actor-authorized-sale", payment_method: "bank_transfer" } satisfies Sale;
     await act(async () => { resolveB(response(other)); });
-    expect(await screen.findByText(other.id)).toBeInTheDocument();
+    expect(await screen.findByText(t("business:pos.payment_bank_transfer"))).toBeInTheDocument();
+    await userEvent.setup().click(await saleDetails());
+    expect(view.onOpen).toHaveBeenCalledWith(other);
   });
   it("keeps historical detail actions and can retry a failed list read without changing its parameters", async () => {
     vi.mocked(getSales).mockRejectedValueOnce(new Error("Synthetic failure")).mockResolvedValueOnce(response());
     const view = setup(); expect(await screen.findByText(t("core:server_error_alert"))).toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole("button", { name: t("core:retry") }));
-    await screen.findByText(sale.id);
+    await saleDetails();
+    expect(screen.queryByText(t("business:pos.filtered_total"))).not.toBeInTheDocument();
     expect(vi.mocked(getSales).mock.calls[1]).toEqual(vi.mocked(getSales).mock.calls[0]);
     expect(screen.getByText(t("business:pos.payment_other"))).toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole("button", { name: t("business:pos.open_sale") }));
@@ -151,10 +159,53 @@ describe("SalesRecords applied filters and scoped reads", () => {
       requests++;
       return requests === 1 ? response() : { data: [], meta: { total: 0, page: params.page ?? 1, limit: 25, total_pages: 0 } };
     });
-    setup(); await screen.findByText(sale.id);
+    setup(); await saleDetails();
     await userEvent.setup().click(screen.getByRole("button", { name: t("core:pagination.page_next") }));
     await screen.findByText(t("business:pos.sales_empty"));
     await waitFor(() => expect(vi.mocked(getSales).mock.calls.map(([, params]) => params.page)).toEqual([1, 2, 1]));
     expect(screen.getByRole("button", { name: t("core:pagination.page_previous") })).toBeDisabled();
+  });
+  it("applies the payment predicate from Filter and scopes the server aggregate to the applied criteria", async () => {
+    const historical = { ...sale, payment_method: "debit_card" } satisfies Sale;
+    let resolveCard!: (value: SalesResponse) => void;
+    vi.mocked(getSales).mockImplementation(async (_businessId, params) => {
+      if (params.payment_method === "card") return new Promise((done) => { resolveCard = done; });
+      return response(historical, 51, params.page, "90123");
+    });
+    const view = setup();
+    const user = userEvent.setup();
+    expect(await screen.findByText(t("business:pos.payment_card"))).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: t("business:pos.sale") })).not.toBeInTheDocument();
+    expect(screen.queryByText(historical.id)).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(formatClp("90123", i18n.language));
+    expect(vi.mocked(getSales).mock.lastCall?.[1]).not.toHaveProperty("payment_method");
+    await user.click(screen.getByRole("button", { name: t("core:pagination.page_next") }));
+    await waitFor(() => expect(vi.mocked(getSales).mock.lastCall?.[1].page).toBe(2));
+    expect(screen.getByRole("status")).toHaveTextContent(formatClp("90123", i18n.language));
+    await waitFor(() => expect(screen.getByRole("button", { name: t("core:open_filters") })).toBeEnabled());
+
+    const dialog = await openFilter(user);
+    const method = within(dialog).getByRole("button", { name: t("business:pos.payment_method") });
+    expect(method).toHaveTextContent(t("business:pos.payment_all"));
+    await user.click(method);
+    await user.click(screen.getByRole("option", { name: t("business:pos.payment_card") }));
+    expect(vi.mocked(getSales).mock.lastCall?.[1]).not.toHaveProperty("payment_method");
+    await filterAction(user, dialog, "core:filter_action");
+    expect(vi.mocked(getSales).mock.lastCall?.[1]).toMatchObject({ page: 1, payment_method: "card" });
+    expect(screen.queryByText(t("business:pos.filtered_total"))).not.toBeInTheDocument();
+
+    const payment = { id: "synthetic-card-payment", payment_method: "card", amount: "13900" } as const;
+    const split = { ...sale, payment_method: "mixed", total_amount: "18900", record_payment: payment } satisfies Sale;
+    await act(async () => { resolveCard(response(split, 2, 1, "24680")); });
+    expect(await screen.findByRole("status")).toHaveTextContent(formatClp("24680", i18n.language));
+    const chipLabel = i18n.t("business:pos.payment_filter", { value: t("business:pos.payment_card") });
+    expect(screen.getByText(chipLabel)).toBeInTheDocument();
+    const table = within(screen.getByRole("table"));
+    expect(table.getByRole("cell", { name: formatClp("13900", i18n.language) })).toBeInTheDocument();
+    expect(table.queryByText(formatClp("18900", i18n.language))).not.toBeInTheDocument();
+    await user.click(await saleDetails());
+    expect(view.onOpen).toHaveBeenCalledWith(split);
+    await user.click(screen.getByRole("button", { name: i18n.t("core:remove_filter", { label: chipLabel }) }));
+    await waitFor(() => expect(vi.mocked(getSales).mock.lastCall?.[1]).toEqual({ page: 1, limit: 25, search: undefined }));
   });
 });

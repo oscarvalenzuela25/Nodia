@@ -29,13 +29,13 @@ describe("SaleLineList", () => {
     expect(screen.getByRole("button", { name: "Quitar Selected synthetic product de esta venta" })).toBeDisabled();
     await user.clear(screen.getByRole("textbox", { name: "Precio CLP" }));
     await user.type(screen.getByRole("textbox", { name: "Precio CLP" }), "800");
-    await user.click(screen.getByRole("button", { name: "Modificar sólo para esta venta" }));
+    await user.click(screen.getByRole("button", { name: "Aplicar a esta venta" }));
     expect(screen.getByRole("textbox", { name: "Precio CLP" })).toHaveValue("800");
     expect(screen.getByRole("button", { name: "Editar precio Second product" })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Cancelar" }));
     for (const quantity of screen.getAllByRole("textbox", { name: "Cantidad" })) expect(quantity).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Editar precio Second product" }));
-    await user.click(screen.getByRole("button", { name: "Modificar sólo para esta venta" }));
+    await user.click(screen.getByRole("button", { name: "Aplicar a esta venta" }));
     expect(screen.queryByRole("textbox", { name: "Precio CLP" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Revisar precios y stock" })).toBeEnabled();
   });
