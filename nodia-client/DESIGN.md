@@ -753,6 +753,9 @@ patrón local. No implica adopción del entorno, aprobación o inferencia nueva.
   El sondeo conserva el bloqueo de la barra y la detención disponible mientras
   el turno siga siendo cancelable. Durante el cierre se muestra el estado
   de detención pedida.
+  Si se pierde el recibo de admisión, el aviso conserva la acción explícita
+  de comprobar el mismo envío con su identidad original. Esa acción vive
+  en el aviso y deja disponible la detención del turno observado.
 - Copiar respuesta es una acción local sobre texto visible con Sileo ES/EN;
   no copia controles/metadatos ni añade regeneración. Markdown, datos ausentes,
   actividad pública, propuestas/recibos, adjuntos y recovery conservan contratos.
