@@ -28,6 +28,19 @@ import {
 
 const path = '/cv/agentic-text';
 
+const finishInstructions = {
+  es: 'Termina con una sola llamada a finish. El parámetro text debe ser una cadena que contenga únicamente el objeto JSON solicitado, sin Markdown ni texto adicional. Aplica al contenido de text el formato indicado en la tarea. finish sólo entrega la respuesta. Las demás herramientas y acciones externas están prohibidas.',
+  en: 'End with exactly one call to finish. The text argument must be a string containing only the requested JSON object, without Markdown or surrounding text. Apply the task formatting instructions to the contents of text. finish only submits the response. All other tools and external actions are prohibited.',
+} satisfies Record<PreparedCvTailoring['locale'], string>;
+
+export function cvGeminiGenerationPrompt(
+  prepared: PreparedCvTailoring,
+): string {
+  return (
+    finishInstructions[prepared.locale] + '\n\n' + cvGenerationPrompt(prepared)
+  );
+}
+
 type CvGeminiReference = Omit<TeacherAgenticReference, 'contract'> & {
   contract: typeof CV_AGENTIC_CONTRACT;
   owner_digest: string;
@@ -276,12 +289,12 @@ export class NodiaCvGeminiTransport {
     prepared: PreparedCvTailoring,
     deadlineAt: Date,
   ): CvGeminiCommand {
-    const prompt = cvGenerationPrompt(prepared);
+    const prompt = cvGeminiGenerationPrompt(prepared);
     if (Buffer.byteLength(prompt, 'utf8') > CV_GEMINI_PROMPT_BYTES)
       throw new CvTailoringError('input_too_large');
     if (
       !agenticWellFormedText(prompt) ||
-      !prompt.trim() ||
+      (!prepared.systemPrompt.trim() && !prepared.userPrompt.trim()) ||
       descriptor.payload_hash !== cvAgenticPayloadHash(prepared)
     )
       invalidCvGeminiProtocol();
