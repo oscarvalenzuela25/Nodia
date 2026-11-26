@@ -8,6 +8,8 @@ import {
   type NodiaAiRuntimePolicy,
 } from '../../nodia-ai-runtime/config/runtime-policy.js';
 import { CV_CODEX_HOST_MAX_PROMPT_BYTES } from '../agentic/nodia-cv-codex-wire.js';
+import { CV_GEMINI_PROMPT_BYTES } from '../agentic/nodia-cv-agentic-provider.js';
+import { cvGeminiGenerationPrompt } from '../agentic/nodia-cv-gemini-transport.js';
 import type {
   StartNodiaCvAiEditDto,
   UpdateNodiaCvDraftDto,
@@ -318,12 +320,17 @@ export class NodiaCvGenerationsUseCase {
                 offer: input.offer_text,
                 locale: input.language,
               });
-        const prompt = cvGenerationPrompt(prepared);
+        const isGemini = observation !== null && 'provider' in observation;
+        const prompt = isGemini
+          ? cvGeminiGenerationPrompt(prepared)
+          : cvGenerationPrompt(prepared);
         const { utf8Bytes, maximumUtf8Bytes } =
           input.selection.mode === 'agentic'
             ? {
                 utf8Bytes: Buffer.byteLength(prompt),
-                maximumUtf8Bytes: CV_CODEX_HOST_MAX_PROMPT_BYTES,
+                maximumUtf8Bytes: isGemini
+                  ? CV_GEMINI_PROMPT_BYTES
+                  : CV_CODEX_HOST_MAX_PROMPT_BYTES,
               }
             : this.api.measure(prompt);
         if (utf8Bytes > maximumUtf8Bytes)
