@@ -104,7 +104,6 @@ function fixture(isSuperAdmin: boolean) {
     }),
     configure: vi.fn(),
     scopeHash: vi.fn(() => 'scope'),
-    qualified: vi.fn().mockResolvedValue(false),
   };
   const measure = vi.fn();
   const useCase = new NodiaCvGenerationsUseCase(
@@ -124,19 +123,22 @@ function fixture(isSuperAdmin: boolean) {
 }
 
 describe('Nodia CV Agentic admission', () => {
-  it('observes the provider outside SQL, then blocks ordinary work until the exact CV scope has qualified', async () => {
+  it('observes the provider outside SQL and admits ordinary work with the exact live configuration', async () => {
     const f = fixture(false);
-    await expect(f.useCase.start(actor, input)).rejects.toThrow(
-      'generation_selection_unqualified',
+    await expect(f.useCase.start(actor, input)).resolves.toMatchObject({
+      state: 'queued',
+    });
+    expect(f.store.admit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        qualification: false,
+        config: f.config,
+        scopeHash: 'scope',
+      }),
     );
     expect(f.authorize).toHaveBeenCalledTimes(2);
     expect(f.selections.configureAgentic).toHaveBeenCalledOnce();
-    expect(f.selections.qualified).toHaveBeenCalledWith(
-      expect.anything(),
-      'scope',
-    );
     expect(f.selections.configure).not.toHaveBeenCalled();
-    expect(f.store.admit).not.toHaveBeenCalled();
   });
 
   it('checks the admin probe owner and designated offer before touching Codex', async () => {
@@ -163,7 +165,6 @@ describe('Nodia CV Agentic admission', () => {
       }),
     );
     expect(f.measure).not.toHaveBeenCalled();
-    expect(f.selections.qualified).not.toHaveBeenCalled();
   });
 
   it('returns an admitted intention or rejects a different payload without depending on provider availability', async () => {

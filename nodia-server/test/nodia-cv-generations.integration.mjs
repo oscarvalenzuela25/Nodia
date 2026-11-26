@@ -231,15 +231,14 @@ try {
     selection,
   });
 
-  assert.equal((await command.eligibility(owner, selection)).eligible, false);
+  const initialEligibility = await command.eligibility(owner, selection);
+  assert.equal(initialEligibility.eligible, true);
+  assert.equal(initialEligibility.qualified, false);
+  assert.equal(initialEligibility.reason_code, 'available');
   assert.equal(
     (await command.eligibility(owner, { ...selection, mode: 'agentic' }))
       .reason_code,
     'agentic_transport_unavailable',
-  );
-  await assert.rejects(
-    command.start(owner, input(ownerProfile)),
-    okStatus(409, /generation_selection_unqualified/),
   );
   await assert.rejects(
     command.startProbe(owner, input(ownerProfile)),
@@ -258,14 +257,6 @@ try {
     okStatus(404, /generation_not_found/),
   );
   assert.equal(calls, 0);
-  const canary = await command.startProbe(admin, input(adminProfile));
-  assert.equal(canary.state, 'queued');
-  const competed = await Promise.all([run(), run()]);
-  assert.equal(competed.filter(Boolean).length, 1);
-  assert.equal(calls, 1);
-  assert.equal((await command.status(admin, canary.id)).state, 'ready');
-  assert.equal((await command.eligibility(owner, selection)).eligible, true);
-
   const request = input(ownerProfile);
   const [first, replayed] = await Promise.all([
     command.start(owner, request),
@@ -289,7 +280,9 @@ try {
       profile: JSON.parse(JSON.stringify(ownerProfile)),
     },
   });
-  assert.equal(await run(), true);
+  const competed = await Promise.all([run(), run()]);
+  assert.equal(competed.filter(Boolean).length, 1);
+  assert.equal(calls, 1);
   const ready = await command.status(owner, first.id);
   assert.deepEqual(ready.review, {
     revision: 1,
@@ -312,6 +305,13 @@ try {
     remote_outcome: 'completed',
     ack: true,
   });
+  assert.equal((await command.eligibility(owner, selection)).qualified, false);
+  const canary = await command.startProbe(admin, input(adminProfile));
+  assert.equal(canary.state, 'queued');
+  assert.equal(await run(), true);
+  assert.equal(calls, 2);
+  assert.equal((await command.status(admin, canary.id)).state, 'ready');
+  assert.equal((await command.eligibility(owner, selection)).qualified, true);
 
   behavior = 'bad';
   const bad = await command.start(owner, input(ownerProfile));
@@ -405,7 +405,7 @@ try {
   });
   await people.delete(owner, ownerProfile.id, ownerProfile.revision);
   console.log(
-    'CV generation: isolated SQL, scoped qualification, one dispatch, drafts, recovery, revocation and purge passed.',
+    'CV generation: isolated SQL, ordinary first use, scoped probe receipts, one dispatch, drafts, recovery, revocation and purge passed.',
   );
 } finally {
   if (db.isInitialized) await db.destroy();

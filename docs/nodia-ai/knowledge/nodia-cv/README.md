@@ -4,7 +4,7 @@
   "document_id": "nodia-cv",
   "product_id": "nodia-cv",
   "kind": "product",
-  "revision": 4,
+  "revision": 5,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -52,8 +52,8 @@ y la [guía UI](../../../features/nodia-cv/ui-design.md).
 
 Las tres secciones son **Perfiles**, **Generar CV** y **CV
 guardados**. La versión guardada conserva una copia de los datos del CV y el
-vínculo al PDF exacto que se revisó. Las comprobaciones de lectura del archivo
-y la revisión de requisitos de la oferta tienen evidencia separada.
+vínculo al PDF exacto que se revisó. Las versiones nuevas conservan también
+el análisis de requisitos y su evidencia de esa misma revisión.
 
 ## Conceptos y relaciones
 
@@ -112,7 +112,9 @@ para intentar reproducir el flujo en el chat.
 ## Restricciones y pendientes
 
 - La admisión de generación se comprueba en Server por la selección
-  exacta de modelo y el ámbito de la persona.
+  exacta de modelo y el ámbito de la persona. El flujo admite el primer
+  intento con cualquier selección compatible del catálogo de la conexión.
+  [Plan113 §20](../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 - El ensayo público OneATS reconoció los datos principales de Clásica
   y Compacta EN. La ubicación estructurada quedó en el país. Quedan
   pendientes Gemini Agentic en producción y la verificación en tenants
@@ -128,6 +130,7 @@ para intentar reproducir el flujo en el chat.
 
 | Revisión | Cambio funcional | Fuentes/evidencia | Impacto en fichas y catálogo |
 | --- | --- | --- | --- |
+| 5 | Primer intento con selección compatible y análisis recuperable por versión | [Plan113 §20](../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26) | Fichas candidatas, sin registro de herramientas |
 | 3 | Piloto VM, lectura pública OneATS y bajas de CV comprobadas en restore | [Plan113 §15](../../../mvp/113-nodia-cv-implementation-plan.md#15-piloto-en-vm-y-lectura-externa-cv-06--2026-11-24) | Fichas candidatas, sin registro de herramientas |
 | 2 | PDF verificado en Clásica y Compacta, descarga e historial privado | [Plan113 §14](../../../mvp/113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) | Fichas candidatas, sin registro de herramientas |
 | 1 | Descripción inicial de perfiles, generación en UI y versiones verificables | [Plan113](../../../mvp/113-nodia-cv-implementation-plan.md), [guía UI](../../../features/nodia-cv/ui-design.md) y [ADR119 propuesto](../../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md). Evidencia de producto pendiente | Dos fichas de funcionalidad en borrador, sin registro de herramientas |

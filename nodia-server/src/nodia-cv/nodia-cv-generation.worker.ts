@@ -143,11 +143,6 @@ export class NodiaCvGenerationWorker
         row.scope_hash
     )
       cvGenerationError('generation_configuration_changed');
-    if (
-      !row.qualification &&
-      !(await this.selections.qualified(manager, row.scope_hash))
-    )
-      cvGenerationError('generation_selection_unqualified');
     return config;
   }
 

@@ -4,7 +4,7 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 9,
+  "revision": 10,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -60,22 +60,23 @@ describen el flujo implementado y los pendientes de aceptación.
 
 El piloto aislado de la VM habilitó GPT-6.2 Sol en Alto y Gemini 4
 Hydrogen en Alto en **Generar CV**.
-El selector exige una calificación válida de CV para la misma conexión,
-modo, modelo, esfuerzo y sesión. Gemini muestra las combinaciones que
-cuentan con un recibo de CV para la configuración guardada y revalida
-la sesión al aplicarlas. La generación exige perfil guardado y oferta.
+La prueba del piloto registró conexión, modo, modelo, esfuerzo y sesión.
+La generación exige perfil guardado y oferta.
 La recuperación consulta el recibo sin reenviar.
 [Recorrido ordinario comprobado](../../../../evidence/nodia-cv-agentic-delivery-20261125.md).
 [Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
 
 ## Agentic en producción
 
-El selector **Generar CV** permite aplicar **ChatGPT → Agentic →
-GPT-6.1 Sol → Medio** o **GPT-6.2 Sol → Alto** en la conexión verificada.
-El navegador generó un borrador con 6.1 Sol y leyó el texto de su PDF.
-La prueba de 6.2 Sol incluyó guardado, reapertura y descarga. Cada
-selección requiere su propio recibo de calificación vigente.
+El navegador generó con **ChatGPT → Agentic → GPT-6.1 Sol → Medio**
+y leyó el texto del PDF. El recorrido con **GPT-6.2 Sol → Alto**
+incluyó guardado, reapertura y descarga.
 [Plan113 §18 y §19](../../../../mvp/113-nodia-cv-implementation-plan.md#publicación-y-prueba-en-navegador).
+
+El primer borrador puede iniciar la ejecución con la conexión, modo, modelo
+e intensidad compatibles elegidos. La disponibilidad real se comprueba
+mediante la inferencia y el cierre del transporte.
+[Plan113 §20](../../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
 ## Solicitudes en lenguaje natural
 
@@ -165,12 +166,15 @@ de selección.
 Elegir perfil y oferta, aplicar la selección de IA y lanzar
 **Generar borrador**. La preparación conserva un resultado temporal para
 revisión. Mostrar el documento y, cuando exista, el texto extraído
-del PDF correspondiente. Si cambian los insumos, la UI identifica la
-vista anterior. Cambiar plantilla mantiene el contenido y permite
+del PDF correspondiente. Si cambian los insumos o se sale de **Generar CV**,
+se limpian la vista previa y los requisitos del borrador completado.
+Cambiar plantilla mantiene el contenido y permite
 preparar y verificar otro PDF con la misma revisión.
 
 **Guardar versión** confirma la versión concreta que la persona revisó.
-Al abrirla después se conserva su snapshot y el PDF exacto. **Eliminar CV**
+Al abrirla después se conserva su snapshot y el PDF exacto. La versión
+también muestra los requisitos y la evidencia archivada de solo lectura
+cuando contiene ese análisis. **Eliminar CV**
 muestra el cargo, número de versión y perfil en su confirmación. Cancelar
 vuelve a la vista anterior. La UI conserva contexto y edición frente a
 errores recuperables.
@@ -202,6 +206,7 @@ requeriría contrato, registro y verificación según el
 
 | Revisión | Cambio y fuentes | Herramientas/contexto afectados | Compatibilidad/propuestas pendientes |
 | --- | --- | --- | --- |
+| 10 | Primera generación con selección compatible, limpieza al cambiar de pestaña y análisis por versión. [Plan113 §20](../../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26) | Sin herramientas registradas o fragmentos publicados | PDF histórico disponible cuando falta el análisis |
 | 3 | Piloto VM y lectura pública de las dos plantillas en OneATS. Restore con bajas preservadas | Sin herramientas registradas o fragmentos publicados | CI, Agentic y adopción en destino pendientes |
 | 2 | Render verificado en Clásica y Compacta, descarga e historial por versión según [Plan113 §14](../../../../mvp/113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) | Sin herramientas registradas o fragmentos publicados | Agentic y evidencia por importador pendientes |
 | 1 | Generación acotada, comprobación del PDF y archivo manual según [Plan113](../../../../mvp/113-nodia-cv-implementation-plan.md) | Sin herramientas registradas o fragmentos publicados | Implementación, pruebas del flujo y evidencia por importador pendientes |

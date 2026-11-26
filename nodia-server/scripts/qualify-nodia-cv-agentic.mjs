@@ -451,7 +451,7 @@ async function admit(parts, pilot) {
   check(quiescent.safe, 'pilot_queue_not_quiet');
   const gate = await ready(parts, pilot);
   check(
-    !gate.eligible && gate.reason_code === 'qualification_required',
+    gate.eligible && !gate.qualified && gate.reason_code === 'available',
     'initial_selection_already_qualified',
   );
   const started = await parts.command.startProbe(actor, {
@@ -622,9 +622,9 @@ async function verify(parts, pilot, seconds) {
     exact.eligible &&
       exact.qualified &&
       exact.reason_code === 'qualified' &&
-      !alternate.eligibility.eligible &&
+      alternate.eligibility.eligible &&
       !alternate.eligibility.qualified &&
-      alternate.eligibility.reason_code === 'qualification_required',
+      alternate.eligibility.reason_code === 'available',
     'pilot_qualification_scope_mismatch',
   );
   report.alternateEffort = {

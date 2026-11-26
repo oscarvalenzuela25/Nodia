@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Nodia CV — primera generación con selección compatible, 2026-11-26.**
+El primer borrador puede usar el modelo elegido sin un recibo previo de
+CV. Al salir de Generar CV se limpian la vista previa y los requisitos.
+Las versiones nuevas conservan el análisis de la revisión para la reapertura.
+[Plan113 §20](113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
+
 **GPT-6.1 Sol en Nodia CV — 2026-11-26.** Producción ofrece GPT-6.1 Sol
 en Medio y GPT-6.2 Sol en Alto. El navegador generó un borrador
 y verificó la lectura del PDF con 6.1 Sol.

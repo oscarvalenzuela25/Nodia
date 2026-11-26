@@ -81,26 +81,13 @@ type CvEligibilityCode =
   | 'codex_profile_busy'
   | 'codex_usage_unavailable'
   | CvGeminiBlockedReason
-  | 'qualification_required'
+  | 'available'
   | 'qualified';
-
-type CvGeminiQualification = {
-  scope_hash: string;
-  connection_id: string;
-  model_id: string;
-  effort_id: string | null;
-  configuration_generation: string;
-  session_generation: string;
-  resource_key: string;
-  policy_hash: string;
-  runtime_hash: string;
-};
-
-type CvGeminiChoices = Map<string, Map<string, Set<string | null>>>;
 
 export interface CvSelectionEligibility {
   selection: AiSelection;
   configured: boolean | null;
+  /** A persisted canary receipt for this exact current identity, when one exists. */
   qualified: boolean;
   eligible: boolean;
   reason_code: CvEligibilityCode;
@@ -468,10 +455,6 @@ export class NodiaCvSelectionService {
     return row?.checked_at ?? null;
   }
 
-  async qualified(manager: EntityManager, scopeHash: string): Promise<boolean> {
-    return (await this.qualification(manager, scopeHash)) !== null;
-  }
-
   async eligibility(
     manager: EntityManager,
     selection: AiSelection,
@@ -524,76 +507,10 @@ export class NodiaCvSelectionService {
       selection: requested,
       configured: true,
       qualified: checkedAt !== null,
-      eligible: checkedAt !== null,
-      reason_code: checkedAt === null ? 'qualification_required' : 'qualified',
+      eligible: true,
+      reason_code: checkedAt === null ? 'available' : 'qualified',
       checked_at: checkedAt,
     };
-  }
-
-  private async geminiQualifications(
-    manager: EntityManager,
-    connections: NodiaAiConnectionConfiguration[],
-  ): Promise<CvGeminiChoices> {
-    const current = connections.flatMap((row) => {
-      const config = geminiConfiguration(row);
-      return config
-        ? [
-            {
-              connection_id: row.id,
-              configuration_generation: config.configurationGeneration,
-            },
-          ]
-        : [];
-    });
-    const choices: CvGeminiChoices = new Map();
-    if (!this.gemini || current.length === 0) return choices;
-
-    // One lookup per catalog page. Each choice uses its most recent receipt for this saved configuration.
-    const receipts = await manager.query<CvGeminiQualification[]>(
-      `SELECT DISTINCT ON (o.connection_id, o.selection_snapshot->>'model_id', o.selection_snapshot->>'effort_id')
-         q.scope_hash, o.connection_id::text, o.selection_snapshot->>'model_id' AS model_id,
-         o.selection_snapshot->>'effort_id' AS effort_id, o.configuration_generation,
-         o.session_generation, o.resource_key, o.agentic_transport_descriptor->>'policy_hash' AS policy_hash,
-         o.agentic_transport_descriptor->>'runtime_hash' AS runtime_hash
-       ${CV_QUALIFICATION_JOIN}
-       JOIN jsonb_to_recordset($1::jsonb) AS configs(connection_id bigint, configuration_generation text)
-         ON configs.connection_id=o.connection_id AND configs.configuration_generation=o.configuration_generation
-       WHERE ${CV_QUALIFICATION_PROOF}
-         AND o.selection_snapshot->>'mode'='agentic' AND o.agentic_transport_descriptor->>'provider'='gemini'
-         AND o.started_exchanges=1 AND o.agentic_acknowledged_at IS NOT NULL
-         AND o.terminal_proof->>'process_closed'='true' AND o.terminal_proof->>'response_hash'=q.response_hash
-       ORDER BY o.connection_id, o.selection_snapshot->>'model_id', o.selection_snapshot->>'effort_id', q.checked_at DESC, q.scope_hash`,
-      [JSON.stringify(current)],
-    );
-    for (const row of receipts) {
-      const selection: AiSelection = {
-        connection_id: row.connection_id,
-        mode: 'agentic',
-        model_id: row.model_id,
-        effort_id: row.effort_id,
-      };
-      if (
-        row.scope_hash !==
-        this.scopeHash(selection, {
-          providerKey: 'gemini',
-          connectionId: row.connection_id,
-          keyId: null,
-          configurationGeneration: row.configuration_generation,
-          sessionGeneration: row.session_generation,
-          resourceKey: row.resource_key,
-          policyHash: row.policy_hash,
-          runtimeHash: row.runtime_hash,
-        })
-      )
-        continue;
-      const models =
-        choices.get(row.connection_id) ?? new Map<string, Set<string | null>>();
-      const efforts = models.get(row.model_id) ?? new Set<string | null>();
-      efforts.add(row.effort_id);
-      models.set(row.model_id, efforts);
-      choices.set(row.connection_id, models);
-    }
-    return choices;
   }
 
   async catalog(manager: EntityManager, after?: string) {
@@ -603,7 +520,6 @@ export class NodiaCvSelectionService {
     const limit = this.policy.results.list_default_rows;
     const rows = await this.connections.list(manager, after ?? null, limit);
     const visibleRows = rows.slice(0, limit);
-    const geminiChoices = await this.geminiQualifications(manager, visibleRows);
     const items = [];
     // Reserve response envelope overhead and preserve whole connections when paginating.
     let bytes = 4096;
@@ -623,50 +539,15 @@ export class NodiaCvSelectionService {
       });
       const item = {
         ...connection,
-        modes: connection.modes.map((mode) => {
-          if (row.provider_key === 'gemini' && mode.mode === 'agentic') {
-            const options = geminiChoices.get(row.id);
-            const models = mode.models.flatMap((model) => {
-              const exactEfforts = options?.get(model.model_id);
-              if (!exactEfforts) return [];
-              const efforts = model.efforts.filter((effort) =>
-                exactEfforts.has(effort.effort_id),
-              );
-              return efforts.length || exactEfforts.has(null)
-                ? [{ ...model, efforts }]
-                : [];
-            });
-            const configured = mode.configured_selection;
-            const configuredModel = models.find(
-              (model) => model.model_id === configured?.model_id,
-            );
-            const configuredSelection =
-              configuredModel &&
-              configured &&
-              (configured.effort_id === null
-                ? options?.get(configured.model_id)?.has(null)
-                : configuredModel.efforts.some(
-                    (effort) => effort.effort_id === configured.effort_id,
-                  ))
-                ? configured
-                : null;
-            return {
-              ...mode,
-              models,
-              configured_selection: configuredSelection,
-              cv_transport: models.length
-                ? ('available' as const)
-                : ('unsupported' as const),
-            };
-          }
-          return {
-            ...mode,
-            cv_transport:
-              row.provider_key === 'openai' || row.provider_key === 'gemini'
-                ? ('available' as const)
-                : ('unsupported' as const),
-          };
-        }),
+        modes: connection.modes.map((mode) => ({
+          ...mode,
+          cv_transport:
+            row.provider_key === 'openai' ||
+            (row.provider_key === 'gemini' &&
+              (mode.mode === 'api_key' || this.gemini))
+              ? ('available' as const)
+              : ('unsupported' as const),
+        })),
       };
       const itemBytes = Buffer.byteLength(JSON.stringify(item), 'utf8') + 1;
       if (bytes + itemBytes > NODIA_AI_CONNECTION_PAGE_UTF8_BYTES) {
