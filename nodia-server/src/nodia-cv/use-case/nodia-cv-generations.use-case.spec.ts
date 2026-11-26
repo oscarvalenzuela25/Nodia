@@ -1,9 +1,12 @@
 import { ForbiddenException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import type { EntityManager } from 'typeorm';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiTextGenerationService } from '../../ai-generation/api-text-generation.service.js';
 import type { NodiaAiRuntimePolicy } from '../../nodia-ai-runtime/config/runtime-policy.js';
+import { CV_GEMINI_PROMPT_BYTES } from '../agentic/nodia-cv-agentic-provider.js';
 import type { StartNodiaCvGenerationDto } from '../dto/nodia-cv-generation.dto.js';
+import { prepareCvTailoring } from '../engine/index.js';
 import type { NodiaCvGenerationScope } from '../nodia-cv-generation-scope.service.js';
 import type { NodiaCvGenerationStore } from '../nodia-cv-generation.store.js';
 import type { NodiaCvProfilesService } from '../nodia-cv-profiles.service.js';
@@ -12,8 +15,10 @@ import {
   CV_PROBE_CANDIDATE,
   CV_PROBE_OFFER,
   cvGenerationIntent,
+  cvGenerationPrompt,
 } from '../policies/nodia-cv-generation.js';
 import type { CvAgenticConfiguration } from '../types/nodia-cv-generation.types.js';
+import type { NodiaCvProfileData } from '../types/nodia-cv-profile.types.js';
 import { NodiaCvGenerationsUseCase } from './nodia-cv-generations.use-case.js';
 
 const actor = {
@@ -34,7 +39,10 @@ const input: StartNodiaCvGenerationDto = {
   },
 };
 
-function fixture(isSuperAdmin: boolean) {
+function fixture(
+  isSuperAdmin: boolean,
+  additionalSections: NodiaCvProfileData['additional_sections'] = [],
+) {
   const current = { ...actor, actorId: actor.userId, isSuperAdmin };
   const profile = {
     id: input.profile_id,
@@ -50,7 +58,7 @@ function fixture(isSuperAdmin: boolean) {
       education: [],
       certifications: [],
       languages: [],
-      additional_sections: [],
+      additional_sections: additionalSections,
     },
   };
   const row = {
@@ -119,10 +127,62 @@ function fixture(isSuperAdmin: boolean) {
       timing: { provider_dispatch_seconds: 5 },
     } as NodiaAiRuntimePolicy,
   );
-  return { authorize, config, measure, row, selections, store, useCase };
+  return {
+    authorize,
+    config,
+    measure,
+    profile,
+    row,
+    selections,
+    store,
+    useCase,
+  };
 }
 
 describe('Nodia CV Agentic admission', () => {
+  it('accounts for the Gemini finish framing before admitting an otherwise valid Agentic prompt', async () => {
+    const additionalSections = Array.from({ length: 6 }, (_, section) => ({
+      id: randomUUID(),
+      title: 'Synthetic section ' + section,
+      lines: Array.from(
+        { length: 30 },
+        (_, line) => 'Synthetic line ' + line + ' ' + 'x'.repeat(440),
+      ),
+    }));
+    const f = fixture(false, additionalSections);
+    f.selections.observeAgentic.mockResolvedValue({ provider: 'gemini' });
+    const { data, ...header } = f.profile;
+    const prepared = prepareCvTailoring({
+      profile: {
+        ...header,
+        ...data,
+        schema_version: 1,
+        created_at: new Date(0),
+        updated_at: new Date(0),
+      },
+      offer: input.offer_text,
+      locale: input.language,
+    });
+    const available =
+      CV_GEMINI_PROMPT_BYTES - Buffer.byteLength(cvGenerationPrompt(prepared));
+    const request = {
+      ...input,
+      // A literal backslash consumes two UTF-8 bytes when encoded inside the offer JSON.
+      offer_text: input.offer_text + '\\'.repeat(Math.floor(available / 2)),
+    };
+    await expect(f.useCase.start(actor, request)).rejects.toThrow(
+      'generation_input_too_large',
+    );
+    expect(f.store.admit).not.toHaveBeenCalled();
+    expect(f.selections.configureAgentic).not.toHaveBeenCalled();
+
+    await expect(
+      fixture(false, additionalSections).useCase.start(actor, request),
+    ).resolves.toMatchObject({
+      state: 'queued',
+    });
+  });
+
   it('observes the provider outside SQL and admits ordinary work with the exact live configuration', async () => {
     const f = fixture(false);
     await expect(f.useCase.start(actor, input)).resolves.toMatchObject({
