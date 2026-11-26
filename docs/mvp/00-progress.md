@@ -1,5 +1,10 @@
 # Progreso del MVP — Nodia
 
+**Pagos combinados y filtro de Ventas — 2026-11-25.** Client y Server
+incorporan el diseño aprobado en la rama local. El POS admite hasta tres
+medios en un checkout y Ventas muestra sus importes por medio.
+[Plan94 §49](94-business-point-of-sale-and-product-refactor.md#49-pagos-combinados-y-total-filtrado-en-ventas--2026-11-25).
+
 **Incorporación de OpenCode — 2026-11-25.** El
 [catastro de modelos](114-ai-model-usage-inventory.md) reúne los recorridos
 de QA al incorporar un proveedor o selección. El

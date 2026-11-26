@@ -89,6 +89,21 @@ describe("ticket snapshots", () => {
     expect(ticket.total).toBe("$500");
   });
 
+  it("prints the full frozen transaction from a split payment row", () => {
+    const payments = [{ payment_method: "cash", amount: "1250" }, { payment_method: "card", amount: "10000" }] as const;
+    const sale = saved({
+      payment_method: "mixed",
+      payments: [...payments],
+      record_payment: { id: "synthetic-payment", ...payments[1] },
+    });
+    const ticket = buildSavedSaleTicket({ sale, language: "es" });
+    expect(ticket.saleId).toBe(sale.id);
+    expect(ticket.total).toBe("$11.250");
+    expect(ticket.lines).toHaveLength(1);
+    expect(ticket.paymentMethod).toBe("Efectivo $1.250 · Tarjeta $10.000");
+    expect(() => buildSavedSaleTicket({ sale: { ...sale, payments: [payments[0], { ...payments[1], amount: "9999" }] }, language: "es" })).toThrow();
+  });
+
   it("omits saved product details from a voucher without changing its frozen identity, date, total or payment", () => {
     const sale = saved();
     const before = structuredClone(sale);

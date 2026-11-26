@@ -1,6 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Alert, Box, Button, Chip, Divider, IconButton, LinearProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, Box, Button, Chip, IconButton, LinearProgress, Typography, useMediaQuery, useTheme } from "@mui/material";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import CheckOutlined from "@mui/icons-material/CheckOutlined";
@@ -23,21 +23,23 @@ import { useSaleDraft } from "../../../../infrastructure/useSaleDraft";
 import { useSaleExitGuard } from "../../../../infrastructure/useSaleExitGuard";
 import { useSalePriceEditing } from "../../../../infrastructure/useSalePriceEditing";
 import { useSaleTicketPrinting } from "../../../../infrastructure/useSaleTicketPrinting";
+import { manualPaymentMethod } from "../../../../infrastructure/salePayments";
 import { buildCartTicket } from "../../../../infrastructure/saleTicket";
 import type { SaleTicketModel } from "../../../../infrastructure/saleTicket";
 import type { ProductEntity } from "../../../../infrastructure/types";
-import type { CartLine, SaleSection } from "../../../../infrastructure/salesTypes";
+import type { CartLine, Sale, SalePayment, SaleSection } from "../../../../infrastructure/salesTypes";
 import SalesRecords from "./SalesRecords";
 import SalesReports from "./SalesReports";
 import PosProductCatalog from "./PosProductCatalog";
 import PosProductRegistration from "./PosProductRegistration";
 import PaymentMethodButtons from "./PaymentMethodButtons";
+import SplitPaymentModal from "./SplitPaymentModal";
 import OpenSaleTabs, { saleTabId } from "./OpenSaleTabs";
 import SaleLineList from "./SaleLineList";
 import { permanentSalePricePatch } from "./SaleLinePrice/priceChange";
 import SaleTicket from "./SaleTicket";
 import { useSaleLineImages } from "../../../../infrastructure/useSaleLineImages";
-import { Actions, CartPanel, CatalogPanel, CheckoutColumn, CompleteSaleButton, NewSaleButton, PointOfSaleGrid, SalePanels, ScannerFields, TotalAmount, TotalLabel, TotalRow, Workspace } from "./styles";
+import { Actions, CartPanel, CatalogPanel, CheckoutColumn, CombinedPaymentsTitle, CompleteSaleButton, NewSaleButton, PointOfSaleGrid, SalePanels, ScannerFields, TotalAmount, TotalLabel, TotalRow, Workspace } from "./styles";
 
 export default function SalesWorkspace({ businessId, section, businessName }: { businessId: string; section: SaleSection; businessName?: string }) {
   const { t, i18n } = useTranslation(["business", "core"]);
@@ -61,6 +63,8 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   const [assignment, setAssignment] = useState<ProductEntity | null>(null);
   const [assignConfirm, setAssignConfirm] = useState(false);
   const [confirm, setConfirm] = useState<"complete" | "cancel" | "close" | "refresh" | null>(null);
+  const [splitScope, setSplitScope] = useState<string | null>(null);
+  const splitOpen = section === "pos" && splitScope === draft.activeId;
   const [catalogReview, setCatalogReview] = useState<CartLine[] | null>(null);
   const [reviewFailed, setReviewFailed] = useState(false);
   const [closingSaleId, setClosingSaleId] = useState<string | null>(null);
@@ -101,7 +105,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
     return true;
   };
   const barcodeLookup = usePosBarcodeLookup({ businessId, context: JSON.stringify([draft.activeId, section]),
-    enabled: section === "pos" && !draft.busy && !lookup && !updateProduct.isPending && !ticketPrinting.printing && !editingPrice && !draft.pending && !draft.storageError && !draft.sale,
+    enabled: section === "pos" && !splitOpen && !draft.busy && !lookup && !updateProduct.isPending && !ticketPrinting.printing && !editingPrice && !draft.pending && !draft.storageError && !draft.sale,
     onProduct: product => { addProductToDraft(product, true); },
     onMissing: (value, scope) => { setMissingBarcode({ id: ++missingSequence.current, scope, barcode: value, stage: "prompt" }); setAssignment(null); sileo.error({ title: t("business:pos.barcode_unknown") }); },
     onError: error => {
@@ -122,30 +126,33 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   const { blocker, confirmLeave, showDialog: showLeaveDialog } = useSaleExitGuard({ section, hasUnsaved: draft.hasUnsaved, canDiscard: canLeave, clearForExit: draft.clearForExit });
   const readonly = Boolean(draft.sale);
   const baseControlsDisabled = busy || Boolean(draft.pending) || draft.storageError || readonly;
-  const controlsDisabled = baseControlsDisabled || editingPrice || Boolean(unknownBarcode);
+  const controlsDisabled = baseControlsDisabled || editingPrice || Boolean(unknownBarcode) || splitOpen;
   let total: string | null = null;
   try { total = cartTotal(draft.lines); } catch { /* Invalid/overflow totals block persistence and completion. */ }
   const quantityInvalid = draft.lines.some((line) => quantityDrafts[line.product_id] !== undefined && quantityFromInput(quantityDrafts[line.product_id]) !== line.quantity);
   const selectedAssignment = assignment;
-  const paymentInvalid = draft.description.trim().length > 500 || (!draft.sale && draft.paymentMethod === "other");
+  const combinedMethods = draft.combinedPaymentMethods;
+  const paymentInvalid = combinedMethods ? combinedMethods.length < 2
+    : draft.description.trim().length > 500 || (!draft.sale && draft.paymentMethod === "other");
   const stockInvalid = draft.lines.some((line) => exceedsObservedStock(line, line.quantity));
   const canReviewCatalog = (!draft.sale || draft.sale.status === "draft") && draft.lines.length > 0;
   const reviewDisabled = busy || editingPrice || !!unknownBarcode || !!draft.pending || draft.storageError;
   const canComplete = !reviewDisabled && !draft.catalogConflict && !stockInvalid && (!draft.sale || (draft.sale.status === "draft" && !draft.dirty)) && !quantityInvalid && !paymentInvalid && total !== null && BigInt(total) > 0n && draft.lines.length > 0;
   let ticketPreview: SaleTicketModel | null = null;
   if (confirm === "complete") {
-    try { ticketPreview = buildCartTicket({ businessName, lines: draft.lines, paymentMethod: draft.paymentMethod, description: draft.description, language: i18n.language, showDetails: true }); }
+    const paymentMethod = draft.sale ? draft.paymentMethod : manualPaymentMethod(draft.paymentMethod) ?? draft.paymentMethod;
+    try { ticketPreview = buildCartTicket({ businessName, lines: draft.lines, paymentMethod, description: draft.description, language: i18n.language, showDetails: true }); }
     catch { /* An invalid cart never becomes a printable or confirmable ticket. */ }
   }
   useEffect(() => {
-    if (restoreScanFocus.current && section === "pos" && !busy && !editingPrice && !draft.pending && !draft.storageError && !draft.sale && !unknownBarcode && !assigning && !confirm) {
+    if (restoreScanFocus.current && section === "pos" && !busy && !editingPrice && !draft.pending && !draft.storageError && !draft.sale && !unknownBarcode && !assigning && !confirm && !splitOpen) {
       restoreScanFocus.current = false;
       const scanner = inputContainer.current?.querySelector("input");
       scanner?.focus({ preventScroll: true });
       if (mobile && scrollToScanner.current) scanner?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
       scrollToScanner.current = false;
     }
-  }, [section, mobile, busy, editingPrice, draft.activeId, draft.pending, draft.storageError, draft.sale, unknownBarcode, assigning, confirm, focusEpoch]);
+  }, [section, mobile, busy, editingPrice, draft.activeId, draft.pending, draft.storageError, draft.sale, unknownBarcode, assigning, confirm, splitOpen, focusEpoch]);
   useEffect(() => {
     if (section !== "pos" || !focusHistoricalCheckout.current) return;
     focusHistoricalCheckout.current = false;
@@ -294,7 +301,27 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
       }
     } finally { confirming.current = false; }
   };
-  const clearTransient = () => { setMissingBarcode(null); setAssignment(null); setAssignConfirm(false); setConfirm(null); setClosingSaleId(null); setReason(""); setCatalogReview(null); };
+  const submitSplit = async (perform: () => Promise<Sale | null>) => {
+    if (!splitOpen || busy || draft.storageError || confirming.current || priceChanging.current || priceEditor.blocksChange()) return;
+    confirming.current = true;
+    try {
+      const result = await perform();
+      if (result && active.current) {
+        setSplitScope(null);
+        ticketPrinting.remember(result);
+        requestScanFocus();
+      }
+    } finally { confirming.current = false; }
+  };
+  const confirmSplit = async (payments: SalePayment[]) => {
+    if (canComplete) await submitSplit(() => draft.checkout(payments));
+  };
+  const openCheckout = () => {
+    if (!canComplete || priceEditor.blocksChange()) return;
+    if (combinedMethods) setSplitScope(draft.activeId);
+    else setConfirm("complete");
+  };
+  const clearTransient = () => { setMissingBarcode(null); setAssignment(null); setAssignConfirm(false); setConfirm(null); setSplitScope(null); setClosingSaleId(null); setReason(""); setCatalogReview(null); };
   const newSale = () => { if (!priceEditor.blocksChange() && draft.newSale()) { clearTransient(); requestScanFocus(); } };
   const selectSale = (id: string, source: "pointer" | "keyboard") => {
     if (priceEditor.blocksChange()) return;
@@ -343,6 +370,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
   });
   const currency = (value: string | number) => formatClp(value, i18n.language);
   const receipt = ticketPrinting.receipt;
+  const mixedSale = draft.sale?.payment_method === "mixed" ? draft.sale : null;
   return <Workspace ref={workspace} tabIndex={-1}>
     {receipt && receipt.id !== draft.sale?.id && <Alert
       severity="success"
@@ -389,7 +417,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
         <Box sx={{ minWidth: 0 }}>
           <Typography component="h2" variant="body2" sx={{ fontWeight: 700, mb: 1 }}>{t("business:pos.open_sales")}</Typography>
           <OpenSaleTabs sales={openSales} activeId={draft.activeId} panelId={panelId} orientation={wide ? "vertical" : "horizontal"}
-            disabled={busy || editingPrice || draft.storageError || Boolean(confirm) || assigning || unknownBarcode !== null} onSelect={selectSale} onClose={closeSale} />
+            disabled={busy || editingPrice || draft.storageError || Boolean(confirm) || splitOpen || assigning || unknownBarcode !== null} onSelect={selectSale} onClose={closeSale} />
         </Box>
         <SalePanels role="tabpanel" id={panelId} aria-labelledby={saleTabId(panelId, draft.activeId)}>
           <CatalogPanel>
@@ -407,7 +435,7 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
               <Button disabled={busy || editingPrice || !selectedAssignment} onClick={() => setAssignConfirm(true)}>{t("business:pos.assign_barcode")}</Button>
               <Button disabled={busy || editingPrice} onClick={dismissUnknown}>{t("business:cancel")}</Button>
             </Alert>}
-            <PosProductCatalog businessId={businessId} disabled={baseControlsDisabled || editingPrice || registrationOverlay || assigning} assignmentMode={unknown?.stage === "assign"} onSelect={(product) => unknown?.stage === "assign" ? setAssignment(product) : add(product)} />
+            <PosProductCatalog businessId={businessId} disabled={baseControlsDisabled || editingPrice || registrationOverlay || assigning || splitOpen} assignmentMode={unknown?.stage === "assign"} onSelect={(product) => unknown?.stage === "assign" ? setAssignment(product) : add(product)} />
             <SaleLineList lines={draft.lines} images={lineImages.images} imageLoading={lineImages.isLoading} imageError={lineImages.isError} imageFetching={lineImages.isFetching} retryImages={() => void lineImages.retry()}
               disabled={controlsDisabled} quantityDrafts={quantityDrafts} onStep={stepQuantity} onQuantity={changeQuantity} onReview={canReviewCatalog ? () => void loadCatalogReview() : undefined} reviewDisabled={reviewDisabled}
               fontScale={fontScale} onFontScale={setFontScale} editingScope={draft.activeId} onPrice={readonly ? undefined : changePrice} scrollToTopVersion={scrollToTopVersion}
@@ -415,22 +443,35 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
               onRemove={readonly ? undefined : (id) => { if (!controlsDisabled && !priceEditor.blocksChange() && draft.setLines(removeCartProduct(draft.lines, id))) { clearQuantityInput(id); sileo.success({ title: t("business:pos.product_removed") }); } }} />
           </CatalogPanel>
           <CheckoutColumn>
-            <NewSaleButton fullWidth variant="contained" startIcon={<AddOutlined />} disabled={busy || editingPrice || unknownBarcode !== null || draft.storageError} onClick={newSale}>{t("business:pos.new_sale")}</NewSaleButton>
+            <NewSaleButton fullWidth variant="contained" startIcon={<AddOutlined />} disabled={busy || editingPrice || unknownBarcode !== null || draft.storageError || splitOpen} onClick={newSale}>{t("business:pos.new_sale")}</NewSaleButton>
             <CartPanel ref={checkoutPanel} role="region" aria-label={t("business:pos.payment_summary")} tabIndex={-1}>
-              <TotalRow><TotalLabel as="h2">{t("business:pos.checkout_total")}</TotalLabel><TotalAmount>{total === null ? "—" : currency(total)}</TotalAmount></TotalRow>
               {total === null && <Alert severity="error">{t("business:pos.invalid_price")}</Alert>}
               {draft.catalogConflict && <Alert severity="warning" sx={{ flexWrap: "wrap", "& .MuiAlert-action": { pl: 0 } }} action={<Button disabled={reviewDisabled} onClick={() => void loadCatalogReview()}>{t("business:stock_tracking.review_cart")}</Button>}>{t("business:stock_tracking.review_required")}</Alert>}
-              <Divider />
-              <PaymentMethodButtons value={draft.paymentMethod} disabled={controlsDisabled} onChange={(method) => { if (!priceEditor.blocksChange()) draft.setPaymentMethod(method); }} />
-              {draft.paymentMethod === "other" && (draft.sale ? <Typography variant="body2">{t("business:pos.payment_other")}{draft.description ? ` · ${draft.description}` : ""}</Typography> : <Alert severity="warning">{t("business:pos.legacy_other_select")}</Alert>)}
+              <Box>
+                {mixedSale ? <Box sx={{ display: "grid", gap: 1 }}>
+                  <CombinedPaymentsTitle variant="h6">{t("business:pos.payment_mixed")}</CombinedPaymentsTitle>
+                  {mixedSale.record_payment && <Typography variant="body2" color="text.secondary">
+                    {t("business:pos.split_payment_record")} · {t(`business:pos.payment_${mixedSale.record_payment.payment_method}`)} · {currency(mixedSale.record_payment.amount)}
+                  </Typography>}
+                  {mixedSale.payments?.map((payment) => <Box key={payment.payment_method} sx={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", columnGap: 1 }}>
+                    <Typography>{t(`business:pos.payment_${payment.payment_method}`)}</Typography>
+                    <Typography sx={{ fontWeight: 700, overflowWrap: "anywhere" }}>{currency(payment.amount)}</Typography>
+                  </Box>)}
+                </Box> : <PaymentMethodButtons value={draft.paymentMethod} combined={combinedMethods}
+                  disabled={controlsDisabled}
+                  onCombineChange={draft.sale ? undefined : (enabled) => { if (!priceEditor.blocksChange()) draft.setCombinedPayments(enabled); }}
+                  onChange={(method) => { if (!priceEditor.blocksChange()) draft.setPaymentMethod(method); }} />}
+                <TotalRow><TotalLabel as="h2">{t("business:pos.checkout_total")}</TotalLabel><TotalAmount>{total === null ? "—" : currency(total)}</TotalAmount></TotalRow>
+                {(!draft.sale || draft.sale.status === "draft") && <CompleteSaleButton fullWidth variant="contained" color="inherit" startIcon={<CheckOutlined />} disabled={!canComplete || splitOpen} onClick={openCheckout}>{t("business:pos.complete")}</CompleteSaleButton>}
+              </Box>
+              {draft.paymentMethod === "other" && !combinedMethods && (draft.sale ? <Typography variant="body2">{t("business:pos.payment_other")}{draft.description ? ` · ${draft.description}` : ""}</Typography> : <Alert severity="warning">{t("business:pos.legacy_other_select")}</Alert>)}
               {busy && <LinearProgress />}
-              {(!draft.sale || draft.sale.status === "draft") && <CompleteSaleButton fullWidth variant="contained" color="inherit" startIcon={<CheckOutlined />} disabled={!canComplete} onClick={() => setConfirm("complete")}>{t("business:pos.complete")}</CompleteSaleButton>}
               {draft.sale?.status === "completed" && <>
-                <Button variant="contained" color="error" sx={{ minHeight: 44 }} disabled={busy || Boolean(draft.pending)} onClick={() => setConfirm("cancel")}>{t("business:pos.cancel_sale")}</Button>
+                <Button variant="contained" color="error" sx={{ minHeight: 44 }} disabled={busy || Boolean(draft.pending)} onClick={() => setConfirm("cancel")}>{t(mixedSale ? "business:pos.split_payment_cancel_transaction" : "business:pos.cancel_sale")}</Button>
                 <Button variant="contained" sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || Boolean(draft.pending)} onClick={() => { if (draft.sale) void ticketPrinting.print(draft.sale, false); }}>{t("business:ticket.print_summary")}</Button>
                 <Button fullWidth variant="contained" sx={{ minHeight: 44 }} startIcon={<PrintOutlined />} disabled={busy || Boolean(draft.pending)} onClick={() => { if (draft.sale) void ticketPrinting.print(draft.sale, true); }}>{t("business:ticket.print")}</Button>
               </>}
-              {draft.sale && <Box sx={{ display: "grid", gap: 1 }}><Chip label={t(draft.sale.status === "draft" ? "business:pos.legacy_unconfirmed" : `business:pos.status_${draft.sale.status}`)} /><Typography variant="caption" sx={{ overflowWrap: "anywhere" }}>{draft.sale.id}</Typography></Box>}
+              {draft.sale && <Box sx={{ display: "grid", gap: 1 }}><Chip label={t(draft.sale.status === "draft" ? "business:pos.legacy_unconfirmed" : `business:pos.status_${draft.sale.status}`)} /><Typography variant="caption" sx={{ overflowWrap: "anywhere" }}>{mixedSale && `${t("business:pos.split_payment_transaction")} · `}{draft.sale.id}</Typography></Box>}
               {draft.sale?.completed_at && <Typography variant="caption">{new Date(draft.sale.completed_at).toLocaleString(i18n.language, { timeZone: "America/Santiago" })} · America/Santiago</Typography>}
               {draft.sale?.cancellation_reason && <Alert severity="warning">{draft.sale.cancellation_reason}</Alert>}
             </CartPanel>
@@ -438,7 +479,12 @@ export default function SalesWorkspace({ businessId, section, businessName }: { 
         </SalePanels>
       </PointOfSaleGrid>
     </>}
-    <ConfirmDialog open={Boolean(confirm)} onClose={() => { if (!busy) { setConfirm(null); setCatalogReview(null); } }} onConfirm={() => void transition()} isLoading={busy} confirmDisabled={(confirm === "cancel" && !reason.trim()) || (confirm === "complete" && (!canComplete || !ticketPreview)) || (confirm === "refresh" && (!catalogReview || !!draft.pending || (readonly && catalogReview.some((line) => exceedsObservedStock(line, line.quantity))))) || (confirm === "close" && (!closingSale || closingSale.busy || Boolean(closingSale.pending) || draft.storageError))} title={t(confirm === "refresh" ? "business:stock_tracking.review_cart" : `business:pos.confirm_${confirm ?? "complete"}`, { number: closingSale?.number })} size={confirm === "complete" ? "md" : "sm"} message={confirm === "close" ? t("business:pos.close_sale_explanation") : confirm === "complete" ? t("business:ticket.review_hint") : confirm === "refresh" ? t("business:stock_tracking.review_hint") : t("business:pos.confirm_explanation")}
+    {combinedMethods && total !== null && <SplitPaymentModal key={`${draft.activeId}:${combinedMethods.join(",")}`}
+      open={splitOpen} methods={combinedMethods} total={total} busy={busy}
+      blockedReason={draft.storageError ? "storage" : draft.catalogConflict ? "catalog" : undefined}
+      pending={Boolean(draft.pending)} onClose={() => setSplitScope(null)}
+      onConfirm={confirmSplit} onReconcile={() => submitSplit(draft.reconcile)} onRetry={() => submitSplit(draft.retry)} />}
+    <ConfirmDialog open={Boolean(confirm)} onClose={() => { if (!busy) { setConfirm(null); setCatalogReview(null); } }} onConfirm={() => void transition()} isLoading={busy} confirmDisabled={(confirm === "cancel" && !reason.trim()) || (confirm === "complete" && (!canComplete || !ticketPreview)) || (confirm === "refresh" && (!catalogReview || !!draft.pending || (readonly && catalogReview.some((line) => exceedsObservedStock(line, line.quantity))))) || (confirm === "close" && (!closingSale || closingSale.busy || Boolean(closingSale.pending) || draft.storageError))} title={t(confirm === "refresh" ? "business:stock_tracking.review_cart" : `business:pos.confirm_${confirm ?? "complete"}`, { number: closingSale?.number })} size={confirm === "complete" ? "md" : "sm"} message={confirm === "close" ? t("business:pos.close_sale_explanation") : confirm === "complete" ? t("business:ticket.review_hint") : confirm === "refresh" ? t("business:stock_tracking.review_hint") : t(mixedSale && confirm === "cancel" ? "business:pos.split_payment_cancel_explanation" : "business:pos.confirm_explanation")}
       additionalActions={confirm === "complete" ? <Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "repeat(2, minmax(0, 1fr))" }, gap: 1, minWidth: 0, width: "100%" }}>
         <Button fullWidth variant="contained" startIcon={<PrintOutlined />} disabled={!canComplete || !ticketPreview} onClick={() => void transition(false)}>{t("business:ticket.confirm_and_print_summary")}</Button>
         <Button fullWidth variant="contained" startIcon={<PrintOutlined />} disabled={!canComplete || !ticketPreview} onClick={() => void transition(true)}>{t("business:ticket.confirm_and_print")}</Button>

@@ -14,7 +14,7 @@ import { cartLinePrice, exceedsObservedStock, formatClp, quantityFromInput } fro
 import { formatQuantity, lineSubtotal, quantityThousandths } from "../../../../../infrastructure/saleQuantities";
 import SaleLinePrice from "../SaleLinePrice";
 import QuantityStepper from "../QuantityStepper";
-import { ActionButton, Copy, EmptyHelp, EmptyState, EmptyTitle, Line, LineControls, LineIdentity, Lines, LineTotal, Picture, PictureSlot, RemoveAction, RemoveButton } from "./styles";
+import { ActionButton, Copy, EmptyHelp, EmptyState, EmptyTitle, Line, LineControls, LineIdentity, Lines, LineTotal, Picture, PictureSlot, ProductDetails, RemoveAction, RemoveButton } from "./styles";
 
 interface Props {
   lines: CartLine[];
@@ -69,14 +69,16 @@ export default function SaleLineList({ lines, images, disabled, imageLoading, im
             <PictureSlot><Skeleton loading={imageLoading}><Picture variant="rounded" src={images[line.product_id]?.url} alt="" slotProps={{ img: { loading: "lazy" } }}><ImageOutlined /></Picture></Skeleton></PictureSlot>
             <Copy>
               <LineIdentity>
-                <Typography sx={{ fontSize: "calc(1rem * var(--sale-font-scale, 1))", fontWeight: 700 }}>{line.name}</Typography>
+                <ProductDetails>
+                  <Typography sx={{ fontSize: "calc(1rem * var(--sale-font-scale, 1))", fontWeight: 700 }}>{line.name}</Typography>
+                  {line.stock_available !== undefined && <Typography variant="body2" color={insufficient ? "error" : "text.secondary"}>
+                    {t(insufficient ? "business:stock_tracking.insufficient" : "business:stock_tracking.available_balance", { stock: formatQuantity(line.stock_available, i18n.language) })}
+                  </Typography>}
+                  {line.quantity === 0 && !disabled && <Typography variant="body2" color="warning.main">{t("business:pos.zero_quantity_help")}</Typography>}
+                </ProductDetails>
                 <SaleLinePrice key={`${editingScope ?? ""}:${line.product_id}`} line={line} disabled={(priceDisabled ?? disabled) || (editingProductId != null && editingProductId !== line.product_id)} onSave={onPrice}
                   onEditingChange={(editing) => onPriceEditingChange?.(line.product_id, editing)} />
               </LineIdentity>
-              {line.stock_available !== undefined && <Typography variant="body2" color={insufficient ? "error" : "text.secondary"}>
-                {t(insufficient ? "business:stock_tracking.insufficient" : "business:stock_tracking.available_balance", { stock: formatQuantity(line.stock_available, i18n.language) })}
-              </Typography>}
-              {line.quantity === 0 && !disabled && <Typography variant="body2" color="warning.main">{t("business:pos.zero_quantity_help")}</Typography>}
             </Copy>
             <LineControls>
               <QuantityStepper name={line.name} quantity={line.quantity} inputValue={quantityDrafts[line.product_id]} disabled={disabled}

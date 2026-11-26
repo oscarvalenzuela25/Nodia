@@ -1830,3 +1830,56 @@ la cantidad editable, el subtotal y la X quedan alineados a la derecha.
 En pantallas estrechas, con texto ampliado o al editar el precio, la fila
 se organiza en bloques. Los controles conservan un área táctil de 44 px.
 La lista mantiene su desplazamiento vertical propio con pista transparente.
+
+## 49. Pagos combinados y total filtrado en Ventas — 2026-11-25
+
+El diseño aprobado ubica Estado, Medio de pago y Desde/Hasta en **Filtro**,
+con **Todos los medios de pago** como valor inicial. Tarjeta agrupa el
+nuevo código y débito/crédito históricos. **Fecha** conserva la hora de
+Santiago. El listado retira la columna **Venta** y conserva el detalle.
+**Total filtrado** suma los importes nominales de todas las filas que
+coinciden con la búsqueda y los filtros. El resumen comercial mantiene su
+agregación de transacciones confirmadas.
+
+El POS inicia en **Efectivo**, con **Combinar pagos** apagado. Efectivo
+ocupa dos posiciones y el Total tiene 12 px de margen vertical a cada
+lado. Apagar el switch vuelve a Efectivo. Con dos o tres medios elegidos,
+**Confirmar venta** abre el diálogo de montos. El reparto exige pesos
+enteros positivos y suma exacta. Volver y los fallos conservan el carrito y
+los importes ingresados mientras el contexto del carrito sigue vigente.
+
+El checkout confirma un carrito y asignaciones por medio en una sola
+transacción con stock, evento y recibo. Anular desde una fila de Ventas
+aplica a toda la transacción. La impresión y los reportes usan el carrito
+completo. El repin técnico de las lecturas reutiliza el esquema firmado
+`sales-read/3`. Conserva los cuerpos aprobados y no registra herramientas
+nuevas. [ADR121](../architecture/decisions/ADR-121-combined-sale-payments.md) ·
+[Ficha candidata](../nodia-ai/knowledge/businesses/features/combined-sale-payments.md).
+
+En el detalle del POS, **Pagos combinados** usa peso 700 y tamaño de
+24 px. A partir de 23 rem de ancho del panel de cobro, usa 26 px.
+
+Al editar el precio de una línea, la miniatura, el nombre, el stock, la
+cantidad y el subtotal quedan en el resumen del producto. El editor se
+ubica debajo e identifica las acciones **Aplicar a esta venta**,
+**Guardar en catálogo** y **Cancelar**. Desde 42 rem de ancho del listado,
+con el tamaño de texto normal, el campo y las acciones caben en una fila.
+En contenedores estrechos se apilan. Cancelar o pulsar Escape devuelve el
+foco a **Editar precio**. La evaluación de impacto en el contexto de
+NodiaAI clasifica estos cambios como presentación y foco de Client.
+
+### Verificación local
+
+- PostgreSQL 16 y Nest compilado pasaron 39 comprobaciones. Se ejercieron
+  la migración y su reversión antes del primer uso, el reparto concurrente
+  con la misma clave, el rechazo de montos inválidos, el descuento único
+  de stock, la anulación completa, el total entre páginas y la validación
+  de la proyección de NodiaAI contra el esquema de lectura firmado.
+- El navegador interno registró una compra sintética de $18.900 con
+  Efectivo $5.000, Tarjeta $10.000 y Transferencia $3.900. El modal bloqueó
+  un exceso y conservó los montos al volver. Ventas mostró tres filas,
+  $77.100 en el conjunto y $34.000 en Tarjeta, incluidos dos pagos
+  históricos. El detalle de Tarjeta conservó el total original de $18.900.
+- Client, API, PostgreSQL y Redis quedaron activos para revisión con un
+  negocio y una cuenta sintéticos. La aceptación por entorno queda
+  pendiente.

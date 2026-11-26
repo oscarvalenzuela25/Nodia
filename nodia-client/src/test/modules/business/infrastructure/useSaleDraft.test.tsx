@@ -8,7 +8,7 @@ import { getSaleReceipt, mutateSale } from "../../../../modules/business/infrast
 import { clearBusinessSaleRecoveryStorage, readSaleJournal, saleJournalKey, saveSaleJournal } from "../../../../config/businessSaleRecoveryStorage";
 import { loadSaleWorkspace, saleWorkspaceKey, writeSaleWorkspace } from "../../../../config/businessSaleWorkspaceStorage";
 import useAuthStore from "../../../../store/authStore";
-import type { CartLine, Sale } from "../../../../modules/business/infrastructure/salesTypes";
+import type { CartLine, Sale, SalePayment } from "../../../../modules/business/infrastructure/salesTypes";
 import type { ProductEntity } from "../../../../modules/business/infrastructure/types";
 
 vi.mock("../../../../modules/business/infrastructure/salesServices", () => ({ mutateSale: vi.fn(), getSaleReceipt: vi.fn() }));
@@ -25,6 +25,71 @@ const catalogProduct: ProductEntity = {
 const completed: Sale = { ...sale, status: "completed", total_amount: "2400", completed_at: "2026-10-29T12:00:00Z" };
 describe("sale draft recovery", () => {
   beforeEach(() => { vi.clearAllMocks(); sessionStorage.clear(); useAuthStore.setState({ user: { id: "actor-a", name: "Synthetic actor" }, token: "synthetic-session", sessionStatus: "authenticated", expiresAt: Date.now() + 60000 }); });
+  it("isolates split methods per cart and restores cash when turning split mode off", () => {
+    const { result } = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    const firstId = result.current.activeId;
+    act(() => {
+      result.current.setPaymentMethod("card");
+      result.current.setCombinedPayments(true);
+      result.current.setPaymentMethod("bank_transfer");
+    });
+    expect(result.current.combinedPaymentMethods).toEqual(["card", "bank_transfer"]);
+    act(() => result.current.newSale());
+    expect(result.current.combinedPaymentMethods).toBeUndefined();
+    expect(result.current.paymentMethod).toBe("cash");
+    act(() => result.current.selectSale(firstId));
+    expect(result.current.combinedPaymentMethods).toEqual(["card", "bank_transfer"]);
+    act(() => result.current.setCombinedPayments(false));
+    expect(result.current.combinedPaymentMethods).toBeUndefined();
+    expect(result.current.paymentMethod).toBe("cash");
+  });
+
+  it("normalizes a historical card selection on a new request", async () => {
+    const { result } = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    vi.mocked(mutateSale).mockResolvedValueOnce({ ...completed, payment_method: "card" });
+    act(() => {
+      result.current.setLines([line]);
+      result.current.setPaymentMethod("debit_card");
+    });
+    await act(async () => { await result.current.checkout(); });
+    expect(mutateSale).toHaveBeenCalledExactlyOnceWith("business-a", expect.objectContaining({
+      operation: "checkout",
+      command: expect.objectContaining({ payment_method: "card" }),
+    }));
+  });
+
+  it("journals the exact split before dispatch and requires the same amounts in a recovered receipt", async () => {
+    const { result, unmount } = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    const payments: SalePayment[] = [{ payment_method: "cash", amount: "1000" }, { payment_method: "card", amount: "1400" }];
+    act(() => {
+      result.current.setLines([line]);
+      result.current.setCombinedPayments(true);
+      result.current.setPaymentMethod("card");
+    });
+    await act(async () => { await result.current.checkout([{ ...payments[0], amount: "0" }, { ...payments[1], amount: "2400" }]); });
+    expect(mutateSale).not.toHaveBeenCalled();
+
+    vi.mocked(mutateSale).mockRejectedValueOnce(new AxiosError("lost split response"));
+    await act(async () => { await result.current.checkout(payments); });
+    const request = result.current.pending?.mutation;
+    expect(request?.command).toEqual(expect.objectContaining({ request_key: expect.any(String), payments }));
+    expect(request?.command).not.toHaveProperty("payment_method");
+    expect(request?.command).not.toHaveProperty("payment_method_description");
+    unmount();
+
+    const reopened = renderHook(() => useSaleDraft("business-a"), { wrapper });
+    expect(reopened.result.current.pending?.mutation).toEqual(request);
+    vi.mocked(getSaleReceipt).mockResolvedValueOnce({ status: "completed", sale: { ...completed, payment_method: "mixed", payments: [{ ...payments[0], amount: "900" }, { ...payments[1], amount: "1500" }] } });
+    await act(async () => { await reopened.result.current.reconcile(); });
+    expect(reopened.result.current.pending?.mutation).toEqual(request);
+    expect(reopened.result.current.lines).toEqual([line]);
+
+    vi.mocked(getSaleReceipt).mockResolvedValueOnce({ status: "completed", sale: { ...completed, payment_method: "mixed", payments: [...payments].reverse() } });
+    await act(async () => { await reopened.result.current.reconcile(); });
+    expect(reopened.result.current.pending).toBeNull();
+    expect(reopened.result.current.lines).toEqual([]);
+    expect(mutateSale).toHaveBeenCalledTimes(1);
+  });
   it("commits each addition against the current cart and restores its order with the scanner state", () => {
     const { result, unmount } = renderHook(() => useSaleDraft("business-a"), { wrapper });
     const second = { ...catalogProduct, id: "product-b", barcode: "000124" };

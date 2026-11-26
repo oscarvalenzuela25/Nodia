@@ -9,6 +9,7 @@ import { CheckModuleAccessUseCase } from '../../authorization/use-case/check-mod
 import { SaleService } from '../sale.service.js';
 import { runSaleScope } from '../sale-authority.js';
 import {
+  assertSalePaymentTotal,
   assertSaleTransition,
   normalizeSaleCommand,
   saleCommandHash,
@@ -132,6 +133,7 @@ export class MutateSaleUseCase {
             throw new ConflictException(
               'business:sale_positive_total_required',
             );
+          if (command.payments) assertSalePaymentTotal(command.payments, total);
           // Insert the final state directly: no draft header or follow-up completion is persisted.
           await tx.query(
             `INSERT INTO sales(id,business_id,status,currency,payment_method,payment_method_description,
@@ -140,12 +142,19 @@ export class MutateSaleUseCase {
             [
               id,
               businessId,
-              command.payment_method,
-              command.payment_method_description,
+              command.payments ? 'mixed' : command.payment_method,
+              command.payment_method_description ?? null,
               total,
               actor.userId,
             ],
           );
+          if (command.payments)
+            await this.store.insertPayments(
+              tx,
+              businessId,
+              id,
+              command.payments,
+            );
         }
         if (operation === 'create') {
           await tx.query(
@@ -249,6 +258,7 @@ export class MutateSaleUseCase {
               to_status: result.status,
               total_amount: result.total_amount,
               item_count: result.items.length,
+              ...(result.payments ? { payments: result.payments } : {}),
               ...(deductions.length ? { stock_deductions: deductions } : {}),
               ...(result.items.some((item) => item.price_source === 'manual')
                 ? {

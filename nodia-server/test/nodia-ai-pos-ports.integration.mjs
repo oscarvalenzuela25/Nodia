@@ -8,7 +8,7 @@ import { compileNodiaAiToolSchema } from '../dist/nodia-ai-tools/use-case/nodia-
 /** SQL companion: retired AI entry points cannot add effects; manual sale coverage remains in the parent harness. */
 export async function verifyNodiaAiPosPorts({ db, business, actor, mutate, check }) {
   const names = ['create', 'update', 'complete', 'cancel', 'discard'];
-  const sourceJson = readFileSync(new URL('../src/nodia-ai-tools/config/common-schema.json', import.meta.url), 'utf8');
+  const sourceJson = readFileSync(new URL('../../docs/mvp/nodia-ai-v1-common-contracts.schema.json', import.meta.url), 'utf8');
   const witness = compileNodiaAiToolSchema({ sourceJson, definition: 'BusinessEffectReceipt', sha256: createHash('sha256').update(sourceJson).digest('hex') });
   await check('NodiaAI registers no native sale writer ports', async () => {
     assert.deepEqual(new BuildNodiaAiSalesOperationsUseCase(mutate).operations, []);

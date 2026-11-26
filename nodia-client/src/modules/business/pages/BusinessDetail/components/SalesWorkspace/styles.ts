@@ -60,10 +60,15 @@ export const CartPanel = styled(Panel)(({ theme }) => ({
   [spaciousCheckout]: { padding: theme.spacing(3), gap: theme.spacing(2.5) },
   "&:focus-visible": { outline: `2px solid ${theme.palette.primary.main}`, outlineOffset: 2 },
 }));
+export const CombinedPaymentsTitle = styled(Typography)(({ theme }) => ({
+  fontSize: "1.5rem",
+  fontWeight: theme.typography.fontWeightBold,
+  [spaciousCheckout]: { fontSize: "1.625rem" },
+}));
 export const CompleteSaleButton = styled(Button)(({ theme }) => {
   const fill = theme.palette.text.primary;
   return {
-    minHeight: 56, fontSize: "1.25rem", lineHeight: 1.2, fontWeight: 700, marginBlockStart: theme.spacing(.5),
+    minHeight: 56, fontSize: "1.25rem", lineHeight: 1.2, fontWeight: 700,
     [wideCheckout]: { minHeight: 64, fontSize: "1.375rem" },
     [spaciousCheckout]: { minHeight: 68, fontSize: "1.5rem" },
     "& .MuiButton-startIcon > svg": { fontSize: "1.5rem" },
@@ -83,6 +88,7 @@ export const TotalRow = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   gap: theme.spacing(.5, 1),
   minWidth: 0,
+  marginBlock: "12px",
 }));
 export const TotalLabel = styled(Typography)({
   fontSize: "1.5rem", lineHeight: 1.25, fontWeight: 700,

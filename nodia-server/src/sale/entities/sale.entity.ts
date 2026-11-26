@@ -15,7 +15,7 @@ export class Sale {
   @Column('uuid') business_id: string;
   @Column('varchar') status: SaleStatus;
   @Column('varchar') currency: 'CLP';
-  @Column('varchar') payment_method: SalePaymentMethod;
+  @Column('varchar') payment_method: SalePaymentMethod | 'mixed';
   @Column({ type: 'varchar', nullable: true }) payment_method_description:
     string | null;
   @Column('bigint') total_amount: string;
