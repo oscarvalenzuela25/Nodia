@@ -74,7 +74,7 @@ describe("CvModelSelector", () => {
     expect(settings.onApply).toHaveBeenCalledExactlyOnceWith(next);
   });
 
-  it("offers only the qualified Gemini model and effort and waits for its current eligibility", async () => {
+  it("offers the configured Gemini model and effort and applies it on first availability", async () => {
     const user = userEvent.setup();
     const exact: NodiaAiSelection = { ...applied, mode: "agentic", model_id: "gemini-fixture-high", effort_id: "high" };
     const settings = props();
@@ -103,12 +103,12 @@ describe("CvModelSelector", () => {
     rerender(<CvModelSelector {...view} eligibility={{ selection: exact, eligible: false, reason_code: "gemini_profile_busy" }} />);
     expect(screen.getByText(cv("gemini_profile_busy"))).toBeVisible();
     expect(screen.getByRole("button", { name: action("apply") })).toBeDisabled();
-    rerender(<CvModelSelector {...view} eligibility={{ selection: exact, eligible: true, reason_code: "qualified" }} />);
+    rerender(<CvModelSelector {...view} eligibility={{ selection: exact, eligible: true, reason_code: "available" }} />);
     await user.click(screen.getByRole("button", { name: action("apply") }));
     expect(settings.onApply).toHaveBeenCalledExactlyOnceWith(exact);
   });
 
-  it("shows each Agentic gate and accepts only the verified model and reasoning tuple", async () => {
+  it("shows each Agentic gate and accepts the exact available model and reasoning tuple", async () => {
     const user = userEvent.setup();
     const exact: NodiaAiSelection = { ...applied, mode: "agentic", model_id: "fixture-codex", effort_id: "high" };
     const settings = props();
@@ -163,7 +163,7 @@ describe("CvModelSelector", () => {
     expect(settings.onRetryEligibility).toHaveBeenCalledTimes(1);
     expect(settings.onSelectionChange).toHaveBeenLastCalledWith(exact);
 
-    const eligibility = { selection: exact, eligible: true, reason_code: "qualified" as const };
+    const eligibility = { selection: exact, eligible: true, reason_code: "available" as const };
     rerender(<CvModelSelector {...view} eligibility={eligibility} eligibilityBusy />);
     expect(screen.getByRole("button", { name: action("apply") })).toBeDisabled();
     rerender(<CvModelSelector {...view} eligibility={eligibility} />);

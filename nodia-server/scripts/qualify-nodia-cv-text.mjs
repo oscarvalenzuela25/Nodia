@@ -221,7 +221,7 @@ try {
       report.agentic = { ...agentic, dispatched: 0 };
     }
     const eligibility = await generationCommand.eligibility(actor, probeSelection);
-    check(eligibility.reason_code === 'qualification_required', 'unexpected_initial_eligibility');
+    check(eligibility.eligible && !eligibility.qualified && eligibility.reason_code === 'available', 'unexpected_initial_eligibility');
     const profile = await profileCommand.create(actor, {
       request_key: randomUUID(),
       profile: {

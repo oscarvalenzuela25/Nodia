@@ -1,5 +1,17 @@
 # Contrato funcional de conexiones IA y regresiones
 
+## GPT-6.1 Sol en Agentic — 2026-11-26
+
+La conexión productiva ChatGPT incorporó `gpt-6.1-sol` desde el
+catálogo autenticado de Codex. OpenAI documenta GPT-6.1 Sol como una
+opción de Codex sujeta a la cuenta y al workspace.
+[Disponibilidad de OpenAI](https://help.openai.com/en/articles/20001275-chatgpt-work-and-codex).
+
+El cambio de catálogo mantiene GPT-6.2 Sol en Alto como selección
+principal. CV renovó esa calificación y emitió una propia para
+GPT-6.1 Sol en Medio. El alcance y la prueba en el navegador están
+en [Plan113 §19](113-nodia-cv-implementation-plan.md#19-gpt-61-sol-en-el-selector-agentic--2026-11-26).
+
 ## Gemini 4 en el selector Agentic — 2026-11-24
 
 La migración `1794020000000` amplía la política de las conexiones Gemini

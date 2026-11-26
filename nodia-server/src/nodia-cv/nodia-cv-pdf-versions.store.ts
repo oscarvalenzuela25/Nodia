@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import type { EntityManager } from 'typeorm';
 import type {
-  NodiaCvPdfVerificationDto,
   NodiaCvPreparedPdfDto,
+  NodiaCvVersionAnalysisDto,
+  NodiaCvVersionDetailDto,
   NodiaCvVersionSummaryDto,
 } from './dto/nodia-cv-pdf-version.dto.js';
 import type {
@@ -11,8 +12,6 @@ import type {
 } from './pdf/nodia-cv-pdf-renderer.service.js';
 import type { CvGenerationRow } from './types/nodia-cv-generation.types.js';
 
-export type CvVersionDetail = NodiaCvVersionSummaryDto &
-  NodiaCvPdfVerificationDto;
 type CvPdfArtifact = Omit<NodiaCvPreparedPdfDto, 'expires_at'>;
 type RenderedPdf = Awaited<ReturnType<NodiaCvPdfRenderer['render']>>;
 type DraftIdentity = Pick<
@@ -129,8 +128,8 @@ export class NodiaCvPdfVersionsStore {
   }
 
   async detail(manager: EntityManager, owner: string, id: string) {
-    const [row] = await manager.query<CvVersionDetail[]>(
-      `SELECT ${summary},p.format,p.renderer,p.sha256,p.page_count,p.extracted_text,p.missing_contact
+    const [row] = await manager.query<NodiaCvVersionDetailDto[]>(
+      `SELECT ${summary},p.format,p.renderer,p.sha256,p.page_count,p.extracted_text,p.missing_contact,v.analysis
        FROM nodia_cv_versions v JOIN nodia_cv_version_pdfs p
          ON p.version_id=v.id AND p.owner_user_id=v.owner_user_id
        WHERE v.owner_user_id=$1 AND v.id=$2`,
@@ -203,7 +202,12 @@ export class NodiaCvPdfVersionsStore {
     draft: DraftIdentity &
       Pick<CvGenerationRow, 'vacancy_title' | 'vacancy_company'>,
     pdf: CvPdfArtifact,
-    version: { id: string; profileName: string; snapshot: unknown },
+    version: {
+      id: string;
+      profileName: string;
+      snapshot: unknown;
+      analysis: NodiaCvVersionAnalysisDto;
+    },
   ) {
     await manager.query(
       `WITH next AS (
@@ -212,8 +216,8 @@ export class NodiaCvPdfVersionsStore {
       )
       INSERT INTO nodia_cv_versions
         (id,owner_user_id,version_number,source_artifact_id,profile_name,
-         vacancy_title,vacancy_company,language,template,snapshot)
-      SELECT $1,$2,next.last_number,$3,$4,$5,$6,$7,$8,$9::jsonb FROM next`,
+         vacancy_title,vacancy_company,language,template,snapshot,analysis)
+      SELECT $1,$2,next.last_number,$3,$4,$5,$6,$7,$8,$9::jsonb,$10::jsonb FROM next`,
       [
         version.id,
         draft.owner_user_id,
@@ -224,6 +228,7 @@ export class NodiaCvPdfVersionsStore {
         draft.language,
         pdf.template,
         JSON.stringify(version.snapshot),
+        JSON.stringify(version.analysis),
       ],
     );
     await manager.query(

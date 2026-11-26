@@ -77,8 +77,9 @@ export default function CvDraftPdf({
   }
   const sameActor = () => {
     const state = useAuthStore.getState();
-    return mounted.current && state.user?.id === scope[1] && state.sessionVersion === scope[2];
+    return state.user?.id === scope[1] && state.sessionVersion === scope[2];
   };
+  const currentView = () => mounted.current && sameActor();
   const clearedByHttp = (error: unknown) => [401, 403, 404, 410].includes(cvHttpStatus(error) ?? 0);
   const stale = [409, 410].includes(cvHttpStatus(readError) ?? 0) || [409, 410].includes(cvHttpStatus(saveError) ?? 0);
   const artifact = result?.artifact;
@@ -100,7 +101,7 @@ export default function CvDraftPdf({
     setPreparing(true);
     setReadError(null);
     setSaveError(null);
-    const current = () => sameActor() && flight.current === controller && !controller.signal.aborted;
+    const current = () => currentView() && flight.current === controller && !controller.signal.aborted;
     const context = { version: scope[2], signal: controller.signal };
     try {
       const pdf = artifact && Date.parse(artifact.expires_at) > Date.now()
@@ -141,19 +142,23 @@ export default function CvDraftPdf({
     try {
       const version = await saveCvVersion(exact, key, { version: scope[2] });
       if (!sameActor()) return;
-      setSaved((previous) => new Map(previous).set(exact.id, version.version_number));
-      setAmbiguousSave(false);
       void cache.invalidateQueries({ queryKey: [...scope, "versions"] });
       sileo.success({ title: t("version_saved", { number: version.version_number }) });
+      if (mounted.current) {
+        setSaved((previous) => new Map(previous).set(exact.id, version.version_number));
+        setAmbiguousSave(false);
+      }
     } catch (error) {
       if (!sameActor()) return;
-      if (profileAccessDenied(error) || cvHttpStatus(error) === 410 || cvHttpStatus(error) === 404) setResult(null);
-      setAmbiguousSave(profileWriteMayHaveCommitted(error));
-      setSaveError(error);
+      if (mounted.current) {
+        if (profileAccessDenied(error) || cvHttpStatus(error) === 410 || cvHttpStatus(error) === 404) setResult(null);
+        setAmbiguousSave(profileWriteMayHaveCommitted(error));
+        setSaveError(error);
+      }
       notifyCvPdfError(error, onDenial);
     } finally {
       saveLock.current = false;
-      if (sameActor()) setSaving(false);
+      if (currentView()) setSaving(false);
     }
   };
 

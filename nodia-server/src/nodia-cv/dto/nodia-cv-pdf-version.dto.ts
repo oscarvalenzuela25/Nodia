@@ -1,4 +1,8 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  IntersectionType,
+} from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsIn,
@@ -10,6 +14,11 @@ import {
   Min,
 } from 'class-validator';
 import type { CvPdfTemplate } from '../pdf/nodia-cv-pdf-renderer.service.js';
+import type {
+  CvDraftRequirement,
+  CvEvidenceFact,
+} from '../engine/index.js';
+import type { CvDraftReviewEvidence } from '../types/nodia-cv-generation.types.js';
 
 const templates = ['classic', 'compact'] as const;
 const languages = ['es', 'en'] as const;
@@ -96,6 +105,46 @@ export class NodiaCvVersionSummaryDto {
   @ApiProperty({ enum: languages }) language!: (typeof languages)[number];
   @ApiProperty({ enum: templates }) template!: CvPdfTemplate;
   @ApiProperty({ type: String, format: 'date-time' }) created_at!: Date;
+}
+
+class NodiaCvSavedRequirementDto implements CvDraftRequirement {
+  @ApiProperty({ type: String }) id!: string;
+  @ApiProperty({ type: String }) quote!: string;
+  @ApiProperty({ enum: ['required', 'preferred', 'uncertain'] })
+  kind!: CvDraftRequirement['kind'];
+  @ApiProperty({ enum: ['supported', 'confirm', 'omitted', 'gap'] })
+  coverage!: CvDraftRequirement['coverage'];
+  @ApiProperty({ type: [String] }) evidenceIds!: string[];
+}
+
+class NodiaCvSavedFactDto implements CvEvidenceFact {
+  @ApiProperty({ type: String }) id!: string;
+  @ApiProperty({ type: String }) groupId!: string;
+  @ApiProperty({ type: String }) section!: CvEvidenceFact['section'];
+  @ApiProperty({ type: String }) field!: string;
+  @ApiProperty({ type: String }) text!: string;
+}
+
+class NodiaCvSavedEvidenceDto implements CvDraftReviewEvidence {
+  @ApiProperty({ type: String }) requirement_id!: string;
+  @ApiProperty({ type: String }) source!: string;
+  @ApiProperty({ type: String }) detail!: string;
+}
+
+export class NodiaCvVersionAnalysisDto {
+  @ApiProperty({ type: [NodiaCvSavedRequirementDto] })
+  requirements!: CvDraftRequirement[];
+  @ApiProperty({ type: [NodiaCvSavedFactDto] }) facts!: CvEvidenceFact[];
+  @ApiProperty({ type: [NodiaCvSavedEvidenceDto] })
+  evidence!: CvDraftReviewEvidence[];
+}
+
+export class NodiaCvVersionDetailDto extends IntersectionType(
+  NodiaCvVersionSummaryDto,
+  NodiaCvPdfVerificationDto,
+) {
+  @ApiProperty({ type: NodiaCvVersionAnalysisDto, nullable: true })
+  analysis!: NodiaCvVersionAnalysisDto | null;
 }
 
 export class NodiaCvVersionPageDto {

@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { Alert, Box, Button, Chip, Divider, LinearProgress, Paper, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Divider, LinearProgress, Paper, Stack, Typography } from "@mui/material";
 import AutoAwesomeOutlined from "@mui/icons-material/AutoAwesomeOutlined";
 import DescriptionOutlined from "@mui/icons-material/DescriptionOutlined";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,12 +27,12 @@ import {
 } from "../../infrastructure/generations";
 import { useProfileDetail } from "../../infrastructure/profiles";
 import {
-  cvHttpStatus,
   useCvGenerationWorkflow,
   type CvGenerationView,
 } from "../../infrastructure/useCvGenerationWorkflow";
 import CvModelSelector from "../CvModelSelector";
 import CvDraftPdf from "../CvDraftPdf";
+import CvRequirements from "../CvRequirements/CvRequirements";
 import CvDraftDocument from "./CvDraftDocument";
 import ReviewEvidenceDialog from "./ReviewEvidenceDialog";
 import { cvPrimaryHover } from "./styles";
@@ -40,7 +40,6 @@ import { cvPrimaryHover } from "./styles";
 const primaryAction = { minHeight: 44, width: { xs: "100%", sm: "auto" }, flexShrink: 0 };
 const panel = { borderRadius: 2, minWidth: 0, p: { xs: 2, sm: 2.5 } };
 const wrap = { overflowWrap: "anywhere" } as const;
-const coverageColor = { supported: "success", confirm: "warning", omitted: "info", gap: "default" } as const;
 
 type Props = { active: boolean; onCreateProfile: () => void; onDenial: () => void; onOpenVersions: () => void };
 type ReviewTarget = { view: CvGenerationView; requirement: CvRequirement };
@@ -53,26 +52,17 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   const [workingSelection, setWorkingSelection] = useState<NodiaAiSelection | null>(null);
   const [selectionDirty, setSelectionDirty] = useState(false);
   const [reviewTarget, setReviewTarget] = useState<ReviewTarget | null>(null);
+  if (!active && reviewTarget) setReviewTarget(null);
 
   const profiles = useCvProfilesForGeneration(active);
   const profileDetail = useProfileDetail(active ? profileId : null);
   const catalog = useCvCatalog(active);
-  const candidateSelection = workingSelection ?? selection;
+  const candidateSelection = selectionDirty ? workingSelection : selection;
   const eligibility = useCvEligibility(candidateSelection, active);
   const workflow = useCvGenerationWorkflow(active, onDenial);
-  const visibleProfileId = workflow.visible?.receipt.profile_id;
-  const previousProfile = useProfileDetail(
-    active && visibleProfileId !== profileId ? (visibleProfileId ?? null) : null,
-  );
-  const visibleProfileError = visibleProfileId === profileId ? profileDetail.error : previousProfile.error;
-  const privateSourceMissing = [404, 410].includes(cvHttpStatus(visibleProfileError) ?? 0);
-  const draftView = privateSourceMissing ? null : workflow.visible;
-  const draft = draftView?.receipt.draft;
-  const review = draftView?.receipt.review;
 
   useCvHttpNotice(profiles.error, onDenial);
   useCvHttpNotice(profileDetail.error, onDenial);
-  useCvHttpNotice(previousProfile.error, onDenial);
   useCvHttpNotice(catalog.error, onDenial);
   useCvHttpNotice(eligibility.error, onDenial);
   useCvHttpNotice(workflow.status.error, onDenial);
@@ -112,13 +102,11 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
       ? { ...validated.data, profile_id: profile.id, profile_revision: profile.revision, selection }
       : null;
   const identity = draftInput ? cvInputIdentity(draftInput) : null;
-  const previous = Boolean(
-    draftView &&
-    (identity !== cvInputIdentity(draftView.intent) ||
-      workflow.tracked?.receipt.id !== draftView.receipt.id ||
-      workflow.busy ||
-      workflow.uncertain),
-  );
+  const visible = workflow.visible;
+  const draftView = visible && !selectionDirty && !workflow.busy && !workflow.uncertain &&
+    identity === cvInputIdentity(visible.intent) ? visible : null;
+  const draft = draftView?.receipt.draft;
+  const review = draftView?.receipt.review;
   const unknownSame = identity !== null && workflow.hasUnknown(identity);
   const appliedEligibility =
     eligibility.isSuccess && sameCvSelection(eligibility.data.selection, selection)
@@ -143,12 +131,11 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     Boolean(workflow.restorable) ||
     Boolean(unknownSame);
   const status = workflow.receipt?.state;
-  const displayedState =
-    workflow.expired || (status === "ready" && !draftView)
-      ? "generation_expired"
-      : status
-        ? "generation_state." + status
-        : null;
+  const displayedState = workflow.expired
+    ? "generation_expired"
+    : status && (status !== "ready" || draftView)
+      ? "generation_state." + status
+      : null;
 
   const submit = handleSubmit(
     (values) => {
@@ -170,7 +157,6 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   const reviewReady = Boolean(
     draftView &&
     review &&
-    !previous &&
     !workflow.status.isFetching &&
     !workflow.status.isError &&
     !workflow.busy,
@@ -179,16 +165,16 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     if (reviewReady && draftView) setReviewTarget({ view: draftView, requirement });
   };
   const candidateError = eligibility.error ? getHttpErrorMessage(eligibility.error) : null;
-  const showAppliedAgenticStatus =
+  const showAppliedEligibility =
     active &&
-    selection?.mode === "agentic" &&
+    selection &&
     sameCvSelection(candidateSelection, selection) &&
     selectionListed &&
     !selectionDirty &&
     !catalog.isError &&
     !catalog.isFetching &&
     !eligibility.isFetching &&
-    (appliedEligibility !== null || eligibility.isError);
+    (eligibility.isError || (appliedEligibility && (selection.mode === "agentic" || !eligible)));
   const restoreSaved = async () => {
     const restored = await workflow.recover();
     if (!restored) return;
@@ -395,7 +381,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
             {selection && catalog.isSuccess && !catalog.isFetching && !selectionListed && !selectionDirty && (
               <Alert severity="warning">{t("model_selector.selection_missing")}</Alert>
             )}
-            {showAppliedAgenticStatus && (
+            {showAppliedEligibility && (
               <Alert severity={eligibility.isError ? "error" : eligible ? "success" : "info"} role="status">
                 <Stack spacing={1} sx={{ alignItems: { xs: "stretch", sm: "flex-start" } }}>
                   <Typography variant="body2">
@@ -435,13 +421,6 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                 {t("stale_profile")}
               </Alert>
             )}
-            {selection &&
-              eligibility.data &&
-              !eligibility.data.eligible &&
-              sameCvSelection(eligibility.data.selection, selection) &&
-              !selectionDirty && (
-                <Alert severity="warning">{t("model_selector." + eligibility.data.reason_code)}</Alert>
-              )}
             {workflow.working && <LinearProgress aria-label={t("generation_working")} />}
             {displayedState && (
               <Typography role="status" variant="body2" color="text.secondary">
@@ -552,80 +531,16 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
               retryVariant="outlined"
             />
           </Stack>
-          {draftView && draft && (
-            <Stack
-              component={Paper}
-              variant="outlined"
-              spacing={2}
-              sx={panel}
-              aria-labelledby={id + "-requirements"}
-            >
-              <Typography component="h2" id={id + "-requirements"} variant="h6" sx={{ fontWeight: 750 }}>
-                {t("generation_requirements")}
-              </Typography>
-              {draft.requirements.length === 0 && (
-                <Typography variant="body2" color="text.secondary">
-                  {t("generation_requirements_empty")}
-                </Typography>
-              )}
-              <Stack component="ul" spacing={1.5} sx={{ listStyle: "none", m: 0, p: 0, minWidth: 0 }}>
-                {draft.requirements.map((requirement) => {
-                  const declared = review?.evidence.find((item) => item.requirement_id === requirement.id);
-                  const knownFacts = [...draft.selectedFacts, ...draft.remainingFacts].filter((fact) =>
-                    requirement.evidenceIds.includes(fact.id),
-                  );
-                  return (
-                    <Stack
-                      component="li"
-                      key={requirement.id}
-                      spacing={1.25}
-                      sx={{
-                        ...wrap,
-                        minWidth: 0,
-                        py: 1.5,
-                        borderBottom: 1,
-                        borderColor: "divider",
-                        "&:last-child": { borderBottom: 0, pb: 0 },
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: 650 }}>{requirement.quote}</Typography>
-                      <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.75 }}>
-                        <Chip
-                          size="small"
-                          variant="outlined"
-                          label={t("requirement_kind." + requirement.kind)}
-                        />
-                        <Chip
-                          size="small"
-                          color={coverageColor[requirement.coverage]}
-                          label={t("requirement_coverage." + requirement.coverage)}
-                        />
-                        {declared && <Chip size="small" variant="outlined" label={t("review_declared")} />}
-                      </Stack>
-                      {knownFacts.length > 0 && (
-                        <Typography variant="body2" color="text.secondary">
-                          {t("generation_linked_evidence")} {knownFacts.map((fact) => fact.text).join(" · ")}
-                        </Typography>
-                      )}
-                      {declared && (
-                        <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                          {declared.source} · {declared.detail}
-                        </Typography>
-                      )}
-                      <Button
-                        variant="text"
-                        disabled={!reviewReady}
-                        onClick={() => openReview(requirement)}
-                        aria-label={t("review_named", { quote: requirement.quote })}
-                        sx={{ minHeight: 44, alignSelf: { xs: "stretch", sm: "flex-start" } }}
-                      >
-                        {t("review_action")}
-                      </Button>
-                    </Stack>
-                  );
-                })}
-              </Stack>
-            </Stack>
+          {draft && (
+            <CvRequirements
+              analysis={{
+                requirements: draft.requirements,
+                facts: [...draft.selectedFacts, ...draft.remainingFacts],
+                evidence: review?.evidence ?? [],
+              }}
+              onReview={openReview}
+              reviewDisabled={!reviewReady}
+            />
           )}
         </Stack>
         <Stack component={Paper} variant="outlined" spacing={2} sx={panel} aria-labelledby={id + "-preview"}>
@@ -641,12 +556,11 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
               </Typography>
             )}
           </Stack>
-          {previous && <Alert severity="info">{t("generation_previous_draft")}</Alert>}
           {forPreviewAvailable && draftView ? (
             <>
               {review && (
                 <CvDraftPdf key={draftView.receipt.id + ":" + review.revision} generationId={draftView.receipt.id}
-                  revision={review.revision} language={draftView.receipt.language} active={active && !previous}
+                  revision={review.revision} language={draftView.receipt.language} active={active}
                   disabled={!reviewReady || Boolean(reviewTarget)} onDenial={onDenial}
                   onRefresh={() => { void workflow.status.refetch(); }} onOpenVersions={onOpenVersions} />
               )}
@@ -678,8 +592,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
       </Box>
       {active &&
         reviewTarget?.view.receipt.review &&
-        draftView?.receipt.id === reviewTarget.view.receipt.id &&
-        !previous && (
+        draftView?.receipt.id === reviewTarget.view.receipt.id && (
           <ReviewEvidenceDialog
             key={reviewTarget.view.receipt.id + ":" + reviewTarget.requirement.id}
             requirement={reviewTarget.requirement}

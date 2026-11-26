@@ -119,11 +119,11 @@ de ancho. Seguir [DESIGN §9–10](../../../nodia-client/DESIGN.md#9-lineamiento
   proyecto o habilidad que respalda el requisito. **Revisar** permite
   proponer o confirmar evidencia conforme al plan. Mantener las revisiones
   pendientes cuando el usuario corrija otros campos.
-- Si un perfil, su revisión, la oferta o la selección aplicada cambian,
-  identificar a qué insumos corresponde la vista previa anterior. Ofrecer
-  nueva generación explícita. Usar IDs de perfil y trabajo más la identidad
-  exacta de la solicitud para ignorar respuestas tardías. Mantener oferta,
-  edición y selección visibles frente a un fallo recuperable.
+- Ocultar la vista previa, los requisitos y las acciones de versión cuando
+  cambien el perfil, su revisión, la oferta, el idioma o la selección.
+  Usar IDs de perfil y trabajo más la identidad exacta de la solicitud
+  para ignorar respuestas tardías. Mantener la oferta y la edición del
+  formulario frente a un fallo recuperable.
 
 ### 3.2 Selector de IA
 
@@ -147,7 +147,10 @@ de ancho. Seguir [DESIGN §9–10](../../../nodia-client/DESIGN.md#9-lineamiento
   habilita la selección definida por Server. Pendiente, inválida, ocupada o
   con edición sin aplicar bloquea **Generar borrador**. Una respuesta de
   elegibilidad anterior queda asociada a su tupla. El contrato del módulo
-  conserva la identidad de conexión, modo, modelo e intensidad.
+  conserva la identidad de conexión, modo, modelo e intensidad. Una
+  selección compatible puede tener su primera ejecución desde el botón de
+  generación. La disponibilidad del catálogo y la ejecución se verifican
+  por separado.
 - **Cancelar** recupera la edición de la tupla aplicada. Escape o clic
   exterior sigue el comportamiento del Popover correspondiente. Cierre
   explícito y confirmación satisfactoria devuelven el foco al disparador.
@@ -159,9 +162,11 @@ de ancho. Seguir [DESIGN §9–10](../../../nodia-client/DESIGN.md#9-lineamiento
 
 ### 3.3 Estado del trabajo
 
-Mostrar vacío inicial con la acción que habilita el recorrido. Durante la
-preparación, mostrar el estado junto al botón y conservar contenido previo
-si ya existe. Bloquear doble envío también en el handler. Al completar
+Mostrar vacío inicial con la acción que habilita el recorrido. Al salir de
+**Generar CV**, limpiar la vista previa y los requisitos del trabajo
+completado. Mantener el estado recuperable de los trabajos en curso o de
+resultado incierto, junto al formulario. Durante la preparación, mostrar
+el estado junto al botón. Bloquear doble envío también en el handler. Al completar
 el trabajo visible, anunciar que hay una vista previa disponible sin
 robar el foco. Un fallo permite corregir los insumos o usar la recuperación
 de la misma intención que establece el plan. El resultado incierto no
@@ -213,7 +218,10 @@ dispara una inferencia nueva por revalidación, recarga o cambio de pestaña.
   la metadata disponible del contrato. Envolver identificadores y nombres
   largos. Compartir consulta, selección y acciones entre representaciones.
 - **Abrir vista previa** recupera el snapshot exacto, incluso cuando se
-  eliminó su perfil de origen. **Eliminar CV** identifica cargo, versión y
+  eliminó su perfil de origen. Mostrar los requisitos y su evidencia de
+  solo lectura cuando la versión contenga el análisis. Las versiones
+  históricas sin análisis siguen mostrando el contenido y el PDF y
+  comunican esa ausencia. **Eliminar CV** identifica cargo, versión y
   perfil en la confirmación. Dos versiones con igual cargo se distinguen
   por su versión y operan con IDs diferentes. Tras confirmar la eliminación
   de la versión abierta, cerrar esa vista y actualizar el listado.
@@ -250,6 +258,7 @@ dispara una inferencia nueva por revalidación, recarga o cambio de pestaña.
 | ES/EN y claro/oscuro con nombres, enlaces y errores largos | Campos, chips, avisos y selector legibles. Contraste del tema y contenido completo accesible |
 | Perfiles con duplicación, varias tarjetas, error y confirmación | Identidad por registro, fechas precisas, datos de la copia independientes y formularios retenidos tras fallo |
 | Generación con cero perfiles, selección sucia, retardo, fallo y resultado incierto | Sin generación inválida, trabajo indeterminado recuperable, respuesta antigua fuera del editor activo |
+| Primera generación con modelo compatible y navegación interna | El botón inicia el modelo e intensidad elegidos. Volver a Generar CV muestra la vista inicial. Abrir la versión guardada recupera los requisitos de esa revisión |
 | Plantillas, documento y lectura ATS | Vista y lectura verificadas contra el mismo PDF. Errores y ausencia de evidencia explícitos. Solo guardado por clic |
 | Dos CV del mismo cargo, borrar perfil y borrar versión | Abrir y borrar por identidad correcta, snapshot existente recuperable y confirmaciones diferenciadas |
 

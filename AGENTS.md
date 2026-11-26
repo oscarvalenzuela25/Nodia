@@ -1,5 +1,11 @@
 # Instrucciones del proyecto: Nodia
 
+## Regla principal de IA — Codex como referencia (2026-11-26)
+
+- Al diseñar, cambiar o verificar cualquier flujo de IA en Nodia, comparar primero cómo se completa una tarea equivalente en Codex. Usar su harness como referencia principal para la experiencia, especialmente para los modelos GPT, y registrar en la especificación las diferencias que afecten al usuario.
+- Si Codex permite iniciar la tarea con cualquier modelo compatible que ofrece su selector, Nodia debe permitir lo mismo con los modelos compatibles descubiertos o configurados para la conexión y el modo elegidos. Ejecutar la selección explícita desde el primer intento. Evitar listas cerradas, modelos sustitutos y recibos previos de inferencia como requisito para empezar.
+- Probar con varias selecciones representativas, incluida una que se use por primera vez. Registrar por modelo, modo y entorno lo que efectivamente se ejecutó. Mantener las comprobaciones de compatibilidad, permisos, sesión o credencial, presupuesto, salida y cierre del transporte. [Plan91](docs/mvp/91-ai-provider-onboarding-verification.md) · [Aplicación en Nodia CV](docs/mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
+
 ## Rutas independientes del menú y Teacher (2026-11-01)
 
 Aplicar [ADR092](docs/architecture/decisions/ADR-092-stable-module-navigation-routes.md) y [traspaso98](docs/mvp/98-nodia-teacher-start-handoff.md): URLs funcionales sin prefijo de sección, Teacher en dominio propio y autoridad por destino canónico. La migración de enlaces preserva identidades/asignaciones; mover o renombrar grupos no concede acceso. APIs y evidencia histórica firmada conservan sus contratos.

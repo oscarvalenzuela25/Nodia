@@ -2,7 +2,7 @@
 
 > Estado: en revisión. Alcance recogido de la conversación y del prototipo interactivo.
 > Fecha: 2026-11-24, America/Santiago. Rama: codex/nodia-cv, creada desde origin/development en 50bb9ec4.
-> Implementación local en curso. Calificación de modelos, importación ATS y despliegue pendientes. El prototipo usa datos ficticios.
+> La implementación, el QA por selección y la adopción en producción se registran al final del plan. El prototipo usa datos ficticios.
 
 ## 1. Resultado y alcance
 
@@ -49,8 +49,8 @@ El plan y la guía UI contienen la referencia del mockup en forma portable. Las 
 2. Extraer requisitos obligatorios, deseables e inciertos con fragmentos de origen. Mostrar todos los requisitos detectados. Clasificar su cobertura como **Con evidencia**, **Por confirmar**, **En el perfil, aún ausente del borrador** o **Brecha**. Presentar inferencias como tales.
 3. Una habilidad omitida puede añadirse aportando evidencia real y confirmándola en el borrador. Si se quiere reutilizar en futuras ofertas, se edita y guarda en Perfiles. Registrar vínculo con empleo, proyecto, formación u otra fuente declarada. Mantener hechos, niveles, fechas y métricas en el sentido confirmado por la persona.
 4. La IA adapta redacción y prioridades. El borrador permite revisar contenido, requisito y evidencia. Server valida IDs y reconstruye los campos invariantes desde los datos autorizados. La revisión humana cubre la equivalencia semántica.
-5. **Guardar versión** fija perfil, contenido, idioma, plantilla, oferta y PDF revisados. La versión es inmutable. Los cambios guardados generan otra versión. Renombrar o borrar el perfil no altera qué CV fue enviado.
-6. **CV guardados** distingue un mismo cargo por número de versión, perfil, idioma, plantilla y fecha. Abrir y descargar recuperan su artefacto. Eliminar confirma la versión exacta y retira ese registro y su PDF. Si esa versión estaba abierta, limpiar su vista previa y enlace.
+5. **Guardar versión** fija perfil, contenido, idioma, plantilla, análisis de requisitos y PDF revisados. La versión es inmutable. Los cambios guardados generan otra versión. Renombrar o borrar el perfil conserva el resultado archivado.
+6. **CV guardados** distingue un mismo cargo por número de versión, perfil, idioma, plantilla y fecha. Abrir recupera el análisis guardado en modo de lectura y el PDF de esa versión. Eliminar confirma la versión exacta y retira ese registro y su PDF. Si esa versión estaba abierta, limpiar su vista previa y enlace.
 
 ## 3. Ruta, UI y autoridad
 
@@ -98,10 +98,10 @@ Separar sesión inválida, módulo denegado, 409 de revisión/idempotencia, inv�
 
 1. Versionar propósito cv_tailoring, prompt privado y esquema de salida. Separar instrucciones, perfil e insumo externo. Enviar hechos profesionales pertinentes con IDs. Incorporar correo, teléfono, dirección y enlaces de contacto en el render desde la fuente autorizada. La oferta pegada no habilita comandos, navegación, acceso a archivos ni funciones.
 2. Dos pasadas lógicas dentro de una inferencia acotada. Extraer requisitos y citas. Después relacionar evidencia y proponer contenido. Validar cardinalidad/longitud, campos inesperados, citas e IDs. Reconstruir invariantes. Preservar fechas, métricas, negaciones, unidades y niveles. Salida inválida o sin evidencia queda identificada y no sobrescribe un borrador previo.
-3. Reusar el transporte textual API key primero. Agentic se habilita con su contrato de cierre y selección comprobada. El transporte Teacher usa owner/proof de Teacher y no acredita CV. Aplicar [Plan91](91-ai-provider-onboarding-verification.md), [Plan92](92-nodia-ai-api-chat-parity.md), [contrato de proveedores](ai-provider-feature-contract.md) y [ADR119](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md). Sin modelo por defecto o transferencia de calificación entre dominios.
+3. El primer intento real puede arrancar desde **Generar borrador** para la conexión, modo, modelo e intensidad compatibles elegidos. API key comprueba configuración y credencial. Agentic observa sesión, runtime y catálogo exactos mediante su contrato de cierre. Los recibos previos de CV sirven para diagnóstico. Aplicar [Plan91](91-ai-provider-onboarding-verification.md), [Plan92](92-nodia-ai-api-chat-parity.md), [contrato de proveedores](ai-provider-feature-contract.md) y [ADR119](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md).
 4. En la base revisada el ledger conoce chat, teacher y flashcard_library. Añadir cv como propietario nuevo con FK compuesta y checks compatibles. Reusar el Worker y su registro. Un integrador compone claims/locks, ocupación activa y recuperación. Probar competencia entre dominios. Precisar límites de espera por cola antes de afirmar una cota global.
 5. Una clave por actor e intención con hash canónico. Congelar perfil/revisión, selección exacta y configuración. Reservar presupuesto antes de intercambio. Empezar con un envío textual por intento. Reconciliar cierre local y conservar resultado remoto unknown cuando corresponda. Una respuesta incierta no habilita replay ni sustitución de proveedor. El reintento de un fallo conocido es explícito.
-6. Estado y salida se ligan a su contexto original. Cambiar perfil, oferta o selección bloquea el resultado obsoleto en Client. Revalidar titular, módulo, perfil y configuración antes de publicar. Conservar datos y revisión al fallar. Tras recargar, recuperar por autoridad e ID o clave de la intención.
+6. Estado y salida se ligan a su contexto original. Cambiar perfil, oferta o selección quita la vista previa anterior de la solicitud activa. Al salir a otra pestaña de CV se limpia el resultado visible de la generación y el historial abre cada versión por su identidad. Revalidar titular, módulo, perfil y configuración antes de publicar. Un trabajo activo o incierto conserva su referencia de recuperación por autoridad e ID o clave.
 7. La integración del chat de NodiaAI se planifica por separado. Las fichas candidatas usan draft/planned/unregistered. Los paths nuevos en el registro habilitan validación documental. Aplicar [catálogo40](40-nodia-ai-tool-catalog-v1.md) y [publicación52](52-nodia-ai-ai06-knowledge-publication-contract.md).
 
 ## 6. PDF, ATS y reutilización
@@ -728,7 +728,7 @@ El [PR 118](https://github.com/oscarvalenzuela25/Nodia/pull/118) promovió
 CV Agentic. Se comprobaron el backend activo
 `backend-89db0f0deb8a-51d8cf48b46f`, API y worker activos, ambos
 recibos de instalación y el Client de Pages. El
-[CD de la versión activa](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45734973451)
+[CD de la versión previa](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45734973451)
 terminó correctamente.
 
 En el navegador autenticado, ChatGPT mostró GPT-6.2 Sol/Alto y rechazó
@@ -759,7 +759,112 @@ PostgreSQL aislado reprodujo el bloqueo con el código publicado. La
 prueba exige cero envíos mientras el job de Chat está incierto y un
 envío cuando termina, con su proyección histórica intacta. Pasaron
 la integración Agentic con el arreglo, el build y 161 pruebas focales
-de Server. Tras la publicación, conciliar la
-primera admisión por su clave, acreditar ambas selecciones con el
-worker activo y comprobar el guardado, reapertura y descarga desde
-la interfaz autenticada.
+de Server. La integración de generación por API key también pasó en
+una base PostgreSQL 16 desechable.
+
+### Publicación y prueba en navegador
+
+El [PR 125](https://github.com/oscarvalenzuela25/Nodia/pull/125)
+entró a master en `1239145f` y pasó
+[CI de publicación](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45840722196).
+El [CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45843244723)
+perdió el sondeo de estado con `backend_poll_outcome_unknown`. La
+consulta restringida de la operación `aa145def13ea7721ae58c91cfd6fe50c`
+confirmó `complete`. El VPS confirmó el release
+`backend-1239145f21a8-d29282c456cd`, ambos servicios activos y sin
+bloqueo. El CD omitió Pages. El artefacto candidato y el Pages ya
+publicado coinciden en los 289 recursos, la configuración pública y
+la huella de árbol `9aac600d7b79e9ee3cd23217a1d7e682927789bcca9a08091a04b2c19d887c9a`.
+La prueba del navegador usó ese origen público con el backend nuevo.
+El [PR 126](https://github.com/oscarvalenzuela25/Nodia/pull/126)
+devolvió el cambio a development. Su
+[CI del merge](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45841565208)
+pasó.
+
+| Selección exacta | Inferencia de calificación en producción | Recorrido ordinario |
+| --- | --- | --- |
+| ChatGPT `2 / gpt-6.2-sol / high` | `3f11a17b-8510-4e9d-b6b7-be0bc322ebc0` · un intercambio, borrador válido, cierre, ACK y elegibilidad | Se aplicó Agentic en Alto, se generó y se verificaron TypeScript con evidencia y Kubernetes como brecha. Se guardó la versión 1 en Clásica y español, se reabrió después de recargar y se descargó el PDF verificado. |
+| Gemini `1 / gemini-4-hydrogen-high / high` | `dae7a714-4cb4-4e99-95c6-f93dcfe18a67` · un intercambio, cierre y ACK, resultado remoto `unknown` | El selector permanece bloqueado para Gemini. El diagnóstico interno registró un HTTP 200 y `reply_finish_missing` con cierre local comprobado. Se conservó el intento sin reenvío. |
+
+El primer intento de ChatGPT en el release anterior venció en cola y
+carecía de intento de proveedor. La prueba del release nuevo tuvo
+una clave propia. El PDF descargado tras reabrir la versión de QA
+contiene una página A4 y 13 331 bytes. Su SHA-256 es
+`1b0ab6bc7f6df09d6202232516aaf878cb5ac5c401aeaa3f3855faf3170a0994`.
+La interfaz confirmó la lectura de esos bytes y mostró TypeScript
+en el texto extraído.
+
+El primer pendiente de Agentic es resolver la falta de finalización
+estructurada de Gemini, con evidencia propia de su transporte. La
+respuesta anterior no habilita la selección ni autoriza su replay.
+
+## 19. GPT-6.1 Sol en el selector Agentic — 2026-11-26
+
+Por solicitud del usuario, la conexión productiva ChatGPT `2` incorpora
+`gpt-6.1-sol` al catálogo guardado. El catálogo autenticado de Codex
+`0.171.0` y la comprobación del host de CV confirmaron ese ID en Medio.
+Se guardó el modelo descubierto mediante el caso de uso de configuración,
+en el release `backend-1239145f21a8-d29282c456cd`. GPT-6.2 Sol en Alto
+conservó su asignación principal. [Contrato del catálogo](ai-provider-feature-contract.md#gpt-61-sol-en-agentic--2026-11-26).
+
+La ampliación generó una configuración nueva. El worker de producción
+emitió un recibo con un intercambio, borrador válido, cierre y ACK para
+cada selección.
+
+| Selección ChatGPT Agentic | Generación de calificación | Elegible desde UTC |
+| --- | --- | --- |
+| `gpt-6.2-sol / high` | `c55afde1-9f13-48e7-8d93-730e7b5c599a` | `2026-11-26T15:44:13.256Z` |
+| `gpt-6.1-sol / medium` | `c9c3084f-baf3-41c4-a957-43630c95c265` | `2026-11-26T15:45:11.059Z` |
+
+El navegador de producción mostró los dos modelos en **Generar CV**.
+Tras recuperar el recibo anterior, se aplicó 6.1 Sol en Medio y se
+generó una oferta ficticia nueva. El borrador mostró TypeScript con
+evidencia y Kubernetes como brecha. El PDF Clásico en español pasó
+la lectura interna de una página y mostró el texto seleccionable.
+El recorrido cubre las selecciones y esfuerzos de la tabla.
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md#agentic-en-producción).
+
+## 20. Primera generación y recuperación por versión — 2026-11-26
+
+La solicitud explícita cambia la admisión de Nodia CV para ambos modos.
+La calificación por modelo y configuración descrita en §17–19
+documenta el comportamiento anterior. Cambiar de modelo o intensidad
+puede iniciar su primera generación desde el botón normal siempre que
+la selección real sea compatible con el transporte de CV. El clic usa
+una intención propia. La consulta de elegibilidad, los cambios de
+selector y la navegación son lecturas de estado.
+
+Server verifica autoridad, credencial o sesión, modelo e intensidad
+exactos y disponibilidad del transporte aplicable. El worker revalida
+la configuración y reserva antes de enviar. La respuesta se publica
+después de validar el borrador y conciliar el cierre conforme al
+transporte. La incertidumbre remota mantiene la referencia original.
+Las pruebas [Plan91](91-ai-provider-onboarding-verification.md) acreditan
+comportamiento por combinación y entorno. Los recibos históricos
+conservan su alcance de diagnóstico.
+
+**Generar CV** mantiene separado el formulario de lo que la persona acaba
+de generar. Cambiar de insumos o salir de esa pestaña limpia la vista
+previa anterior y los requisitos que le pertenecían. Volver a abrir la
+sección muestra la vista inicial. Los trabajos en curso o de resultado
+incierto conservan acceso a su estado sin reenviar inferencia.
+
+**CV guardados** lee los requisitos, estados y evidencia archivados en la
+versión elegida. El análisis es de solo lectura y conserva la misma
+identidad de revisión que el PDF. El detalle de versiones anteriores
+recupera el análisis si todavía existe el artefacto temporal y coinciden
+su propietario, revisión y huellas. Cuando ya falta esa fuente exacta, el
+detalle indica la ausencia del análisis y ofrece el PDF archivado.
+
+[Guía UI](../features/nodia-cv/ui-design.md#3-generar-cv) ·
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md) ·
+[ADR119 propuesto](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md).
+
+### Control previo en producción
+
+En una pestaña de QA y con un perfil sintético, el catálogo de ChatGPT
+Agentic ofrecía GPT-6.1 Sol en Bajo. Al seleccionar esa intensidad, la
+interfaz de producción mostraba «Esta selección exacta aún no está
+habilitada para generar CV» y deshabilitaba aplicar y generar. Se registró
+el bloqueo sin enviar una solicitud de inferencia. La misma selección es
+el control para la verificación del despliegue.
