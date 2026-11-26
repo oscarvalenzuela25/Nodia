@@ -38,14 +38,6 @@ export async function startCvGeneration(intent: CvGenerationInput, version: numb
   return verifiedReceipt(response.data, intent);
 }
 
-export async function recoverCvGeneration(intent: CvGenerationInput, version: number, signal: AbortSignal) {
-  const response = await mainInstance.get<unknown>(
-    `${root}/generations/requests/${intent.request_key}`,
-    scopeHeaders(version, signal),
-  );
-  return verifiedReceipt(response.data, intent);
-}
-
 const recoverySchema = z.object({
   recovery: z.object({ offer_text: z.string(), profile: profileRecordSchema }),
 });
