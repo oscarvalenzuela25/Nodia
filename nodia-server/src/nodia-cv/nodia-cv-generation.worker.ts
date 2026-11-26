@@ -51,6 +51,7 @@ import { NodiaCvGeminiTransport } from './agentic/nodia-cv-gemini-transport.js';
 import { NodiaCvGenerationScope } from './nodia-cv-generation-scope.service.js';
 import { NodiaCvGenerationStore } from './nodia-cv-generation.store.js';
 import { NodiaCvProfilesService } from './nodia-cv-profiles.service.js';
+import { cvGenerationProfileId } from './policies/nodia-cv-generation-status.js';
 import {
   cvAgenticObservationBusy,
   NodiaCvSelectionService,
@@ -118,16 +119,19 @@ export class NodiaCvGenerationWorker
     });
     if (row.qualification && !actor.isSuperAdmin)
       cvGenerationError('authority_changed', 403);
-    if (!row.profile_id) cvGenerationError('profile_not_found', 404);
-    const profile = await this.profiles.find(
-      manager,
-      row.profile_id,
-      row.owner_user_id,
-      'read',
-    );
-    if (!profile) cvGenerationError('profile_not_found', 404);
-    if (profile.revision !== row.profile_revision)
-      cvGenerationError('stale_profile');
+    const profileId = cvGenerationProfileId(row);
+    if (!profileId) cvGenerationError('profile_not_found', 404);
+    if (!row.source_version) {
+      const profile = await this.profiles.find(
+        manager,
+        profileId,
+        row.owner_user_id,
+        'read',
+      );
+      if (!profile) cvGenerationError('profile_not_found', 404);
+      if (profile.revision !== row.profile_revision)
+        cvGenerationError('stale_profile');
+    }
     if (!checkEdit || !row.edit_input) return null;
     const base = requireCvEditBase(
       await this.store.status(
@@ -141,8 +145,9 @@ export class NodiaCvGenerationWorker
       row.edit_input.base_revision,
     );
     if (
-      base.profile_id !== row.profile_id ||
+      base.profile_id !== profileId ||
       base.profile_revision !== row.profile_revision ||
+      base.source_version?.id !== row.source_version?.id ||
       base.language !== row.language ||
       base.offer_text !== row.offer_text ||
       base.vacancy_title !== row.vacancy_title ||
@@ -241,7 +246,7 @@ export class NodiaCvGenerationWorker
           (base ? CV_EDIT_PURPOSE : CV_TAILORING_PURPOSE) ||
         !row.selection_snapshot ||
         !row.profile_snapshot ||
-        !row.offer_text ||
+        row.offer_text === null ||
         !row.request_hash
       )
         cvGenerationError('generation_input_changed');
@@ -273,7 +278,7 @@ export class NodiaCvGenerationWorker
               generation_id: row.id,
               attempt_id: randomUUID(),
               actor_id: row.owner_user_id,
-              profile_id: row.profile_id,
+              profile_id: cvGenerationProfileId(row),
               profile_revision: row.profile_revision,
               payload_hash: cvAgenticPayloadHash(prepared),
               resource_key: configuration.resourceKey,

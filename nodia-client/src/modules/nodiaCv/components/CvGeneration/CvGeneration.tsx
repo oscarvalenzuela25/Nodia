@@ -49,14 +49,17 @@ const wrap = { overflowWrap: "anywhere" } as const;
 export type CvGenerationHandle = { leave: (action: () => void) => void };
 type Props = {
   active: boolean;
+  initialCopy: CvGenerationView | null;
   onCreateProfile: () => void;
   onDenial: () => void;
+  onClearCopy: () => void;
   onOpenVersions: () => void;
   ref?: Ref<CvGenerationHandle>;
 };
 type ReviewTarget = { view: CvGenerationView; requirement: CvRequirement };
+type EditTarget = { view: CvGenerationView; selection: NodiaAiSelection };
 
-export default function CvGeneration({ active, onCreateProfile, onDenial, onOpenVersions, ref }: Props) {
+export default function CvGeneration({ active, initialCopy, onCreateProfile, onDenial, onClearCopy, onOpenVersions, ref }: Props) {
   const { t, i18n } = useTranslation("nodiaCv");
   const id = useId();
   const [profileId, setProfileId] = useState<string | null>(null);
@@ -64,36 +67,39 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   const [workingSelection, setWorkingSelection] = useState<NodiaAiSelection | null>(null);
   const [selectionDirty, setSelectionDirty] = useState(false);
   const [reviewTarget, setReviewTarget] = useState<ReviewTarget | null>(null);
-  const [editTarget, setEditTarget] = useState<CvGenerationView | null>(null);
+  const [editTarget, setEditTarget] = useState<EditTarget | null>(null);
   const [savedRevision, setSavedRevision] = useState<string | null>(null);
-  const [template, setTemplate] = useState<CvPdfTemplate>("classic");
+  const [template, setTemplate] = useState<CvPdfTemplate>(initialCopy?.receipt.source_version?.template ?? "classic");
   const [writingVersion, setWritingVersion] = useState(false);
   const pdfRef = useRef<CvDraftPdfHandle>(null);
+  const modelTrigger = useRef<HTMLButtonElement>(null);
+  const prepareTitle = useRef<HTMLHeadingElement>(null);
   if (!active && reviewTarget) setReviewTarget(null);
   if (!active && editTarget) setEditTarget(null);
 
-  const profiles = useCvProfilesForGeneration(active);
+  const profiles = useCvProfilesForGeneration(active && !initialCopy);
   const profileDetail = useProfileDetail(active ? profileId : null);
   const catalog = useCvCatalog(active);
   const candidateSelection = selectionDirty ? workingSelection : selection;
   const eligibility = useCvEligibility(candidateSelection, active);
-  const workflow = useCvGenerationWorkflow(active, onDenial);
+  const workflow = useCvGenerationWorkflow(active, onDenial, initialCopy);
 
-  useCvHttpNotice(profiles.error, onDenial);
+  useCvHttpNotice(initialCopy ? null : profiles.error, onDenial);
   useCvHttpNotice(profileDetail.error, onDenial);
   useCvHttpNotice(catalog.error, onDenial);
   useCvHttpNotice(eligibility.error, onDenial);
   useCvHttpNotice(workflow.status.error, onDenial);
 
-  const { control, handleSubmit } = useForm<CvOffer>({
+  const emptyOffer: CvOffer = {
+    language: i18n.resolvedLanguage?.startsWith("en") ? "en" : "es",
+    vacancy_title: "",
+    vacancy_company: "",
+    offer_text: "",
+  };
+  const { control, handleSubmit, reset } = useForm<CvOffer>({
     resolver: zodResolver(cvOfferSchema),
     mode: "onTouched",
-    defaultValues: {
-      language: i18n.resolvedLanguage?.startsWith("en") ? "en" : "es",
-      vacancy_title: "",
-      vacancy_company: "",
-      offer_text: "",
-    },
+    defaultValues: emptyOffer,
   });
   const watched = useWatch({ control });
   const validated = cvOfferSchema.safeParse(watched);
@@ -116,26 +122,59 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
       listedModel.efforts.some((effort) => effort.effort_id === selection?.effort_id)),
   );
   const draftInput =
-    profile && profileRevisionCurrent && selection && validated.success
+    !initialCopy && profile && profileRevisionCurrent && selection && validated.success
       ? { ...validated.data, profile_id: profile.id, profile_revision: profile.revision, selection }
       : null;
   const identity = draftInput ? cvInputIdentity(draftInput) : null;
   const visible = workflow.visible;
-  const draftView = visible && !selectionDirty && !workflow.busy && !workflow.uncertain &&
-    identity === cvInputIdentity(visible.intent) ? visible : null;
+  const draftView = visible && !workflow.busy && !workflow.uncertain &&
+    (initialCopy || (!selectionDirty && identity === cvInputIdentity(visible.intent))) ? visible : null;
   const draft = draftView?.receipt.draft;
   const review = draftView?.receipt.review;
   const visibleReview = visible?.receipt.review;
   const revisionKey = visible && visibleReview ? visible.receipt.id + ":" + visibleReview.revision : null;
+  const unsaved = Boolean(revisionKey && revisionKey !== savedRevision);
   const exit = useCvDraftExit({
-    unsaved: Boolean(revisionKey && revisionKey !== savedRevision),
+    unsaved,
     save: () => pdfRef.current?.saveForExit() ?? Promise.resolve(false),
     retire: (saved) => {
       workflow.discardDraft();
       if (!saved) sileo.success({ title: t("draft_exit_discarded") });
     },
   });
-  useImperativeHandle(ref, () => ({ leave: exit.request }));
+  const clearFields = () => {
+    workflow.clearPresentation();
+    reset(emptyOffer);
+    setProfileId(null);
+    setSelection(null);
+    setWorkingSelection(null);
+    setSelectionDirty(false);
+    setSavedRevision(null);
+    setReviewTarget(null);
+    setEditTarget(null);
+    setTemplate("classic");
+  };
+  useImperativeHandle(ref, () => ({
+    leave: (action) => exit.request(() => {
+      if (visible) clearFields();
+      action();
+    }),
+  }));
+  const hasFields = Boolean(
+    initialCopy || profileId || selection || selectionDirty || workflow.receipt || workflow.uncertain ||
+    workflow.priorRequest || workflow.admissionError ||
+    watched.offer_text || watched.vacancy_title || watched.vacancy_company || watched.language !== emptyOffer.language
+  );
+  const clearForm = () => exit.request(() => {
+    clearFields();
+    if (initialCopy) onClearCopy();
+    else requestAnimationFrame(() => prepareTitle.current?.focus());
+    if (!unsaved) sileo.success({ title: t("generation_fields_cleared") });
+  });
+  const chooseAnotherModel = () => {
+    modelTrigger.current?.focus();
+    if (modelTrigger.current?.getAttribute("aria-expanded") === "false") modelTrigger.current.click();
+  };
   const unknownSame = identity !== null && workflow.hasUnknown(identity);
   const appliedEligibility =
     eligibility.isSuccess && sameCvSelection(eligibility.data.selection, selection)
@@ -190,6 +229,8 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     !workflow.status.isError &&
     !workflow.busy;
   const reviewReady = Boolean(draftView && review && pdfReady && !writingVersion);
+  const copyModelReady = eligible && selectionListed && !selectionDirty && !catalog.isError && !catalog.isFetching;
+  const editSelection = initialCopy ? (copyModelReady ? selection : null) : draftView?.receipt.selection;
   const openReview = (requirement: CvRequirement) => {
     if (reviewReady && draftView) setReviewTarget({ view: draftView, requirement });
   };
@@ -225,15 +266,21 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
             sx={panel}
             aria-labelledby={id + "-prepare"}
           >
-            <Typography id={id + "-prepare"} component="h2" variant="h6" sx={{ fontWeight: 750 }}>
-              {t("generation_prepare")}
-            </Typography>
-            <QueryErrorAlert
-              isError={profiles.isError}
-              isFetching={profiles.isFetching}
-              onRetry={profiles.refetch}
-              retryVariant="outlined"
-            />
+            <Stack direction={{ xs: "column", sm: "row" }}
+              sx={{ gap: 1, alignItems: { xs: "stretch", sm: "center" }, justifyContent: "space-between" }}>
+              <Typography id={id + "-prepare"} ref={prepareTitle} tabIndex={-1}
+                component="h2" variant="h6" sx={{ fontWeight: 750 }}>
+                {t("generation_prepare")}
+              </Typography>
+              <Button type="button" variant="outlined" sx={primaryAction} onClick={clearForm}
+                disabled={!hasFields || workflow.busy || workflow.working || writingVersion || Boolean(editTarget || reviewTarget)}>
+                {t("generation_clear_fields")}
+              </Button>
+            </Stack>
+            {!initialCopy && (
+              <QueryErrorAlert isError={profiles.isError} isFetching={profiles.isFetching}
+                onRetry={profiles.refetch} retryVariant="outlined" />
+            )}
             {profileId && (
               <QueryErrorAlert
                 isError={profileDetail.isError}
@@ -242,7 +289,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                 retryVariant="outlined"
               />
             )}
-            {noProfiles && (
+            {!initialCopy && noProfiles && (
               <Alert severity="info">
                 <Stack spacing={1} sx={{ alignItems: { xs: "stretch", sm: "flex-start" } }}>
                   <Typography variant="body2">{t("generate_needs_profile")}</Typography>
@@ -257,9 +304,22 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
               spacing={2}
               noValidate
               onSubmit={(event) => {
-                void submit(event);
+                if (initialCopy) event.preventDefault();
+                else void submit(event);
               }}
             >
+              {initialCopy ? (
+                <Alert severity="info">
+                  <Typography variant="body2" sx={wrap}>
+                    {t("version_copy_profile", {
+                      profile: initialCopy.profile.profile_name,
+                      language: t(`document_language.${initialCopy.receipt.language}`),
+                    })}
+                  </Typography>
+                  <Typography variant="body2">{t("version_copy_offer_unavailable")}</Typography>
+                  <Typography variant="body2">{t("version_copy_choose_model")}</Typography>
+                </Alert>
+              ) : <>
               <SelectSingleInput
                 id={id + "-profile"}
                 label={t("generation_profile")}
@@ -347,6 +407,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                   />
                 )}
               />
+              </>}
               <Divider />
               <Stack
                 direction={{ xs: "column", sm: "row" }}
@@ -357,6 +418,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                 }}
               >
                 <CvModelSelector
+                  triggerRef={modelTrigger}
                   connections={connections}
                   selection={selection}
                   onSelectionChange={setWorkingSelection}
@@ -381,7 +443,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                     if (!catalog.isFetching) void catalog.fetchNextPage();
                   }}
                 />
-                <Button
+                {!initialCopy && <Button
                   type="submit"
                   variant="contained"
                   startIcon={<AutoAwesomeOutlined />}
@@ -390,7 +452,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                   disabled={blocked}
                 >
                   {t("generation_start")}
-                </Button>
+                </Button>}
               </Stack>
             </Stack>
             {selection && catalog.isSuccess && !catalog.isFetching && !selectionListed && !selectionDirty && (
@@ -402,7 +464,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                   <Typography variant="body2">
                     {eligibility.isError
                       ? (candidateError ?? t("core:server_error_alert"))
-                      : t(cvEligibilityReasonKey(appliedEligibility?.reason_code ?? null))}
+                      : t(initialCopy && eligible ? "version_copy_model_ready" : cvEligibilityReasonKey(appliedEligibility?.reason_code ?? null))}
                   </Typography>
                   {!eligible && (
                     <Button
@@ -449,23 +511,25 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
                 })}
               </Alert>
             )}
-            {(status === "unknown" || unknownSame) && (
+            {status === "unknown" && (
               <Alert severity="warning">
-                <Stack spacing={1} sx={{ alignItems: { xs: "stretch", sm: "flex-start" } }}>
-                  <Typography variant="body2">{t("generation_unknown_help")}</Typography>
-                  {status === "unknown" && (
-                    <Button
-                      color="inherit"
-                      variant="outlined"
-                      sx={primaryAction}
-                      loading={workflow.status.isFetching}
-                      onClick={() => {
-                        void workflow.status.refetch();
-                      }}
-                    >
+                <Stack spacing={1}>
+                  <Typography variant="body2">{t(unknownSame
+                    ? "generation_unknown_change_model"
+                    : "generation_unknown_help")}</Typography>
+                  <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, flexWrap: "wrap" }}>
+                    {unknownSame && (
+                      <Button type="button" color="inherit" variant="outlined" sx={primaryAction}
+                        disabled={catalog.isFetching || eligibility.isFetching || workflow.busy}
+                        onClick={chooseAnotherModel}>
+                        {t("generation_change_model")}
+                      </Button>
+                    )}
+                    <Button type="button" color="inherit" sx={primaryAction} loading={workflow.status.isFetching}
+                      onClick={() => { void workflow.status.refetch(); }}>
                       {t("generation_check_status")}
                     </Button>
-                  )}
+                  </Stack>
                 </Stack>
               </Alert>
             )}
@@ -546,7 +610,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
             <Typography id={id + "-preview"} component="h2" variant="h6" sx={{ fontWeight: 750 }}>
               {t("generation_preview")}
             </Typography>
-            {draftView?.receipt.vacancy_title && (
+            {draftView && (draftView.receipt.vacancy_title || draftView.receipt.vacancy_company) && (
               <Typography variant="body2" color="text.secondary" sx={wrap}>
                 {[draftView.receipt.vacancy_title, draftView.receipt.vacancy_company]
                   .filter(Boolean)
@@ -556,7 +620,8 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
           </Stack>
           {draftView && review && (
             <Button variant="outlined" startIcon={<AutoAwesomeOutlined />}
-              disabled={!reviewReady || Boolean(reviewTarget)} onClick={() => setEditTarget(draftView)}
+              disabled={!reviewReady || !editSelection || Boolean(reviewTarget)}
+              onClick={() => { if (editSelection) setEditTarget({ view: draftView, selection: editSelection }); }}
               sx={{ ...primaryAction, alignSelf: { sm: "flex-start" } }}>
               {t("ai_edit.open")}
             </Button>
@@ -598,10 +663,10 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
         </Stack>
       </Box>
       {active && editTarget && (
-        <CvAiEditDialog base={editTarget} selection={editTarget.receipt.selection}
-          connectionLabel={connections.find(item => item.connection_id === editTarget.receipt.selection.connection_id)?.label}
+        <CvAiEditDialog base={editTarget.view} selection={editTarget.selection}
+          connectionLabel={connections.find(item => item.connection_id === editTarget.selection.connection_id)?.label}
           onDenial={onDenial} onClose={() => setEditTarget(null)}
-          onApply={(next) => workflow.applyEdit(editTarget, next)}
+          onApply={(next) => workflow.applyEdit(editTarget.view, next)}
         />
       )}
       {exit.open && (

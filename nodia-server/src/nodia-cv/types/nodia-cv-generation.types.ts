@@ -12,6 +12,7 @@ import type {
   PreparedCvTailoring,
 } from '../engine/index.js';
 import type { NodiaCvProfileDetail } from './nodia-cv-profile.types.js';
+import type { CvPdfTemplate } from '../pdf/nodia-cv-pdf-contract.js';
 
 export type CvGenerationState =
   'queued' | 'running' | 'ready' | 'failed' | 'unknown' | 'expired';
@@ -38,6 +39,12 @@ export interface CvEditInput {
   instructions: string;
 }
 
+export interface CvSourceVersion {
+  id: string;
+  template: CvPdfTemplate;
+  offer_sha256: string;
+}
+
 export interface CvGenerationRow {
   id: string;
   owner_user_id: string;
@@ -61,6 +68,7 @@ export interface CvGenerationRow {
   qualification: boolean;
   draft: CvTailoringDraft | null;
   edit_input: CvEditInput | null;
+  source_version: CvSourceVersion | null;
   review: CvDraftReviewContent | null;
   review_revision: number | null;
   error_code: string | null;

@@ -91,6 +91,7 @@ Prefijo candidato /api/v1/nodia-cv. Registrar método y ruta explícitos en Serv
 | POST /drafts/:id/pdf, GET /drafts/:id/pdf/:artifactId | Preparar una revisión y plantilla y recuperar los mismos bytes verificados. La preparación devuelve formato, renderer, idioma, páginas, hash, vencimiento y texto extraído. |
 | GET /versions, GET /versions/:id, GET /versions/:id/pdf | Historial paginado, detalle y descarga autorizada, sin inferencia al reabrir. |
 | POST /versions, DELETE /versions/:id | Guardar con clave de solicitud, generación, revisión, ID de artefacto y hash aprobados. Eliminar por ID de versión después de confirmar. |
+| POST /versions/:id/draft-copy | Crear un borrador temporal propio desde la versión guardada. La clave de solicitud identifica una sola copia y la apertura no ejecuta IA. |
 
 Separar sesión inválida, módulo denegado, 409 de revisión/idempotencia, inválido por campo, conexión inelegible, cola ocupada, fallo conocido, resultado remoto desconocido, borrador vencido y fallo de PDF. Transportar sólo códigos y detalles permitidos. Consultar con backoff acotado. Abortar lecturas al navegar y recuperar mutaciones perdidas por su identidad.
 
@@ -909,6 +910,7 @@ mantiene su propia identidad. Si la referencia anterior aún devuelve 404,
 una continuación explícita utiliza esa misma clave para resolver una
 admisión concurrente sin enviar otra clave para la misma operación.
 [Guía UI](../features/nodia-cv/ui-design.md#33-estado-del-trabajo).
+[Verificación en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#guardar-o-descartar-al-salir).
 
 ## 22. Edición del borrador con IA — 2026-11-26
 
@@ -943,3 +945,40 @@ de IA.
 [Guía UI](../features/nodia-cv/ui-design.md#34-editar-con-ia) ·
 [Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md) ·
 [ADR119 propuesto](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md).
+[Prueba en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#editar-con-ia-y-reabrir-el-cv).
+
+## 23. Editar un CV guardado y limpiar el formulario — 2026-11-26
+
+**CV guardados → Editar una copia** abre en **Generar CV** una copia temporal
+del contenido, requisitos y evidencia disponibles en la versión. La copia
+usa la revisión archivada incluso si cambió el perfil o venció el borrador
+original. El texto original de la oferta queda fuera de las versiones que
+no lo archivaron. Abrir la copia deja disponibles el CV y PDF originales.
+El usuario aplica una selección compatible y pide un cambio con **Editar
+con IA**. Puede
+revisar y guardar una nueva versión o descartar la copia.
+
+El recorrido toma como referencia la edición en Codex de un documento
+que la persona proporciona y elige modificar con el modelo activo.
+En Nodia, el contenido fuente proviene del archivo privado del usuario y
+la propuesta se revisa antes de guardar. La selección se resuelve por la
+conexión y el modo elegidos, incluidos los modelos compatibles sin una
+ejecución previa en CV.
+
+**Limpiar campos** restablece el formulario, la selección de IA y la
+vista previa. Ante un borrador listo sin guardar, permite guardar,
+descartar o seguir editando. Salir de la pestaña después de guardar o
+descartar deja limpio el formulario para la siguiente visita. La vía
+explícita para volver a editar una versión es **CV guardados**.
+
+Si la misma solicitud queda en estado remoto incierto, **Consultar
+estado** conserva su identidad. **Cambiar modelo** abre la configuración
+de IA con la oferta intacta. Una selección diferente permite iniciar
+otra solicitud y la referencia anterior sigue disponible para su verificación.
+La captura reportada no contiene el identificador de la solicitud. Una
+ejecución anterior de Hydrogen Alto registró fin de respuesta del proveedor
+sin la salida estructurada de CV. Véase la evidencia con alcance exacto
+en la sección 18.
+
+[Guía UI](../features/nodia-cv/ui-design.md) ·
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md).

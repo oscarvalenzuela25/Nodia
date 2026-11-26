@@ -39,6 +39,7 @@ const nodiaCvOperations = new Set([
   'GET versions',
   'POST versions',
   'GET versions/:id',
+  'POST versions/:id/draft-copy',
   'DELETE versions/:id',
   'GET versions/:id/pdf',
 ]);

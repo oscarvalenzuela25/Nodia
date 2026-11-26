@@ -21,6 +21,7 @@ import CvGeneration, { type CvGenerationHandle } from "../../components/CvGenera
 import CvSavedVersions from "../../components/CvSavedVersions";
 import { emptyProfile, profileEditorValues, profilesPageSize, type ProfileInput, type ProfileRecord, type ProfileSummary } from "../../infrastructure/profileSchema";
 import { profileAccessDenied, useProfileDetail, useProfiles, useWriteProfile } from "../../infrastructure/profiles";
+import type { CvGenerationView } from "../../infrastructure/useCvGenerationWorkflow";
 
 const tabs = [
   { value: "profiles", icon: PersonOutline },
@@ -60,6 +61,7 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
   const narrow = useMediaQuery(theme.breakpoints.down("sm"));
   const [tab, setTab] = useState<Panel>("profiles");
   const [generationOpened, setGenerationOpened] = useState(false);
+  const [draftCopy, setDraftCopy] = useState<CvGenerationView | null>(null);
   const [page, setPage] = useState(1);
   const [editor, setEditor] = useState<EditorTarget>();
   const [removing, setRemoving] = useState<ProfileSummary>();
@@ -87,6 +89,7 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
     else action();
   };
   const startProfile = () => leaveGeneration(() => {
+    setDraftCopy(null);
     setTab("profiles");
     create();
   });
@@ -140,14 +143,20 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
     : "";
   const editorTitle = editor?.kind === "edit" ? t("edit_profile") : editor?.kind === "copy" ? t("duplicate_profile") : t("new_profile");
   const deleteConflict = isAxiosError(deleteError) && [404, 409].includes(deleteError.response?.status ?? 0);
+  const focus = (panel: Panel) => requestAnimationFrame(() => document.getElementById(`${terminalId}-panel-${panel}`)?.focus());
   const switchTab = (next: string | null, focusPanel = false) => {
     if (next !== "profiles" && next !== "generate" && next !== "saved") return;
     if (next === tab) return;
     leaveGeneration(() => {
       if (next === "generate") setGenerationOpened(true);
+      else setDraftCopy(null);
       setTab(next);
-      if (focusPanel) requestAnimationFrame(() => document.getElementById(`${terminalId}-panel-${next}`)?.focus());
+      if (focusPanel) focus(next);
     });
+  };
+  const editSavedCopy = (copy: CvGenerationView) => {
+    setDraftCopy(copy);
+    switchTab("generate", true);
   };
 
   if (denial) return <Alert severity="error">{t("access_lost")}</Alert>;
@@ -201,14 +210,16 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
             )}
           </>}
           {tab === "saved" && (
-            <CvSavedVersions onDenial={onDenial} onGoToGeneration={() => switchTab("generate", true)} />
+            <CvSavedVersions onDenial={onDenial} onGoToGeneration={() => switchTab("generate", true)} onEditCopy={editSavedCopy} />
           )}
         </Stack>}
         {generationOpened && (
           <Box id={`${terminalId}-panel-generate`} hidden={tab !== "generate"} role={narrow ? "region" : "tabpanel"}
             aria-label={narrow ? t("tabs.generate") : undefined}
             aria-labelledby={!narrow ? `${terminalId}-generate` : undefined} tabIndex={0}>
-            <CvGeneration ref={generation} active={tab === "generate"} onCreateProfile={startProfile} onDenial={onDenial}
+            <CvGeneration key={draftCopy?.receipt.id ?? "new-draft"} initialCopy={draftCopy} ref={generation}
+              active={tab === "generate"} onCreateProfile={startProfile} onDenial={onDenial}
+              onClearCopy={() => { setDraftCopy(null); focus("generate"); }}
               onOpenVersions={() => switchTab("saved", true)} />
           </Box>
         )}

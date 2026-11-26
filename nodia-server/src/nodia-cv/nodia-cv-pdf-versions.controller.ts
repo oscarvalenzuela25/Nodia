@@ -27,6 +27,7 @@ import type { Response } from 'express';
 import type { AuthRequest } from '../auth/types/auth.types.js';
 import { actorReference } from '../authorization/authority-transaction.js';
 import {
+  CopyNodiaCvVersionDto,
   ListNodiaCvVersionsDto,
   NodiaCvPreparedPdfDto,
   NodiaCvVersionDetailDto,
@@ -112,6 +113,25 @@ export class NodiaCvPdfVersionsController {
   @ApiNotFoundResponse()
   detail(@Req() request: AuthRequest, @Param('id', uuid) id: string) {
     return this.pdfVersions.detail(actorReference(request.auth), id);
+  }
+
+  @Post('versions/:id/draft-copy')
+  @HttpCode(200)
+  @Header('Cache-Control', privateResponse)
+  @ApiOkResponse({
+    description: 'An independent editable copy of the saved CV.',
+  })
+  @ApiConflictResponse({
+    description: 'The request key has already been used.',
+  })
+  @ApiGoneResponse({ description: 'The previously created copy has expired.' })
+  @ApiNotFoundResponse()
+  copy(
+    @Req() request: AuthRequest,
+    @Param('id', uuid) id: string,
+    @Body() input: CopyNodiaCvVersionDto,
+  ) {
+    return this.pdfVersions.copy(actorReference(request.auth), id, input);
   }
 
   @Get('versions/:id/pdf')

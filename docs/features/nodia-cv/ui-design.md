@@ -168,15 +168,19 @@ salir del módulo o generar un reemplazo. **Seguir editando** conserva el
 trabajo y recibe el foco. **Guardar borrador** prepara y comprueba el
 PDF de la plantilla elegida y guarda la versión. Continuar solo al
 confirmar el guardado. **Descartar** limpia la vista local del borrador.
-Al salir se limpian la vista previa y los requisitos. La reapertura de
-versiones ocurre desde **CV guardados**.
+Al salir después de guardar o descartar se limpian el formulario, la
+vista previa y los requisitos. **Limpiar campos** junto a **Preparar
+borrador** restablece los insumos y usa la misma confirmación si hay un
+borrador sin guardar. La reapertura de versiones ocurre desde
+**CV guardados**.
 
 Durante la preparación, mostrar el estado junto al botón y bloquear
 doble envío también en el handler. Una referencia de otra visita se
 consulta al iniciar una solicitud para evitar reenvíos. Su oferta y
 borrador permanecen fuera del formulario activo. Una solicitud terminada
 permite generar con los insumos actuales. La incertidumbre de la misma
-intención conserva su clave y tiene un estado contextual.
+intención conserva su clave. **Consultar estado** actualiza su recibo y
+**Cambiar modelo** abre la configuración de IA con la oferta intacta.
 
 ### 3.4 Editar con IA
 
@@ -190,6 +194,11 @@ intención conserva su clave y tiene un estado contextual.
   exige la revisión base que vio la persona. **Conservar original** vuelve
   al borrador activo. Tras aplicar, la vista previa y el PDF corresponden
   a la nueva revisión. Guardar archiva sólo la revisión elegida.
+- Al abrir una copia desde **CV guardados**, presentar el contenido
+  archivado y la plantilla de esa versión. La persona aplica una
+  selección de IA y pide el cambio desde la copia. Los requisitos y
+  la evidencia disponibles acompañan al contenido. Una oferta sin
+  texto archivado conserva ese estado.
 
 ## 4. Vista previa y comprobaciones ATS
 
@@ -240,8 +249,9 @@ intención conserva su clave y tiene un estado contextual.
   eliminó su perfil de origen. Mostrar los requisitos y su evidencia de
   solo lectura cuando la versión contenga el análisis. Las versiones
   históricas sin análisis siguen mostrando el contenido y el PDF y
-  comunican esa ausencia. **Eliminar CV** identifica cargo, versión y
-  perfil en la confirmación. Dos versiones con igual cargo se distinguen
+  comunican esa ausencia. **Editar una copia** abre una copia temporal en
+  **Generar CV** con el foco en esa pestaña. **Eliminar CV** identifica
+  cargo, versión y perfil en la confirmación. Dos versiones con igual cargo se distinguen
   por su versión y operan con IDs diferentes. Tras confirmar la eliminación
   de la versión abierta, cerrar esa vista y actualizar el listado.
 - Usar [ConfirmDialog](../../../nodia-client/src/components/ConfirmDialog/ConfirmDialog.tsx)

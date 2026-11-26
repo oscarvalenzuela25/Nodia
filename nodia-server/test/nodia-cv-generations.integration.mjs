@@ -12,6 +12,7 @@ import { ValidateNodiaAiRuntimePolicyUseCase } from '../dist/nodia-ai-runtime/us
 import { NodiaCvGenerationScope } from '../dist/nodia-cv/nodia-cv-generation-scope.service.js';
 import { NodiaCvGenerationStore } from '../dist/nodia-cv/nodia-cv-generation.store.js';
 import { NodiaCvGenerationWorker } from '../dist/nodia-cv/nodia-cv-generation.worker.js';
+import { NodiaCvPdfVersionsStore } from '../dist/nodia-cv/nodia-cv-pdf-versions.store.js';
 import { NodiaCvProfilesService } from '../dist/nodia-cv/nodia-cv-profiles.service.js';
 import { NodiaCvSelectionService } from '../dist/nodia-cv/nodia-cv-selection.service.js';
 import {
@@ -19,7 +20,9 @@ import {
   CV_PROBE_OFFER,
 } from '../dist/nodia-cv/policies/nodia-cv-generation.js';
 import { prepareCvTailoring } from '../dist/nodia-cv/engine/index.js';
+import { NodiaCvPdfRenderer } from '../dist/nodia-cv/pdf/nodia-cv-pdf-renderer.service.js';
 import { NodiaCvGenerationsUseCase } from '../dist/nodia-cv/use-case/nodia-cv-generations.use-case.js';
+import { NodiaCvPdfVersionsUseCase } from '../dist/nodia-cv/use-case/nodia-cv-pdf-versions.use-case.js';
 import { NodiaCvProfilesUseCase } from '../dist/nodia-cv/use-case/nodia-cv-profiles.use-case.js';
 
 // Use real SQL, authority, credential metadata, engine, ledger and worker.
@@ -523,14 +526,102 @@ try {
     review_revision: null,
     review_updated_by_actor_id: null,
   });
+  const versions = new NodiaCvPdfVersionsUseCase(
+    scope,
+    store,
+    new NodiaCvPdfVersionsStore(),
+    new NodiaCvPdfRenderer(),
+  );
+  const prepared = await versions.prepare(owner, manual.id, {
+    revision: manual.review.revision,
+    template: 'classic',
+  });
+  const original = await versions.save(owner, {
+    request_key: randomUUID(),
+    generation_id: manual.id,
+    artifact_id: prepared.id,
+    revision: manual.review.revision,
+    sha256: prepared.sha256,
+  });
+  assert.equal(calls, 7);
   await people.delete(owner, ownerProfile.id, ownerProfile.revision);
   const [deletedEdit] = await db.query(
     'SELECT state,edit_input FROM nodia_cv_generations WHERE id=$1',
     [child.id],
   );
   assert.deepEqual(deletedEdit, { state: 'expired', edit_input: null });
+
+  const archive = await versions.copy(owner, original.id, {
+    request_key: randomUUID(),
+  });
+  const archiveEditRequest = {
+    request_key: randomUUID(),
+    revision: archive.review.revision,
+    instructions: 'Poner competencias primero',
+    selection,
+  };
+  const archiveEdit = await command.startEdit(
+    owner,
+    archive.id,
+    archiveEditRequest,
+  );
+  assert.equal(archiveEdit.state, 'queued');
+  assert.deepEqual(archiveEdit.selection, selection);
+  assert.deepEqual(archiveEdit.source_version, archive.source_version);
+  assert.equal(await run(), true);
+  const archiveResult = await command.statusByRequest(
+    owner,
+    archiveEditRequest.request_key,
+  );
+  assert.equal(archiveResult.state, 'ready');
+  assert.equal(archiveResult.recovery.offer_text, '');
+  assert.deepEqual(archiveResult.review.evidence, archive.review.evidence);
+  assert.deepEqual(
+    archiveResult.draft.requirements,
+    original.analysis.requirements,
+  );
+  assert.equal(calls, 8);
+
+  const newPdf = await versions.prepare(owner, archiveResult.id, {
+    revision: archiveResult.review.revision,
+    template: 'compact',
+  });
+  const newVersion = await versions.save(owner, {
+    request_key: randomUUID(),
+    generation_id: archiveResult.id,
+    artifact_id: newPdf.id,
+    revision: archiveResult.review.revision,
+    sha256: newPdf.sha256,
+  });
+  assert.notEqual(newVersion.id, original.id);
+  assert.deepEqual(await versions.detail(owner, original.id), original);
+  const offerHashes = await db.query(
+    "SELECT snapshot->>'offer_sha256' AS hash FROM nodia_cv_versions ORDER BY version_number",
+  );
+  assert.deepEqual(offerHashes, [
+    { hash: hash(request.offer_text) },
+    { hash: hash(request.offer_text) },
+  ]);
+  await db.query(
+    "UPDATE nodia_cv_generations SET expires_at=clock_timestamp()-interval '1 second' WHERE id IN ($1,$2)",
+    [archive.id, archiveResult.id],
+  );
+  await registry.recover();
+  const expiredArchive = await db.query(
+    'SELECT state,source_version,profile_snapshot,draft FROM nodia_cv_generations WHERE id IN ($1,$2)',
+    [archive.id, archiveResult.id],
+  );
+  assert.deepEqual(
+    expiredArchive,
+    Array.from({ length: 2 }, () => ({
+      state: 'expired',
+      source_version: null,
+      profile_snapshot: null,
+      draft: null,
+    })),
+  );
   console.log(
-    'CV generation and AI edit: isolated SQL, scoped receipts, one dispatch per intention, draft review, recovery, revocation and purge passed.',
+    'CV generation and AI edit: isolated SQL, scoped receipts, one dispatch per intention, draft review, saved version copy, recovery, revocation and purge passed.',
   );
 } finally {
   if (db.isInitialized) await db.destroy();
