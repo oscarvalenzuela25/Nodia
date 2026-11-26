@@ -4,18 +4,24 @@ export const CV_TAILORING_SCHEMA_VERSION = 1;
 export const CV_TAILORING_MAX_OFFER_BYTES = 64 * 1024;
 export const CV_TAILORING_MAX_PROMPT_BYTES = 160 * 1024;
 export const CV_TAILORING_MAX_RESPONSE_BYTES = 128 * 1024;
+export const CV_EDIT_PURPOSE = 'cv_tailoring_edit';
+export const CV_EDIT_PROMPT_VERSION = 'cv-edit/1';
+export const CV_EDIT_MAX_INSTRUCTIONS_BYTES = 2048;
 
 export type CvTailoringLocale = 'es' | 'en';
 
-export type CvEvidenceSection =
-  | 'profile'
-  | 'experience'
-  | 'project'
-  | 'skills'
-  | 'education'
-  | 'certification'
-  | 'language'
-  | 'additional';
+export const CV_EVIDENCE_SECTIONS = [
+  'profile',
+  'experience',
+  'project',
+  'skills',
+  'education',
+  'certification',
+  'language',
+  'additional',
+] as const;
+
+export type CvEvidenceSection = (typeof CV_EVIDENCE_SECTIONS)[number];
 
 export interface CvEvidenceFact {
   readonly id: string;
@@ -35,6 +41,7 @@ export interface PreparedCvTailoring {
   readonly normalizedOffer: string;
   readonly providedOffer: string;
   readonly evidence: readonly CvEvidenceFact[];
+  readonly editRequirements?: readonly CvDraftRequirement[];
 }
 
 export type CvRequirementKind = 'required' | 'preferred' | 'uncertain';
@@ -58,6 +65,7 @@ export interface CvTailoringDraft {
 
 export type CvTailoringErrorCode =
   | 'invalid_offer'
+  | 'invalid_edit_instructions'
   | 'input_too_large'
   | 'no_profile_evidence'
   | 'invalid_model_output'

@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import type { NodiaCvProfileDetail } from '../types/nodia-cv-profile.types.js';
 import {
   buildCvDraft,
+  cvEditedReview,
   CV_TAILORING_MAX_OFFER_BYTES,
   CV_TAILORING_PROMPT_VERSION,
   CvTailoringError,
+  prepareCvEdit,
   prepareCvTailoring,
   type PreparedCvTailoring,
 } from './index.js';
@@ -83,6 +85,126 @@ const evidenceId = (prepared: PreparedCvTailoring, expected: string) => {
 };
 const answer = (selectedEvidenceIds: string[], requirements: unknown[] = []) =>
   JSON.stringify({ selectedEvidenceIds, requirements });
+
+describe('Nodia CV AI edit', () => {
+  it('changes presentation using source IDs and preserves requirements, facts and confirmed evidence', () => {
+    const initial = prepare();
+    const stack = evidenceId(initial, 'TypeScript');
+    const achievement = evidenceId(
+      initial,
+      'Redujo 15% el tiempo de compilación.',
+    );
+    const parent = buildCvDraft(
+      initial,
+      answer(
+        [stack, achievement],
+        [
+          {
+            quote: 'TypeScript',
+            kind: 'required',
+            relation: 'direct',
+            evidenceIds: [stack],
+          },
+          {
+            quote: 'Kubernetes',
+            kind: 'preferred',
+            relation: 'absent',
+            evidenceIds: [],
+          },
+        ],
+      ),
+    );
+    const review = {
+      included_fact_ids: parent.selectedFacts.map(({ id }) => id),
+      evidence: [
+        {
+          requirement_id: 'r2',
+          source: 'Proyecto',
+          detail: 'Evidencia confirmada',
+        },
+      ],
+    };
+    const prepared = prepareCvEdit({
+      profile,
+      draft: parent,
+      review,
+      instructions:
+        'Pon las competencias primero. Email: synthetic@example.test',
+    });
+    expect(prepared.promptVersion).toBe(CV_TAILORING_PROMPT_VERSION);
+    expect(prepared.systemPrompt).toContain('cv-edit/1');
+    expect(prepared.userPrompt).toContain('Pon las competencias primero');
+    expect(prepared.userPrompt).not.toContain('synthetic@example.test');
+    expect(prepared.userPrompt).not.toContain('Evidencia confirmada');
+    expect(JSON.parse(prepared.userPrompt)).toMatchObject({
+      includedEvidenceIds: [...review.included_fact_ids.slice(1), stack],
+      jobRequirements: [
+        { quote: 'TypeScript', kind: 'required' },
+        { quote: 'Kubernetes', kind: 'preferred' },
+      ],
+    });
+    expect(buildCvDraft(prepared, answer([achievement])).requirements).toEqual([
+      { ...parent.requirements[0], coverage: 'omitted' },
+      parent.requirements[1],
+    ]);
+
+    const result = buildCvDraft(prepared, answer([stack, achievement]));
+    expect(result.requirements).toEqual(parent.requirements);
+    expect(result.selectedFacts).toEqual(
+      expect.arrayContaining([
+        initial.evidence.find(({ id }) => id === achievement),
+        initial.evidence.find(({ text }) => text === '2022-07'),
+        initial.evidence.find(({ text }) => text === '2024-10'),
+      ]),
+    );
+    expect(cvEditedReview(result, review)).toEqual({
+      included_fact_ids: result.selectedFacts.map(({ id }) => id),
+      evidence: review.evidence,
+      section_order: ['skills', 'experience'],
+    });
+    expect(() =>
+      buildCvDraft(
+        prepared,
+        answer(
+          [stack],
+          [
+            {
+              quote: 'New fabricated requirement',
+              kind: 'required',
+              relation: 'direct',
+              evidenceIds: [stack],
+            },
+          ],
+        ),
+      ),
+    ).toThrow('invalid_model_output');
+    expect(() => buildCvDraft(prepared, answer(['e999999']))).toThrow(
+      'invalid_evidence',
+    );
+    expect(() => buildCvDraft(prepared, answer([stack, stack]))).toThrow(
+      'invalid_model_output',
+    );
+  });
+
+  it('rejects instructions consisting exclusively of redacted private input', () => {
+    const initial = prepare();
+    const draft = buildCvDraft(
+      initial,
+      answer([evidenceId(initial, 'TypeScript')]),
+    );
+    expect(() =>
+      prepareCvEdit({
+        profile,
+        draft,
+        review: {
+          included_fact_ids: [draft.selectedFacts[0].id],
+          evidence: [],
+        },
+        instructions: 'synthetic@example.test',
+      }),
+    ).toThrow('invalid_edit_instructions');
+  });
+});
 
 describe('Nodia CV tailoring', () => {
   it('isolates untrusted text and minimizes contact data, secrets, links and database IDs', () => {

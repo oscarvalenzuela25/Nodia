@@ -86,19 +86,21 @@ export const cvEligibilitySchema = z
     return !result.eligible && !result.qualified;
   });
 
+const evidenceSection = z.enum([
+  "profile",
+  "experience",
+  "project",
+  "skills",
+  "education",
+  "certification",
+  "language",
+  "additional",
+]);
+
 const fact = z.object({
   id: factId,
   groupId: z.string().regex(/^g[1-9][0-9]*$/),
-  section: z.enum([
-    "profile",
-    "experience",
-    "project",
-    "skills",
-    "education",
-    "certification",
-    "language",
-    "additional",
-  ]),
+  section: evidenceSection,
   field: z.string().regex(/^[a-z_]+$/),
   text: z.string().min(1).max(8192),
 });
@@ -129,6 +131,7 @@ const review = z.object({
   revision: z.int().positive(),
   included_fact_ids: z.array(factId),
   evidence: z.array(declaredEvidence),
+  section_order: z.array(evidenceSection).max(evidenceSection.options.length).refine(unique).optional(),
 });
 
 function unique(values: readonly string[]) {
@@ -166,8 +169,13 @@ export const cvGenerationSchema = z
       .nullable(),
     draft: draft.nullable(),
     review: review.nullable().optional(),
+    edit: z.object({
+      base_generation_id: z.uuidv4(),
+      base_revision: z.int().positive(),
+    }).optional(),
   })
   .refine((result) => {
+    if (result.edit?.base_generation_id === result.id) return false;
     if (!result.draft) return result.state !== "ready" && !result.review;
     if (result.state !== "ready" || result.language !== result.draft.locale) return false;
     const facts = [...result.draft.selectedFacts, ...result.draft.remainingFacts];
@@ -204,7 +212,7 @@ export type CvOffer = z.output<typeof cvOfferSchema>;
 export type CvDraft = z.output<typeof draft>;
 export type CvDraftFact = z.output<typeof fact>;
 export type CvRequirement = z.output<typeof requirement>;
-export type CvReviewSave = z.output<typeof review>;
+export type CvReviewSave = Omit<z.output<typeof review>, "section_order">;
 export type CvSavedAnalysis = z.output<typeof cvSavedAnalysisSchema>;
 export type CvGeneration = z.output<typeof cvGenerationSchema>;
 export type CvCatalog = z.output<typeof cvCatalogSchema>;

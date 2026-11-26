@@ -5,6 +5,7 @@ import {
   CV_TAILORING_MAX_RESPONSE_BYTES,
   CV_TAILORING_SCHEMA_VERSION,
   CvTailoringError,
+  type CvDraftRequirement,
   type CvEvidenceFact,
   type CvRequirementCoverage,
   type CvRequirementKind,
@@ -171,30 +172,48 @@ export function buildCvDraft(
 
   const citations = new Set<string>();
   const selectedIds = new Set(selected.keys());
-  const requirements = output.requirements.map((requirement, index) => {
-    const { quote, kind, relation, evidenceIds } = requirement;
-    if (
-      quote !== quote.trim() ||
-      quote.includes(REDACTED_CV_DATA) ||
-      citations.has(quote) ||
-      !prepared.normalizedOffer.includes(quote) ||
-      !prepared.providedOffer.includes(quote) ||
-      !/[\p{L}\p{N}]/u.test(quote)
-    ) {
-      throw new CvTailoringError('invalid_citation');
-    }
-    citations.add(quote);
-    if ((relation === 'absent') !== (evidenceIds.length === 0))
-      throw new CvTailoringError('invalid_evidence');
-    const evidence = evidenceIds.map(findEvidence);
-    return {
-      id: `r${index + 1}`,
-      quote,
-      kind,
-      coverage: coverageFor(requirement, evidence, selectedIds),
-      evidenceIds,
-    };
-  });
+  if (prepared.editRequirements && output.requirements.length)
+    throw new CvTailoringError('invalid_model_output');
+  const requirements = prepared.editRequirements
+    ? prepared.editRequirements.map((requirement): CvDraftRequirement => {
+        const { coverage, evidenceIds, quote } = requirement;
+        if (coverage !== 'supported' && coverage !== 'omitted')
+          return requirement;
+        const selectedEvidence = evidenceIds
+          .map(findEvidence)
+          .some(
+            (fact) =>
+              selectedIds.has(fact.id) && isDirectlyTraceable(quote, fact),
+          );
+        return {
+          ...requirement,
+          coverage: selectedEvidence ? 'supported' : 'omitted',
+        };
+      })
+    : output.requirements.map((requirement, index) => {
+        const { quote, kind, relation, evidenceIds } = requirement;
+        if (
+          quote !== quote.trim() ||
+          quote.includes(REDACTED_CV_DATA) ||
+          citations.has(quote) ||
+          !prepared.normalizedOffer.includes(quote) ||
+          !prepared.providedOffer.includes(quote) ||
+          !/[\p{L}\p{N}]/u.test(quote)
+        ) {
+          throw new CvTailoringError('invalid_citation');
+        }
+        citations.add(quote);
+        if ((relation === 'absent') !== (evidenceIds.length === 0))
+          throw new CvTailoringError('invalid_evidence');
+        const evidence = evidenceIds.map(findEvidence);
+        return {
+          id: `r${index + 1}`,
+          quote,
+          kind,
+          coverage: coverageFor(requirement, evidence, selectedIds),
+          evidenceIds,
+        };
+      });
   return {
     locale: prepared.locale,
     schemaVersion: CV_TAILORING_SCHEMA_VERSION,

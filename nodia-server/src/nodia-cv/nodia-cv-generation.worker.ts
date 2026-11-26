@@ -20,10 +20,14 @@ import {
 } from '../nodia-ai-runtime/config/runtime-policy.js';
 import {
   buildCvDraft,
+  cvEditedReview,
+  CV_EDIT_PROMPT_VERSION,
+  CV_EDIT_PURPOSE,
   CV_TAILORING_PROMPT_VERSION,
   CV_TAILORING_PURPOSE,
   CV_TAILORING_SCHEMA_VERSION,
   CvTailoringError,
+  prepareCvEdit,
   prepareCvTailoring,
   type CvTailoringDraft,
 } from './engine/index.js';
@@ -56,6 +60,7 @@ import {
   cvGenerationError,
   cvGenerationFailure,
 } from './policies/nodia-cv-generation-errors.js';
+import { requireCvEditBase } from './policies/nodia-cv-draft-review.js';
 import {
   cvExecutionHash,
   cvGenerationPrompt,
@@ -102,7 +107,11 @@ export class NodiaCvGenerationWorker
     this.registry.register(this, 'cv');
   }
 
-  private async authorize(manager: EntityManager, row: CvGenerationRow) {
+  private async authorize(
+    manager: EntityManager,
+    row: CvGenerationRow,
+    checkEdit = false,
+  ) {
     const actor = await this.scope.authorize(manager, {
       userId: row.owner_user_id,
       sessionId: row.auth_session_public_id ?? '',
@@ -119,6 +128,28 @@ export class NodiaCvGenerationWorker
     if (!profile) cvGenerationError('profile_not_found', 404);
     if (profile.revision !== row.profile_revision)
       cvGenerationError('stale_profile');
+    if (!checkEdit || !row.edit_input) return null;
+    const base = requireCvEditBase(
+      await this.store.status(
+        manager,
+        row.owner_user_id,
+        {
+          id: row.edit_input.base_generation_id,
+        },
+        true,
+      ),
+      row.edit_input.base_revision,
+    );
+    if (
+      base.profile_id !== row.profile_id ||
+      base.profile_revision !== row.profile_revision ||
+      base.language !== row.language ||
+      base.offer_text !== row.offer_text ||
+      base.vacancy_title !== row.vacancy_title ||
+      base.vacancy_company !== row.vacancy_company
+    )
+      cvGenerationError('generation_input_changed');
+    return base;
   }
 
   private async configuration(
@@ -157,7 +188,7 @@ export class NodiaCvGenerationWorker
       if (row.selection_snapshot?.mode !== 'agentic')
         return this.claimOwned(manager, row, workerId, null);
       try {
-        await this.authorize(manager, row);
+        await this.authorize(manager, row, true);
       } catch (error) {
         return this.rejectClaim(manager, row, error);
       }
@@ -201,22 +232,32 @@ export class NodiaCvGenerationWorker
     observation: CvAgenticObservation,
   ) {
     try {
-      await this.authorize(manager, row);
+      const base = await this.authorize(manager, row, true);
       const configuration = await this.configuration(manager, row, observation);
       if (
-        row.prompt_version !== CV_TAILORING_PROMPT_VERSION ||
-        row.purpose_version !== CV_TAILORING_PURPOSE ||
+        row.prompt_version !==
+          (base ? CV_EDIT_PROMPT_VERSION : CV_TAILORING_PROMPT_VERSION) ||
+        row.purpose_version !==
+          (base ? CV_EDIT_PURPOSE : CV_TAILORING_PURPOSE) ||
         !row.selection_snapshot ||
         !row.profile_snapshot ||
         !row.offer_text ||
         !row.request_hash
       )
         cvGenerationError('generation_input_changed');
-      const prepared = prepareCvTailoring({
-        profile: row.profile_snapshot,
-        offer: row.offer_text,
-        locale: row.language,
-      });
+      const prepared =
+        base && row.edit_input
+          ? prepareCvEdit({
+              profile: row.profile_snapshot,
+              draft: base.draft,
+              review: base.review,
+              instructions: row.edit_input.instructions,
+            })
+          : prepareCvTailoring({
+              profile: row.profile_snapshot,
+              offer: row.offer_text,
+              locale: row.language,
+            });
       const executionHash = cvExecutionHash(
         row.request_hash,
         row.scope_hash,
@@ -277,7 +318,7 @@ export class NodiaCvGenerationWorker
         owned.started_exchanges !== 0
       )
         cvGenerationError('generation_lease_lost');
-      await this.authorize(manager, claim.row);
+      await this.authorize(manager, claim.row, true);
       await this.configuration(manager, claim.row);
       await this.store.beforeExchange(manager, claim.row.id);
     }, true);
@@ -426,7 +467,7 @@ export class NodiaCvGenerationWorker
           this.scope.transaction(async (manager) => {
             const op = await this.store.owned(manager, claim);
             if (!op?.valid_lease) return false;
-            await this.authorize(manager, claim.row);
+            await this.authorize(manager, claim.row, true);
             await this.configuration(manager, claim.row, observation);
             active.throwIfAborted();
             return this.store.agenticBind(manager, op, descriptor, custody);
@@ -443,7 +484,7 @@ export class NodiaCvGenerationWorker
           return this.scope.transaction(async (manager) => {
             const op = await this.store.owned(manager, claim);
             if (!op?.valid_lease) return false;
-            await this.authorize(manager, claim.row);
+            await this.authorize(manager, claim.row, true);
             await this.configuration(manager, claim.row, observation);
             active.throwIfAborted();
             return this.store.agenticArm(manager, op, descriptor, custody);
@@ -493,7 +534,7 @@ export class NodiaCvGenerationWorker
     const armed = await this.scope.transaction(async (manager) => {
       const op = await this.store.owned(manager, claim);
       if (!op?.valid_lease) return false;
-      await this.authorize(manager, claim.row);
+      await this.authorize(manager, claim.row, true);
       await this.configuration(manager, claim.row, observation);
       signal.throwIfAborted();
       return this.store.geminiArm(manager, op, descriptor, requestHash);
@@ -592,9 +633,10 @@ export class NodiaCvGenerationWorker
           Buffer.byteLength(JSON.stringify(draft)) <= 250 * 1024 &&
           (!claim.row.qualification || validCvProbeDraft(draft));
       } else if (draft && !op.valid_lease) failure = 'generation_lease_lost';
+      let base = null;
       if (op.valid_lease) {
         try {
-          await this.authorize(manager, claim.row);
+          base = await this.authorize(manager, claim.row, true);
           await this.configuration(manager, claim.row, observation);
         } catch (error) {
           const reason = cvGenerationFailure(error);
@@ -609,6 +651,7 @@ export class NodiaCvGenerationWorker
           claim.row,
           draft,
           receipt.response_hash,
+          base ? cvEditedReview(draft, base.review) : undefined,
         );
       } else {
         const remoteUnknown = receipt.remote_outcome === 'unknown';
@@ -631,9 +674,10 @@ export class NodiaCvGenerationWorker
         op.started_exchanges && op.valid_lease && responseHash && draft,
       );
       let reason = error;
+      let base = null;
       if (mayPublish) {
         try {
-          await this.authorize(manager, claim.row);
+          base = await this.authorize(manager, claim.row, true);
           await this.configuration(manager, claim.row);
         } catch (cause) {
           const failure = cvGenerationFailure(cause);
@@ -645,7 +689,13 @@ export class NodiaCvGenerationWorker
         reason = 'generation_lease_lost';
 
       if (mayPublish && draft && responseHash) {
-        await this.store.publish(manager, claim.row, draft, responseHash);
+        await this.store.publish(
+          manager,
+          claim.row,
+          draft,
+          responseHash,
+          base ? cvEditedReview(draft, base.review) : undefined,
+        );
       } else {
         const unknown = op.started_exchanges > 0 && !responseHash;
         await this.store.fail(

@@ -24,6 +24,7 @@ type Props = {
   generationId: string;
   revision: number;
   language: CvPdfArtifact["language"];
+  initialTemplate?: CvPdfTemplate;
   active: boolean;
   disabled: boolean;
   onDenial: () => void;
@@ -31,15 +32,17 @@ type Props = {
   onOpenVersions: () => void;
   onSaved?: () => void;
   onSavingChange?: (saving: boolean) => void;
+  onTemplateChange?: (template: CvPdfTemplate) => void;
 };
 
 export default function CvDraftPdf({
-  ref, generationId, revision, language, active, disabled, onDenial, onRefresh, onOpenVersions, onSaved, onSavingChange,
+  ref, generationId, revision, language, initialTemplate = "classic", active, disabled,
+  onDenial, onRefresh, onOpenVersions, onSaved, onSavingChange, onTemplateChange,
 }: Props) {
   const { t } = useTranslation("nodiaCv");
   const { scope } = useProfileScope();
   const cache = useQueryClient();
-  const [template, setTemplate] = useState<CvPdfTemplate>("classic");
+  const [template, setTemplate] = useState(initialTemplate);
   const [result, setResult] = useState<ArtifactState | null>(null);
   const [preparing, setPreparing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -96,6 +99,7 @@ export default function CvDraftPdf({
   const choose = (next: CvPdfTemplate | null) => {
     if (!next || template === next || disabled || flight.current || saveLock.current) return;
     setTemplate(next);
+    onTemplateChange?.(next);
     setResult(null);
     setReadError(null);
     setSaveError(null);

@@ -903,3 +903,37 @@ mantiene su propia identidad. Si la referencia anterior aún devuelve 404,
 una continuación explícita utiliza esa misma clave para resolver una
 admisión concurrente sin enviar otra clave para la misma operación.
 [Guía UI](../features/nodia-cv/ui-design.md#33-estado-del-trabajo).
+
+## 22. Edición del borrador con IA — 2026-11-26
+
+Tras generar un borrador, **Editar con IA** acepta una instrucción como
+«prioriza las competencias», «acorta la experiencia» u «omite los
+proyectos». La primera entrega selecciona, omite y ordena datos
+verificados del perfil y conserva las citas de la oferta y la evidencia
+confirmada. La redacción libre que altera el sentido de una afirmación
+requiere un contrato de revisión de hechos adicional.
+
+Codex conserva el contexto al pedir una corrección. Nodia CV conserva la
+oferta, el perfil y la revisión exacta y presenta una propuesta privada
+antes de cambiar el borrador activo. La edición muestra la misma
+selección de IA aplicada, con su conexión, modo, modelo e intensidad.
+Ante error o resultado incierto, la persona conserva el borrador y la
+instrucción. La consulta recupera por la clave original.
+
+La admisión autenticada `POST /drafts/:id/ai-edits` usa la clave
+idempotente, la revisión esperada, la instrucción y la selección aplicada.
+La cola y el transporte de CV conservan presupuesto, autorización,
+control de configuración y cierre comprobado. El trabajo hijo conserva
+el perfil, la oferta y el alcance de revisión de la solicitud original.
+La propuesta valida qué datos existen en la fuente y deja los documentos
+guardados intactos.
+
+**Aplicar cambios** comprueba la revisión base y activa la propuesta.
+**Conservar original** retorna al borrador que se estaba revisando.
+Render, vista previa y PDF aplican el mismo orden de la revisión activa.
+Guardar o descartar sigue siendo una decisión independiente del resultado
+de IA.
+
+[Guía UI](../features/nodia-cv/ui-design.md#34-editar-con-ia) ·
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md) ·
+[ADR119 propuesto](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md).

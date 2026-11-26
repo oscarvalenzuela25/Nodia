@@ -6,7 +6,11 @@ import type {
   CvProviderDescriptor,
   CvProviderReceipt,
 } from '../agentic/nodia-cv-agentic-provider.js';
-import type { CvTailoringDraft, PreparedCvTailoring } from '../engine/index.js';
+import type {
+  CvEvidenceSection,
+  CvTailoringDraft,
+  PreparedCvTailoring,
+} from '../engine/index.js';
 import type { NodiaCvProfileDetail } from './nodia-cv-profile.types.js';
 
 export type CvGenerationState =
@@ -21,10 +25,17 @@ export interface CvDraftReviewEvidence {
 export interface CvDraftReviewContent {
   included_fact_ids: string[];
   evidence: CvDraftReviewEvidence[];
+  section_order?: CvEvidenceSection[];
 }
 
 export interface CvDraftReview extends CvDraftReviewContent {
   revision: number;
+}
+
+export interface CvEditInput {
+  base_generation_id: string;
+  base_revision: number;
+  instructions: string;
 }
 
 export interface CvGenerationRow {
@@ -49,6 +60,7 @@ export interface CvGenerationRow {
   scope_hash: string;
   qualification: boolean;
   draft: CvTailoringDraft | null;
+  edit_input: CvEditInput | null;
   review: CvDraftReviewContent | null;
   review_revision: number | null;
   error_code: string | null;
