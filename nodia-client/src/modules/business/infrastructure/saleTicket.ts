@@ -3,7 +3,7 @@ import { measurementUnit } from "./measurementUnits";
 import { cartLinePrice, cartTotal, formatClp } from "./salesPolicies";
 import { formatQuantity, lineSubtotal } from "./saleQuantities";
 import { paymentMethodSchema, saleSchema } from "./salesSchemas";
-import type { CartLine, PaymentMethod, Sale } from "./salesTypes";
+import type { CartLine, PaymentMethod, Sale, SalePayment } from "./salesTypes";
 
 export interface SaleTicketModel {
   title: string;
@@ -32,11 +32,12 @@ const businessName = (name: string | undefined): string | null => {
   return name.trim() || null;
 };
 
-function context(input: TicketContext, payment: PaymentMethod, description: string | null | undefined) {
-  paymentMethodSchema.parse(payment);
+function context(input: TicketContext, payment: Sale["payment_method"], description: string | null | undefined, payments?: SalePayment[]) {
+  if (!payments) paymentMethodSchema.parse(payment);
   if (description !== undefined && description !== null && (typeof description !== "string" || description.length > 500)) throw new Error("invalid_ticket");
   const t = i18n.getFixedT(input.language);
-  const label = t(`business:pos.payment_${payment}`);
+  const label = payments?.map(({ payment_method, amount }) => `${t(`business:pos.payment_${payment_method}`)} ${formatClp(amount, input.language)}`).join(" · ")
+    ?? t(`business:pos.payment_${payment}`);
   const detail = description?.trim();
   return {
     t,
@@ -80,7 +81,7 @@ export function buildSavedSaleTicket(input: SavedSaleTicketInput): SaleTicketMod
   const sale = saleSchema.parse(input.sale);
   if (sale.status !== "completed" || sale.completed_at === null) throw new Error("ticket_sale_not_completed");
   if (new Set(sale.items.map((item) => item.position)).size !== sale.items.length || new Set(sale.items.map((item) => item.product_id)).size !== sale.items.length) throw new Error("invalid_ticket");
-  const { t, common } = context(input, sale.payment_method, sale.payment_method_description);
+  const { t, common } = context(input, sale.payment_method, sale.payment_method_description, sale.payments);
   const issued = new Date(sale.completed_at);
   if (!Number.isFinite(issued.valueOf())) throw new Error("invalid_ticket");
   const issuedAt = new Intl.DateTimeFormat(input.language.startsWith("en") ? "en-CL" : "es-CL", {

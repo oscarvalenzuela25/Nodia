@@ -2,6 +2,7 @@ import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import useAuthStore from "../../../store/authStore";
 import { SaleWorkspaceEngine } from "./saleWorkspaceEngine";
+import type { SalePayment } from "./salesTypes";
 import type { ProductEntity } from "./types";
 
 /** One mounted engine owns every local cart and its durable request identity. */
@@ -34,11 +35,12 @@ export function useSaleDraft(businessId: string) {
     setLines: (value: typeof active.lines) => engine.edit(id, { lines: value, dirty: true }),
     reviewCatalog: (value: typeof active.lines) => engine.reviewCatalog(id, value),
     setPaymentMethod: (value: typeof active.paymentMethod) => engine.setPaymentMethod(id, value),
+    setCombinedPayments: (enabled: boolean) => engine.setCombinedPayments(id, enabled),
     setDescription: (value: string) => engine.edit(id, { description: value, dirty: true }),
     setBarcode: (value: string) => engine.edit(id, { barcode: value }),
     setQuantityDrafts: (value: typeof active.quantityDrafts | ((previous: typeof active.quantityDrafts) => typeof active.quantityDrafts)) => engine.setQuantityDrafts(id, value),
     load: (sale: NonNullable<typeof active.sale>) => engine.load(sale), reset: () => engine.reset(id), clearForExit: () => engine.clearForExit(),
-    save: () => engine.save(id), checkout: () => engine.checkout(id),
+    save: () => engine.save(id), checkout: (payments?: SalePayment[]) => engine.checkout(id, payments),
     transition: (operation: "complete" | "cancel" | "discard", reason?: string) => engine.transition(id, operation, reason),
     reconcile: () => engine.reconcile(id), retry: () => engine.retry(id), retryStorage: () => engine.retryStorage(),
   };

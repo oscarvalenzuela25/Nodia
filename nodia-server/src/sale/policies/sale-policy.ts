@@ -4,6 +4,7 @@ import { stockQuantityMillis } from '../../common/utils/stock-quantity.js';
 import { validateProductMeasurementUnit } from '../../product/product-measurement-unit.js';
 import { roundedSaleLineTotal, saleQuantity } from './sale-quantity.js';
 import {
+  SALE_COMBINABLE_PAYMENT_METHODS,
   SALE_PAYMENT_METHODS,
   SALE_STATUSES,
   type ProductSaleRow,
@@ -13,6 +14,7 @@ import {
   type SaleListQuery,
   type SaleMutationCommand,
   type SaleOperation,
+  type SalePayment,
   type SalePaymentMethod,
   type SaleStatus,
   type SaleStockDeduction,
@@ -76,6 +78,41 @@ function paymentMethod(value: unknown): SalePaymentMethod {
   if (!method) return invalid();
   return method;
 }
+function normalizeSalePayments(value: unknown): SalePayment[] {
+  if (!Array.isArray(value) || value.length < 2 || value.length > 3)
+    return invalid();
+  const methods = new Set<SalePayment['payment_method']>();
+  return value
+    .map((entry): SalePayment => {
+      keys(entry, ['payment_method', 'amount']);
+      const method = SALE_COMBINABLE_PAYMENT_METHODS.find(
+        (method) => method === entry.payment_method,
+      );
+      if (!method || methods.has(method) || typeof entry.amount !== 'string')
+        return invalid();
+      const amount = saleMoney(entry.amount);
+      if (amount === 0n) return invalid();
+      methods.add(method);
+      return { payment_method: method, amount: amount.toString() };
+    })
+    .sort(
+      (a, b) =>
+        SALE_COMBINABLE_PAYMENT_METHODS.indexOf(a.payment_method) -
+        SALE_COMBINABLE_PAYMENT_METHODS.indexOf(b.payment_method),
+    );
+}
+
+export function assertSalePaymentTotal(
+  payments: readonly SalePayment[],
+  total: string,
+): void {
+  if (
+    payments.reduce((sum, payment) => sum + BigInt(payment.amount), 0n) !==
+    BigInt(total)
+  )
+    throw new ConflictException('business:sale_payment_total_mismatch');
+}
+
 export function normalizeSaleCommand(
   operation: SaleOperation,
   value: unknown,
@@ -89,6 +126,7 @@ export function normalizeSaleCommand(
   keys(value, [
     ...common,
     ...(['create', 'checkout', 'update'].includes(operation) ? editable : []),
+    ...(operation === 'checkout' ? ['payments'] : []),
     ...(operation === 'cancel' ? ['cancellation_reason'] : []),
   ]);
   const command: SaleMutationCommand = {
@@ -132,19 +170,28 @@ export function normalizeSaleCommand(
   }
   if (operation === 'checkout' && !command.items?.length) return invalid();
   if (operation === 'create' && command.items === undefined) command.items = [];
-  if (value.payment_method !== undefined)
-    command.payment_method = paymentMethod(value.payment_method);
-  else if (createsSale) command.payment_method = 'cash';
-  if (value.payment_method_description !== undefined) {
-    const description = value.payment_method_description;
+  if (value.payments !== undefined) {
     if (
-      description !== null &&
-      (typeof description !== 'string' || description.length > 500)
+      value.payment_method !== undefined ||
+      value.payment_method_description !== undefined
     )
       return invalid();
-    command.payment_method_description =
-      typeof description === 'string' ? description.trim() || null : null;
-  } else if (createsSale) command.payment_method_description = null;
+    command.payments = normalizeSalePayments(value.payments);
+  } else {
+    if (value.payment_method !== undefined)
+      command.payment_method = paymentMethod(value.payment_method);
+    else if (createsSale) command.payment_method = 'cash';
+    if (value.payment_method_description !== undefined) {
+      const description = value.payment_method_description;
+      if (
+        description !== null &&
+        (typeof description !== 'string' || description.length > 500)
+      )
+        return invalid();
+      command.payment_method_description =
+        typeof description === 'string' ? description.trim() || null : null;
+    } else if (createsSale) command.payment_method_description = null;
+  }
   if (operation === 'cancel') {
     if (
       typeof value.cancellation_reason !== 'string' ||
@@ -207,8 +254,10 @@ export function snapshotSaleItems(
       catalogPrice !== saleMoney(input.expected_unit_price)
     )
       throw new ConflictException('business:sale_product_changed');
-    if (product.track_stock &&
-        stockQuantityMillis(product.stock) < stockQuantityMillis(input.quantity))
+    if (
+      product.track_stock &&
+      stockQuantityMillis(product.stock) < stockQuantityMillis(input.quantity)
+    )
       throw new ConflictException('business:sale_stock_insufficient');
     validateProductMeasurementUnit(product.measurement_unit);
     const override = manualUnitPrice(input.unit_price_override);
@@ -255,22 +304,28 @@ export function saleStockDeductions(
   items: readonly SaleItemView[],
   products: readonly ProductSaleRow[],
 ): SaleStockDeduction[] {
-  const tracked = new Map(products.filter((product) => product.track_stock)
-    .map((product) => [product.id, product]));
+  const tracked = new Map(
+    products
+      .filter((product) => product.track_stock)
+      .map((product) => [product.id, product]),
+  );
   return items.flatMap((item) => {
     const product = tracked.get(item.product_id);
     if (!product) return [];
     if (product.version >= 2147483647)
       throw new ConflictException('business:sale_product_changed');
-    const remaining = stockQuantityMillis(product.stock) - stockQuantityMillis(item.quantity);
+    const remaining =
+      stockQuantityMillis(product.stock) - stockQuantityMillis(item.quantity);
     if (remaining < 0)
       throw new ConflictException('business:sale_stock_insufficient');
-    return [{
-      product_id: product.id,
-      quantity: item.quantity,
-      stock_before: product.stock,
-      stock_after: remaining / 1000,
-    }];
+    return [
+      {
+        product_id: product.id,
+        quantity: item.quantity,
+        stock_before: product.stock,
+        stock_after: remaining / 1000,
+      },
+    ];
   });
 }
 
@@ -302,6 +357,7 @@ export function normalizeSaleQuery(
     'page',
     'limit',
     'status',
+    'payment_method',
     'from',
     'to_exclusive',
     'search',
@@ -314,6 +370,7 @@ export function normalizeSaleQuery(
   };
   if (query.status !== undefined && !SALE_STATUSES.includes(query.status))
     return invalid();
+  if (query.payment_method !== undefined) paymentMethod(query.payment_method);
   if (query.metric !== undefined && !['units', 'amount'].includes(query.metric))
     return invalid();
   if (

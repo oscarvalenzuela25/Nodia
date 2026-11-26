@@ -8,7 +8,8 @@ import { readSaleJournal, removeSaleJournal, type SaleJournal } from "../../../c
 import { loadSaleWorkspace, writeSaleWorkspace, type SaleWorkspaceSession, type SaleWorkspaceSnapshot } from "../../../config/businessSaleWorkspaceStorage";
 import { getSaleReceipt, mutateSale } from "./salesServices";
 import { addCartProduct, cartTotal, exceedsObservedStock, quantityFromInput, saleToCart } from "./salesPolicies";
-import type { CartLine, PaymentMethod, Sale, SaleMutation } from "./salesTypes";
+import { manualPaymentMethod, matchesSplitPayment } from "./salePayments";
+import type { CartLine, PaymentMethod, Sale, SaleCommand, SaleMutation, SalePayment } from "./salesTypes";
 import type { ProductEntity } from "./types";
 
 const freshSession = (number: number): SaleWorkspaceSession => ({ id: crypto.randomUUID(), number, sale: null, lines: [], paymentMethod: "cash", description: "", dirty: false, pending: null, quantityDrafts: {}, barcode: "" });
@@ -16,7 +17,8 @@ const emptyWorkspace = (actorId: string, businessId: string): SaleWorkspaceSnaps
   const session = freshSession(1);
   return { version: 2, actorId, businessId, activeId: session.id, nextNumber: 2, sessions: [session] };
 };
-const safeEmpty = (entry: SaleWorkspaceSession) => !entry.sale && !entry.pending && !entry.dirty && entry.lines.length === 0 && !entry.description && !entry.barcode && Object.keys(entry.quantityDrafts).length === 0 && entry.paymentMethod === "cash";
+const safeEmpty = (entry: SaleWorkspaceSession) => !entry.sale && !entry.pending && !entry.dirty && entry.lines.length === 0 && !entry.description && !entry.barcode && Object.keys(entry.quantityDrafts).length === 0 && entry.paymentMethod === "cash" && !entry.combinedPaymentMethods;
+const savedPaymentMethod = (sale: Sale): PaymentMethod => sale.payment_method === "mixed" ? "cash" : sale.payment_method;
 const orderedJson = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map(orderedJson);
   if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)).map(([key, entry]) => [key, orderedJson(entry)]));
@@ -107,7 +109,7 @@ export class SaleWorkspaceEngine {
     const workspace = this.state.workspace;
     return this.commit({ ...workspace, sessions: workspace.sessions.map((entry) => entry.id === id ? update(entry) : entry) }, keepLocalOnFailure);
   }
-  edit(id: string, patch: Partial<Pick<SaleWorkspaceSession, "lines" | "paymentMethod" | "description" | "dirty" | "barcode" | "quantityDrafts">>) {
+  edit(id: string, patch: Partial<Pick<SaleWorkspaceSession, "lines" | "paymentMethod" | "combinedPaymentMethods" | "description" | "dirty" | "barcode" | "quantityDrafts">>) {
     if (!this.editable(id)) return false;
     return this.replace(id, (entry) => ({ ...entry, ...patch }), true);
   }
@@ -129,9 +131,28 @@ export class SaleWorkspaceEngine {
   }
   setPaymentMethod(id: string, value: PaymentMethod) {
     const entry = this.session(id);
-    // Original Other remains valid for history/recovery; new manual selections have four methods.
+    // Original Other remains valid for history and recovery.
     if (value === "other" && entry?.paymentMethod !== "other") return false;
+    const combined = entry?.combinedPaymentMethods;
+    if (combined) {
+      const method = manualPaymentMethod(value);
+      if (!method) return false;
+      return this.edit(id, {
+        combinedPaymentMethods: combined.includes(method) ? combined.filter((selected) => selected !== method) : [...combined, method],
+        dirty: true,
+      });
+    }
     return this.edit(id, { paymentMethod: value, dirty: true });
+  }
+  setCombinedPayments(id: string, enabled: boolean) {
+    const entry = this.session(id);
+    if (!entry || entry.sale || !this.editable(id)) return false;
+    if (enabled === Boolean(entry.combinedPaymentMethods)) return true;
+    return this.edit(id, {
+      combinedPaymentMethods: enabled ? [manualPaymentMethod(entry.paymentMethod) ?? "cash"] : undefined,
+      ...(enabled ? {} : { paymentMethod: "cash", description: "" }),
+      dirty: true,
+    });
   }
   setQuantityDrafts(id: string, value: Record<string, string> | ((previous: Record<string, string>) => Record<string, string>)) {
     const entry = this.session(id);
@@ -173,7 +194,7 @@ export class SaleWorkspaceEngine {
     if (existing && (existing.pending || existing.dirty || this.locks.has(existing.id))) return this.selectSale(existing.id) ? existing.id : null;
     const reusable = existing ?? workspace.sessions.find((entry) => safeEmpty(entry) && !this.locks.has(entry.id));
     const entry = reusable ?? freshSession(workspace.nextNumber);
-    const loaded = { ...entry, sale: value, lines: saleToCart(value), paymentMethod: value.payment_method, description: value.payment_method_description ?? "", dirty: false, quantityDrafts: {}, barcode: "" };
+    const loaded = { ...entry, sale: value, lines: saleToCart(value), paymentMethod: savedPaymentMethod(value), combinedPaymentMethods: undefined, description: value.payment_method_description ?? "", dirty: false, quantityDrafts: {}, barcode: "" };
     return this.commit({ ...workspace, activeId: entry.id, nextNumber: reusable ? workspace.nextNumber : workspace.nextNumber + 1,
       sessions: reusable ? workspace.sessions.map((item) => item.id === entry.id ? loaded : item) : [...workspace.sessions, loaded] }) ? entry.id : null;
   }
@@ -181,11 +202,14 @@ export class SaleWorkspaceEngine {
     if (!this.current(lease) || this.session(id)?.pending?.mutation.command.request_key !== mutation.command.request_key) return false;
     const number = this.session(id)!.number;
     const closesCart = mutation.operation === "checkout" || mutation.operation === "complete";
-    if (value.business_id !== this.businessId || (mutation.saleId && value.id !== mutation.saleId) ||
+    const requestedPayments = mutation.command.payments;
+    const invalidPaymentReceipt = requestedPayments && (value.payment_method !== "mixed" || value.record_payment || !value.payments ||
+      value.payments.length !== requestedPayments.length || !requestedPayments.every((requested) => value.payments?.some((received) => received.payment_method === requested.payment_method && received.amount === requested.amount)));
+    if (invalidPaymentReceipt || value.business_id !== this.businessId || (mutation.saleId && value.id !== mutation.saleId) ||
       ((mutation.operation === "checkout" || mutation.operation === "complete") && (value.status !== "completed" || !value.completed_at))) throw new Error(i18n.t("business:pos.checkout_invalid_result"));
     const next = closesCart ? this.without(id) : {
       ...this.state.workspace, sessions: this.state.workspace.sessions.map((entry) => entry.id === id ? {
-        ...entry, sale: value, lines: saleToCart(value), paymentMethod: value.payment_method, description: value.payment_method_description ?? "", dirty: false, pending: null, quantityDrafts: {}, barcode: "",
+        ...entry, sale: value, lines: saleToCart(value), paymentMethod: savedPaymentMethod(value), combinedPaymentMethods: undefined, description: value.payment_method_description ?? "", dirty: false, pending: null, quantityDrafts: {}, barcode: "",
       } : entry),
     };
     this.catalogConflicts.delete(id);
@@ -217,8 +241,12 @@ export class SaleWorkspaceEngine {
       errorFeedback(error); return null;
     } finally { this.locks.delete(id); this.publish(); }
   }
-  private command(entry: SaleWorkspaceSession) {
-    return { request_key: crypto.randomUUID(), items: entry.lines.map(({ product_id, quantity, expected_product_version, expected_unit_price, unit_price_override }) => ({ product_id, quantity, expected_product_version, expected_unit_price, ...(unit_price_override == null ? {} : { unit_price_override }) })), payment_method: entry.paymentMethod, payment_method_description: entry.description.trim() || null };
+  private command(entry: SaleWorkspaceSession, payments?: SalePayment[]): SaleCommand {
+    return {
+      request_key: crypto.randomUUID(),
+      items: entry.lines.map(({ product_id, quantity, expected_product_version, expected_unit_price, unit_price_override }) => ({ product_id, quantity, expected_product_version, expected_unit_price, ...(unit_price_override == null ? {} : { unit_price_override }) })),
+      ...(payments ? { payments } : { payment_method: entry.paymentMethod, payment_method_description: entry.description.trim() || null }),
+    };
   }
   save(id: string): Promise<Sale | null> {
     const entry = this.session(id);
@@ -237,15 +265,20 @@ export class SaleWorkspaceEngine {
     this.catalogConflicts.delete(id); this.publish();
     return true;
   }
-  checkout(id: string): Promise<Sale | null> {
+  checkout(id: string, payments?: SalePayment[]): Promise<Sale | null> {
     const entry = this.session(id);
     if (!entry || entry.sale || entry.pending || this.catalogConflicts.has(id)) return Promise.resolve(null);
     try {
-      if (!entry.lines.length || entry.paymentMethod === "other" || BigInt(cartTotal(entry.lines)) <= 0n || entry.description.trim().length > 500 || entry.lines.some((line) => exceedsObservedStock(line, line.quantity) || (entry.quantityDrafts[line.product_id] !== undefined && quantityFromInput(entry.quantityDrafts[line.product_id]) !== line.quantity))) throw new Error("invalid_checkout");
+      const total = cartTotal(entry.lines);
+      const invalidPayment = entry.combinedPaymentMethods
+        ? !payments || !matchesSplitPayment(payments, entry.combinedPaymentMethods, total)
+        : Boolean(payments) || entry.paymentMethod === "other" || entry.description.trim().length > 500;
+      if (!entry.lines.length || invalidPayment || BigInt(total) <= 0n || entry.lines.some((line) => exceedsObservedStock(line, line.quantity) || (entry.quantityDrafts[line.product_id] !== undefined && quantityFromInput(entry.quantityDrafts[line.product_id]) !== line.quantity))) throw new Error("invalid_checkout");
     } catch { sileo.error({ title: i18n.t("business:pos.checkout_invalid") }); return Promise.resolve(null); }
     const lines = entry.lines.filter((line) => line.quantity > 0);
     if (lines.length !== entry.lines.length && !this.edit(id, { lines, quantityDrafts: Object.fromEntries(Object.entries(entry.quantityDrafts).filter(([productId]) => lines.some((line) => line.product_id === productId))), dirty: true })) return Promise.resolve(null);
-    return this.dispatch(id, { operation: "checkout", command: this.command({ ...entry, lines }) });
+    const paymentMethod = manualPaymentMethod(entry.paymentMethod) ?? entry.paymentMethod;
+    return this.dispatch(id, { operation: "checkout", command: this.command({ ...entry, lines, paymentMethod }, payments) });
   }
   transition(id: string, operation: "complete" | "cancel" | "discard", cancellationReason?: string): Promise<Sale | null> {
     const entry = this.session(id);

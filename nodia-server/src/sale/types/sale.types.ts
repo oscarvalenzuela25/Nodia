@@ -12,10 +12,24 @@ export const SALE_PAYMENT_METHODS = [
   'bank_transfer',
   'debit_card',
   'credit_card',
+  'card',
   'other',
+] as const;
+export const SALE_COMBINABLE_PAYMENT_METHODS = [
+  'cash',
+  'card',
+  'bank_transfer',
 ] as const;
 export type SaleStatus = (typeof SALE_STATUSES)[number];
 export type SalePaymentMethod = (typeof SALE_PAYMENT_METHODS)[number];
+export type SaleTender = (typeof SALE_COMBINABLE_PAYMENT_METHODS)[number];
+export interface SalePayment {
+  payment_method: SaleTender;
+  amount: string;
+}
+export interface SalePaymentRecord extends SalePayment {
+  id: string;
+}
 export type SaleOperation =
   'create' | 'checkout' | 'update' | 'complete' | 'cancel' | 'discard';
 export type SaleActor = ActorReference;
@@ -33,6 +47,7 @@ export interface SaleMutationCommand {
   items?: SaleItemInput[];
   payment_method?: SalePaymentMethod;
   payment_method_description?: string | null;
+  payments?: SalePayment[];
   cancellation_reason?: string;
 }
 export interface SaleItemView {
@@ -61,8 +76,10 @@ export interface SaleView {
   business_id: string;
   status: SaleStatus;
   currency: 'CLP';
-  payment_method: SalePaymentMethod;
+  payment_method: SalePaymentMethod | 'mixed';
   payment_method_description: string | null;
+  payments?: SalePayment[];
+  record_payment?: SalePaymentRecord;
   total_amount: string;
   version: number;
   created_at: string;
@@ -76,6 +93,7 @@ export interface SaleListQuery {
   page?: number;
   limit?: number;
   status?: SaleStatus;
+  payment_method?: SalePaymentMethod;
   from?: string;
   to_exclusive?: string;
   search?: string;

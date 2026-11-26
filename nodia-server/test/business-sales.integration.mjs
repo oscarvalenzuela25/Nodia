@@ -20,6 +20,7 @@ import { AddManualSaleLinePrices1793450000000 } from '../dist/migrations/1793450
 import { RemoveProductProfitPercentage1793620000000 } from '../dist/migrations/1793620000000-RemoveProductProfitPercentage.js';
 import { AddProductAlias1793660000000 } from '../dist/migrations/1793660000000-AddProductAlias.js';
 import { TrackProductStock1794030000000 } from '../dist/migrations/1794030000000-TrackProductStock.js';
+import { AddCombinedSalePayments1794050000000 } from '../dist/migrations/1794050000000-AddCombinedSalePayments.js';
 import { verifyDirectSaleCheckout } from './business-sales-checkout.integration.mjs';
 import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-module-access.use-case.js';
 import { ModuleAccessGuard } from '../dist/authorization/module-access.guard.js';
@@ -198,6 +199,17 @@ try {
       () => db.query('UPDATE products SET stock=0.0001 WHERE id=3'),
       /ck_products_stock_balance/,
     );
+  });
+  const combinedPayments = new AddCombinedSalePayments1794050000000();
+  await check('combined payment migration preserves previous data and can revert before use', async () => {
+    const legacy = randomUUID();
+    await db.query(`INSERT INTO sales(id,business_id,payment_method,created_by,updated_by)
+                    VALUES($1,$2,'credit_card',1,1)`, [legacy, business]);
+    await migration(combinedPayments, 'up');
+    await migration(combinedPayments, 'down');
+    await migration(combinedPayments, 'up');
+    assert.equal((await db.query('SELECT payment_method FROM sales WHERE id=$1', [legacy]))[0].payment_method, 'credit_card');
+    await db.query('DELETE FROM sales WHERE id=$1', [legacy]);
   });
   const modules = new CheckModuleAccessUseCase(db),
     store = new SaleService();

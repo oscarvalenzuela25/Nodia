@@ -25,6 +25,8 @@ import type {
 import { exactSaleQuantityReport } from '../policies/sale-quantity.js';
 import { validateProductMeasurementUnit } from '../../product/product-measurement-unit.js';
 
+type SaleRepresentation = 'transaction' | 'payment_records';
+
 function exact(value: unknown): string {
   if (typeof value !== 'string' || !/^(?:0|[1-9][0-9]*)$/.test(value))
     throw new InternalServerErrorException('business:sale_report_invalid');
@@ -50,6 +52,7 @@ export class ReadSalesUseCase {
     id: string,
     actor: SaleActor,
     manager?: EntityManager,
+    representation: SaleRepresentation = 'transaction',
   ): Promise<SaleView> {
     saleUuid(id);
     return runSaleScope(
@@ -57,7 +60,10 @@ export class ReadSalesUseCase {
       this.modules,
       businessId,
       actor,
-      (tx) => this.store.load(tx, businessId, id),
+      (tx) =>
+        representation === 'payment_records'
+          ? this.store.loadPaymentRecord(tx, businessId, id)
+          : this.store.load(tx, businessId, id),
       manager,
     );
   }
@@ -66,6 +72,7 @@ export class ReadSalesUseCase {
     value: SaleListQuery,
     actor: SaleActor,
     manager?: EntityManager,
+    representation: SaleRepresentation = 'transaction',
   ) {
     const query = normalizeSaleQuery(value);
     if (query.metric !== undefined)
@@ -89,11 +96,25 @@ export class ReadSalesUseCase {
           predicates.push(
             `s.completed_at>=${bind(query.from)}::timestamptz AND s.completed_at<${bind(query.to_exclusive)}::timestamptz`,
           );
+        const paymentRecords = representation === 'payment_records';
+        const recordMethod = paymentRecords
+          ? 'COALESCE(p.payment_method,s.payment_method)'
+          : 's.payment_method';
+        if (query.payment_method !== undefined) {
+          const methods =
+            query.payment_method === 'card'
+              ? ['card', 'debit_card', 'credit_card']
+              : [query.payment_method];
+          predicates.push(`${recordMethod}=ANY(${bind(methods)}::varchar[])`);
+        }
         if (query.search?.trim()) {
           const term = bind(
             `%${query.search.trim().replace(/[\\%_]/g, '\\$&')}%`,
           );
-          predicates.push(`(s.id::text ILIKE ${term} ESCAPE '\\' OR EXISTS (
+          const recordSearch = paymentRecords
+            ? `p.id::text ILIKE ${term} ESCAPE '\\' OR `
+            : '';
+          predicates.push(`(s.id::text ILIKE ${term} ESCAPE '\\' OR ${recordSearch}EXISTS (
           SELECT 1 FROM sale_items search_item WHERE search_item.sale_id=s.id AND search_item.business_id=s.business_id
           AND (search_item.product_name_snapshot ILIKE ${term} ESCAPE '\\' OR
             search_item.product_code_snapshot ILIKE ${term} ESCAPE '\\' OR
@@ -101,13 +122,32 @@ export class ReadSalesUseCase {
         }
         const limit = bind(query.limit),
           offset = bind((query.page - 1) * query.limit);
-        // Count and page share one database snapshot; item projections never multiply the parent count.
-        const rows: { total: string; data: SaleView[] }[] = await tx.query(
+        const recordSource = paymentRecords
+          ? `SELECT s.*,p.id AS record_id,p.payment_method AS record_method,
+              COALESCE(p.amount,s.total_amount) AS record_amount
+             FROM sales s LEFT JOIN sale_payments p ON p.business_id=s.business_id AND p.sale_id=s.id`
+          : `SELECT s.*,NULL::uuid AS record_id,NULL::varchar AS record_method,s.total_amount AS record_amount FROM sales s`;
+        // One snapshot serves rows and totals; only the bounded page projects item details.
+        const rows: {
+          total: string;
+          total_amount: string;
+          data: SaleView[];
+        }[] = await tx.query(
           `WITH filtered AS MATERIALIZED (
-        SELECT s.* FROM sales s WHERE ${predicates.join(' AND ')}
-      ) SELECT (SELECT count(*)::text FROM filtered) AS total, COALESCE((SELECT jsonb_agg(page ORDER BY page.updated_at DESC,page.id DESC)
-        FROM (SELECT ${SALE_PUBLIC_SELECT} FROM filtered s ORDER BY s.updated_at DESC,s.id DESC
-          LIMIT ${limit} OFFSET ${offset}) page),'[]'::jsonb) AS data`,
+        ${recordSource} WHERE ${predicates.join(' AND ')}
+      )
+      SELECT count(*)::text AS total,COALESCE(sum(record_amount),0)::text AS total_amount,
+        COALESCE((
+          SELECT jsonb_agg(to_jsonb(page)-'record_id' ORDER BY page.updated_at DESC,page.id DESC,page.record_id)
+          FROM (
+            SELECT ${SALE_PUBLIC_SELECT},s.record_id,CASE WHEN s.record_id IS NOT NULL THEN
+              jsonb_build_object('id',s.record_id,'payment_method',s.record_method,'amount',s.record_amount::text)
+            END AS record_payment FROM (
+              SELECT * FROM filtered ORDER BY updated_at DESC,id DESC,record_id LIMIT ${limit} OFFSET ${offset}
+            ) s
+          ) page
+        ),'[]'::jsonb) AS data
+      FROM filtered`,
           parameters,
         );
         const total = count(exact(rows[0].total));
@@ -115,6 +155,7 @@ export class ReadSalesUseCase {
           data: rows[0].data.map(publicSale),
           meta: {
             total,
+            total_amount: exact(rows[0].total_amount),
             total_items: total,
             page: query.page,
             limit: query.limit,
@@ -163,6 +204,7 @@ export class ReadSalesUseCase {
     const query = normalizeSaleQuery(value);
     if (
       query.status !== undefined ||
+      query.payment_method !== undefined ||
       query.search !== undefined ||
       query.metric !== undefined
     )
@@ -242,7 +284,11 @@ export class ReadSalesUseCase {
     manager?: EntityManager,
   ) {
     const query = normalizeSaleQuery(value);
-    if (query.status !== undefined || query.search !== undefined)
+    if (
+      query.status !== undefined ||
+      query.search !== undefined ||
+      query.payment_method !== undefined
+    )
       throw new BadRequestException('business:sale_invalid_command');
     return runSaleScope(
       this.source,

@@ -1,5 +1,9 @@
 import type { MeasurementUnit } from "./measurementUnits";
-export type PaymentMethod = "cash" | "bank_transfer" | "debit_card" | "credit_card" | "other";
+export const POS_PAYMENT_METHODS = ["cash", "card", "bank_transfer"] as const;
+export type PosPaymentMethod = (typeof POS_PAYMENT_METHODS)[number];
+export type PaymentMethod = PosPaymentMethod | "debit_card" | "credit_card" | "other";
+export interface SalePayment { payment_method: PosPaymentMethod; amount: string }
+export interface SalePaymentRecord extends SalePayment { id: string }
 export type SaleStatus = "draft" | "completed" | "cancelled" | "discarded";
 export type SaleSection = "pos" | "sales" | "reports";
 export interface SaleItem {
@@ -10,7 +14,9 @@ export interface SaleItem {
 }
 export interface Sale {
   id: string; business_id: string; status: SaleStatus; currency: "CLP";
-  payment_method: PaymentMethod; payment_method_description: string | null; total_amount: string;
+  payment_method: PaymentMethod | "mixed"; payment_method_description: string | null; total_amount: string;
+  payments?: SalePayment[];
+  record_payment?: SalePaymentRecord;
   version: number; created_at: string; updated_at: string; completed_at: string | null;
   cancelled_at: string | null; cancellation_reason: string | null; items: SaleItem[];
 }
@@ -18,12 +24,13 @@ export interface SaleLineCommand { product_id: string; quantity: number; expecte
 export interface SaleCommand {
   request_key: string; expected_version?: number; items?: SaleLineCommand[];
   payment_method?: PaymentMethod; payment_method_description?: string | null; cancellation_reason?: string;
+  payments?: SalePayment[];
 }
 export type SaleOperation = "create" | "update" | "checkout" | "complete" | "cancel" | "discard";
 export interface SaleMutation { operation: SaleOperation; saleId?: string; command: SaleCommand }
 export interface SaleReceipt { status: "completed" | "unconfirmed"; sale?: Sale; result_version?: number }
-export interface SalesParams { page?: number; limit?: number; status?: SaleStatus; search?: string; from?: string; to_exclusive?: string }
-export interface SalesResponse { data: Sale[]; meta: { total: number; page: number; limit: number; total_pages: number } }
+export interface SalesParams { page?: number; limit?: number; status?: SaleStatus; payment_method?: PaymentMethod; search?: string; from?: string; to_exclusive?: string }
+export interface SalesResponse { data: Sale[]; meta: { total: number; page: number; limit: number; total_pages: number; total_amount?: string } }
 export interface SalesSummary {
   currency: "CLP"; timezone: "America/Santiago"; sales_count: string; total_amount: string; units_sold: string;
   average_ticket: { numerator: string; denominator: string } | null;
