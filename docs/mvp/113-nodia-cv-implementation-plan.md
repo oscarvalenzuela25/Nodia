@@ -704,14 +704,16 @@ se prueban por separado antes de la ventana de activación.
   salida inválida/excesiva, duplicación, timeout antes y después del
   despacho, reinicio antes del cierre y reinicio antes del ACK. Registrar
   por separado pruebas sintéticas, inferencia real y adopción.
-- [ ] Abrir PR a `development` y conciliar CI por SHA. La promoción a
+- [x] Abrir PR a `development` y conciliar CI por SHA. La promoción a
   `master` se realiza después de la validación de VM y por el proceso
   autorizado de entrega. Si cambia el árbol Gemini, aplicar el
   [rollout coordinado](../../ops/production/ai-runtime/README.md#actualización-coordinada-del-adaptador-gemini--2026-11-24)
   y verificar el recibo del VPS antes de promover. Si cambia un host
   Codex, documentar su preparación y reversión bajo el runbook operativo
-  antes de activar el carril. Pasar CI/CD y comprobar en destino el
-  selector y el resultado del smoke autorizado. Actualizar progreso,
+  antes de activar el carril. Pasar CI/CD y comprobar que el release
+  sirve Server y Client con ambos runtimes acreditados.
+- [ ] Completar la calificación generativa y el recorrido autenticado en
+  producción según §18. Actualizar progreso,
   [pendientes](TODO.md#cola-actual) y
   [ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md#agentic-en-el-piloto-de-la-vm)
   con evidencia real y estado por proveedor.
@@ -719,3 +721,45 @@ se prueban por separado antes de la ventana de activación.
 El primer cambio de código corresponde al paso 2, después de completar
 la línea base del paso 1. Integrar un paso con sus pruebas antes de abrir
 el siguiente cambio en archivos compartidos de worker, ledger o contratos.
+
+## 18. Agentic en producción — incidencia del 2026-11-26
+
+El [PR 118](https://github.com/oscarvalenzuela25/Nodia/pull/118) promovió
+CV Agentic. Se comprobaron el backend activo
+`backend-89db0f0deb8a-51d8cf48b46f`, API y worker activos, ambos
+recibos de instalación y el Client de Pages. El
+[CD de la versión activa](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45734973451)
+terminó correctamente.
+
+En el navegador autenticado, ChatGPT mostró GPT-6.2 Sol/Alto y rechazó
+la selección por falta de habilitación para CV. El selector Agentic de
+Gemini no ofreció modelos. Server proyecta para Gemini únicamente
+combinaciones con recibo de CV para la configuración guardada. La
+promoción anterior verificó runtimes en el VPS e inferencias en la VM.
+La calificación de producción requiere un recibo de CV de la misma
+conexión, modelo, esfuerzo, configuración y sesión.
+
+El [operador de producción](../../ops/production/ai-runtime/README.md#calificar-una-selección-en-el-release-activo)
+usa el caso de uso interno y el worker activo. Quedó preparado un
+perfil ficticio de TypeScript desde el navegador de producción.
+La observación productiva de ChatGPT `2 / gpt-6.2-sol / high` y
+Gemini `1 / gemini-4-hydrogen-high / high` devolvió
+`qualification_required` para ambas selecciones.
+
+El VPS admitió la prueba de ChatGPT y el worker la mantuvo en cola con
+cero intercambios. La consulta de candidatos consideraba pendientes tres
+proyecciones históricas de Chat cerradas con resultado completado. Chat
+conserva su propia prueba de cierre y la proyección de su ledger puede
+permanecer sin el ACK compartido que usan CV y Tarjetas. La corrección
+alinea el selector de CV con Teacher y Tarjetas. Los jobs activos o
+inciertos de Chat y Teacher siguen impidiendo el despacho y el slot
+del recurso conserva su comprobación.
+
+PostgreSQL aislado reprodujo el bloqueo con el código publicado. La
+prueba exige cero envíos mientras el job de Chat está incierto y un
+envío cuando termina, con su proyección histórica intacta. Pasaron
+la integración Agentic con el arreglo, el build y 161 pruebas focales
+de Server. Tras la publicación, conciliar la
+primera admisión por su clave, acreditar ambas selecciones con el
+worker activo y comprobar el guardado, reapertura y descarga desde
+la interfaz autenticada.

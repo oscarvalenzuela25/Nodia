@@ -159,12 +159,14 @@ export class NodiaCvGenerationStore {
   }
 
   async next(manager: EntityManager, globalWorkers: number, onlyId?: string) {
+    // Chat and Teacher track their actor barriers in their own job tables.
     const [row] = await manager.query<CvGenerationRow[]>(
       `SELECT g.* FROM nodia_cv_generations g
        WHERE g.state='queued' AND g.queue_expires_at>clock_timestamp() AND g.expires_at>clock_timestamp()
        AND ($1::uuid IS NULL OR g.id=$1)
        AND NOT EXISTS (SELECT 1 FROM nodia_ai_runtime_slots s WHERE s.resource_key=g.resource_key AND s.state<>'free')
-       AND NOT EXISTS (SELECT 1 FROM ai_generation_operations o WHERE o.actor_id=g.owner_user_id AND o.acknowledged_at IS NULL)
+       AND NOT EXISTS (SELECT 1 FROM ai_generation_operations o WHERE o.actor_id=g.owner_user_id
+         AND o.owner_kind IN ('flashcard_library','cv') AND o.acknowledged_at IS NULL)
        AND NOT EXISTS (SELECT 1 FROM teacher_generation_jobs j WHERE j.actor_id=g.owner_user_id AND j.state IN ('running','unknown') AND j.blocks_duplicate)
        AND NOT EXISTS (SELECT 1 FROM nodia_ai_jobs j JOIN nodia_ai_conversations c ON c.id=j.conversation_id
          WHERE c.owner_id=g.owner_user_id AND j.state IN ('leased','unknown'))
