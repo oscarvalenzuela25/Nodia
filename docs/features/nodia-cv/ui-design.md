@@ -162,15 +162,21 @@ de ancho. Seguir [DESIGN §9–10](../../../nodia-client/DESIGN.md#9-lineamiento
 
 ### 3.3 Estado del trabajo
 
-Mostrar vacío inicial con la acción que habilita el recorrido. Al salir de
-**Generar CV**, limpiar la vista previa y los requisitos del trabajo
-completado. Mantener el estado recuperable de los trabajos en curso o de
-resultado incierto, junto al formulario. Durante la preparación, mostrar
-el estado junto al botón. Bloquear doble envío también en el handler. Al completar
-el trabajo visible, anunciar que hay una vista previa disponible sin
-robar el foco. Un fallo permite corregir los insumos o usar la recuperación
-de la misma intención que establece el plan. El resultado incierto no
-dispara una inferencia nueva por revalidación, recarga o cambio de pestaña.
+Mostrar vacío inicial con la acción que habilita el recorrido. Si hay un
+borrador listo y sin guardar, pedir una decisión al cambiar de sección,
+salir del módulo o generar un reemplazo. **Seguir editando** conserva el
+trabajo y recibe el foco. **Guardar borrador** prepara y comprueba el
+PDF de la plantilla elegida y guarda la versión. Continuar solo al
+confirmar el guardado. **Descartar** limpia la vista local del borrador.
+Al salir se limpian la vista previa y los requisitos. La reapertura de
+versiones ocurre desde **CV guardados**.
+
+Durante la preparación, mostrar el estado junto al botón y bloquear
+doble envío también en el handler. Una referencia de otra visita se
+consulta al iniciar una solicitud para evitar reenvíos. Su oferta y
+borrador permanecen fuera del formulario activo. Una solicitud terminada
+permite generar con los insumos actuales. La incertidumbre de la misma
+intención conserva su clave y tiene un estado contextual.
 
 ## 4. Vista previa y comprobaciones ATS
 
@@ -259,6 +265,8 @@ dispara una inferencia nueva por revalidación, recarga o cambio de pestaña.
 | Perfiles con duplicación, varias tarjetas, error y confirmación | Identidad por registro, fechas precisas, datos de la copia independientes y formularios retenidos tras fallo |
 | Generación con cero perfiles, selección sucia, retardo, fallo y resultado incierto | Sin generación inválida, trabajo indeterminado recuperable, respuesta antigua fuera del editor activo |
 | Primera generación con modelo compatible y navegación interna | El botón inicia el modelo e intensidad elegidos. Volver a Generar CV muestra la vista inicial. Abrir la versión guardada recupera los requisitos de esa revisión |
+| Cambiar de sección o ruta con un borrador sin guardar | Seguir editando conserva vista y foco. Descartar sale y retira el borrador. Guardar solo sale después de confirmar el PDF y la versión. El error mantiene el diálogo |
+| Recargar con una referencia anterior y preparar otra oferta | El botón admite iniciar una solicitud nueva con una selección válida. La comprobación no recupera la vista ni reemplaza la oferta |
 | Plantillas, documento y lectura ATS | Vista y lectura verificadas contra el mismo PDF. Errores y ausencia de evidencia explícitos. Solo guardado por clic |
 | Dos CV del mismo cargo, borrar perfil y borrar versión | Abrir y borrar por identidad correcta, snapshot existente recuperable y confirmaciones diferenciadas |
 

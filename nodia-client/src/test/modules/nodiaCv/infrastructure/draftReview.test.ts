@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { rebaseCvReviewFields } from "../../../../modules/nodiaCv/infrastructure/draftReview";
 import {
   clearCvReceipt,
-  cvRecoveryKey,
+  cvRecoveryKeys,
   discardOtherCvReceipt,
   rememberCvReceipt,
 } from "../../../../modules/nodiaCv/infrastructure/receiptStorage";
@@ -27,17 +27,19 @@ describe("Nodia CV draft review and receipt recovery", () => {
     });
   });
 
-  it("stores just one opaque receipt per tab and never restores another actor's reference", () => {
-    const key = "ebf95073-9ac2-42c0-8593-b248f3c3dc2a";
-    rememberCvReceipt("123", key);
-    expect(JSON.parse(sessionStorage.getItem("nodia-cv-recovery") ?? "{}")).toEqual({
-      owner: "123",
-      requestKey: key,
-    });
-    expect(cvRecoveryKey("123")).toBe(key);
-    expect(cvRecoveryKey("456")).toBeNull();
+  it("reads a legacy marker and keeps independent opaque keys isolated by owner", () => {
+    const oldKey = "ebf95073-9ac2-42c0-8593-b248f3c3dc2a";
+    const currentKey = "a578c247-581f-4251-b1bf-50a6a4ebf95a";
+    sessionStorage.setItem("nodia-cv-recovery", JSON.stringify({ owner: "123", requestKey: oldKey }));
+    expect(cvRecoveryKeys("123")).toEqual([oldKey]);
+    rememberCvReceipt("123", currentKey);
+    expect(cvRecoveryKeys("123")).toEqual([currentKey, oldKey]);
+    expect(cvRecoveryKeys("456")).toEqual([]);
+    clearCvReceipt("456", oldKey);
+    expect(cvRecoveryKeys("123")).toEqual([currentKey, oldKey]);
+    clearCvReceipt("123", currentKey);
+    expect(cvRecoveryKeys("123")).toEqual([oldKey]);
     discardOtherCvReceipt("456");
-    expect(cvRecoveryKey("123")).toBeNull();
-    clearCvReceipt(key);
+    expect(cvRecoveryKeys("123")).toEqual([]);
   });
 });

@@ -17,7 +17,7 @@ import { getHttpErrorMessage } from "../../../../config/httpFeedback";
 import { ProductHeading } from "../../../../theme/productBrand";
 import ProfileEditor from "../../components/ProfileEditor/ProfileEditor";
 import ProfilesList from "../../components/ProfilesList/ProfilesList";
-import CvGeneration from "../../components/CvGeneration/CvGeneration";
+import CvGeneration, { type CvGenerationHandle } from "../../components/CvGeneration/CvGeneration";
 import CvSavedVersions from "../../components/CvSavedVersions";
 import { emptyProfile, profileEditorValues, profilesPageSize, type ProfileInput, type ProfileRecord, type ProfileSummary } from "../../infrastructure/profileSchema";
 import { profileAccessDenied, useProfileDetail, useProfiles, useWriteProfile } from "../../infrastructure/profiles";
@@ -65,6 +65,7 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
   const [removing, setRemoving] = useState<ProfileSummary>();
   const [deleteError, setDeleteError] = useState<unknown>(null);
   const deleting = useRef(false);
+  const generation = useRef<CvGenerationHandle>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const createButton = useRef<HTMLButtonElement>(null);
   const profiles = useProfiles(page, tab === "profiles");
@@ -81,10 +82,14 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
   }, [denial, onDenial]);
 
   const create = () => setEditor({ kind: "create" });
-  const startProfile = () => {
+  const leaveGeneration = (action: () => void) => {
+    if (tab === "generate" && generation.current) generation.current.leave(action);
+    else action();
+  };
+  const startProfile = () => leaveGeneration(() => {
     setTab("profiles");
     create();
-  };
+  });
   const save = async (input: ProfileInput, intent: { requestKey: string } | Pick<ProfileRecord, "id" | "revision">) => {
     try {
       if ("requestKey" in intent) {
@@ -135,10 +140,14 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
     : "";
   const editorTitle = editor?.kind === "edit" ? t("edit_profile") : editor?.kind === "copy" ? t("duplicate_profile") : t("new_profile");
   const deleteConflict = isAxiosError(deleteError) && [404, 409].includes(deleteError.response?.status ?? 0);
-  const switchTab = (next: string | null) => {
+  const switchTab = (next: string | null, focusPanel = false) => {
     if (next !== "profiles" && next !== "generate" && next !== "saved") return;
-    if (next === "generate") setGenerationOpened(true);
-    setTab(next);
+    if (next === tab) return;
+    leaveGeneration(() => {
+      if (next === "generate") setGenerationOpened(true);
+      setTab(next);
+      if (focusPanel) requestAnimationFrame(() => document.getElementById(`${terminalId}-panel-${next}`)?.focus());
+    });
   };
 
   if (denial) return <Alert severity="error">{t("access_lost")}</Alert>;
@@ -192,21 +201,15 @@ function NodiaCvWorkspace({ onDenial }: { onDenial: () => void }) {
             )}
           </>}
           {tab === "saved" && (
-            <CvSavedVersions onDenial={onDenial} onGoToGeneration={() => {
-              switchTab("generate");
-              requestAnimationFrame(() => document.getElementById(`${terminalId}-panel-generate`)?.focus());
-            }} />
+            <CvSavedVersions onDenial={onDenial} onGoToGeneration={() => switchTab("generate", true)} />
           )}
         </Stack>}
         {generationOpened && (
           <Box id={`${terminalId}-panel-generate`} hidden={tab !== "generate"} role={narrow ? "region" : "tabpanel"}
             aria-label={narrow ? t("tabs.generate") : undefined}
             aria-labelledby={!narrow ? `${terminalId}-generate` : undefined} tabIndex={0}>
-            <CvGeneration active={tab === "generate"} onCreateProfile={startProfile} onDenial={onDenial}
-              onOpenVersions={() => {
-                switchTab("saved");
-                requestAnimationFrame(() => document.getElementById(`${terminalId}-panel-saved`)?.focus());
-              }} />
+            <CvGeneration ref={generation} active={tab === "generate"} onCreateProfile={startProfile} onDenial={onDenial}
+              onOpenVersions={() => switchTab("saved", true)} />
           </Box>
         )}
         {editor && editor.kind !== "create" && !detail.data && (

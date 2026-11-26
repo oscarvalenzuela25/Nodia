@@ -826,6 +826,12 @@ El recorrido cubre las selecciones y esfuerzos de la tabla.
 
 ## 20. Primera generación y recuperación por versión — 2026-11-26
 
+Codex sirve de referencia para iniciar una tarea con cualquier modelo
+compatible que ofrece su selector. Nodia CV aplica la misma elección al
+primer borrador e incorpora la revisión del perfil, la oferta y la
+verificación del PDF en su flujo propio.
+[Regla principal de IA en AGENTS.md](../../AGENTS.md#regla-principal-de-ia--codex-como-referencia-2026-11-26).
+
 La solicitud explícita cambia la admisión de Nodia CV para ambos modos.
 La calificación por modelo y configuración descrita en §17–19
 documenta el comportamiento anterior. Cambiar de modelo o intensidad
@@ -868,3 +874,38 @@ interfaz de producción mostraba «Esta selección exacta aún no está
 habilitada para generar CV» y deshabilitaba aplicar y generar. Se registró
 el bloqueo sin enviar una solicitud de inferencia. La misma selección es
 el control para la verificación del despliegue.
+
+### Verificación posterior al despliegue
+
+El navegador generó y comprobó el PDF con GPT-6.1 Sol en Bajo,
+GPT-6 Luna y Gemini 4 Neon en Bajo por Agentic, y con GPT-6.1 Terra
+en Alto por API key. Después de guardar y salir de Generar CV, reabrir
+la versión en CV guardados recuperó sus requisitos. La migración
+recuperó también los de una versión histórica cuya fuente seguía vigente.
+[Resultados y entrega](../evidence/nodia-cv-first-use-production-20261126.md).
+
+## 21. Guardar o descartar antes de salir — 2026-11-26
+
+El control previo en producción confirmó otra causa del botón inhabilitado.
+Una recarga después de generar conservaba un recibo en la pestaña. Aunque
+ChatGPT Agentic con GPT-6.1 Sol en Alto mostraba disponibilidad, la
+interfaz exigía recuperar la oferta y el borrador anteriores.
+
+Al cambiar de pestaña interna, salir por una ruta de Nodia o pedir otra
+generación con un borrador listo sin guardar, elegir **Seguir editando**,
+**Descartar** o **Guardar borrador**. Guardar reutiliza el artefacto
+comprobado de la revisión y plantilla activas o lo prepara para guardar la
+versión. Un error conserva el diálogo y el borrador. Descartar retira la
+vista y su referencia local. El almacenamiento temporal de Server mantiene
+su vencimiento. Las versiones se reabren en **CV guardados**. Para recarga
+o cierre de la pestaña se presenta el aviso nativo cuando está disponible.
+
+La referencia de generación se conserva para comprobar ocupación,
+idempotencia y estado remoto. Se consulta con la autoridad vigente al
+generar una nueva solicitud. La lectura conserva la edición actual y
+ningún resultado previo se abre por esta vía. Una referencia terminada
+o expirada deja continuar y una intención igual en curso o incierta
+mantiene su propia identidad. Si la referencia anterior aún devuelve 404,
+una continuación explícita utiliza esa misma clave para resolver una
+admisión concurrente sin enviar otra clave para la misma operación.
+[Guía UI](../features/nodia-cv/ui-design.md#33-estado-del-trabajo).

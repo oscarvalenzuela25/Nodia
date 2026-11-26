@@ -4,6 +4,9 @@
 El primer borrador puede usar el modelo elegido sin un recibo previo de
 CV. Al salir de Generar CV se limpian la vista previa y los requisitos.
 Las versiones nuevas conservan el análisis de la revisión para la reapertura.
+El navegador verificó generación y PDF con cuatro modelos y recuperó los
+requisitos de una versión nueva y otra histórica.
+[QA de producción](../evidence/nodia-cv-first-use-production-20261126.md).
 [Plan113 §20](113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
 **GPT-6.1 Sol en Nodia CV — 2026-11-26.** Producción ofrece GPT-6.1 Sol
@@ -15,7 +18,7 @@ y verificó la lectura del PDF con 6.1 Sol.
 `1239145f` procesó la calificación de ChatGPT y el navegador generó,
 guardó, reabrió y descargó un CV con GPT-6.2 Sol en Alto. La prueba de
 Gemini Hydrogen en Alto cerró con resultado remoto incierto al faltar
-la finalización estructurada. El selector de Gemini permanece bloqueado.
+la finalización estructurada. El selector de Gemini quedó bloqueado en esa entrega.
 [Verificación por selección](113-nodia-cv-implementation-plan.md#publicación-y-prueba-en-navegador).
 
 **Pagos combinados y filtro de Ventas — 2026-11-25.** Client y Server

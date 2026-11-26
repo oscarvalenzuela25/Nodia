@@ -32,8 +32,8 @@
   ],
   "verification": {
     "checked_on": "2026-11-26",
-    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md"],
-    "notes": "La VM verificó API key y ambas plantillas mediante OneATS público. Plan113 §18 y §19 registran los recibos exactos y el alcance del navegador en producción. Gemini sigue pendiente en producción."
+    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md", "docs/evidence/nodia-cv-first-use-production-20261126.md"],
+    "notes": "La VM verificó las dos plantillas mediante OneATS público. Plan113 §20 registra cuatro modelos en producción, junto con apertura, descarga y requisitos de versiones."
   },
   "approval": null
 }
@@ -76,6 +76,7 @@ incluyó guardado, reapertura y descarga.
 El primer borrador puede iniciar la ejecución con la conexión, modo, modelo
 e intensidad compatibles elegidos. La disponibilidad real se comprueba
 mediante la inferencia y el cierre del transporte.
+[QA de producción](../../../../evidence/nodia-cv-first-use-production-20261126.md).
 [Plan113 §20](../../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
 ## Solicitudes en lenguaje natural
@@ -170,6 +171,14 @@ del PDF correspondiente. Si cambian los insumos o se sale de **Generar CV**,
 se limpian la vista previa y los requisitos del borrador completado.
 Cambiar plantilla mantiene el contenido y permite
 preparar y verificar otro PDF con la misma revisión.
+
+Antes de cambiar de sección, de ruta o de generación con un borrador sin
+guardar, elegir guardar, descartar o seguir editando. Guardar desde ese
+diálogo verifica el PDF de la revisión y deja la versión en **CV
+guardados**. Descartar retira el resultado temporal de la vista. Una
+referencia de un trabajo anterior se comprueba sin sustituir la oferta
+actual ni abrir su borrador.
+[Plan113 §21](../../../../mvp/113-nodia-cv-implementation-plan.md#21-guardar-o-descartar-antes-de-salir--2026-11-26).
 
 **Guardar versión** confirma la versión concreta que la persona revisó.
 Al abrirla después se conserva su snapshot y el PDF exacto. La versión

@@ -8,7 +8,7 @@
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Perfiles, revisión, PDF e historial implementados. Generación API key verificada en VM y ChatGPT Agentic verificado en producción por selección."
+    "notes": "Producción verificó el primer borrador con ChatGPT Agentic, ChatGPT API key y Gemini Agentic. También verificó la reapertura de requisitos y del PDF."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -32,7 +32,7 @@
   ],
   "verification": {
     "checked_on": "2026-11-26",
-    "evidence_paths": ["docs/evidence/nodia-cv-pdf-spike-20261124.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/mvp/113-nodia-cv-implementation-plan.md"],
+    "evidence_paths": ["docs/evidence/nodia-cv-pdf-spike-20261124.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-first-use-production-20261126.md"],
     "notes": "CV-06 verificó API key y lectura mediante OneATS en el piloto. Plan113 §18 y §19 registran GPT-6.1 Sol en Medio y GPT-6.2 Sol en Alto en producción."
   },
   "approval": null
@@ -116,9 +116,11 @@ para intentar reproducir el flujo en el chat.
   intento con cualquier selección compatible del catálogo de la conexión.
   [Plan113 §20](../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 - El ensayo público OneATS reconoció los datos principales de Clásica
-  y Compacta EN. La ubicación estructurada quedó en el país. Quedan
-  pendientes Gemini Agentic en producción y la verificación en tenants
-  autorizados.
+  y Compacta EN. La ubicación estructurada quedó en el país. Queda
+  pendiente la verificación en tenants ATS autorizados.
+- Producción verificó Agentic con GPT-6.1 Sol, GPT-6 Luna y Gemini 4 Neon,
+  y API key con GPT-6.1 Terra.
+  [QA de producción](../../../evidence/nodia-cv-first-use-production-20261126.md).
 - El alcance inicial propone usar texto pegado en la interfaz. La búsqueda
   de ofertas, el envío a terceros y la operación del producto desde el chat
   quedan fuera de esta revisión.
