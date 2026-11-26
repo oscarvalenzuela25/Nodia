@@ -36,10 +36,10 @@ export default function ChatComposer(props: ChatComposerProps) {
     setShowAttachments(true);
   };
   return <MessageComposer layout="stacked" sx={composerStyles} scopeKey={props.conversationId} text={props.text} onTextChange={props.onTextChange} onSend={props.onSend}
-    maxBytes={remainingTextBytes} disabled={turnInProgress || draft.busy || capabilities.isFetching || (disabled && !recovering)}
+    maxBytes={remainingTextBytes} disabled={controlsDisabled || recovering || draft.busy || capabilities.isFetching}
     inputDisabled={controlsDisabled || recovering} voiceDisabled={controlsDisabled || recovering || draft.busy}
     sendDisabled={sendDisabled} sendAction={props.sendAction} submitOnEnter={!recovering} textTooLarge={props.textTooLarge}
-    label={t("message")} placeholder={t("composer.placeholder")} ariaLabel={t("composer.title")} sendLabel={t(recovering ? "recover_send" : "send")}
+    label={t("message")} placeholder={t("composer.placeholder")} ariaLabel={t("composer.title")} sendLabel={t("send")}
     onRecordingChange={recordingChanged} onPaste={event => {
       const files = Array.from(event.clipboardData.files);
       if (!files.length) return;
@@ -47,7 +47,13 @@ export default function ChatComposer(props: ChatComposerProps) {
       event.preventDefault();
       addFiles(files);
     }} beforeInput={<>
-    {recovering && <Alert severity="warning">{t("send_uncertain")}</Alert>}
+    {recovering && <Alert severity="warning" sx={{ "& .MuiAlert-message": { minWidth: 0, width: "100%" } }}>
+      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", alignItems: "center" }}>
+        <Box sx={{ flex: "1 1 18rem" }}>{t("send_uncertain")}</Box>
+        <Button type="button" color="inherit" variant="outlined" sx={{ minHeight: 44, maxWidth: "100%" }}
+          disabled={sendDisabled} onClick={props.onSend}>{t("recover_send")}</Button>
+      </Box>
+    </Alert>}
     {capabilities.isFetching && <LinearProgress aria-label={t("refreshing")} sx={{ height: 2, borderRadius: 1 }} />}
     {capabilities.isError && <Alert severity="error" action={<Button disabled={busy || recording} onClick={() => void draft.refreshCapabilities()}>{t("retry")}</Button>}>{t("attachments.capabilities_error")}</Alert>}
     <input ref={input} type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf,audio/webm,audio/ogg,audio/mpeg,audio/mp4,audio/wav" hidden disabled={fileDisabled} aria-label={t("attachments.choose")}

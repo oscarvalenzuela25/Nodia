@@ -276,6 +276,7 @@ function ChatPage() {
     saving ||
     updateConversation.isPending;
   const readBusy = detail.isFetching || history.isFetching;
+  const recoveryDisabled = !detail.draftAuthorized || busy || readBusy || detail.isError;
   const sendDisabled =
     !chat ||
     !detail.draftAuthorized ||
@@ -401,11 +402,7 @@ function ChatPage() {
       !chatId ||
       !chat ||
       chat.read_only ||
-      busy ||
-      readBusy ||
-      active ||
-      (sendDisabled && !recovering) ||
-      (inlineDirty && !recovering) ||
+      (recovering ? recoveryDisabled : sendDisabled || inlineDirty) ||
       (!recovering &&
         ((!draft.trim() && !attachments.parts.length) ||
           attachments.busy ||
@@ -795,7 +792,7 @@ function ChatPage() {
               textTooLarge={messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES}
               onSend={() => void send()} onRecordingChange={setRecording}
               sendDisabled={uncertain === chatId
-                ? busy || readBusy || detail.isError
+                ? recoveryDisabled
                 : sendDisabled || inlineDirty || (!draft.trim() && !attachments.parts.length)
                   || !attachments.ready || attachments.busy || recording || messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES}
               footer={<Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5, flexWrap: "wrap", minWidth: 0 }}>

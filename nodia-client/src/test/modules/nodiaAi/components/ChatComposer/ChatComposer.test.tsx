@@ -252,8 +252,15 @@ describe("ChatComposer", () => {
     expect(props.onSend).not.toHaveBeenCalled();
     expect(draft.add).not.toHaveBeenCalled();
 
-    rerender(<ChatComposer {...props} turnInProgress recovering />);
-    expect(screen.getByRole("button", { name: "Comprobar el mismo envío" })).toBeDisabled();
+    rerender(<ChatComposer {...props} turnInProgress recovering sendAction={sendAction} />);
+    const recover = screen.getByRole("button", { name: "Comprobar el mismo envío" });
+    expect(recover).toBeEnabled();
+    expect(recover.closest("[data-composer-toolbar]")).toBeNull();
+    expect(screen.getByRole("button", { name: "Detener respuesta" })).toBeEnabled();
+    await user.click(recover);
+    expect(props.onSend).toHaveBeenCalledOnce();
+    rerender(<ChatComposer {...props} turnInProgress recovering sendDisabled sendAction={sendAction} />);
+    expect(recover).toBeDisabled();
     rerender(<ChatComposer {...props} />);
     expect(add).toBeEnabled();
     expect(screen.getByRole("button", { name: "Dictar mensaje" })).toBeEnabled();
