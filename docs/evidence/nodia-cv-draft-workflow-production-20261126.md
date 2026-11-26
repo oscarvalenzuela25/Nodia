@@ -110,3 +110,21 @@ Las pruebas locales de esta entrega pasaron con 58 casos de Client y
 verificó la copia tras la baja del perfil, las versiones históricas,
 los reintentos concurrentes y la purga. Hydrogen Alto conserva su
 resultado incierto para el intento registrado.
+
+## Oferta extensa y Gemini Agentic
+
+Con el release `6678cefef141ea365602d1b9fbf46ed3c1783ae1`, la oferta
+completa reportada se ingresó con sus 4.666 caracteres y 4.688 bytes
+UTF-8, incluyendo las barras de escape, y con un perfil sintético.
+
+| Selección exacta | Resultado observado |
+| --- | --- |
+| GPT-6.1 Sol · Agentic · Alto | `075c34df-f3eb-49d2-bca3-cb00fa58cfa5` llegó a `ready`. Mostró 52 requisitos y seis hechos seleccionados. La comprobación extrajo texto seleccionable de una página. |
+| Gemini 4 Hydrogen · Agentic · Alto | `a2d05b57-893e-43b6-bf4d-8fb923986add` devolvió `unknown/provider_outcome_unknown`. Se conservó su recibo. |
+| GPT-6.1 Terra · API key · Alto | `aa712100-cbd5-4ca6-89de-3769ea79b37b` llegó a `ready`. Mostró 47 requisitos y seis hechos seleccionados. La comprobación extrajo texto seleccionable de una página. |
+
+Una prueba aislada del motor con el mismo texto aceptó citas literales
+y rechazó citas alteradas, referencias de evidencia inconsistentes y
+JSON envuelto en Markdown. Esos rechazos corresponden a
+`generation_invalid_output`. El recibo de Hydrogen quedó en la etapa
+de resultado remoto incierto.
