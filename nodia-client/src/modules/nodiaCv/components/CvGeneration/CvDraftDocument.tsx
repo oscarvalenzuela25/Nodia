@@ -28,6 +28,10 @@ export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
   for (const id of included) {
     const fact = indexed.get(id);
     if (!fact) continue;
+    if (
+      fact.section === "profile" && fact.field === "professional_title" &&
+      fact.text === profile.professional_title
+    ) continue;
     const section = fact.section === "profile" && fact.field === "main_stack" ? "skills" : fact.section;
     const key = `${section}:${fact.groupId}`;
     const group = groups.get(key) ?? { section, facts: [] };
@@ -35,7 +39,8 @@ export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
     groups.set(key, group);
   }
 
-  const bySection = sections.map((section) => ({
+  const orderedSections = new Set([...(receipt.review?.section_order ?? []), ...sections]);
+  const bySection = Array.from(orderedSections, (section) => ({
     section,
     groups: [...groups].filter(([, group]) => group.section === section),
   }));
@@ -77,20 +82,15 @@ export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
       <Divider />
       {bySection
         .filter(({ groups }) => groups.length > 0)
-        .map(({ section, groups }) => (
+        .map(({ section, groups }, index) => (
           <Stack component="section" key={section} spacing={1}>
-            {section !== "profile" && (
+            {(section !== "profile" || index > 0) && (
               <Typography component="h4" variant="subtitle2" sx={{ fontWeight: 750 }}>
                 {t("document_sections." + section)}
               </Typography>
             )}
             {groups.map(([id, group]) => {
-              const lines = group.facts.filter(
-                (fact) =>
-                  section !== "profile" ||
-                  fact.field !== "professional_title" ||
-                  fact.text !== profile.professional_title,
-              );
+              const lines = group.facts;
               const presentation =
                 group.section === "experience"
                   ? cvExperiencePresentation(lines, t)

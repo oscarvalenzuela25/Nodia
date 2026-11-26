@@ -24,7 +24,10 @@ import {
 import { IsOptional, IsString, Matches } from 'class-validator';
 import { actorReference } from '../authorization/authority-transaction.js';
 import type { AuthRequest } from '../auth/types/auth.types.js';
-import { UpdateNodiaCvDraftDto } from './dto/nodia-cv-draft.dto.js';
+import {
+  StartNodiaCvAiEditDto,
+  UpdateNodiaCvDraftDto,
+} from './dto/nodia-cv-draft.dto.js';
 import {
   NodiaCvSelectionDto,
   StartNodiaCvGenerationDto,
@@ -94,6 +97,26 @@ export class NodiaCvGenerationsController {
     @Param('key', generationUuid) key: string,
   ) {
     return this.generations.statusByRequest(actorReference(request.auth), key);
+  }
+
+  @Post('drafts/:id/ai-edits')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Header('Cache-Control', privateResponse)
+  @ApiAcceptedResponse({
+    description:
+      'An idempotent AI edit of the specified CV draft revision was admitted.',
+  })
+  @ApiConflictResponse({
+    description: 'The draft revision or request key has changed.',
+  })
+  @ApiGoneResponse({ description: 'The draft has expired.' })
+  @ApiNotFoundResponse()
+  startEdit(
+    @Req() request: AuthRequest,
+    @Param('id', generationUuid) id: string,
+    @Body() body: StartNodiaCvAiEditDto,
+  ) {
+    return this.generations.startEdit(actorReference(request.auth), id, body);
   }
 
   @Put('drafts/:id')

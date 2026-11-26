@@ -91,6 +91,17 @@ calificación previa por combinación. Las pruebas de cierre y el estado
 remoto incierto conservan el contrato de cada transporte.
 [Plan113 §20](../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
+La edición por IA admite una generación hija asociada a la revisión exacta
+del borrador. La generación hija reutiliza cola, política de ejecución y
+transporte del dominio. La clave distingue edición de generación y
+vincula la revisión base, la instrucción y la selección aplicada. La
+instrucción permanece en el almacenamiento temporal privado y se
+purga con la operación. La propuesta conserva hechos, citas y
+evidencia de la revisión. Adoptar la propuesta cambia el borrador
+activo de la interfaz. Guardar sigue publicando una versión que
+corresponde al PDF verificado.
+[Plan113 §22](../../mvp/113-nodia-cv-implementation-plan.md#22-edición-del-borrador-con-ia--2026-11-26).
+
 ## Consecuencias
 
 - La cuenta puede repetir el proceso, reutilizar perfiles y reabrir el PDF exacto sin pagar otra inferencia.

@@ -272,7 +272,14 @@ class FixtureHost extends EventEmitter {
       policy_hash: policyHash,
       source_commit: CODEX_CV_HOST_CAPABILITIES.source_commit,
     });
-    const text = JSON.stringify(setup.answer);
+    const text = JSON.stringify(
+      prompt.includes('cv-edit/1')
+        ? {
+            requirements: [],
+            selectedEvidenceIds: setup.answer.selectedEvidenceIds,
+          }
+        : setup.answer,
+    );
     this.stdout.write(
       line({
         event: 'started',
@@ -450,7 +457,6 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   const geminiModel = 'fixture-gemini-high';
   const otherModel = 'fixture-gemini-medium';
   const resource = 'gemini-profile:' + 'f'.repeat(64);
-  const text = JSON.stringify(answer);
   let session = 'f'.repeat(32);
   let current;
   let behavior = 'complete';
@@ -459,6 +465,7 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   let sent = 0;
   let acknowledgements = 0;
   let failNativeAck = true;
+  let editing = false;
   const native = new Map();
 
   await db.query(
@@ -499,6 +506,11 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
     return { transport: agentic.cv_transport, models: agentic.models };
   }
   function result(descriptor, outcome) {
+    const text = JSON.stringify(
+      editing
+        ? { requirements: [], selectedEvidenceIds: answer.selectedEvidenceIds }
+        : answer,
+    );
     return {
       state: 'terminal',
       text: outcome === 'completed' ? text : null,
@@ -524,7 +536,10 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
       binarySha512: 'e'.repeat(128),
       observedAt: new Date().toISOString(),
     }),
-    prepare: (descriptor) => ({ request_hash: agenticHash(descriptor) }),
+    prepare(descriptor, prepared) {
+      assert.equal(prepared.systemPrompt.includes('cv-edit/1'), editing);
+      return { request_hash: agenticHash(descriptor) };
+    },
     async start(command, descriptor) {
       sent++;
       const op = await operation(current.id);
@@ -697,6 +712,7 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
 
   current = await restarted.generations.start(owner, ordinary);
   assert.equal(await restarted.run(), true);
+  const editable = await restarted.generations.status(owner, current.id);
   assert.equal(
     (await restarted.generations.status(owner, current.id)).state,
     'ready',
@@ -745,6 +761,28 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   assert.equal(excluded.slot_state, 'free');
   assert.equal(sent, 4);
   assert.equal(acknowledgements, 4);
+
+  editing = true;
+  behavior = 'complete';
+  current = await restarted.generations.startEdit(owner, editable.id, {
+    request_key: randomUUID(),
+    revision: editable.review.revision,
+    instructions: 'Put skills first',
+    selection,
+  });
+  assert.equal(await restarted.run(), true);
+  const edited = await restarted.generations.status(owner, current.id);
+  assert.equal(edited.state, 'ready');
+  assert.deepEqual(edited.edit, {
+    base_generation_id: editable.id,
+    base_revision: editable.review.revision,
+  });
+  assert.deepEqual(edited.draft.requirements, editable.draft.requirements);
+  assert.equal(edited.review.section_order[0], 'skills');
+  assert.equal((await operation(current.id)).started_exchanges, 1);
+  assert.ok((await operation(current.id)).acknowledged_at);
+  assert.equal(sent, 5);
+  assert.equal(acknowledgements, 5);
 }
 
 try {
@@ -910,6 +948,10 @@ try {
   );
   assert.equal((await operation(currentAttempt.id)).started_exchanges, 1);
   assert.equal(sends, 2);
+  const editableCodex = await restarted.generations.status(
+    owner,
+    currentAttempt.id,
+  );
 
   behavior = 'no-terminal';
   closureVerifiable = false;
@@ -988,6 +1030,35 @@ try {
     'UPDATE user_modules SET is_active=true WHERE user_id=$1 AND module_id=$2',
     [owner.userId, moduleId],
   );
+  behavior = 'complete';
+  currentAttempt = await afterCrash.generations.startEdit(
+    owner,
+    editableCodex.id,
+    {
+      request_key: randomUUID(),
+      revision: editableCodex.review.revision,
+      instructions: 'Put skills first',
+      selection,
+    },
+  );
+  assert.equal(await afterCrash.run(), true);
+  const editedCodex = await afterCrash.generations.status(
+    owner,
+    currentAttempt.id,
+  );
+  assert.equal(editedCodex.state, 'ready');
+  assert.deepEqual(editedCodex.edit, {
+    base_generation_id: editableCodex.id,
+    base_revision: editableCodex.review.revision,
+  });
+  assert.deepEqual(
+    editedCodex.draft.requirements,
+    editableCodex.draft.requirements,
+  );
+  assert.equal(editedCodex.review.section_order[0], 'skills');
+  assert.equal((await operation(currentAttempt.id)).started_exchanges, 1);
+  assert.ok((await operation(currentAttempt.id)).acknowledged_at);
+  assert.equal(sends, 5);
   await checkGemini(adminCv, ownerCv, answer);
   console.log(
     'CV Agentic: PostgreSQL custody, independent catalog and probe receipts, one exchange, ACK, restore quarantine, restart recovery, no replay, and revocation passed.',

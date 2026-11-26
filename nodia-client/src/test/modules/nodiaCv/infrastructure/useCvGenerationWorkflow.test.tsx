@@ -4,7 +4,7 @@ import { AxiosError, AxiosHeaders } from "axios";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import useAuthStore from "../../../../store/authStore";
-import { restoreCvGeneration, startCvGeneration } from "../../../../modules/nodiaCv/infrastructure/generations";
+import { readCvGeneration, restoreCvGeneration, startCvGeneration } from "../../../../modules/nodiaCv/infrastructure/generations";
 import type { CvGeneration, CvGenerationInput } from "../../../../modules/nodiaCv/infrastructure/generationSchema";
 import { emptyProfile, profileRecordSchema } from "../../../../modules/nodiaCv/infrastructure/profileSchema";
 import { cvRecoveryKeys, rememberCvReceipt } from "../../../../modules/nodiaCv/infrastructure/receiptStorage";
@@ -14,6 +14,7 @@ vi.mock("../../../../modules/nodiaCv/infrastructure/generations", async (origina
   ...await original<object>(),
   startCvGeneration: vi.fn(),
   restoreCvGeneration: vi.fn(),
+  readCvGeneration: vi.fn(),
   useCvGenerationStatus: () => ({ data: undefined, error: null }),
 }));
 
@@ -292,5 +293,31 @@ describe("CV tab navigation and recovery", () => {
     await waitFor(() => expect(view.result.current.visible).toBeNull());
     expect(cvRecoveryKeys(owner)).toEqual([]);
     expect(startCvGeneration).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([1, 2])("uses the current parent revision %i to decide whether to replace the draft", async (revision) => {
+    const original = { ...ready, review: { revision: 1, included_fact_ids: [], evidence: [] } };
+    vi.mocked(startCvGeneration).mockResolvedValue(original);
+    const view = open();
+    await act(() => view.result.current.generate(input, profile));
+    const base = view.result.current.visible;
+    if (!base) throw new Error("Expected the original draft to be visible");
+    const proposal = {
+      intent: { ...base.intent, request_key: oldKey },
+      receipt: {
+        ...original,
+        id: newReady.id,
+        edit: { base_generation_id: original.id, base_revision: 1 },
+      },
+    };
+
+    vi.mocked(readCvGeneration).mockResolvedValueOnce({ ...original, review: { ...original.review, revision } });
+    const expected = revision === 1 ? "applied" : "stale";
+    await act(async () => {
+      expect(await view.result.current.applyEdit(base, proposal)).toBe(expected);
+    });
+    expect(view.result.current.visible?.receipt.id).toBe(revision === 1 ? proposal.receipt.id : original.id);
+    expect(cvRecoveryKeys(owner)).toEqual([revision === 1 ? oldKey : base.intent.request_key]);
+    expect(startCvGeneration).toHaveBeenCalledOnce();
   });
 });
