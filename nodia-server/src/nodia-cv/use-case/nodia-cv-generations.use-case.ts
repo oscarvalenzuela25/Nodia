@@ -42,6 +42,10 @@ import {
 } from '../policies/nodia-cv-draft-review.js';
 import { cvGenerationError } from '../policies/nodia-cv-generation-errors.js';
 import {
+  recoverableGeneration,
+  visibleGeneration,
+} from '../policies/nodia-cv-generation-status.js';
+import {
   CV_PROBE_CANDIDATE,
   CV_PROBE_OFFER,
   cvEditIntent,
@@ -57,48 +61,6 @@ type Admission =
       qualification: boolean;
     }
   | { kind: 'edit'; input: StartNodiaCvAiEditDto; baseId: string };
-
-function visibleGeneration(row: CvGenerationRow) {
-  if (
-    row.state === 'expired' ||
-    !row.profile_id ||
-    row.expires_at.getTime() <= Date.now()
-  )
-    cvGenerationError('generation_expired', 410);
-  return {
-    id: row.id,
-    state: row.state,
-    profile_id: row.profile_id,
-    profile_revision: row.profile_revision,
-    language: row.language,
-    selection: row.selection_snapshot,
-    created_at: row.created_at,
-    expires_at: row.expires_at,
-    vacancy_title: row.vacancy_title,
-    vacancy_company: row.vacancy_company,
-    error_code: row.error_code,
-    draft: row.draft,
-    ...(row.edit_input
-      ? {
-          edit: {
-            base_generation_id: row.edit_input.base_generation_id,
-            base_revision: row.edit_input.base_revision,
-          },
-        }
-      : {}),
-    review:
-      row.review && row.review_revision !== null
-        ? {
-            revision: row.review_revision,
-            included_fact_ids: row.review.included_fact_ids,
-            evidence: row.review.evidence,
-            ...(row.review.section_order
-              ? { section_order: row.review.section_order }
-              : {}),
-          }
-        : null,
-  };
-}
 
 @Injectable()
 export class NodiaCvGenerationsUseCase {
@@ -143,18 +105,7 @@ export class NodiaCvGenerationsUseCase {
   }
 
   statusByRequest(actor: ActorReference, key: string) {
-    return this.read(actor, { key }, (row) => {
-      const visible = visibleGeneration(row);
-      if (!row.offer_text || !row.profile_snapshot)
-        cvGenerationError('request_failed', 500);
-      return {
-        ...visible,
-        recovery: {
-          offer_text: row.offer_text,
-          profile: row.profile_snapshot,
-        },
-      };
-    });
+    return this.read(actor, { key }, recoverableGeneration);
   }
 
   private read<T>(
@@ -267,6 +218,15 @@ export class NodiaCvGenerationsUseCase {
       };
     } else {
       input = request.input;
+    }
+    if (base?.source_version) {
+      return {
+        state: 'new',
+        current,
+        input,
+        base,
+        snapshot: base.profile_snapshot,
+      } as const;
     }
     const profile = await this.profiles.find(
       manager,
@@ -415,6 +375,7 @@ export class NodiaCvGenerationsUseCase {
           waitSeconds: this.policy.queue.wait_seconds,
           editInput,
           baseExpiresAt: base?.expires_at ?? null,
+          sourceVersion: base?.source_version ?? null,
         }),
       );
     }, true);

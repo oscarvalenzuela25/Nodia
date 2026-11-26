@@ -4,7 +4,7 @@
   "document_id": "nodia-cv",
   "product_id": "nodia-cv",
   "kind": "product",
-  "revision": 5,
+  "revision": 6,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -54,6 +54,8 @@ Las tres secciones son **Perfiles**, **Generar CV** y **CV
 guardados**. La versión guardada conserva una copia de los datos del CV y el
 vínculo al PDF exacto que se revisó. Las versiones nuevas conservan también
 el análisis de requisitos y su evidencia de esa misma revisión.
+**Editar una copia** en **CV guardados** lleva el contenido archivado a
+**Generar CV** para pedir cambios con una selección de IA aplicada.
 
 ## Conceptos y relaciones
 
@@ -132,6 +134,7 @@ para intentar reproducir el flujo en el chat.
 
 | Revisión | Cambio funcional | Fuentes/evidencia | Impacto en fichas y catálogo |
 | --- | --- | --- | --- |
+| 6 | Edición de una copia de una versión guardada y limpieza del formulario | [Plan113 §23](../../../mvp/113-nodia-cv-implementation-plan.md#23-editar-un-cv-guardado-y-limpiar-el-formulario--2026-11-26) | [Ficha de generación](features/tailoring-and-verified-versions.md), sin registro de herramientas |
 | 5 | Primer intento con selección compatible y análisis recuperable por versión | [Plan113 §20](../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26) | Fichas candidatas, sin registro de herramientas |
 | 3 | Piloto VM, lectura pública OneATS y bajas de CV comprobadas en restore | [Plan113 §15](../../../mvp/113-nodia-cv-implementation-plan.md#15-piloto-en-vm-y-lectura-externa-cv-06--2026-11-24) | Fichas candidatas, sin registro de herramientas |
 | 2 | PDF verificado en Clásica y Compacta, descarga e historial privado | [Plan113 §14](../../../mvp/113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) | Fichas candidatas, sin registro de herramientas |

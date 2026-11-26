@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type { NodiaAiConnection, NodiaAiMode, NodiaAiSelection } from "../../modules/nodiaAi/infrastructure/types";
 
 export interface AiComposerSelectorLabels {
@@ -12,6 +13,7 @@ export interface AiComposerSelectorLabels {
 }
 
 export interface AiComposerSelectorProps<Connection extends NodiaAiConnection = NodiaAiConnection> {
+  triggerRef?: RefObject<HTMLButtonElement | null>;
   connections: Connection[];
   selection: NodiaAiSelection | null;
   onSelectionChange: (draft: NodiaAiSelection | null) => void;

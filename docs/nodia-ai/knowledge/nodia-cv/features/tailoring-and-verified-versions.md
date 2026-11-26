@@ -4,7 +4,7 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 11,
+  "revision": 12,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -103,6 +103,7 @@ registradas para leer la oferta o actuar sobre un borrador o versión.
 | Preparar PDF y observar sus comprobaciones | Artefacto privado y lectura verificable | Sin herramienta registrada | POST /drafts/:id/pdf y GET /drafts/:id/pdf/:artifactId | Archivo y texto extraído ligados a revisión, plantilla y huella |
 | Guardar versión | Escritura explícita de una copia revisada | Sin herramienta registrada | POST /versions con clave, generación, revisión, artefacto y hash | Identidad propia de la versión guardada |
 | Listar, abrir y descargar versiones | Lectura de metadatos y artefactos privados | Sin herramienta registrada | GET /versions, GET /versions/:id y GET /versions/:id/pdf | Lista del ámbito y versión exacta en su lectura o descarga |
+| Editar una copia de una versión guardada | Preparación temporal privada | Sin herramienta registrada | POST /versions/:id/draft-copy | Copia del contenido y el análisis archivados. La selección de IA se aplica antes de pedir la edición |
 | Eliminar CV guardado | Baja de la versión elegida tras confirmación | Sin herramienta registrada | DELETE /versions/:id | Baja de la versión y del acceso a sus bytes |
 
 El contrato de la UI autentica y autoriza cada operación. Guardar o borrar
@@ -188,6 +189,13 @@ reordenar datos del perfil. La persona compara el resultado, aplica la
 propuesta o conserva el original. Guardar archiva la revisión elegida.
 [Plan113 §22](../../../../mvp/113-nodia-cv-implementation-plan.md#22-edición-del-borrador-con-ia--2026-11-26).
 
+Desde **CV guardados**, **Editar una copia** abre una copia temporal en
+**Generar CV**. Se conserva la versión de origen y se elige una
+selección compatible para pedir cambios. Para empezar otro borrador,
+**Limpiar campos** restablece el formulario y pide una decisión si la
+revisión actual sigue sin guardar.
+[Plan113 §23](../../../../mvp/113-nodia-cv-implementation-plan.md#23-editar-un-cv-guardado-y-limpiar-el-formulario--2026-11-26).
+
 **Guardar versión** confirma la versión concreta que la persona revisó.
 Al abrirla después se conserva su snapshot y el PDF exacto. La versión
 también muestra los requisitos y la evidencia archivada de solo lectura
@@ -223,6 +231,7 @@ requeriría contrato, registro y verificación según el
 
 | Revisión | Cambio y fuentes | Herramientas/contexto afectados | Compatibilidad/propuestas pendientes |
 | --- | --- | --- | --- |
+| 12 | Copia editable de una versión guardada, limpieza explícita y cambio de modelo ante resultado incierto. [Plan113 §23](../../../../mvp/113-nodia-cv-implementation-plan.md#23-editar-un-cv-guardado-y-limpiar-el-formulario--2026-11-26) | Sin herramientas registradas o fragmentos publicados | Una versión histórica puede carecer del análisis estructurado |
 | 10 | Primera generación con selección compatible, limpieza al cambiar de pestaña y análisis por versión. [Plan113 §20](../../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26) | Sin herramientas registradas o fragmentos publicados | PDF histórico disponible cuando falta el análisis |
 | 3 | Piloto VM y lectura pública de las dos plantillas en OneATS. Restore con bajas preservadas | Sin herramientas registradas o fragmentos publicados | CI, Agentic y adopción en destino pendientes |
 | 2 | Render verificado en Clásica y Compacta, descarga e historial por versión según [Plan113 §14](../../../../mvp/113-nodia-cv-implementation-plan.md#14-pdf-verificado-y-cv-guardados-cv-05--2026-11-24) | Sin herramientas registradas o fragmentos publicados | Agentic y evidencia por importador pendientes |

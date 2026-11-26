@@ -15,8 +15,10 @@ import {
   sameCvSelection,
   type CvGeneration,
   type CvGenerationInput,
+  type CvGenerationIntent,
   type CvReviewSave,
 } from "./generationSchema";
+import type { CvVersionSummary } from "./pdfVersions";
 import { fetchCvProfilesPage, profileAccessDenied, useProfileScope } from "./profiles";
 import { profileRecordSchema, profilesPageSize } from "./profileSchema";
 
@@ -26,7 +28,7 @@ const scopeHeaders = (version: number, signal?: AbortSignal) => ({
   signal,
 });
 
-function verifiedReceipt(data: unknown, intent: CvGenerationInput, id?: string) {
+function verifiedReceipt(data: unknown, intent: CvGenerationIntent, id?: string) {
   const result = cvGenerationSchema.parse(data);
   if ((id && id !== result.id) || !receivedCvIntent(result, intent))
     throw new Error("Unexpected Nodia CV generation identity");
@@ -42,30 +44,52 @@ const recoverySchema = z.object({
   recovery: z.object({ offer_text: z.string(), profile: profileRecordSchema }),
 });
 
-export async function restoreCvGeneration(requestKey: string, version: number, signal: AbortSignal) {
-  const { data } = await mainInstance.get<unknown>(
-    `${root}/generations/requests/${requestKey}`,
-    scopeHeaders(version, signal),
-  );
+function parseCvRecovery(data: unknown, requestKey: string) {
   const receipt = cvGenerationSchema.parse(data);
   const { recovery } = recoverySchema.parse(data);
   const { profile } = recovery;
   if (profile.id !== receipt.profile_id || profile.revision !== receipt.profile_revision)
     throw new Error("Unexpected recovered CV profile revision");
-  const offer = cvOfferSchema.parse({
+  const archive = receipt.source_version;
+  const offerSchema = archive ? cvOfferSchema.extend({ offer_text: z.literal("") }) : cvOfferSchema;
+  const offer = offerSchema.parse({
     offer_text: recovery.offer_text,
     language: receipt.language,
     vacancy_title: receipt.vacancy_title ?? "",
     vacancy_company: receipt.vacancy_company ?? "",
   });
-  const input = {
+  const input: CvGenerationIntent = {
     ...offer,
     request_key: requestKey,
     profile_id: profile.id,
     profile_revision: profile.revision,
     selection: receipt.selection,
+    source_version: archive,
   };
   return { input, profile, receipt };
+}
+
+export async function restoreCvGeneration(requestKey: string, version: number, signal: AbortSignal) {
+  const { data } = await mainInstance.get<unknown>(
+    `${root}/generations/requests/${requestKey}`,
+    scopeHeaders(version, signal),
+  );
+  return parseCvRecovery(data, requestKey);
+}
+
+export async function copySavedCvDraft(saved: CvVersionSummary, requestKey: string, version: number) {
+  const { data } = await mainInstance.post<unknown>(
+    `${root}/versions/${saved.id}/draft-copy`,
+    { request_key: requestKey },
+    scopeHeaders(version),
+  );
+  const { input: intent, profile, receipt } = parseCvRecovery(data, requestKey);
+  if (receipt.selection !== null || receipt.source_version?.id !== saved.id ||
+      receipt.source_version.template !== saved.template || receipt.language !== saved.language ||
+      receipt.vacancy_title !== saved.vacancy_title || receipt.vacancy_company !== saved.vacancy_company) {
+    throw new Error("Unexpected archived Nodia CV source");
+  }
+  return { intent, profile, receipt };
 }
 
 async function fetchCvReceipt(id: string, version: number, signal?: AbortSignal) {
@@ -78,7 +102,7 @@ async function fetchCvReceipt(id: string, version: number, signal?: AbortSignal)
   return result;
 }
 
-export async function readCvGeneration(id: string, intent: CvGenerationInput, version: number, signal?: AbortSignal) {
+export async function readCvGeneration(id: string, intent: CvGenerationIntent, version: number, signal?: AbortSignal) {
   const result = await fetchCvReceipt(id, version, signal);
   if (!receivedCvIntent(result, intent)) throw new Error("Unexpected Nodia CV generation identity");
   return result;
@@ -86,7 +110,7 @@ export async function readCvGeneration(id: string, intent: CvGenerationInput, ve
 
 export async function saveCvReview(
   id: string,
-  intent: CvGenerationInput,
+  intent: CvGenerationIntent,
   input: CvReviewSave,
   version: number,
 ) {
@@ -159,7 +183,7 @@ export function useCvEligibility(selection: NodiaAiSelection | null, active: boo
   });
 }
 
-export type TrackedCvGeneration = { intent: CvGenerationInput; receipt: CvGeneration };
+export type TrackedCvGeneration = { intent: CvGenerationIntent; receipt: CvGeneration };
 export const cvGenerationQueryKey = (scope: ReturnType<typeof useProfileScope>["scope"], id?: string) =>
   [...scope, "generation-status", id] as const;
 
