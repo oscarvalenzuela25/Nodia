@@ -797,3 +797,29 @@ en el texto extraído.
 El primer pendiente de Agentic es resolver la falta de finalización
 estructurada de Gemini, con evidencia propia de su transporte. La
 respuesta anterior no habilita la selección ni autoriza su replay.
+
+## 19. GPT-6.1 Sol en el selector Agentic — 2026-11-26
+
+Por solicitud del usuario, la conexión productiva ChatGPT `2` incorpora
+`gpt-6.1-sol` al catálogo guardado. El catálogo autenticado de Codex
+`0.171.0` y la comprobación del host de CV confirmaron ese ID en Medio.
+Se guardó el modelo descubierto mediante el caso de uso de configuración,
+en el release `backend-1239145f21a8-d29282c456cd`. GPT-6.2 Sol en Alto
+conservó su asignación principal. [Contrato del catálogo](ai-provider-feature-contract.md#gpt-61-sol-en-agentic--2026-11-26).
+
+La ampliación generó una configuración nueva. El worker de producción
+emitió un recibo con un intercambio, borrador válido, cierre y ACK para
+cada selección.
+
+| Selección ChatGPT Agentic | Generación de calificación | Elegible desde UTC |
+| --- | --- | --- |
+| `gpt-6.2-sol / high` | `c55afde1-9f13-48e7-8d93-730e7b5c599a` | `2026-11-26T15:44:13.256Z` |
+| `gpt-6.1-sol / medium` | `c9c3084f-baf3-41c4-a957-43630c95c265` | `2026-11-26T15:45:11.059Z` |
+
+El navegador de producción mostró los dos modelos en **Generar CV**.
+Tras recuperar el recibo anterior, se aplicó 6.1 Sol en Medio y se
+generó una oferta ficticia nueva. El borrador mostró TypeScript con
+evidencia y Kubernetes como brecha. El PDF Clásico en español pasó
+la lectura interna de una página y mostró el texto seleccionable.
+El recorrido cubre las selecciones y esfuerzos de la tabla.
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md#agentic-en-producción).

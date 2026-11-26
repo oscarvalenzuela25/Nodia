@@ -4,11 +4,11 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 8,
+  "revision": 9,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Generación API key, revisión, PDF e historial comprobados en VM. El piloto aislado verificó generación Agentic y una versión guardada con GPT-6.2 Sol en Alto y Gemini 4 Hydrogen en Alto."
+    "notes": "La VM verificó generación API key y Agentic. Producción calificó GPT-6.1 Sol en Medio y GPT-6.2 Sol en Alto y comprobó sus PDF desde la interfaz."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -31,9 +31,9 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-25",
+    "checked_on": "2026-11-26",
     "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md"],
-    "notes": "La VM verificó el recorrido API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó generación, revisión de ambas plantillas, guardado, reapertura y descarga en ambas selecciones."
+    "notes": "La VM verificó API key y ambas plantillas mediante OneATS público. Plan113 §18 y §19 registran los recibos exactos y el alcance del navegador en producción. Gemini sigue pendiente en producción."
   },
   "approval": null
 }
@@ -67,6 +67,15 @@ la sesión al aplicarlas. La generación exige perfil guardado y oferta.
 La recuperación consulta el recibo sin reenviar.
 [Recorrido ordinario comprobado](../../../../evidence/nodia-cv-agentic-delivery-20261125.md).
 [Continuación de CV-03](../../../../mvp/113-nodia-cv-implementation-plan.md#17-continuación-de-cv-03--generación-agentic--2026-11-25).
+
+## Agentic en producción
+
+El selector **Generar CV** permite aplicar **ChatGPT → Agentic →
+GPT-6.1 Sol → Medio** o **GPT-6.2 Sol → Alto** en la conexión verificada.
+El navegador generó un borrador con 6.1 Sol y leyó el texto de su PDF.
+La prueba de 6.2 Sol incluyó guardado, reapertura y descarga. Cada
+selección requiere su propio recibo de calificación vigente.
+[Plan113 §18 y §19](../../../../mvp/113-nodia-cv-implementation-plan.md#publicación-y-prueba-en-navegador).
 
 ## Solicitudes en lenguaje natural
 

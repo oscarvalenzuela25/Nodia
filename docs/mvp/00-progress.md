@@ -1,5 +1,10 @@
 # Progreso del MVP — Nodia
 
+**GPT-6.1 Sol en Nodia CV — 2026-11-26.** Producción ofrece GPT-6.1 Sol
+en Medio y GPT-6.2 Sol en Alto. El navegador generó un borrador
+y verificó la lectura del PDF con 6.1 Sol.
+[Plan113 §19](113-nodia-cv-implementation-plan.md#19-gpt-61-sol-en-el-selector-agentic--2026-11-26).
+
 **Nodia CV Agentic en producción — 2026-11-26.** El backend corregido
 `1239145f` procesó la calificación de ChatGPT y el navegador generó,
 guardó, reabrió y descargó un CV con GPT-6.2 Sol en Alto. La prueba de

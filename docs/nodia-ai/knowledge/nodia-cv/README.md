@@ -4,11 +4,11 @@
   "document_id": "nodia-cv",
   "product_id": "nodia-cv",
   "kind": "product",
-  "revision": 3,
+  "revision": 4,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
-    "notes": "Perfiles, generación API key, revisión, PDF verificado e historial implementados en la rama de Nodia CV. Agentic y aceptación en destino pendientes."
+    "notes": "Perfiles, revisión, PDF e historial implementados. Generación API key verificada en VM y ChatGPT Agentic verificado en producción por selección."
   },
   "integration_status": "unregistered",
   "maintainer": "Nodia",
@@ -31,9 +31,9 @@
     }
   ],
   "verification": {
-    "checked_on": "2026-11-24",
+    "checked_on": "2026-11-26",
     "evidence_paths": ["docs/evidence/nodia-cv-pdf-spike-20261124.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/mvp/113-nodia-cv-implementation-plan.md"],
-    "notes": "CV-06 verificó el recorrido en VM con API key, lectura de ambos PDF EN por OneATS público y restauración aislada de bajas. Agentic y adopción en destino pendientes."
+    "notes": "CV-06 verificó API key y lectura mediante OneATS en el piloto. Plan113 §18 y §19 registran GPT-6.1 Sol en Medio y GPT-6.2 Sol en Alto en producción."
   },
   "approval": null
 }
@@ -94,7 +94,7 @@ revalidan en el ámbito autenticado.
 | Función | Ficha relativa | Implementación | Integración NodiaAI | Módulos de destino |
 | --- | --- | --- | --- | --- |
 | Gestionar perfiles y copias | [Perfiles profesionales](features/profiles.md) | Implementada en la rama de CV | Sin herramientas registradas | `/nodia-cv` |
-| Preparar, revisar y guardar CV por oferta | [Generación y versiones verificadas](features/tailoring-and-verified-versions.md) | API key, PDF e historial implementados en la rama de CV | Generación desde su interfaz, sin herramientas Chat | `/nodia-cv` |
+| Preparar, revisar y guardar CV por oferta | [Generación y versiones verificadas](features/tailoring-and-verified-versions.md) | API key verificado en VM y [ChatGPT Agentic verificado en producción](features/tailoring-and-verified-versions.md#agentic-en-producción) | Generación desde su interfaz, sin herramientas Chat | `/nodia-cv` |
 | Postular, enviar correos o automatizar portales | Exclusión de [generación y versiones](features/tailoring-and-verified-versions.md#reglas-acceso-y-restricciones) | Fuera del alcance descrito | Sin herramientas registradas | No aplica |
 
 ## Interpretación de solicitudes que combinan funciones
@@ -115,7 +115,7 @@ para intentar reproducir el flujo en el chat.
   exacta de modelo y el ámbito de la persona.
 - El ensayo público OneATS reconoció los datos principales de Clásica
   y Compacta EN. La ubicación estructurada quedó en el país. Quedan
-  pendientes Agentic, adopción en destino y la verificación en tenants
+  pendientes Gemini Agentic en producción y la verificación en tenants
   autorizados.
 - El alcance inicial propone usar texto pegado en la interfaz. La búsqueda
   de ofertas, el envío a terceros y la operación del producto desde el chat
