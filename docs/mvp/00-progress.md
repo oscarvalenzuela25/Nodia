@@ -1,5 +1,19 @@
 # Progreso del MVP — Nodia
 
+**NodiaAI — conteo de catálogo y barra durante un turno, 2026-11-26.**
+La entrega `eeb5ff86d534` está activa en producción. Con Gemini 4
+Hydrogen en Alto, un turno de texto completó su respuesta. Durante el
+envío y el turno activo, el selector mantuvo visible el modelo y quedaron
+bloqueados el campo, los adjuntos y el dictado. Dos turnos de prueba
+confirmaron la detención con teclado y con clic. El servidor aceptó
+ambas solicitudes y la barra se habilitó al cerrar cada turno. El
+conteo por nombre ya se enruta a las lecturas de catálogo. Para Hydrogen
+Alto, la elegibilidad de producción devolvió `supports_mcp: false`. Sigue
+pendiente la prueba sintética del transporte y la consulta de catálogo
+con esa misma selección.
+[Entrega](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45909873210).
+[Contrato del catálogo](40-nodia-ai-tool-catalog-v1.md).
+
 **Nodia CV — oferta extensa con Gemini Agentic, 2026-11-26.**
 La oferta reportada generó borradores y PDF verificados con Hydrogen
 Alto y Neon Bajo tras ajustar la entrega estructurada de Gemini. La
