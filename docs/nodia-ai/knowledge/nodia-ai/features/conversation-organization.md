@@ -116,3 +116,12 @@ El ajuste afecta presentación y descubrimiento de controles, sin cambiar concep
 ### Ajuste del encabezado — 2026-10-28
 
 Por solicitud del usuario, el encabezado visible pasa a «Nodia AI», con espacio, y utiliza el mismo degradado del logotipo (tokens primary→tertiary/secondary del tema). Conserva su fuente, semántica h1 y tamaño responsive. Sólo presentación: sin cambios de contexto funcional, contratos, herramientas, permisos o confirmaciones; sin publicación de esta ficha. [Evidencia de verificación](../../../../evidence/nodia-ai-title-ui-r01.json).
+
+### Controles durante un turno — 2026-11-26
+
+La admisión y el turno en curso mantienen la selección aplicada visible
+y deshabilitan los controles del compositor. **Detener respuesta** sigue
+disponible durante la reconsulta del estado mientras el turno sea cancelable
+y la autoridad esté vigente. Es un ajuste de presentación que usa los
+estados y las operaciones ya documentados.
+[Diseño del compositor](../../../../../nodia-client/DESIGN.md#1010-chat-conversacional-y-compositor-compacto-2026-10-28).

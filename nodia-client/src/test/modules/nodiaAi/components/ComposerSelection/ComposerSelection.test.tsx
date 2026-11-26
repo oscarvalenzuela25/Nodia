@@ -264,6 +264,34 @@ describe("ComposerSelection", () => {
     expect(screen.getByRole("button", { name: key("selection_panel.title"), hidden: true })).toBeDisabled();
   });
 
+  it("keeps the same applied selector disabled through status refreshes and closes its editor for the turn", async () => {
+    const settings = props();
+    const { rerender } = render(<ComposerSelection {...settings} />);
+    const trigger = screen.getByRole("button", { name: key("selection_panel.title") });
+    await choose("connection", "Independent connection");
+    expect(screen.getByRole("dialog", { name: key("title") })).toBeInTheDocument();
+
+    rerender(<ComposerSelection {...settings} locked isFetching />);
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: key("title") })).not.toBeInTheDocument());
+    expect(trigger).toBeDisabled();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(trigger).toHaveTextContent("Configured api_key");
+
+    rerender(<ComposerSelection {...settings} locked error="Synthetic catalog failure" />);
+    expect(screen.getByRole("button", { name: key("selection_panel.title") })).toBe(trigger);
+    expect(trigger).toBeDisabled();
+    expect(screen.getByRole("button", { name: i18n.t("nodiaAi:retry") })).toBeDisabled();
+    expect(screen.queryByRole("dialog", { name: key("title") })).not.toBeInTheDocument();
+    expect(settings.onRetry).not.toHaveBeenCalled();
+    expect(settings.onApply).not.toHaveBeenCalled();
+
+    rerender(<ComposerSelection {...settings} />);
+    expect(trigger).toBeEnabled();
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await openSelection();
+    expect(screen.getByRole("button", { name: key("connection") })).toHaveTextContent("Independent connection");
+  });
+
   it("lets the field popup consume Escape before closing the preserved editor", async () => {
     render(<ComposerSelection {...props()} />);
     await openSelection();

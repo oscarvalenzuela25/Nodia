@@ -268,12 +268,13 @@ function ChatPage() {
   const [recording, setRecording] = useState(false);
   const messageTextBytes =
     new TextEncoder().encode(draft).length + attachments.reviewedTextBytes;
+  const startingTurn = admit.isPending || attachments.admissionInFlight;
+  const turnInProgress = startingTurn || active;
   const busy =
     create.isPending ||
-    admit.isPending ||
+    startingTurn ||
     saving ||
-    updateConversation.isPending ||
-    attachments.admissionInFlight;
+    updateConversation.isPending;
   const readBusy = detail.isFetching || history.isFetching;
   const sendDisabled =
     !chat ||
@@ -281,7 +282,7 @@ function ChatPage() {
     chat.read_only ||
     busy ||
     readBusy ||
-    active ||
+    turnInProgress ||
     !usable ||
     eligibility.isFetching ||
     detail.isError ||
@@ -402,6 +403,7 @@ function ChatPage() {
       chat.read_only ||
       busy ||
       readBusy ||
+      active ||
       (sendDisabled && !recovering) ||
       (inlineDirty && !recovering) ||
       (!recovering &&
@@ -784,10 +786,10 @@ function ChatPage() {
             <ChatComposer key={chatId!}
               conversationId={chatId!} conversationRevision={chat.revision}
               text={draft} onTextChange={text => { composerDraft.setText(text); attachments.dismissRejectedAdmission(); }}
-              draft={attachments} disabled={sendDisabled || uncertain === chatId || inlineDirty}
-              sendAction={uncertain !== chatId && run && ["queued", "running", "cancel_requested"].includes(run.state) ? <RunCancellation
+              draft={attachments} disabled={sendDisabled || uncertain === chatId || inlineDirty} turnInProgress={turnInProgress}
+              sendAction={run && isNodiaAiRunActive(run.state) ? <RunCancellation
                 key={run.run_id} compact conversationId={chatId!} run={run}
-                authorized={detail.draftAuthorized && !detail.isFetching && !detail.isError}
+                authorized={detail.draftAuthorized && !detail.isError}
                 readOnly={chat.read_only} /> : undefined}
               recovering={uncertain === chatId}
               textTooLarge={messageTextBytes > NODIA_AI_MESSAGE_TEXT_BYTES}
@@ -803,7 +805,8 @@ function ChatPage() {
                   eligibilityBusy={eligibility.isFetching} eligibilityError={eligibility.isError ? t("eligibility_error") : null}
                   onRetryEligibility={() => void eligibility.refetch()}
                   isLoading={catalog.isLoading} isFetching={catalog.isFetching || readBusy}
-                  isSaving={saving} readOnly={active || busy || recording || attachments.busy || uncertain === chatId || detail.isError}
+                  isSaving={saving} readOnly={busy || recording || attachments.busy || uncertain === chatId || detail.isError}
+                  locked={turnInProgress}
                   error={configurationError ?? (catalog.isError ? t("catalog_error") : null)}
                   onRetry={() => { setConfigurationError(null); void catalog.refetch(); void detail.refetch(); }}
                   hasMore={!!catalog.hasNextPage} onLoadMore={() => void catalog.fetchNextPage()}

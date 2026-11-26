@@ -22,6 +22,7 @@ interface Props {
   appliedDetails: string;
   appliedIdentity?: string;
   busy: boolean;
+  locked: boolean;
   fields: ComposerSelectionField[];
   notices: ReactNode;
   hasNotices: boolean;
@@ -30,17 +31,18 @@ interface Props {
 
 export default function ComposerSelectionPopover({
   summaryRef, title, triggerLabel, closeLabel, appliedLabel, appliedModel, appliedMode, appliedDetails,
-  appliedIdentity, busy, fields, notices, hasNotices, actions,
+  appliedIdentity, busy, locked, fields, notices, hasNotices, actions,
 }: Props) {
   const panelId = useId();
   const [opened, setOpened] = useState(false);
   const [visited, setVisited] = useState(false);
+  if (locked && opened) setOpened(false);
   const closePanel = () => {
     if (!busy) setOpened(false);
   };
   return (
     <SelectionPanel>
-      <SelectionSummary ref={summaryRef} type="button" variant="text" disabled={busy}
+      <SelectionSummary ref={summaryRef} type="button" variant="text" disabled={busy || locked}
         aria-label={triggerLabel} aria-expanded={opened} aria-controls={visited ? panelId : undefined} aria-haspopup="dialog"
         aria-describedby={`${panelId}-applied`}
         title={[appliedModel, appliedDetails, appliedIdentity].filter(Boolean).join("\n")}
@@ -66,7 +68,7 @@ export default function ComposerSelectionPopover({
               <Typography component="h2" variant="subtitle2" id={`${panelId}-title`}>{title}</Typography>
               <Typography variant="caption" color="text.secondary">{appliedLabel}: {appliedModel} · {appliedDetails}</Typography>
             </Box>
-            <IconButton type="button" aria-label={closeLabel} disabled={busy} onClick={closePanel}
+          <IconButton type="button" aria-label={closeLabel} disabled={busy || locked} onClick={closePanel}
               sx={{ width: 44, height: 44, flexShrink: 0 }}><CloseOutlined /></IconButton>
           </Box>
           {opened && <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: hasNotices ? 1 : 0 }}>{notices}</Box>}
