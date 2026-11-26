@@ -394,7 +394,17 @@
   "stale_draft": "The draft changed since you opened the review.",
   "invalid_draft_review": "Review the selected facts and the evidence you entered.",
   "generation_check_status": "Check status",
-  "generation_restore_saved": "You can recover a request to review its status and job posting.",
-  "generation_restore_action": "Recover posting and draft",
-  "generation_discard_recovery": "Discard reference"
+  "generation_prior": {
+    "working": "The draft for this request is still in progress. Select Generate draft again to check its status.",
+    "unknown": "The outcome of this same request is still unconfirmed. Change the job posting or AI selection to start another request.",
+    "missing": "The previous request's status is still unconfirmed."
+  },
+  "generation_resume_request": "Try with the same reference",
+  "draft_exit_title": "You have an unsaved draft",
+  "draft_exit_description": "Save it to open it later in Saved CVs, or discard it to continue.",
+  "draft_exit_keep": "Keep editing",
+  "draft_exit_discard": "Discard",
+  "draft_exit_save": "Save draft",
+  "draft_exit_save_error": "The draft could not be saved. Try again or return to editing.",
+  "draft_exit_discarded": "Draft discarded"
 }
