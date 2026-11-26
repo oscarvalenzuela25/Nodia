@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Nodia CV — oferta extensa con Gemini Agentic, 2026-11-26.**
+La oferta reportada generó borradores y PDF verificados con Hydrogen
+Alto y Neon Bajo tras ajustar la entrega estructurada de Gemini. La
+misma oferta también pasó con Sol Agentic y Terra por API key en el
+release anterior.
+[Verificación en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#oferta-extensa-y-gemini-agentic).
+
 **Nodia CV — copia editable y limpieza del formulario, 2026-11-26.**
 Producción verificó el regreso al formulario limpio, la edición de una
 copia guardada, el PDF original intacto y la generación con otra
