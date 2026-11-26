@@ -60,3 +60,53 @@ PostgreSQL 16 comprobaron permisos HTTP, revisión, carreras, retry
 por la clave original, purga y los carriles de API key, Codex y Gemini
 con transportes de prueba. Las ejecuciones reales de este registro
 corresponden a los dos modelos y modos indicados.
+
+## Limpiar campos y editar una copia guardada
+
+Producción publicó `6678cefef141ea365602d1b9fbf46ed3c1783ae1`.
+El CI ensayó la migración `1794090000000`. El primer CD perdió el sondeo
+tras enviar la actualización del backend. La operación restringida
+`120e28d50c088d1f50c0dbca110486d5` devolvió `complete` y el VPS confirmó
+API y worker activos en `backend-6678cefef141-ce57368d78d9`.
+Un segundo intento del CI de master, con ese release ya instalado,
+publicó Pages en `01ffe19b-0edd-443b-9ed0-b2123a62c942`. El origen
+público sirvió `/assets/main-Chzoo-gx.js`.
+[CI](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45885361839) ·
+[Primer CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45886900850) ·
+[CD completo](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45890016478).
+
+- **Gemini 4 Hydrogen en Alto por Agentic.** Antes de publicar Client,
+  una oferta sintética produjo el recibo
+  `5886bb65-a810-4d98-8bbd-93b9cc376a22` con estado `unknown` y código
+  `provider_outcome_unknown`. Con el Client nuevo, intentar la misma
+  selección y oferta consultó el recibo mediante GET. **Consultar
+  estado** también hizo GET a ese ID. La red registró cero reenvíos para
+  esa intención.
+- **GPT-6.1 Sol en Medio por Agentic.** **Cambiar modelo** abrió el
+  selector con la oferta exacta intacta. Al aplicar Sol y generar,
+  apareció el borrador con requisitos y evidencia de TypeScript.
+  **Limpiar campos** ofreció conservar, guardar o descartar. Conservar
+  mantuvo oferta y borrador. Descartar vació perfil, cargo, empresa,
+  oferta, requisitos y vista previa. La limpieza de campos preparados
+  sin borrador funcionó sin diálogo.
+- **GPT-6.1 Terra en Alto por API key.** **Editar una copia** abrió la
+  versión sintética 4 en **Generar CV** con su plantilla Compacta, perfil
+  archivado y tres requisitos. La apertura envió únicamente la mutación
+  de copia y dejó la selección de IA vacía. Tras aplicar Terra, la IA
+  propuso quitar el proyecto. **Guardar borrador** al cambiar de pestaña
+  creó la versión 6. Su PDF pasó la comprobación interna y el texto
+  extraído mantuvo TypeScript y omitió el proyecto. El requisito del
+  proyecto quedó en el análisis. La versión 4 conservó la huella SHA-256
+  `3d66b30f64fcc50e6a14b432097c28d9c70ba4fa6e1f415bef1a5c889dbc61d7`
+  y el proyecto en el texto archivado. Regresar a **Generar CV** mostró
+  el formulario vacío.
+- **Gemini 4 Neon en Bajo por Agentic.** Otra oferta sintética llegó a
+  vista previa. Cambiar a **CV guardados** pidió una decisión. Al
+  descartar y regresar, la pantalla mostró el formulario vacío y omitió
+  el aviso de recuperación.
+
+Las pruebas locales de esta entrega pasaron con 58 casos de Client y
+193 de Server. La integración descartable con PostgreSQL 18 también
+verificó la copia tras la baja del perfil, las versiones históricas,
+los reintentos concurrentes y la purga. Hydrogen Alto conserva su
+resultado incierto para el intento registrado.

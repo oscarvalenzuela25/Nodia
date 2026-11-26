@@ -981,4 +981,5 @@ sin la salida estructurada de CV. Véase la evidencia con alcance exacto
 en la sección 18.
 
 [Guía UI](../features/nodia-cv/ui-design.md) ·
-[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md).
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md) ·
+[Verificación en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#limpiar-campos-y-editar-una-copia-guardada).
