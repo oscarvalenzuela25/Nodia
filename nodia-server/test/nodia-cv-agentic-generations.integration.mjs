@@ -600,15 +600,32 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   }
 
   const pilot = geminiWorker();
-  assert.deepEqual(pair(await pilot.generations.catalog(owner)), {
-    transport: 'unsupported',
-    models: [],
-  });
+  const expectedCatalog = {
+    transport: 'available',
+    models: [
+      {
+        model_id: geminiModel,
+        label: 'Fixture Gemini (High)',
+        efforts: [{ effort_id: 'high', label: 'high' }],
+      },
+      {
+        model_id: otherModel,
+        label: 'Fixture Gemini (Medium)',
+        efforts: [{ effort_id: 'medium', label: 'medium' }],
+      },
+    ],
+  };
+  assert.deepEqual(
+    pair(await pilot.generations.catalog(owner)),
+    expectedCatalog,
+  );
   const ordinary = makeInput(ownerProfile, selection);
-  await assert.rejects(pilot.generations.start(owner, ordinary), {
-    status: 409,
-    message: /generation_selection_unqualified/,
-  });
+  const firstGeminiSelection = await pilot.generations.eligibility(
+    owner,
+    selection,
+  );
+  assert.equal(firstGeminiSelection.eligible, true);
+  assert.equal(firstGeminiSelection.qualified, false);
   current = await pilot.generations.startProbe(
     admin,
     makeInput(adminProfile, selection),
@@ -620,7 +637,10 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   assert.equal(pendingAck.slot_state, 'held');
   assert.equal(sent, 1);
   assert.equal(acknowledgements, 1);
-  assert.deepEqual(pair(await pilot.generations.catalog(owner)).models, []);
+  assert.deepEqual(
+    pair(await pilot.generations.catalog(owner)),
+    expectedCatalog,
+  );
   await assert.rejects(
     db.query(
       'UPDATE ai_generation_operations SET cv_gemini_request_hash=NULL WHERE id=$1',
@@ -644,26 +664,17 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   assert.equal(completed.slot_state, 'free');
   assert.ok(completed.agentic_acknowledged_at);
   assert.deepEqual(completed.terminal_proof, pendingAck.terminal_proof);
-  assert.deepEqual(pair(await restarted.generations.catalog(owner)), {
-    transport: 'available',
-    models: [
-      {
-        model_id: geminiModel,
-        label: 'Fixture Gemini (High)',
-        efforts: [{ effort_id: 'high', label: 'high' }],
-      },
-    ],
-  });
-  assert.equal(
-    (
-      await restarted.generations.eligibility(owner, {
-        ...selection,
-        model_id: otherModel,
-        effort_id: 'medium',
-      })
-    ).eligible,
-    false,
+  assert.deepEqual(
+    pair(await restarted.generations.catalog(owner)),
+    expectedCatalog,
   );
+  const otherGeminiSelection = await restarted.generations.eligibility(owner, {
+    ...selection,
+    model_id: otherModel,
+    effort_id: 'medium',
+  });
+  assert.equal(otherGeminiSelection.eligible, true);
+  assert.equal(otherGeminiSelection.qualified, false);
   assert.deepEqual(
     (
       await restarted.generations.status(admin, current.id)
@@ -671,11 +682,12 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
     ['supported', 'gap'],
   );
   session = 'a'.repeat(32);
-  assert.equal(
-    (await restarted.generations.eligibility(owner, selection)).eligible,
-    false,
+  const renewedGemini = await restarted.generations.eligibility(
+    owner,
+    selection,
   );
-  session = 'f'.repeat(32);
+  assert.equal(renewedGemini.eligible, true);
+  assert.equal(renewedGemini.qualified, false);
   adapterAvailable = false;
   assert.equal(
     (await restarted.generations.eligibility(owner, selection)).eligible,
@@ -683,8 +695,20 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   );
   adapterAvailable = true;
 
-  behavior = 'uncertain';
   current = await restarted.generations.start(owner, ordinary);
+  assert.equal(await restarted.run(), true);
+  assert.equal(
+    (await restarted.generations.status(owner, current.id)).state,
+    'ready',
+  );
+  assert.equal((await operation(current.id)).started_exchanges, 1);
+  assert.equal(sent, 2);
+
+  behavior = 'uncertain';
+  current = await restarted.generations.start(
+    owner,
+    makeInput(ownerProfile, selection),
+  );
   await restarted.run();
   await db.query(
     "UPDATE nodia_cv_generations SET lease_until=clock_timestamp()-interval '1 second' WHERE id=$1",
@@ -697,7 +721,7 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   assert.equal(unproven.terminal_proof, null);
   assert.equal(unproven.acknowledged_at, null);
   assert.equal(unproven.started_exchanges, 1);
-  assert.equal(sent, 2);
+  assert.equal(sent, 3);
   closureProven = true;
   await freshWorker.recover();
   const recovered = await operation(current.id);
@@ -708,7 +732,7 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
     unproven.cv_gemini_request_hash,
   );
   assert.equal(await freshWorker.run(), false);
-  assert.equal(sent, 2);
+  assert.equal(sent, 3);
 
   behavior = 'excluded';
   current = await restarted.generations.start(
@@ -719,8 +743,8 @@ async function checkGemini(adminProfile, ownerProfile, answer) {
   const excluded = await operation(current.id);
   assert.equal(excluded.terminal_proof.remote_outcome, 'not_dispatched');
   assert.equal(excluded.slot_state, 'free');
-  assert.equal(sent, 3);
-  assert.equal(acknowledgements, 3);
+  assert.equal(sent, 4);
+  assert.equal(acknowledgements, 4);
 }
 
 try {
@@ -796,10 +820,9 @@ try {
   setup.answer = answer;
 
   const ordinary = makeInput(ownerCv, selection);
-  await assert.rejects(setup.generations.start(owner, ordinary), {
-    status: 409,
-    message: /generation_selection_unqualified/,
-  });
+  const initialCodex = await setup.generations.eligibility(owner, selection);
+  assert.equal(initialCodex.eligible, true);
+  assert.equal(initialCodex.qualified, false);
   await assert.rejects(setup.generations.startProbe(owner, ordinary), {
     status: 403,
     message: /generation_probe_forbidden/,
@@ -869,18 +892,31 @@ try {
     ['supported', 'gap'],
   );
   generation = 'c'.repeat(32);
-  assert.equal(
-    (await restarted.generations.eligibility(owner, selection)).qualified,
-    false,
+  const renewedCodex = await restarted.generations.eligibility(
+    owner,
+    selection,
   );
-  generation = 'b'.repeat(32);
+  assert.equal(renewedCodex.eligible, true);
+  assert.equal(renewedCodex.qualified, false);
+
+  currentAttempt = await restarted.generations.start(
+    owner,
+    makeInput(ownerCv, selection),
+  );
+  assert.equal(await restarted.run(), true);
+  assert.equal(
+    (await restarted.generations.status(owner, currentAttempt.id)).state,
+    'ready',
+  );
+  assert.equal((await operation(currentAttempt.id)).started_exchanges, 1);
+  assert.equal(sends, 2);
 
   behavior = 'no-terminal';
   closureVerifiable = false;
   currentAttempt = await restarted.generations.start(owner, ordinary);
   await restarted.run();
   assert.equal(nativeFailure, undefined);
-  assert.equal(sends, 2);
+  assert.equal(sends, 3);
   assert.equal((await operation(currentAttempt.id)).started_exchanges, 1);
   await db.query(
     "UPDATE nodia_cv_generations SET lease_until=clock_timestamp()-interval '1 second' WHERE id=$1",
@@ -901,7 +937,7 @@ try {
   assert.ok(reconciled.acknowledged_at);
   assert.equal(reconciled.slot_state, 'free');
   assert.equal(await afterCrash.run(), false);
-  assert.equal(sends, 2);
+  assert.equal(sends, 3);
   assert.equal(
     (await afterCrash.generations.statusByRequest(owner, ordinary.request_key))
       .state,
@@ -916,7 +952,7 @@ try {
   failNextAck = true;
   await afterCrash.run();
   const unsent = await operation(currentAttempt.id);
-  assert.equal(sends, 2);
+  assert.equal(sends, 3);
   assert.equal(unsent.started_exchanges, 0);
   assert.equal(unsent.terminal_proof.remote_outcome, 'not_dispatched');
   assert.deepEqual(unsent.cv_agentic_native.native, nativeIdentity);
@@ -936,7 +972,7 @@ try {
   );
   await afterCrash.run();
   assert.equal(nativeFailure, undefined);
-  assert.equal(sends, 3);
+  assert.equal(sends, 4);
   const [failed] = await db.query(
     'SELECT state,error_code,draft FROM nodia_cv_generations WHERE id=$1',
     [currentAttempt.id],
@@ -954,7 +990,7 @@ try {
   );
   await checkGemini(adminCv, ownerCv, answer);
   console.log(
-    'CV Agentic: PostgreSQL Codex and Gemini custody, exact qualification catalog, one exchange, ACK, restore quarantine, restart recovery, no replay, and revocation passed.',
+    'CV Agentic: PostgreSQL custody, independent catalog and probe receipts, one exchange, ACK, restore quarantine, restart recovery, no replay, and revocation passed.',
   );
 } finally {
   if (db.isInitialized) await db.destroy();

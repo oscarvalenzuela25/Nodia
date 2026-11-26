@@ -169,7 +169,7 @@ function agenticFixture() {
 }
 
 describe('Nodia CV selection', () => {
-  it('distinguishes configured and qualified using the exact scope receipt', async () => {
+  it('allows a configured API key selection and reports any exact prior receipt independently', async () => {
     const { selectionService, manager, query, resolveConfiguration } =
       fixture();
     await expect(
@@ -177,8 +177,8 @@ describe('Nodia CV selection', () => {
     ).resolves.toMatchObject({
       configured: true,
       qualified: false,
-      eligible: false,
-      reason_code: 'qualification_required',
+      eligible: true,
+      reason_code: 'available',
       checked_at: null,
     });
     expect(resolveConfiguration).toHaveBeenCalledWith(selection, manager);
@@ -257,7 +257,7 @@ describe('Nodia CV selection', () => {
     expect(query).not.toHaveBeenCalled();
   });
 
-  it('keeps live Agentic metadata unqualified until the exact scope has a CV acceptance', async () => {
+  it('allows exact live Agentic metadata and reports prior CV evidence separately', async () => {
     const f = agenticFixture();
     const signal = new AbortController().signal;
     const observation = await f.selectionService.observeAgentic(
@@ -286,8 +286,8 @@ describe('Nodia CV selection', () => {
     expect(eligibility).toMatchObject({
       configured: true,
       qualified: false,
-      eligible: false,
-      reason_code: 'qualification_required',
+      eligible: true,
+      reason_code: 'available',
     });
     expect(f.query.mock.calls[0][1]).toEqual([scopeHash]);
     const checkedAt = new Date('2026-11-25T00:00:00Z');
@@ -489,8 +489,9 @@ describe('Nodia CV selection', () => {
     await expect(
       f.selectionService.eligibility(f.manager, geminiRequested, renewed),
     ).resolves.toMatchObject({
-      eligible: false,
-      reason_code: 'qualification_required',
+      eligible: true,
+      qualified: false,
+      reason_code: 'available',
     });
 
     f.find.mockResolvedValue({
@@ -540,55 +541,21 @@ describe('Nodia CV selection', () => {
     expect(f.query).not.toHaveBeenCalled();
   });
 
-  it('projects only the exact qualified Gemini option and leaves the API key models available', async () => {
+  it('projects configured Gemini options without per-model observations or receipt queries', async () => {
     const f = geminiFixture();
-    const observation = await f.selectionService.observeAgentic(
-      geminiRequested,
-      new AbortController().signal,
-    );
-    const configuration = await f.selectionService.configureAgentic(
-      geminiRequested,
-      f.manager,
-      observation,
-    );
-    const qualifies = (
-      selection: AiSelection,
-      scopeHash = f.selectionService.scopeHash(selection, configuration),
-    ) => ({
-      connection_id: selection.connection_id,
-      model_id: selection.model_id,
-      effort_id: selection.effort_id,
-      scope_hash: scopeHash,
-      configuration_generation: configuration.configurationGeneration,
-      session_generation: configuration.sessionGeneration,
-      resource_key: configuration.resourceKey,
-      policy_hash: configuration.policyHash,
-      runtime_hash: configuration.runtimeHash,
-    });
-
-    const unqualified = await f.selectionService.catalog(f.manager);
-    expect(
-      unqualified.items[0].modes.find((m) => m.mode === 'agentic'),
-    ).toMatchObject({
-      cv_transport: 'unsupported',
-      configured_selection: null,
-      models: [],
-    });
-
-    f.query.mockResolvedValue([
-      qualifies(geminiRequested),
-      qualifies({ ...geminiRequested, effort_id: 'medium' }),
-      qualifies(
-        {
-          ...geminiRequested,
-          model_id: 'gemini-fixture-medium',
-          effort_id: 'medium',
+    const { fields } = geminiConnection;
+    f.list.mockResolvedValueOnce([{
+      ...geminiConnection,
+      fields: {
+        ...fields,
+        agentic: {
+          ...fields.agentic,
+          allowed_model_ids: ['gemini-fixture-medium', 'gemini-fixture-high'],
         },
-        'a'.repeat(64),
-      ),
-    ]);
-    const qualified = await f.selectionService.catalog(f.manager);
-    expect(qualified.items[0].modes).toMatchObject([
+      },
+    }]);
+    const page = await f.selectionService.catalog(f.manager);
+    expect(page.items[0].modes).toMatchObject([
       {
         mode: 'api_key',
         cv_transport: 'available',
@@ -596,9 +563,20 @@ describe('Nodia CV selection', () => {
       },
       {
         mode: 'agentic',
+        authentication: 'unknown',
+        inference: 'unknown',
         cv_transport: 'available',
-        configured_selection: null,
+        configured_selection: {
+          ...geminiRequested,
+          model_id: 'gemini-fixture-medium',
+          effort_id: 'medium',
+        },
         models: [
+          {
+            model_id: 'gemini-fixture-medium',
+            label: 'Gemini Fixture (Medium)',
+            efforts: [{ effort_id: 'medium', label: 'medium' }],
+          },
           {
             model_id: 'gemini-fixture-high',
             label: 'Gemini Fixture (High)',
@@ -607,15 +585,8 @@ describe('Nodia CV selection', () => {
         ],
       },
     ]);
-    expect(f.observe).toHaveBeenCalledTimes(1);
-    expect(f.query.mock.calls[1][1]).toEqual([
-      JSON.stringify([
-        {
-          connection_id: geminiRequested.connection_id,
-          configuration_generation: configuration.configurationGeneration,
-        },
-      ]),
-    ]);
+    expect(f.observe).not.toHaveBeenCalled();
+    expect(f.query).not.toHaveBeenCalled();
   });
 
   it('paginates complete sanitized connections and declares the CV transport explicitly', async () => {

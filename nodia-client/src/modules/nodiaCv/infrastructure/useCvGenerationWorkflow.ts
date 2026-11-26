@@ -40,7 +40,8 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   const { scope } = useProfileScope();
   const actorId = scope[1];
   const [tracked, setTracked] = useState<CvGenerationView | null>(null);
-  const [prior, setPrior] = useState<CvGenerationView | null>(null);
+  const [presentedTerminal, setPresentedTerminal] = useState<string | null>(null);
+  const [dismissedRequest, setDismissedRequest] = useState<string | null>(null);
   const [closedUnknown, setClosedUnknown] = useState<ReadonlySet<string>>(() => new Set());
   const [uncertain, setUncertain] = useState<UncertainAdmission | null>(null);
   const [admissionError, setAdmissionError] = useState<unknown>(null);
@@ -75,12 +76,10 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   useEffect(() => discardOtherCvReceipt(actorId), [actorId]);
 
   const known = status.data ?? tracked?.receipt ?? null;
-  const deadlines = [known?.expires_at, prior?.receipt.expires_at].flatMap((value) =>
-    value ? [Date.parse(value)] : [],
-  );
-  const nextDeadline = Math.min(...deadlines.filter((deadline) => deadline > clock));
+  const deadline = known ? Date.parse(known.expires_at) : 0;
+  const nextDeadline = deadline > clock ? deadline : null;
   useEffect(() => {
-    if (!Number.isFinite(nextDeadline)) return;
+    if (nextDeadline === null) return;
     const timer = window.setTimeout(() => setClock(Date.now()), Math.max(0, nextDeadline - Date.now() + 1));
     const refresh = () => {
       if (document.visibilityState === "visible") setClock(Date.now());
@@ -95,15 +94,27 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   const expired = Boolean(known && Date.parse(known.expires_at) <= clock);
   const receiptUnavailable = expired || [404, 410].includes(cvHttpStatus(status.error) ?? 0);
   const receipt = receiptUnavailable ? null : known;
-  const visible =
-    tracked && receipt?.state === "ready"
-      ? { ...tracked, receipt }
-      : !prior || prior.receipt.id === tracked?.receipt.id || Date.parse(prior.receipt.expires_at) <= clock
-        ? null
-        : prior;
+  const visible = active && tracked && receipt?.state === "ready" ? { ...tracked, receipt } : null;
   const working = receipt?.state === "queued" || receipt?.state === "running";
   const currentUnknown = receipt?.state === "unknown" && tracked ? cvInputIdentity(tracked.intent) : null;
   const hasUnknown = (identity: string) => identity === currentUnknown || closedUnknown.has(identity);
+
+  useEffect(() => {
+    if (dismissedRequest) clearCvReceipt(dismissedRequest);
+  }, [dismissedRequest]);
+
+  const terminal = receipt?.state === "ready" || receipt?.state === "failed";
+  if (active && terminal && presentedTerminal !== receipt.id) setPresentedTerminal(receipt.id);
+
+  if (!active && !busy && !uncertain && !restorable) {
+    if (admissionError !== null) setAdmissionError(null);
+    if (tracked && receipt?.state !== "unknown") {
+      // Keep unresolved submissions recoverable by the same key after leaving the tab.
+      if (working || (terminal && presentedTerminal !== receipt.id)) setRestorable(tracked.intent.request_key);
+      else setDismissedRequest(tracked.intent.request_key);
+      setTracked(null);
+    }
+  }
 
   const sameActor = () => {
     const state = useAuthStore.getState();
@@ -135,7 +146,6 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
 
   const submit = async (intent: Intent) => {
     if (!startLock()) return;
-    if (visible) setPrior(visible);
     if (scope[1]) rememberCvReceipt(scope[1], intent.input.request_key);
     setAdmissionError(null);
     try {

@@ -1,5 +1,10 @@
 # Especificación del MVP — Nodia
 
+**Nodia CV — primera generación y análisis por versión, 2026-11-26.**
+Se puede iniciar el borrador con la selección compatible elegida.
+El análisis archivado pertenece a la misma revisión que el PDF guardado.
+[Plan113 §20](113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
+
 **Nodia CV — piloto en VM y lectura externa, 2026-11-24.** CV-06
 recorrió el flujo con dos cuentas sintéticas y una inferencia API key
 real. Clásica y Compacta de la misma revisión coincidieron en 9 de 10

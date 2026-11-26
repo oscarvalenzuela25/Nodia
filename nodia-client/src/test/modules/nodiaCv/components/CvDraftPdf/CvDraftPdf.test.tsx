@@ -38,7 +38,8 @@ describe("prepare and save CV", () => {
     vi.mocked(prepareCvPdf).mockResolvedValue(artifact);
     vi.mocked(fetchCvDraftPdf).mockResolvedValue({ buffer: new ArrayBuffer(8), sha256: artifact.sha256 });
     vi.mocked(saveCvVersion).mockRejectedValueOnce(new Error("Connection lost")).mockResolvedValueOnce({
-      ...artifact, version_number: 4, profile_name: "Fixture", vacancy_title: null, vacancy_company: null, created_at: "2026-11-24T16:00:00.000Z",
+      ...artifact, version_number: 4, profile_name: "Fixture", vacancy_title: null, vacancy_company: null,
+      created_at: "2026-11-24T16:00:00.000Z", analysis: null,
     });
     openDraft();
     const save = () => screen.getByRole("button", { name: t("version_save") });

@@ -34,6 +34,7 @@
   "version_created": "Fecha de guardado",
   "version_named": "Versión {{number}} · {{title}}",
   "version_detail_subtitle": "{{profile}} · {{template}} · {{language}}",
+  "version_requirements_unavailable": "Esta versión se guardó sin el análisis de requisitos.",
   "version_open": "Abrir vista previa",
   "version_open_named": "Abrir vista previa de {{version}}",
   "version_delete": "Eliminar CV",
@@ -282,7 +283,6 @@
   "generation_offer": "Oferta de trabajo",
   "generation_preview": "Vista previa del contenido",
   "generation_preview_empty": "El borrador aparecerá aquí cuando la generación termine.",
-  "generation_previous_draft": "Este borrador corresponde a la solicitud anterior.",
   "generation_requirements": "Requisitos de la oferta",
   "generation_requirements_empty": "El borrador no contiene requisitos identificados.",
   "generation_linked_evidence": "Evidencia del perfil",
@@ -374,7 +374,8 @@
     "gemini_effort_unavailable": "El nivel de razonamiento elegido no está disponible para este modelo de Gemini.",
     "gemini_profile_busy": "La conexión de Gemini está en uso. Vuelve a comprobarla cuando termine.",
     "qualification_required": "Esta selección exacta aún no está habilitada para generar CV.",
-    "qualified": "Esta selección está habilitada para generar borradores.",
+    "available": "Puedes solicitar un borrador con esta selección.",
+    "qualified": "Puedes solicitar un borrador con esta selección.",
     "selection_unavailable": "Esta selección no está disponible para generar CV.",
     "no_connections": "No hay conexiones de IA disponibles para generar CV.",
     "selection_missing": "La selección ya no está en el catálogo. Revísala antes de continuar."
@@ -393,7 +394,7 @@
   "stale_draft": "El borrador cambió desde que abriste la revisión.",
   "invalid_draft_review": "Revisa los hechos elegidos y la evidencia ingresada.",
   "generation_check_status": "Consultar estado",
-  "generation_restore_saved": "Esta pestaña tiene una solicitud anterior. Puedes recuperar su oferta y borrador.",
+  "generation_restore_saved": "Hay una solicitud que puedes recuperar para revisar su estado y su oferta.",
   "generation_restore_action": "Recuperar oferta y borrador",
   "generation_discard_recovery": "Descartar referencia"
 }

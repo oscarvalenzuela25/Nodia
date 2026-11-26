@@ -172,7 +172,7 @@ async function verify(parts, actor, selection) {
   report.evidence_verified = true;
   const eligibility = await parts.cv.eligibility(actor, selection);
   report.eligibility = eligibility;
-  return eligibility.eligible ? 'qualified' : 'awaiting_or_unqualified';
+  return eligibility.eligible && eligibility.qualified ? 'qualified' : 'awaiting_or_unqualified';
 }
 
 let parts;

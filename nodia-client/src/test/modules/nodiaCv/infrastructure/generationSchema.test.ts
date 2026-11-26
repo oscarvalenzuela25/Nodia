@@ -68,6 +68,21 @@ describe("Nodia CV generation contract", () => {
     expect(cvEligibilitySchema.safeParse({ ...pending, reason_code: "qualified" }).success).toBe(false);
   });
 
+  it("accepts an available exact selection without a prior CV receipt and rejects contradictory evidence", () => {
+    const available = {
+      selection: { ...input.selection, mode: "agentic", model_id: "synthetic-first-attempt" },
+      reason_code: "available",
+      configured: true,
+      eligible: true,
+      qualified: false,
+      checked_at: null,
+    };
+    expect(cvEligibilitySchema.parse(available)).toEqual(available);
+    expect(cvEligibilitySchema.safeParse({ ...available, qualified: true }).success).toBe(false);
+    expect(cvEligibilitySchema.safeParse({ ...available, eligible: false }).success).toBe(false);
+    expect(cvEligibilitySchema.safeParse({ ...available, checked_at: receipt.created_at }).success).toBe(false);
+  });
+
   it("distinguishes edits of the offer, revision, and exact selection without comparing request keys", () => {
     const current = cvInputIdentity(input);
     const duplicate = { ...input, request_key: "different" };

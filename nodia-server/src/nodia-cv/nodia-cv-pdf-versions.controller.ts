@@ -22,26 +22,19 @@ import {
   ApiOkResponse,
   ApiProduces,
   ApiTags,
-  IntersectionType,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import type { AuthRequest } from '../auth/types/auth.types.js';
 import { actorReference } from '../authorization/authority-transaction.js';
 import {
   ListNodiaCvVersionsDto,
-  NodiaCvPdfVerificationDto,
   NodiaCvPreparedPdfDto,
+  NodiaCvVersionDetailDto,
   NodiaCvVersionPageDto,
-  NodiaCvVersionSummaryDto,
   PrepareNodiaCvPdfDto,
   SaveNodiaCvVersionDto,
 } from './dto/nodia-cv-pdf-version.dto.js';
 import { NodiaCvPdfVersionsUseCase } from './use-case/nodia-cv-pdf-versions.use-case.js';
-
-class NodiaCvVersionDetailDto extends IntersectionType(
-  NodiaCvVersionSummaryDto,
-  NodiaCvPdfVerificationDto,
-) {}
 
 const uuid = new ParseUUIDPipe({ version: '4' });
 const privateResponse = 'private, no-store';

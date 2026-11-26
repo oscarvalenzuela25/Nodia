@@ -11,6 +11,7 @@ import { fetchCvVersionPdf, readCvVersion, type CvVersionSummary } from "../../i
 import { useProfileScope } from "../../infrastructure/profiles";
 import { cvHttpStatus } from "../../infrastructure/useCvGenerationWorkflow";
 import CvPdfReview from "../CvPdfReview";
+import CvRequirements from "../CvRequirements/CvRequirements";
 import { cvVersionLabel } from "./versionPresentation";
 
 type Props = {
@@ -85,6 +86,7 @@ export default function CvSavedVersionDetail({ target, onClose, onMissing, onDel
       )}
       {!unavailable && data && (
         <Stack spacing={2} sx={{ minWidth: 0 }}>
+          <CvRequirements analysis={data.analysis} />
           {!file.data && !file.isError && (
             <Button variant="outlined" startIcon={<PictureAsPdfOutlined />} loading={file.isFetching}
               disabled={detail.isFetching || detail.isError} sx={{ ...button, alignSelf: { sm: "flex-start" } }}
@@ -93,7 +95,7 @@ export default function CvSavedVersionDetail({ target, onClose, onMissing, onDel
             </Button>
           )}
           <CvPdfReview key={data.id + ":" + data.sha256} description={data} bytes={file.data ?? null}
-            filename={`nodia-cv-${data.version_number}.pdf`} />
+            filename={`nodia-cv-${data.version_number}.pdf`} showTextOnOpen />
         </Stack>
       )}
     </BaseModal>

@@ -34,6 +34,7 @@
   "version_created": "Date saved",
   "version_named": "Version {{number}} · {{title}}",
   "version_detail_subtitle": "{{profile}} · {{template}} · {{language}}",
+  "version_requirements_unavailable": "This version was saved without the requirements analysis.",
   "version_open": "Open preview",
   "version_open_named": "Open preview of {{version}}",
   "version_delete": "Delete résumé",
@@ -282,7 +283,6 @@
   "generation_offer": "Job posting",
   "generation_preview": "Content preview",
   "generation_preview_empty": "Your draft will appear here when generation finishes.",
-  "generation_previous_draft": "This draft belongs to the previous request.",
   "generation_requirements": "Job requirements",
   "generation_requirements_empty": "The draft contains no identified requirements.",
   "generation_linked_evidence": "Profile evidence",
@@ -374,7 +374,8 @@
     "gemini_effort_unavailable": "The selected reasoning level is unavailable for this Gemini model.",
     "gemini_profile_busy": "The Gemini connection is in use. Check it again when it is free.",
     "qualification_required": "This exact selection is not yet enabled for résumé generation.",
-    "qualified": "This selection is enabled for draft generation.",
+    "available": "You can request a draft with this selection.",
+    "qualified": "You can request a draft with this selection.",
     "selection_unavailable": "This selection is unavailable for résumé generation.",
     "no_connections": "No AI connections are available for résumé generation.",
     "selection_missing": "This selection is no longer in the catalog. Review it before continuing."
@@ -393,7 +394,7 @@
   "stale_draft": "The draft changed since you opened the review.",
   "invalid_draft_review": "Review the selected facts and the evidence you entered.",
   "generation_check_status": "Check status",
-  "generation_restore_saved": "This tab has a previous request. You can recover its posting and draft.",
+  "generation_restore_saved": "You can recover a request to review its status and job posting.",
   "generation_restore_action": "Recover posting and draft",
   "generation_discard_recovery": "Discard reference"
 }

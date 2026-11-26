@@ -21,12 +21,13 @@ type Props = {
   description: CvPdfDescription;
   bytes: CvVerifiedBytes | null;
   filename: string;
+  showTextOnOpen?: boolean;
 };
 
-export default function CvPdfReview({ description, bytes, filename }: Props) {
+export default function CvPdfReview({ description, bytes, filename, showTextOnOpen = false }: Props) {
   const { t } = useTranslation("nodiaCv");
   const bodyId = useId();
-  const [mode, setMode] = useState<"text" | "pdf" | null>(null);
+  const [mode, setMode] = useState<"text" | "pdf" | null>(showTextOnOpen ? "text" : null);
   const [viewer, setViewer] = useState<{ Component: ComponentType<CvPdfViewerProps> }>();
   const [generation, setGeneration] = useState(0);
   const [loading, setLoading] = useState(false);
