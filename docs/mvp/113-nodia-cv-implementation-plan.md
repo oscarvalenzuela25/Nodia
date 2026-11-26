@@ -903,6 +903,7 @@ mantiene su propia identidad. Si la referencia anterior aún devuelve 404,
 una continuación explícita utiliza esa misma clave para resolver una
 admisión concurrente sin enviar otra clave para la misma operación.
 [Guía UI](../features/nodia-cv/ui-design.md#33-estado-del-trabajo).
+[Verificación en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#guardar-o-descartar-al-salir).
 
 ## 22. Edición del borrador con IA — 2026-11-26
 
@@ -937,3 +938,4 @@ de IA.
 [Guía UI](../features/nodia-cv/ui-design.md#34-editar-con-ia) ·
 [Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md) ·
 [ADR119 propuesto](../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md).
+[Prueba en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#editar-con-ia-y-reabrir-el-cv).
