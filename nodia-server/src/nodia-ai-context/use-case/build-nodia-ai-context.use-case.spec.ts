@@ -366,10 +366,20 @@ describe('BuildNodiaAiContextUseCase', () => {
     const execution = instructions('execution', 'product_catalog_reads');
     expect(execution).toContain('nodia_businesses_list');
     expect(execution).toContain('q.business_id_eq');
-    expect(execution).toContain('q.name_cont');
     expect(execution).toContain(
-      'Si hay varias coincidencias posibles, pide aclaración',
+      'omite el tratamiento («Sr.», «Sra.», «don», «doña») y los descriptores genéricos',
     );
+    expect(execution).toContain('Busca el término distintivo con q.name_cont');
+    expect(execution).toContain(
+      'Sólo si la búsqueda devuelve cero coincidencias, prueba como máximo una variante plausible que cambie la tilde del mismo término.',
+    );
+    expect(execution).toContain(
+      'Si no encuentras coincidencias, pide el nombre registrado',
+    );
+    expect(execution).toContain(
+      'Si hay varias coincidencias posibles, pide aclaración (comprueba meta.total_items aunque la página muestre una sola fila).',
+    );
+    expect(execution).toContain('Usa el ID devuelto para el negocio identificado');
     expect(execution).toContain('nodia_products_list');
     expect(execution).toContain('page: 1');
     expect(execution).toContain(
