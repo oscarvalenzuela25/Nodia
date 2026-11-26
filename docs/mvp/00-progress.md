@@ -6,11 +6,23 @@ y la integración posterior por API key. La primera comprobación exige una
 ruta explícita y un solo envío al destino ante éxito y fallos. La versión
 actual se evaluó mediante lectura de código y documentación.
 
+**Nodia CV — primera generación con selección compatible, 2026-11-26.**
+El primer borrador puede usar el modelo elegido sin un recibo previo de
+CV. Al salir de Generar CV se limpian la vista previa y los requisitos.
+Las versiones nuevas conservan el análisis de la revisión para la reapertura.
+La verificación del cambio en producción está pendiente.
+[Plan113 §20](113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
+
+**GPT-6.1 Sol en Nodia CV — 2026-11-26.** Producción ofrece GPT-6.1 Sol
+en Medio y GPT-6.2 Sol en Alto. El navegador generó un borrador
+y verificó la lectura del PDF con 6.1 Sol.
+[Plan113 §19](113-nodia-cv-implementation-plan.md#19-gpt-61-sol-en-el-selector-agentic--2026-11-26).
+
 **Nodia CV Agentic en producción — 2026-11-26.** El backend corregido
 `1239145f` procesó la calificación de ChatGPT y el navegador generó,
 guardó, reabrió y descargó un CV con GPT-6.2 Sol en Alto. La prueba de
 Gemini Hydrogen en Alto cerró con resultado remoto incierto al faltar
-la finalización estructurada. El selector de Gemini permanece bloqueado.
+la finalización estructurada. El selector de Gemini quedó bloqueado en ese release.
 [Verificación por selección](113-nodia-cv-implementation-plan.md#publicación-y-prueba-en-navegador).
 
 **Pagos combinados y filtro de Ventas — 2026-11-25.** Client y Server

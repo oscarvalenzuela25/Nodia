@@ -20,6 +20,7 @@ import { ModuleAccessGuard } from '../dist/authorization/module-access.guard.js'
 import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-module-access.use-case.js';
 import { AllExceptionsFilter } from '../dist/common/filters/all-exceptions.filter.js';
 import { RedisService } from '../dist/common/redis/redis.service.js';
+import { SaveNodiaCvVersionAnalysis1794060000000 } from '../dist/migrations/1794060000000-SaveNodiaCvVersionAnalysis.js';
 import {
   buildCvDraft,
   prepareCvTailoring,
@@ -300,7 +301,7 @@ async function readyDraft(language, multiPage) {
       JSON.stringify(review),
     ],
   );
-  return { generationId, profile, review, language };
+  return { generationId, profile, draft, review, language };
 }
 
 const draftPdf = (generationId) => '/drafts/' + generationId + '/pdf';
@@ -419,6 +420,9 @@ try {
   const migrations = await db.runMigrations({ transaction: 'all' });
   assert.ok(
     migrations.some((migration) => migration.timestamp === 1794000000000),
+  );
+  assert.ok(
+    migrations.some((migration) => migration.timestamp === 1794060000000),
   );
   const cvModule = await seedAuthority();
   await openHttp();
@@ -550,6 +554,13 @@ try {
     save(firstInput),
   ]);
   assert.deepEqual(first, firstReplay);
+  const cPlusPlus = es.draft.selectedFacts.find(({ text }) => text === 'C++');
+  assert.ok(cPlusPlus);
+  assert.deepEqual(first.analysis, {
+    requirements: es.draft.requirements,
+    facts: [cPlusPlus],
+    evidence: [],
+  });
   assert.deepEqual(
     await save(bodyFor(esClassic)),
     first,
@@ -575,7 +586,9 @@ try {
   const latest = await json(
     request('PUT', '/drafts/' + es.generationId, owner, {
       revision: 1,
-      ...es.review,
+      included_fact_ids: es.review.included_fact_ids.filter(
+        (id) => id !== cPlusPlus.id,
+      ),
       evidence: [
         {
           requirement_id: 'r2',
@@ -609,9 +622,17 @@ try {
   );
   const revised = await prepare(es.generationId, 'classic', 2);
   assert.match(revised.extracted_text, /Preparé pruebas de Kubernetes\./);
+  artifacts.set(
+    revised.id,
+    await readPdf(draftPdf(es.generationId) + '/' + revised.id, revised.sha256),
+  );
   const third = await save(bodyFor(revised));
   assert.equal(third.version_number, second.version_number + 1);
   assert.equal(third.vacancy_title, first.vacancy_title);
+  assert.deepEqual(third.analysis, {
+    ...first.analysis,
+    evidence: latest.review.evidence,
+  });
   const enInput = bodyFor(enClassic);
   const retainedEn = await save(enInput);
 
@@ -619,6 +640,30 @@ try {
     "UPDATE nodia_cv_generations SET expires_at=now()-interval '1 minute' WHERE id=$1",
     [en.generationId],
   );
+
+  // Rehearse upgrading existing versions in an isolated transaction.
+  const migration = new SaveNodiaCvVersionAnalysis1794060000000();
+  const upgrade = db.createQueryRunner();
+  await upgrade.connect();
+  await upgrade.startTransaction();
+  try {
+    await upgrade.query('UPDATE nodia_cv_versions SET analysis=NULL');
+    await migration.down(upgrade);
+    await migration.up(upgrade);
+    const restored = await upgrade.query(
+      'SELECT id,analysis FROM nodia_cv_versions WHERE owner_user_id=$1 ORDER BY version_number',
+      [owner],
+    );
+    assert.deepEqual(restored, [
+      { id: first.id, analysis: null },
+      { id: third.id, analysis: third.analysis },
+      { id: retainedEn.id, analysis: null },
+    ]);
+  } finally {
+    await upgrade.rollbackTransaction();
+    await upgrade.release();
+  }
+
   await json(
     request('GET', draftPdf(en.generationId) + '/' + enCompact.id),
     410,
@@ -646,6 +691,7 @@ try {
   assert.deepEqual(await save(enInput), retainedEn);
   for (const [version, artifact] of [
     [first, esClassic],
+    [third, revised],
     [retainedEn, enClassic],
   ]) {
     const detail = await json(request('GET', versionPath(version)), 200);
@@ -657,6 +703,17 @@ try {
       artifacts.get(artifact.id),
     );
   }
+  await db.query('UPDATE nodia_cv_versions SET analysis=NULL WHERE id=$1', [
+    retainedEn.id,
+  ]);
+  assert.deepEqual(
+    await json(request('GET', versionPath(retainedEn)), 200),
+    { ...retainedEn, analysis: null },
+  );
+  assert.deepEqual(
+    await readPdf(versionPath(retainedEn) + '/pdf', enClassic.sha256),
+    artifacts.get(enClassic.id),
+  );
 
   const pageOne = await json(request('GET', '/versions?page=1&limit=2'), 200);
   const pageTwo = await json(request('GET', '/versions?page=2&limit=2'), 200);

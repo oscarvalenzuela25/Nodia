@@ -44,7 +44,14 @@ artefacto temporal. La migración 179400 separa sus bytes de los PDFs
 guardados y proyecta el historial desde los metadatos de versión.
 Versionar preserva el diagnóstico, el hash, los bytes y el contenido
 usado en el render. El descriptor de origen conserva la huella de la
-oferta. La numeración y los recibos mínimos sobreviven al borrado de una
+oferta. Las versiones nuevas archivan los requisitos y su evidencia de la
+misma revisión en un campo privado acotado. Se puede leer el análisis al
+abrir la versión aunque su generación temporal ya haya caducado. El
+análisis conserva su propia representación y el PDF firmado conserva el
+snapshot y la identidad originales. La migración recupera el análisis
+histórico cuando la fuente exacta aún está vigente. Las versiones sin
+esa fuente devuelven la ausencia del análisis. La numeración y los recibos
+mínimos sobreviven al borrado de una
 versión por el titular para mantener orden e idempotencia. Los accesos
 vigentes, el perfil y el número de revisión vuelven a comprobarse en la
 publicación y el guardado nuevo.
@@ -66,6 +73,23 @@ El adaptador mantiene la reserva hasta confirmar el recibo exacto
 después del commit de CV. Al recuperar, el cierre local se acredita
 por ese intento. Las calificaciones de CV se emiten por conexión,
 modelo, esfuerzo, sesión y runtime observados.
+
+La promoción productiva exige acreditaciones separadas. El host Codex
+CV conserva su binario, manifiesto y catálogo de CLI fijados y se
+registra como extensión de API y worker. Su recibo acredita únicamente
+el árbol nativo compartido revisado para esta entrega. Gemini acredita
+el árbol de imagen y, por separado, el SDK restringido y su sesión
+privada. El receptor obtiene las pruebas del estado instalado. El CD
+las vuelve a comprobar antes de escribir, al confirmar el backend y
+antes de publicar Client. Las pruebas generativas exactas de CV por
+selección y entorno conservan su valor como evidencia.
+
+La primera generación con la selección explícita puede iniciarse desde
+CV cuando se comprueba acceso, configuración, sesión o credencial y
+transporte compatible. La admisión y el worker prescinden de una
+calificación previa por combinación. Las pruebas de cierre y el estado
+remoto incierto conservan el contrato de cada transporte.
+[Plan113 §20](../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
 ## Consecuencias
 

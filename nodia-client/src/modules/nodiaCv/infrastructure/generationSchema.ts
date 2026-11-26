@@ -57,6 +57,7 @@ export const cvEligibilitySchema = z
     configured: z.boolean().nullable(),
     qualified: z.boolean(),
     reason_code: z.enum([
+      "available",
       "qualified",
       "configuration_unavailable",
       "qualification_required",
@@ -77,11 +78,13 @@ export const cvEligibilitySchema = z
     ]),
     checked_at: z.iso.datetime().nullable(),
   })
-  .refine((result) =>
-    result.reason_code === "qualified"
-      ? result.eligible && result.qualified && result.configured === true && result.checked_at !== null
-      : !result.eligible && !result.qualified,
-  );
+  .refine((result) => {
+    if (result.reason_code === "available")
+      return result.eligible && !result.qualified && result.configured === true && result.checked_at === null;
+    if (result.reason_code === "qualified")
+      return result.eligible && result.qualified && result.configured === true && result.checked_at !== null;
+    return !result.eligible && !result.qualified;
+  });
 
 const fact = z.object({
   id: factId,
@@ -131,6 +134,19 @@ const review = z.object({
 function unique(values: readonly string[]) {
   return new Set(values).size === values.length;
 }
+
+export const cvSavedAnalysisSchema = z.object({
+  requirements: z.array(requirement),
+  facts: z.array(fact),
+  evidence: z.array(declaredEvidence),
+}).refine(({ requirements, facts, evidence }) => {
+  const factIds = new Set(facts.map((item) => item.id));
+  const requirementIds = new Set(requirements.map((item) => item.id));
+  return factIds.size === facts.length && requirementIds.size === requirements.length &&
+    requirements.every((item) => item.evidenceIds.every((id) => factIds.has(id))) &&
+    unique(evidence.map((item) => item.requirement_id)) &&
+    evidence.every((item) => requirementIds.has(item.requirement_id));
+});
 
 export const cvGenerationSchema = z
   .object({
@@ -189,6 +205,7 @@ export type CvDraft = z.output<typeof draft>;
 export type CvDraftFact = z.output<typeof fact>;
 export type CvRequirement = z.output<typeof requirement>;
 export type CvReviewSave = z.output<typeof review>;
+export type CvSavedAnalysis = z.output<typeof cvSavedAnalysisSchema>;
 export type CvGeneration = z.output<typeof cvGenerationSchema>;
 export type CvCatalog = z.output<typeof cvCatalogSchema>;
 export type CvEligibility = z.output<typeof cvEligibilitySchema>;

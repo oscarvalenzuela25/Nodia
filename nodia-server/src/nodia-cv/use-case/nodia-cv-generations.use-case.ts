@@ -300,12 +300,6 @@ export class NodiaCvGenerationsUseCase {
               observation,
             )
           : await this.selections.configure(input.selection, manager);
-      const scopeHash = this.selections.scopeHash(input.selection, config);
-      if (
-        !qualification &&
-        !(await this.selections.qualified(manager, scopeHash))
-      )
-        cvGenerationError('generation_selection_unqualified');
       return visibleGeneration(
         await this.store.admit(manager, {
           id: randomUUID(),
@@ -314,7 +308,7 @@ export class NodiaCvGenerationsUseCase {
           input,
           profile: snapshot,
           config,
-          scopeHash,
+          scopeHash: this.selections.scopeHash(input.selection, config),
           requestHash,
           purposeVersion: CV_TAILORING_PURPOSE,
           promptVersion: CV_TAILORING_PROMPT_VERSION,

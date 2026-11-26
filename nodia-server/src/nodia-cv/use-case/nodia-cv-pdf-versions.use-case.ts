@@ -181,9 +181,20 @@ export class NodiaCvPdfVersionsUseCase {
       let id = await this.store.versionByArtifact(manager, owner, pdf.id);
       if (!id) {
         id = randomUUID();
+        const { requirements, selectedFacts, remainingFacts } = draft.draft;
+        const evidenceIds = new Set(
+          requirements.flatMap(({ evidenceIds }) => evidenceIds),
+        );
         await this.store.insertVersion(manager, draft, pdf, {
           id,
           profileName: draft.profile_snapshot.profile_name,
+          analysis: {
+            requirements,
+            facts: [...selectedFacts, ...remainingFacts].filter(({ id }) =>
+              evidenceIds.has(id),
+            ),
+            evidence: draft.review.evidence,
+          },
           snapshot: {
             ...snapshotCvPdfSource(sourceOf(draft)),
             profile_id: draft.profile_id,

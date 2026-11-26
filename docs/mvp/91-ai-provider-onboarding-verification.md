@@ -8,6 +8,11 @@
 > aplicables, no convierte catálogo/clave en disponibilidad generativa comprobada
 > ni acepta todos los modelos/modalidades o modifica gates de otros dominios.
 
+> Nodia CV aplica la primera generación con selección explícita a su flujo
+> de borradores. Las pruebas de ingeniería por modelo, modo y entorno
+> siguen comprobando la inferencia, la salida y el cierre.
+> [Plan113 §20](113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
+
 Fecha: 2026-10-27. Estado: en revisión; flujo técnico reusable solicitado expresamente. Aplica a nuevos proveedores (por ejemplo DeepSeek), nuevo modo/adaptador y cambios de contratos. [Retirada de Web](90-agentic-api-only-web-retirement.md). Las capacidades reales dependen de proveedor, modelo, cuenta, modo y entorno; no se deducen por nombre ni se exigen mediante fallbacks.
 
 ## Catastro de recorridos de producto

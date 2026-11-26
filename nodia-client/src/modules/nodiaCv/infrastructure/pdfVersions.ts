@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { mainInstance } from "../../../config/api";
 import { apiPath } from "../../../config/apiPath";
+import { cvSavedAnalysisSchema } from "./generationSchema";
 
 const root = apiPath("/nodia-cv");
 const template = z.enum(["classic", "compact"]);
@@ -32,7 +33,10 @@ const versionSummarySchema = z.object({
   template,
   created_at: z.iso.datetime(),
 });
-const versionDetailSchema = versionSummarySchema.extend(pdfDetails.shape);
+const versionDetailSchema = versionSummarySchema.extend({
+  ...pdfDetails.shape,
+  analysis: cvSavedAnalysisSchema.nullish().transform((analysis) => analysis ?? null),
+});
 const pageSchema = z.object({
   items: z.array(versionSummarySchema).max(10),
   page: z.int().positive(),

@@ -4,6 +4,7 @@ export function cvEligibilityReasonKey(reason: string | null) {
       return "model_selector.agentic_host_unavailable";
     case "configuration_unavailable":
     case "qualification_required":
+    case "available":
     case "qualified":
     case "codex_runtime_unavailable":
     case "codex_session_required":
