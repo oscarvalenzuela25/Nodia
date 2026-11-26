@@ -55,6 +55,53 @@ de Gemini acreditan la instalación. La prueba de generación de CV
 se califica por separado para la conexión, el modelo, el esfuerzo y
 la sesión de cada entorno.
 
+### Calificar una selección en el release activo
+
+1. En **Nodia CV → Perfiles**, un superadministrador con sesión vigente
+   guarda un perfil ficticio con nombre único que empieza por `CV QA `,
+   nombre completo `CV Synthetic Candidate`, título profesional
+   `Software Developer` y stack principal `TypeScript`. Dejar vacíos
+   contacto y los demás campos. El operador vincula la prueba al dueño
+   de ese perfil y a su sesión vigente más reciente.
+2. Copiar [el operador](../qualify-nodia-cv-agentic.py) y [su helper](../qualify-nodia-cv-agentic.mjs)
+   desde el corte revisado al mismo directorio privado del operador.
+   Comparar ambos SHA-256 antes de ejecutar. Obtener el ID del backend
+   activo con el comando restringido `status`. Abrir la
+   [sesión administrativa](../README.md#sesión-administrativa-compartida).
+3. Ejecutar `catalog` para leer las conexiones guardadas. Elegir
+   conexión, ID de modelo y esfuerzo explícitos. Ejecutar `check`
+   para observar esa selección. `qualification_required` indica que
+   el runtime y la sesión responden y falta el recibo generativo.
+   Si ya está `qualified`, pasar al QA en navegador.
+4. Generar un UUID v4 y conservarlo con la selección en el registro
+   operativo. Ejecutar `admit --execute` una vez. El worker activo
+   procesa la oferta ficticia con la cola, el presupuesto y la
+   persistencia normales. `verify` consulta el mismo UUID y exige un
+   intercambio, cierre, ACK, respaldo de TypeScript, brecha de Kubernetes
+   y elegibilidad vigente. Si la admisión se interrumpe, consultar ese UUID
+   antes de decidir cómo continuar. Ante resultado `unknown`, conservar
+   la referencia para conciliación.
+5. Recargar Nodia CV en producción y usar **Generar borrador** con el
+   perfil ficticio y la selección acreditada. Revisar la evidencia y
+   la brecha, preparar un PDF, guardar la versión, recargar y descargarla.
+   Registrar el resultado por selección y release.
+
+Todos los comandos usan el mismo release, digest y nombre de perfil.
+`catalog` usa solo esos tres argumentos. `check` añade los tres
+argumentos de selección. `admit` y `verify` añaden la clave de la prueba.
+
+```bash
+sudo -n python3 -I -B qualify-nodia-cv-agentic.py verify \
+  --release "$release" --helper-sha256 "$helper_sha256" --profile-name "$profile_name" \
+  --connection-id "$connection_id" --model-id "$model_id" --effort-id "$effort_id" \
+  --request-key "$request_key"
+```
+
+El operador ejecuta una unidad transitoria como `nodia` con la
+configuración privada del VPS y el código compilado del backend activo.
+El proceso administrativo solo encola la prueba. API y worker siguen
+activos durante el recorrido.
+
 ## Actualización coordinada del adaptador Gemini — 2026-11-24
 
 El [operador de rollout](rollout-gemini.py) prepara una imagen de Antigravity
