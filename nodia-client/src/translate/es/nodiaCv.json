@@ -394,7 +394,17 @@
   "stale_draft": "El borrador cambió desde que abriste la revisión.",
   "invalid_draft_review": "Revisa los hechos elegidos y la evidencia ingresada.",
   "generation_check_status": "Consultar estado",
-  "generation_restore_saved": "Hay una solicitud que puedes recuperar para revisar su estado y su oferta.",
-  "generation_restore_action": "Recuperar oferta y borrador",
-  "generation_discard_recovery": "Descartar referencia"
+  "generation_prior": {
+    "working": "El borrador de esta solicitud sigue en curso. Vuelve a pulsar Generar borrador para comprobar su estado.",
+    "unknown": "El resultado de esta misma solicitud sigue pendiente de confirmar. Puedes cambiar la oferta o la selección para iniciar otra.",
+    "missing": "El estado de la solicitud anterior está pendiente de confirmar."
+  },
+  "generation_resume_request": "Intentar con la misma referencia",
+  "draft_exit_title": "Tienes un borrador sin guardar",
+  "draft_exit_description": "Guárdalo para abrirlo después en CV guardados o descártalo para continuar.",
+  "draft_exit_keep": "Seguir editando",
+  "draft_exit_discard": "Descartar",
+  "draft_exit_save": "Guardar borrador",
+  "draft_exit_save_error": "No se pudo guardar el borrador. Reintenta o vuelve a editarlo.",
+  "draft_exit_discarded": "Borrador descartado"
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { Alert, Button, Divider, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import PictureAsPdfOutlined from "@mui/icons-material/PictureAsPdfOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
@@ -17,7 +17,10 @@ import { cvPrimaryHover } from "../CvGeneration/styles";
 
 const action = { minHeight: 44, width: { xs: "100%", sm: "auto" } };
 type ArtifactState = { artifact: CvPdfArtifact; bytes: CvVerifiedBytes | null };
+export type CvDraftPdfHandle = { saveForExit: () => Promise<boolean> };
+
 type Props = {
+  ref?: Ref<CvDraftPdfHandle>;
   generationId: string;
   revision: number;
   language: CvPdfArtifact["language"];
@@ -26,10 +29,12 @@ type Props = {
   onDenial: () => void;
   onRefresh: () => void;
   onOpenVersions: () => void;
+  onSaved?: () => void;
+  onSavingChange?: (saving: boolean) => void;
 };
 
 export default function CvDraftPdf({
-  generationId, revision, language, active, disabled, onDenial, onRefresh, onOpenVersions,
+  ref, generationId, revision, language, active, disabled, onDenial, onRefresh, onOpenVersions, onSaved, onSavingChange,
 }: Props) {
   const { t } = useTranslation("nodiaCv");
   const { scope } = useProfileScope();
@@ -84,18 +89,20 @@ export default function CvDraftPdf({
   const stale = [409, 410].includes(cvHttpStatus(readError) ?? 0) || [409, 410].includes(cvHttpStatus(saveError) ?? 0);
   const artifact = result?.artifact;
   const savedNumber = artifact ? saved.get(artifact.id) : undefined;
+  const matchesCurrentDraft = (pdf: CvPdfArtifact) =>
+    pdf.generation_id === generationId && pdf.revision === revision &&
+    pdf.language === language && pdf.template === template && Date.parse(pdf.expires_at) > Date.now();
 
   const choose = (next: CvPdfTemplate | null) => {
-    if (!next || template === next || preparing || saving) return;
-    flight.current?.abort();
+    if (!next || template === next || disabled || flight.current || saveLock.current) return;
     setTemplate(next);
     setResult(null);
     setReadError(null);
     setSaveError(null);
     setAmbiguousSave(false);
   };
-  const prepare = async () => {
-    if (!active || disabled || flight.current || saveLock.current || stale) return;
+  const prepare = async (): Promise<ArtifactState | null> => {
+    if (!active || disabled || !currentView() || flight.current || saveLock.current || stale) return null;
     const controller = new AbortController();
     flight.current = controller;
     setPreparing(true);
@@ -104,24 +111,28 @@ export default function CvDraftPdf({
     const current = () => currentView() && flight.current === controller && !controller.signal.aborted;
     const context = { version: scope[2], signal: controller.signal };
     try {
-      const pdf = artifact && Date.parse(artifact.expires_at) > Date.now()
+      const pdf = artifact && matchesCurrentDraft(artifact)
         ? artifact : await prepareCvPdf(generationId, { revision, template, language }, context);
-      if (!current()) return;
+      if (!current()) return null;
       setResult({ artifact: pdf, bytes: null });
       const bytes = await fetchCvDraftPdf(pdf, context);
-      if (!current()) return;
-      if (Date.parse(pdf.expires_at) <= Date.now()) {
+      if (!current()) return null;
+      if (!matchesCurrentDraft(pdf)) {
         setResult(null);
         onRefresh();
-        return;
+        return null;
       }
-      setResult({ artifact: pdf, bytes });
+      const prepared = { artifact: pdf, bytes };
+      setResult(prepared);
       sileo.success({ title: t("pdf_prepared") });
+      return prepared;
     } catch (error) {
-      if (!current()) return;
-      if (clearedByHttp(error)) setResult(null);
-      setReadError(error);
-      notifyCvPdfError(error, onDenial);
+      if (current()) {
+        if (clearedByHttp(error)) setResult(null);
+        setReadError(error);
+        notifyCvPdfError(error, onDenial);
+      }
+      return null;
     } finally {
       if (current()) {
         flight.current = null;
@@ -129,38 +140,53 @@ export default function CvDraftPdf({
       }
     }
   };
-  const save = async () => {
-    const exact = result?.artifact;
-    if (!active || disabled || !exact || result.bytes?.sha256 !== exact.sha256 || Date.parse(exact.expires_at) <= Date.now() ||
-      exact.generation_id !== generationId || exact.revision !== revision || exact.template !== template ||
-      stale || flight.current || saveLock.current || saved.has(exact.id)) return;
+  const save = async (prepared = result): Promise<boolean> => {
+    const exact = prepared?.artifact;
+    if (!active || disabled || !currentView() || !exact || prepared.bytes?.sha256 !== exact.sha256 ||
+      !matchesCurrentDraft(exact) || stale || flight.current || saveLock.current) return false;
+    if (saved.has(exact.id)) return true;
     const key = saveKeys.current.get(exact.id) ?? crypto.randomUUID();
     saveKeys.current.set(exact.id, key);
     saveLock.current = true;
+    onSavingChange?.(true);
     setSaving(true);
     setSaveError(null);
     try {
       const version = await saveCvVersion(exact, key, { version: scope[2] });
-      if (!sameActor()) return;
+      if (!sameActor()) return false;
       void cache.invalidateQueries({ queryKey: [...scope, "versions"] });
       sileo.success({ title: t("version_saved", { number: version.version_number }) });
       if (mounted.current) {
         setSaved((previous) => new Map(previous).set(exact.id, version.version_number));
         setAmbiguousSave(false);
+        onSaved?.();
       }
+      return true;
     } catch (error) {
-      if (!sameActor()) return;
-      if (mounted.current) {
-        if (profileAccessDenied(error) || cvHttpStatus(error) === 410 || cvHttpStatus(error) === 404) setResult(null);
-        setAmbiguousSave(profileWriteMayHaveCommitted(error));
-        setSaveError(error);
+      if (sameActor()) {
+        if (mounted.current) {
+          if (profileAccessDenied(error) || cvHttpStatus(error) === 410 || cvHttpStatus(error) === 404) setResult(null);
+          setAmbiguousSave(profileWriteMayHaveCommitted(error));
+          setSaveError(error);
+        }
+        notifyCvPdfError(error, onDenial);
       }
-      notifyCvPdfError(error, onDenial);
+      return false;
     } finally {
       saveLock.current = false;
-      if (currentView()) setSaving(false);
+      if (sameActor()) {
+        onSavingChange?.(false);
+        if (mounted.current) setSaving(false);
+      }
     }
   };
+
+  const saveForExit = async () => {
+    if (!active || disabled || !currentView() || stale || flight.current || saveLock.current) return false;
+    const prepared = result?.bytes && matchesCurrentDraft(result.artifact) ? result : await prepare();
+    return prepared ? save(prepared) : false;
+  };
+  useImperativeHandle(ref, () => ({ saveForExit }));
 
   if (!active) return null;
   return (

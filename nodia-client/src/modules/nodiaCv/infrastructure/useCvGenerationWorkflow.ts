@@ -9,7 +9,6 @@ import {
   cvEligibilityQueryKey,
   cvGenerationQueryKey,
   readCvGeneration,
-  recoverCvGeneration,
   restoreCvGeneration,
   saveCvReview,
   startCvGeneration,
@@ -23,13 +22,14 @@ import {
   type CvReviewSave,
 } from "./generationSchema";
 import type { ProfileRecord } from "./profileSchema";
-import { clearCvReceipt, cvRecoveryKey, discardOtherCvReceipt, rememberCvReceipt } from "./receiptStorage";
+import { clearCvReceipt, cvRecoveryKeys, discardOtherCvReceipt, rememberCvReceipt } from "./receiptStorage";
 import { profileAccessDenied, profileWriteMayHaveCommitted, useProfileScope } from "./profiles";
 
 type Intent = { input: CvGenerationInput; profile: ProfileRecord };
 export type CvGenerationView = TrackedCvGeneration & { profile: ProfileRecord };
 export type CvReviewTarget = Pick<CvGenerationView, "intent" | "receipt">;
 type UncertainAdmission = { intent: Intent; receiptMissing: boolean };
+type PriorRequest = { state: "working" | "unknown" } | { state: "missing"; key: string };
 
 export function cvHttpStatus(error: unknown) {
   return isAxiosError(error) ? (error.response?.status ?? null) : null;
@@ -40,18 +40,15 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   const { scope } = useProfileScope();
   const actorId = scope[1];
   const [tracked, setTracked] = useState<CvGenerationView | null>(null);
-  const [presentedTerminal, setPresentedTerminal] = useState<string | null>(null);
   const [dismissedRequest, setDismissedRequest] = useState<string | null>(null);
-  const [closedUnknown, setClosedUnknown] = useState<ReadonlySet<string>>(() => new Set());
   const [uncertain, setUncertain] = useState<UncertainAdmission | null>(null);
   const [admissionError, setAdmissionError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
-  const [restorable, setRestorable] = useState(() => cvRecoveryKey(scope[1]));
-  const [restoreMissing, setRestoreMissing] = useState(false);
+  const [priorRequest, setPriorRequest] = useState<PriorRequest | null>(null);
   const [clock, setClock] = useState(Date.now);
   const mounted = useRef(true);
-  const lock = useRef(false);
   const recovering = useRef<AbortController | null>(null);
+  const localReceipts = useRef(new Set<string>());
   const status = useCvGenerationStatus(tracked, active);
   const startRequest = useMutation({
     mutationFn: (input: CvGenerationInput) => startCvGeneration(input, scope[2]),
@@ -73,7 +70,14 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     };
   }, []);
 
-  useEffect(() => discardOtherCvReceipt(actorId), [actorId]);
+  useEffect(() => {
+    localReceipts.current.clear();
+    discardOtherCvReceipt(actorId);
+  }, [actorId]);
+
+  useEffect(() => {
+    if (!active) recovering.current?.abort();
+  }, [active]);
 
   const known = status.data ?? tracked?.receipt ?? null;
   const deadline = known ? Date.parse(known.expires_at) : 0;
@@ -96,22 +100,24 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   const receipt = receiptUnavailable ? null : known;
   const visible = active && tracked && receipt?.state === "ready" ? { ...tracked, receipt } : null;
   const working = receipt?.state === "queued" || receipt?.state === "running";
-  const currentUnknown = receipt?.state === "unknown" && tracked ? cvInputIdentity(tracked.intent) : null;
-  const hasUnknown = (identity: string) => identity === currentUnknown || closedUnknown.has(identity);
+  const hasUnknown = (identity: string) =>
+    receipt?.state === "unknown" && Boolean(tracked && cvInputIdentity(tracked.intent) === identity);
 
   useEffect(() => {
-    if (dismissedRequest) clearCvReceipt(dismissedRequest);
-  }, [dismissedRequest]);
+    if (actorId && dismissedRequest) {
+      localReceipts.current.delete(dismissedRequest);
+      clearCvReceipt(actorId, dismissedRequest);
+    }
+  }, [actorId, dismissedRequest]);
 
-  const terminal = receipt?.state === "ready" || receipt?.state === "failed";
-  if (active && terminal && presentedTerminal !== receipt.id) setPresentedTerminal(receipt.id);
-
-  if (!active && !busy && !uncertain && !restorable) {
+  if (!active) {
     if (admissionError !== null) setAdmissionError(null);
-    if (tracked && receipt?.state !== "unknown") {
-      // Keep unresolved submissions recoverable by the same key after leaving the tab.
-      if (working || (terminal && presentedTerminal !== receipt.id)) setRestorable(tracked.intent.request_key);
-      else setDismissedRequest(tracked.intent.request_key);
+    if (priorRequest) setPriorRequest(null);
+    if (uncertain) setUncertain(null);
+    if (tracked) {
+      if (receipt?.state === "ready" || receipt?.state === "failed" || expired) {
+        setDismissedRequest(tracked.intent.request_key);
+      }
       setTracked(null);
     }
   }
@@ -125,37 +131,41 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     if (profileAccessDenied(error)) onDenial();
     notifyHttpError(error);
   };
-  const startLock = () => {
-    if (lock.current || !sameActor() || !hasActiveSession(useAuthStore.getState())) return false;
-    lock.current = true;
+  const beginCommand = () => {
+    if (!active || recovering.current || !sameActor() || !hasActiveSession(useAuthStore.getState())) return null;
+    const controller = new AbortController();
+    recovering.current = controller;
     setBusy(true);
-    return true;
+    return controller;
   };
-  const releaseLock = () => {
-    lock.current = false;
+  const finishCommand = () => {
+    recovering.current = null;
     if (sameActor()) setBusy(false);
   };
   const accept = (intent: Intent, value: CvGeneration) => {
     queryClient.setQueryData(cvGenerationQueryKey(scope, value.id), value);
     setTracked({ intent: intent.input, profile: intent.profile, receipt: value });
     setUncertain(null);
-    setRestorable(null);
-    setRestoreMissing(false);
     setAdmissionError(null);
   };
+  const forget = (key: string) => {
+    localReceipts.current.delete(key);
+    if (actorId) clearCvReceipt(actorId, key);
+  };
 
-  const submit = async (intent: Intent) => {
-    if (!startLock()) return;
-    if (scope[1]) rememberCvReceipt(scope[1], intent.input.request_key);
+  const submit = async (intent: Intent, signal: AbortSignal, keepKeyOnFailure = false) => {
+    localReceipts.current.add(intent.input.request_key);
+    if (actorId) rememberCvReceipt(actorId, intent.input.request_key);
     setAdmissionError(null);
     try {
       const value = await startRequest.mutateAsync(intent.input);
       if (!sameActor()) return;
-      accept(intent, value);
+      if (!signal.aborted) accept(intent, value);
+      else if (value.state === "ready" || value.state === "failed") forget(intent.input.request_key);
       sileo.success({ title: i18n.t("nodiaCv:generation_accepted") });
     } catch (error) {
       if (!sameActor()) return;
-      setAdmissionError(error);
+      if (!signal.aborted) setAdmissionError(error);
       const message: unknown = isAxiosError(error) ? error.response?.data?.message : null;
       if (intent.input.selection.mode === "agentic" && (
         message === "nodiaCv:generation_selection_unqualified" ||
@@ -167,59 +177,112 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
           exact: true,
         });
       }
-      if (profileWriteMayHaveCommitted(error)) setUncertain({ intent, receiptMissing: false });
-      else if (!uncertain) {
-        if (scope[1] && tracked) rememberCvReceipt(scope[1], tracked.intent.request_key);
-        else clearCvReceipt(intent.input.request_key);
+      if (profileWriteMayHaveCommitted(error)) {
+        if (!signal.aborted) setUncertain({ intent, receiptMissing: false });
+      } else if (message === "nodiaCv:request_key_conflict") {
+        if (!signal.aborted) setUncertain(null);
+      } else if (!uncertain && !keepKeyOnFailure) {
+        forget(intent.input.request_key);
       }
-      // A prior ambiguous submission remains recoverable even if a subsequent
-      // retry was rejected before reaching the original receipt lookup.
       reportError(error);
     } finally {
       startRequest.reset();
-      releaseLock();
     }
   };
 
-  const generate = (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord) => {
-    if (uncertain || restorable || working || hasUnknown(cvInputIdentity(input))) return;
-    if (currentUnknown) setClosedUnknown((priorUnknown) => new Set(priorUnknown).add(currentUnknown));
-    void submit({ input: { ...input, request_key: crypto.randomUUID() }, profile });
+  const startGeneration = async (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord, resumeKey?: string) => {
+    const identity = cvInputIdentity(input);
+    if (uncertain || working || hasUnknown(identity)) return;
+    const controller = beginCommand();
+    if (!controller) return;
+    setPriorRequest(null);
+    setAdmissionError(null);
+    try {
+      let verifiedMissingKey: string | undefined;
+      const keys = new Set([...cvRecoveryKeys(actorId), ...localReceipts.current]);
+      for (const key of keys) {
+        let previous: { input: CvGenerationInput; receipt: CvGeneration };
+        try {
+          previous = receipt && key === tracked?.intent.request_key
+            ? { input: tracked.intent, receipt }
+            : await restoreCvGeneration(key, scope[2], controller.signal);
+        } catch (error) {
+          if (!sameActor() || controller.signal.aborted) return;
+          if (cvHttpStatus(error) === 410) {
+            forget(key);
+            continue;
+          }
+          if (cvHttpStatus(error) === 404) {
+            // The earlier request can still commit. Explicit continuation uses
+            // its own key so the server can recognize or reject that intent.
+            if (key === resumeKey) {
+              verifiedMissingKey = key;
+              continue;
+            }
+            setPriorRequest({ state: "missing", key });
+          } else {
+            setAdmissionError(error);
+          }
+          reportError(error);
+          return;
+        }
+        if (!sameActor() || controller.signal.aborted) return;
+        const state = previous.receipt.state;
+        if (state === "ready" || state === "failed") forget(key);
+        else if (cvInputIdentity(previous.input) === identity) {
+          setPriorRequest({ state: state === "unknown" ? "unknown" : "working" });
+          return;
+        }
+      }
+      if (!controller.signal.aborted) {
+        await submit({
+          input: { ...input, request_key: verifiedMissingKey ?? crypto.randomUUID() },
+          profile,
+        }, controller.signal, Boolean(verifiedMissingKey));
+      }
+    } finally {
+      finishCommand();
+    }
   };
 
   const recover = async () => {
-    const key = uncertain?.intent.input.request_key ?? restorable;
-    if (!key || !startLock()) return;
-    const controller = new AbortController();
-    recovering.current = controller;
+    if (!uncertain) return;
+    const controller = beginCommand();
+    if (!controller) return;
+    const { intent } = uncertain;
     setAdmissionError(null);
     try {
-      if (uncertain) {
-        const value = await recoverCvGeneration(uncertain.intent.input, scope[2], controller.signal);
-        if (sameActor()) accept(uncertain.intent, value);
+      const recovered = await restoreCvGeneration(intent.input.request_key, scope[2], controller.signal);
+      if (!sameActor() || controller.signal.aborted) return;
+      if (cvInputIdentity(recovered.input) !== cvInputIdentity(intent.input)) {
+        // A different original request won a reused legacy key.
+        setUncertain(null);
         return;
       }
-      const restored = await restoreCvGeneration(key, scope[2], controller.signal);
-      if (!sameActor()) return;
-      accept(restored, restored.receipt);
-      return restored.input;
+      accept(intent, recovered.receipt);
     } catch (error) {
       if (!sameActor() || controller.signal.aborted) return;
       setAdmissionError(error);
       if (cvHttpStatus(error) === 404) {
-        if (uncertain) setUncertain({ intent: uncertain.intent, receiptMissing: true });
-        else setRestoreMissing(true);
+        setUncertain({ intent, receiptMissing: true });
       }
       if (cvHttpStatus(error) === 410) {
-        clearCvReceipt(key);
-        setRestorable(null);
+        forget(intent.input.request_key);
         setUncertain(null);
       }
       reportError(error);
     } finally {
-      recovering.current = null;
-      releaseLock();
+      finishCommand();
     }
+  };
+
+  const discardDraft = () => {
+    if (!visible || !sameActor()) return;
+    const id = visible.receipt.id;
+    const latest = queryClient.getQueryData<CvGeneration>(cvGenerationQueryKey(scope, id)) ?? visible.receipt;
+    if (latest.state !== "ready" || latest.review?.revision !== visible.receipt.review?.revision) return;
+    forget(visible.intent.request_key);
+    setTracked(current => current?.receipt.id === id ? null : current);
   };
 
   const reloadReview = async (view: CvReviewTarget) => {
@@ -257,24 +320,22 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     status,
     admissionError,
     uncertain,
-    restorable,
-    restoreMissing,
+    priorRequest: priorRequest?.state ?? null,
     expired,
-    discardRestorable: () => {
-      if (!restorable || !restoreMissing || lock.current) return;
-      clearCvReceipt(restorable);
-      setRestorable(null);
-      setRestoreMissing(false);
-      setAdmissionError(null);
-    },
+    discardDraft,
     hasUnknown,
-    generate,
+    generate: (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord) => startGeneration(input, profile),
+    resumeMissing: (input: Omit<CvGenerationInput, "request_key">, profile: ProfileRecord) => {
+      if (priorRequest?.state === "missing") return startGeneration(input, profile, priorRequest.key);
+    },
     recover,
     review,
     reloadReview,
     reportError,
     resend: () => {
-      if (uncertain?.receiptMissing) void submit(uncertain.intent);
+      if (!uncertain?.receiptMissing) return;
+      const controller = beginCommand();
+      if (controller) void submit(uncertain.intent, controller.signal).finally(finishCommand);
     },
   };
 }
