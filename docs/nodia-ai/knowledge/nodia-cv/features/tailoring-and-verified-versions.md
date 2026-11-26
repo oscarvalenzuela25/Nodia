@@ -172,6 +172,14 @@ se limpian la vista previa y los requisitos del borrador completado.
 Cambiar plantilla mantiene el contenido y permite
 preparar y verificar otro PDF con la misma revisión.
 
+Antes de cambiar de sección, de ruta o de generación con un borrador sin
+guardar, elegir guardar, descartar o seguir editando. Guardar desde ese
+diálogo verifica el PDF de la revisión y deja la versión en **CV
+guardados**. Descartar retira el resultado temporal de la vista. Una
+referencia de un trabajo anterior se comprueba sin sustituir la oferta
+actual ni abrir su borrador.
+[Plan113 §21](../../../../mvp/113-nodia-cv-implementation-plan.md#21-guardar-o-descartar-antes-de-salir--2026-11-26).
+
 **Guardar versión** confirma la versión concreta que la persona revisó.
 Al abrirla después se conserva su snapshot y el PDF exacto. La versión
 también muestra los requisitos y la evidencia archivada de solo lectura

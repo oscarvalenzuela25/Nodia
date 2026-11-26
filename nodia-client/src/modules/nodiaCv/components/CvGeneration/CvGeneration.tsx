@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { Alert, Box, Button, Divider, LinearProgress, Paper, Stack, Typography } from "@mui/material";
 import AutoAwesomeOutlined from "@mui/icons-material/AutoAwesomeOutlined";
 import DescriptionOutlined from "@mui/icons-material/DescriptionOutlined";
@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Skeleton } from "boneyard-js/react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { sileo } from "sileo";
+import BaseModal from "../../../../components/BaseModal";
 import QueryErrorAlert from "../../../../components/QueryErrorAlert";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import TextInput from "../../../../components/inputs/TextInput";
@@ -26,12 +28,13 @@ import {
   useCvProfilesForGeneration,
 } from "../../infrastructure/generations";
 import { useProfileDetail } from "../../infrastructure/profiles";
+import { useCvDraftExit } from "../../infrastructure/useCvDraftExit";
 import {
   useCvGenerationWorkflow,
   type CvGenerationView,
 } from "../../infrastructure/useCvGenerationWorkflow";
 import CvModelSelector from "../CvModelSelector";
-import CvDraftPdf from "../CvDraftPdf";
+import CvDraftPdf, { type CvDraftPdfHandle } from "../CvDraftPdf/CvDraftPdf";
 import CvRequirements from "../CvRequirements/CvRequirements";
 import CvDraftDocument from "./CvDraftDocument";
 import ReviewEvidenceDialog from "./ReviewEvidenceDialog";
@@ -41,10 +44,17 @@ const primaryAction = { minHeight: 44, width: { xs: "100%", sm: "auto" }, flexSh
 const panel = { borderRadius: 2, minWidth: 0, p: { xs: 2, sm: 2.5 } };
 const wrap = { overflowWrap: "anywhere" } as const;
 
-type Props = { active: boolean; onCreateProfile: () => void; onDenial: () => void; onOpenVersions: () => void };
+export type CvGenerationHandle = { leave: (action: () => void) => void };
+type Props = {
+  active: boolean;
+  onCreateProfile: () => void;
+  onDenial: () => void;
+  onOpenVersions: () => void;
+  ref?: Ref<CvGenerationHandle>;
+};
 type ReviewTarget = { view: CvGenerationView; requirement: CvRequirement };
 
-export default function CvGeneration({ active, onCreateProfile, onDenial, onOpenVersions }: Props) {
+export default function CvGeneration({ active, onCreateProfile, onDenial, onOpenVersions, ref }: Props) {
   const { t, i18n } = useTranslation("nodiaCv");
   const id = useId();
   const [profileId, setProfileId] = useState<string | null>(null);
@@ -52,6 +62,9 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   const [workingSelection, setWorkingSelection] = useState<NodiaAiSelection | null>(null);
   const [selectionDirty, setSelectionDirty] = useState(false);
   const [reviewTarget, setReviewTarget] = useState<ReviewTarget | null>(null);
+  const [savedRevision, setSavedRevision] = useState<string | null>(null);
+  const [writingVersion, setWritingVersion] = useState(false);
+  const pdfRef = useRef<CvDraftPdfHandle>(null);
   if (!active && reviewTarget) setReviewTarget(null);
 
   const profiles = useCvProfilesForGeneration(active);
@@ -67,7 +80,7 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
   useCvHttpNotice(eligibility.error, onDenial);
   useCvHttpNotice(workflow.status.error, onDenial);
 
-  const { control, handleSubmit, reset } = useForm<CvOffer>({
+  const { control, handleSubmit } = useForm<CvOffer>({
     resolver: zodResolver(cvOfferSchema),
     mode: "onTouched",
     defaultValues: {
@@ -107,6 +120,17 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     identity === cvInputIdentity(visible.intent) ? visible : null;
   const draft = draftView?.receipt.draft;
   const review = draftView?.receipt.review;
+  const visibleReview = visible?.receipt.review;
+  const revisionKey = visible && visibleReview ? visible.receipt.id + ":" + visibleReview.revision : null;
+  const exit = useCvDraftExit({
+    unsaved: Boolean(revisionKey && revisionKey !== savedRevision),
+    save: () => pdfRef.current?.saveForExit() ?? Promise.resolve(false),
+    retire: (saved) => {
+      workflow.discardDraft();
+      if (!saved) sileo.success({ title: t("draft_exit_discarded") });
+    },
+  });
+  useImperativeHandle(ref, () => ({ leave: exit.request }));
   const unknownSame = identity !== null && workflow.hasUnknown(identity);
   const appliedEligibility =
     eligibility.isSuccess && sameCvSelection(eligibility.data.selection, selection)
@@ -127,8 +151,8 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     catalog.isFetching ||
     workflow.busy ||
     workflow.working ||
+    writingVersion ||
     Boolean(workflow.uncertain) ||
-    Boolean(workflow.restorable) ||
     Boolean(unknownSame);
   const status = workflow.receipt?.state;
   const displayedState = workflow.expired
@@ -137,13 +161,14 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
       ? "generation_state." + status
       : null;
 
-  const submit = handleSubmit(
+  const submitDraft = (resumeMissing = false) => handleSubmit(
     (values) => {
       if (blocked || !profile || !selection) return;
-      workflow.generate(
-        { ...values, profile_id: profile.id, profile_revision: profile.revision, selection },
-        profile,
-      );
+      const input = { ...values, profile_id: profile.id, profile_revision: profile.revision, selection };
+      exit.request(() => {
+        if (resumeMissing) void workflow.resumeMissing(input, profile);
+        else workflow.generate(input, profile);
+      });
     },
     (errors) => {
       if (errors.offer_text) requestAnimationFrame(() => document.getElementById(id + "-offer")?.focus());
@@ -153,14 +178,13 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
         requestAnimationFrame(() => document.getElementById(id + "-vacancy_company")?.focus());
     },
   );
+  const submit = submitDraft();
   const forPreviewAvailable = Boolean(draftView && draft);
-  const reviewReady = Boolean(
-    draftView &&
-    review &&
+  const pdfReady =
     !workflow.status.isFetching &&
     !workflow.status.isError &&
-    !workflow.busy,
-  );
+    !workflow.busy;
+  const reviewReady = Boolean(draftView && review && pdfReady && !writingVersion);
   const openReview = (requirement: CvRequirement) => {
     if (reviewReady && draftView) setReviewTarget({ view: draftView, requirement });
   };
@@ -175,20 +199,6 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
     !catalog.isFetching &&
     !eligibility.isFetching &&
     (eligibility.isError || (appliedEligibility && (selection.mode === "agentic" || !eligible)));
-  const restoreSaved = async () => {
-    const restored = await workflow.recover();
-    if (!restored) return;
-    setProfileId(restored.profile_id);
-    setSelection(restored.selection);
-    setWorkingSelection(null);
-    setSelectionDirty(false);
-    reset({
-      language: restored.language,
-      vacancy_title: restored.vacancy_title,
-      vacancy_company: restored.vacancy_company,
-      offer_text: restored.offer_text,
-    });
-  };
 
   return (
     <Box sx={{ containerType: "inline-size", minWidth: 0 }}>
@@ -457,33 +467,16 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
             {workflow.admissionError !== null && (
               <Alert severity="error">{getHttpErrorMessage(workflow.admissionError)}</Alert>
             )}
-            {workflow.restorable && (
-              <Alert severity="info">
-                <Stack spacing={1.25}>
-                  <Typography variant="body2">{t("generation_restore_saved")}</Typography>
-                  <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, flexWrap: "wrap" }}>
-                    <Button
-                      color="inherit"
-                      variant="outlined"
-                      loading={workflow.busy}
-                      sx={primaryAction}
-                      onClick={() => {
-                        void restoreSaved();
-                      }}
-                    >
-                      {t("generation_restore_action")}
+            {workflow.priorRequest && (
+              <Alert role="status" severity={workflow.priorRequest === "working" ? "info" : "warning"}>
+                <Stack spacing={1} sx={{ alignItems: { xs: "stretch", sm: "flex-start" } }}>
+                  <Typography variant="body2">{t("generation_prior." + workflow.priorRequest)}</Typography>
+                  {workflow.priorRequest === "missing" && (
+                    <Button variant="outlined" color="inherit" sx={primaryAction}
+                      loading={workflow.busy} disabled={blocked} onClick={submitDraft(true)}>
+                      {t("generation_resume_request")}
                     </Button>
-                    {workflow.restoreMissing && (
-                      <Button
-                        color="inherit"
-                        disabled={workflow.busy}
-                        sx={primaryAction}
-                        onClick={workflow.discardRestorable}
-                      >
-                        {t("generation_discard_recovery")}
-                      </Button>
-                    )}
-                  </Stack>
+                  )}
                 </Stack>
               </Alert>
             )}
@@ -556,16 +549,17 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
               </Typography>
             )}
           </Stack>
+          {visible && visibleReview && (
+            <Box hidden={!forPreviewAvailable}>
+              <CvDraftPdf key={revisionKey} ref={pdfRef} generationId={visible.receipt.id}
+                revision={visibleReview.revision} language={visible.receipt.language} active={active}
+                disabled={!pdfReady || Boolean(reviewTarget)} onDenial={onDenial}
+                onSaved={() => setSavedRevision(revisionKey)} onSavingChange={setWritingVersion}
+                onRefresh={() => { void workflow.status.refetch(); }} onOpenVersions={onOpenVersions} />
+            </Box>
+          )}
           {forPreviewAvailable && draftView ? (
-            <>
-              {review && (
-                <CvDraftPdf key={draftView.receipt.id + ":" + review.revision} generationId={draftView.receipt.id}
-                  revision={review.revision} language={draftView.receipt.language} active={active}
-                  disabled={!reviewReady || Boolean(reviewTarget)} onDenial={onDenial}
-                  onRefresh={() => { void workflow.status.refetch(); }} onOpenVersions={onOpenVersions} />
-              )}
-              <CvDraftDocument view={draftView} />
-            </>
+            <CvDraftDocument view={draftView} />
           ) : workflow.status.isLoading ? (
             <Skeleton loading name="cv-draft-preview">
               <Box sx={{ height: 180 }} />
@@ -590,6 +584,22 @@ export default function CvGeneration({ active, onCreateProfile, onDenial, onOpen
           )}
         </Stack>
       </Box>
+      {exit.open && (
+        <BaseModal open size="xs" title={t("draft_exit_title")} subtitle={t("draft_exit_description")}
+          onClose={exit.keepEditing} showCloseButton={false} disableEscapeKeyDown={exit.saving}
+          actions={
+            <Stack direction={{ xs: "column", sm: "row" }} sx={{ width: "100%", gap: 1, justifyContent: "flex-end", flexWrap: "wrap" }}>
+              <Button autoFocus variant="outlined" color="inherit" disabled={exit.saving}
+                sx={primaryAction} onClick={exit.keepEditing}>{t("draft_exit_keep")}</Button>
+              <Button variant="outlined" color="error" disabled={exit.saving || writingVersion}
+                sx={primaryAction} onClick={exit.discard}>{t("draft_exit_discard")}</Button>
+              <Button variant="contained" loading={exit.saving} disabled={!pdfReady || writingVersion || Boolean(reviewTarget)}
+                sx={primaryAction} onClick={() => void exit.saveAndLeave()}>{t("draft_exit_save")}</Button>
+            </Stack>
+          }>
+          {exit.saveFailed && <Alert severity="error">{t("draft_exit_save_error")}</Alert>}
+        </BaseModal>
+      )}
       {active &&
         reviewTarget?.view.receipt.review &&
         draftView?.receipt.id === reviewTarget.view.receipt.id && (
