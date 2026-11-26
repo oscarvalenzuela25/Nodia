@@ -5,4 +5,5 @@ export type ComposerSelectionProps = Omit<ConfigurationDrawerProps,
 > & {
   /** Incomplete edits are also dirty and must block admission of the old selection. */
   onDirtyChange: (dirty: boolean) => void;
+  locked?: boolean;
 };
