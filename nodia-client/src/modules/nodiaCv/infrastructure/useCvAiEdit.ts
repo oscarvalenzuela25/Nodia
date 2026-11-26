@@ -99,8 +99,8 @@ export function useCvAiEdit(base: CvGenerationView, selection: NodiaAiSelection,
   const forget = (key: string) => {
     if (owner) clearCvAiEditReceipt(owner, target, key);
   };
-  const intentOf = (key: string): CvGenerationInput => ({
-    ...base.intent, request_key: key, selection,
+  const intentOf = (key: string, model = selection): CvGenerationInput => ({
+    ...base.intent, request_key: key, selection: model,
   });
   const accept = (intent: CvGenerationInput, receipt: CvGeneration) => {
     cache.setQueryData(cvGenerationQueryKey(scope, receipt.id), receipt);
@@ -147,11 +147,12 @@ export function useCvAiEdit(base: CvGenerationView, selection: NodiaAiSelection,
     if (!pending) return;
     const controller = begin("check");
     if (!controller) return;
-    const intent = intentOf(pending.key);
     setMissing(false);
     try {
       const recovered = await restoreCvGeneration(pending.key, sessionVersion, controller.signal);
       if (!authorized() || controller.signal.aborted) return;
+      const recoveredModel = base.intent.source_version && !pending.request ? recovered.input.selection : null;
+      const intent = intentOf(pending.key, recoveredModel ?? selection);
       if (!matchesAiEdit(recovered.receipt, target, intent) ||
           cvInputIdentity(recovered.input) !== cvInputIdentity(intent)) {
         throw new Error("Unexpected recovered Nodia CV edit identity");
@@ -207,6 +208,7 @@ export function useCvAiEdit(base: CvGenerationView, selection: NodiaAiSelection,
     action, error: error ?? status.error, missing, stale, applyUnavailable, invalid, changes, proposal,
     pending: pending !== null, tracked: tracked !== null, working, unresolved, failed,
     failedCode: failed ? latest?.error_code : null,
+    observedModel: (working || unresolved || proposal) ? tracked?.intent.selection : null,
     canEdit, canPropose, checkingResult: status.isFetching,
     propose, check, apply, dismiss,
   };

@@ -6,6 +6,7 @@ import type {
   CvGenerationRow,
 } from '../types/nodia-cv-generation.types.js';
 import { cvGenerationError } from './nodia-cv-generation-errors.js';
+import { requireLiveCvGeneration } from './nodia-cv-generation-status.js';
 
 export function prepareCvDraftReview(
   draft: CvTailoringDraft,
@@ -57,16 +58,11 @@ export function requireCvEditBase(
   revision: number,
 ) {
   if (!row || row.qualification) cvGenerationError('generation_not_found', 404);
-  if (
-    row.state === 'expired' ||
-    !row.profile_id ||
-    row.expires_at.getTime() <= Date.now()
-  )
-    cvGenerationError('generation_expired', 410);
+  const profileId = requireLiveCvGeneration(row);
   if (
     row.state !== 'ready' ||
     !row.profile_snapshot ||
-    !row.offer_text ||
+    row.offer_text === null ||
     !row.draft ||
     !row.review
   )
@@ -74,7 +70,7 @@ export function requireCvEditBase(
   if (row.review_revision !== revision) cvGenerationError('stale_draft');
   return {
     ...row,
-    profile_id: row.profile_id,
+    profile_id: profileId,
     profile_snapshot: row.profile_snapshot,
     offer_text: row.offer_text,
     draft: row.draft,

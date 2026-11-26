@@ -8,7 +8,7 @@ import { readCvGeneration, restoreCvGeneration, startCvGeneration } from "../../
 import type { CvGeneration, CvGenerationInput } from "../../../../modules/nodiaCv/infrastructure/generationSchema";
 import { emptyProfile, profileRecordSchema } from "../../../../modules/nodiaCv/infrastructure/profileSchema";
 import { cvRecoveryKeys, rememberCvReceipt } from "../../../../modules/nodiaCv/infrastructure/receiptStorage";
-import { useCvGenerationWorkflow } from "../../../../modules/nodiaCv/infrastructure/useCvGenerationWorkflow";
+import { useCvGenerationWorkflow, type CvGenerationView } from "../../../../modules/nodiaCv/infrastructure/useCvGenerationWorkflow";
 
 vi.mock("../../../../modules/nodiaCv/infrastructure/generations", async (original) => ({
   ...await original<object>(),
@@ -102,6 +102,34 @@ function open() {
 }
 
 describe("CV tab navigation and recovery", () => {
+  it("applies a separately selected model to a copied version while verifying its archived source", async () => {
+    const source_version = { id: "67b4026d-9179-4a78-96e5-a09ffeaea318", template: "compact" } as const;
+    const intent = { ...input, request_key: oldKey, offer_text: "", selection: null, source_version };
+    const review = { revision: 1, included_fact_ids: [], evidence: [] };
+    const receipt = { ...ready, selection: null, source_version, review };
+    const base: CvGenerationView = { intent, receipt, profile };
+    const view = renderHook(() => useCvGenerationWorkflow(true, noDenial, base), { wrapper: Wrapper });
+    const next = {
+      intent: { ...intent, request_key: crypto.randomUUID(), selection: newInput.selection },
+      receipt: { ...newReady, source_version, edit: { base_generation_id: receipt.id, base_revision: 1 }, review },
+    };
+    expect(view.result.current.visible?.receipt).toEqual(receipt);
+    await act(async () => {
+      const differentSource = { ...source_version, id: crypto.randomUUID() };
+      expect(await view.result.current.applyEdit(base, {
+        intent: { ...next.intent, source_version: differentSource },
+        receipt: { ...next.receipt, source_version: differentSource },
+      })).toBe("stale");
+    });
+    vi.mocked(readCvGeneration).mockResolvedValue(receipt);
+    await act(async () => {
+      expect(await view.result.current.applyEdit(base, next)).toBe("applied");
+    });
+    expect(view.result.current.visible?.receipt).toEqual(next.receipt);
+    expect(view.result.current.visible?.profile).toEqual(profile);
+    expect(startCvGeneration).not.toHaveBeenCalled();
+  });
+
   it("clears an already presented terminal draft on returning to Generate CV", async () => {
     vi.mocked(startCvGeneration).mockResolvedValue(ready);
     const view = open();
@@ -186,11 +214,13 @@ describe("CV tab navigation and recovery", () => {
     vi.mocked(restoreCvGeneration).mockResolvedValue({
       profile, input: submitted, receipt: { ...queued, state: "unknown" },
     });
-    view.rerender({ active: false });
-    view.rerender({ active: true });
+    act(view.result.current.clearPresentation);
+    expect(view.result.current.receipt).toBeNull();
+    expect(cvRecoveryKeys(owner)).toEqual([submitted.request_key]);
 
     await act(() => view.result.current.generate(input, profile));
-    expect(view.result.current.priorRequest).toBe("unknown");
+    expect(view.result.current.receipt?.state).toBe("unknown");
+    expect(view.result.current.priorRequest).toBeNull();
     expect(view.result.current.visible).toBeNull();
     expect(startCvGeneration).toHaveBeenCalledOnce();
 

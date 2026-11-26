@@ -42,6 +42,12 @@ export class PrepareNodiaCvPdfDto extends NodiaCvDraftRevisionDto {
   template!: CvPdfTemplate;
 }
 
+export class CopyNodiaCvVersionDto {
+  @ApiProperty({ type: String, format: 'uuid' })
+  @IsUUID('4')
+  request_key!: string;
+}
+
 export class SaveNodiaCvVersionDto extends NodiaCvDraftRevisionDto {
   @ApiProperty({ type: String, format: 'uuid' })
   @IsUUID('4')

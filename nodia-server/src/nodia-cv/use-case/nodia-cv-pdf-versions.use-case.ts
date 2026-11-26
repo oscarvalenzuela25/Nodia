@@ -7,6 +7,7 @@ import {
   type NodiaAiDeletionJournalPort,
 } from '../../nodia-ai-recovery/types/deletion-journal.js';
 import type {
+  CopyNodiaCvVersionDto,
   ListNodiaCvVersionsDto,
   PrepareNodiaCvPdfDto,
   SaveNodiaCvVersionDto,
@@ -22,7 +23,15 @@ import {
   type CvPdfTemplate,
 } from '../pdf/nodia-cv-pdf-renderer.service.js';
 import { cvGenerationError } from '../policies/nodia-cv-generation-errors.js';
+import {
+  recoverableGeneration,
+  requireLiveCvGeneration,
+} from '../policies/nodia-cv-generation-status.js';
 import { protectNodiaCvDelete } from '../policies/nodia-cv-protected-delete.js';
+import {
+  CV_VERSION_COPY_PURPOSE,
+  prepareCvVersionDraft,
+} from '../policies/nodia-cv-version-draft.js';
 import type { CvGenerationRow } from '../types/nodia-cv-generation.types.js';
 
 type RenderedPdf = Awaited<ReturnType<NodiaCvPdfRenderer['render']>>;
@@ -133,6 +142,52 @@ export class NodiaCvPdfVersionsUseCase {
     );
   }
 
+  copy(actor: ActorReference, id: string, input: CopyNodiaCvVersionDto) {
+    const sourceId = id.toLowerCase();
+    const request = { key: input.request_key };
+    const requestHash = sha256(
+      JSON.stringify([CV_VERSION_COPY_PURPOSE, sourceId]),
+    );
+    const replay = (row: CvGenerationRow | null) => {
+      if (!row) cvGenerationError('request_failed', 500);
+      requireLiveCvGeneration(row);
+      if (row.request_hash !== requestHash)
+        cvGenerationError('request_key_conflict');
+      return recoverableGeneration(row);
+    };
+    return this.scope.transaction(async (manager) => {
+      const current = await this.scope.authorize(manager, actor);
+      const previous = await this.generations.status(
+        manager,
+        current.actorId,
+        request,
+      );
+      if (previous) return replay(previous);
+
+      const version = await this.store.draftSource(
+        manager,
+        current.actorId,
+        sourceId,
+      );
+      if (!version) cvGenerationError('version_not_found', 404);
+      const row = await this.generations.copyVersion(manager, {
+        ...prepareCvVersionDraft(version),
+        id: randomUUID(),
+        owner: current.actorId,
+        sessionId: current.sessionId,
+        requestKey: request.key,
+        requestHash,
+        vacancyTitle: version.vacancy_title,
+        vacancyCompany: version.vacancy_company,
+      });
+      // The unique owner/request key pairs the originating receipt with its copy.
+      return replay(
+        row ??
+          (await this.generations.status(manager, current.actorId, request)),
+      );
+    }, true);
+  }
+
   versionPdf(actor: ActorReference, id: string) {
     return this.authorized(actor, async (manager, owner) => {
       const pdf = await this.store.versionPdf(manager, owner, id);
@@ -185,6 +240,7 @@ export class NodiaCvPdfVersionsUseCase {
         const evidenceIds = new Set(
           requirements.flatMap(({ evidenceIds }) => evidenceIds),
         );
+        const requirementIds = new Set(requirements.map(({ id }) => id));
         await this.store.insertVersion(manager, draft, pdf, {
           id,
           profileName: draft.profile_snapshot.profile_name,
@@ -193,14 +249,17 @@ export class NodiaCvPdfVersionsUseCase {
             facts: [...selectedFacts, ...remainingFacts].filter(({ id }) =>
               evidenceIds.has(id),
             ),
-            evidence: draft.review.evidence,
+            evidence: draft.review.evidence.filter(({ requirement_id }) =>
+              requirementIds.has(requirement_id),
+            ),
           },
           snapshot: {
             ...snapshotCvPdfSource(sourceOf(draft)),
             profile_id: draft.profile_id,
             profile_revision: draft.profile_revision,
             review_revision: draft.review_revision,
-            offer_sha256: sha256(draft.offer_text),
+            offer_sha256:
+              draft.source_version?.offer_sha256 ?? sha256(draft.offer_text),
           },
         });
       }
@@ -241,26 +300,21 @@ export class NodiaCvPdfVersionsUseCase {
     const row = await this.generations.status(manager, owner, { id }, true);
     if (!row || row.qualification)
       cvGenerationError('generation_not_found', 404);
-    if (
-      row.state === 'expired' ||
-      !row.profile_id ||
-      row.expires_at.getTime() <= Date.now()
-    )
-      cvGenerationError('generation_expired', 410);
+    const profileId = requireLiveCvGeneration(row);
     if (
       row.state !== 'ready' ||
       !row.profile_snapshot ||
       !row.draft ||
       !row.review ||
       row.review_revision === null ||
-      !row.offer_text
+      row.offer_text === null
     )
       cvGenerationError('draft_not_ready');
     if (revision !== undefined && row.review_revision !== revision)
       cvGenerationError('stale_draft');
     return {
       ...row,
-      profile_id: row.profile_id,
+      profile_id: profileId,
       profile_snapshot: row.profile_snapshot,
       draft: row.draft,
       review: row.review,

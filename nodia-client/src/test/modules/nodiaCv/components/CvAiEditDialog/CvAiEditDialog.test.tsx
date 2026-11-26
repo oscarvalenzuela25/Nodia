@@ -72,13 +72,13 @@ afterEach(() => {
   useAuthStore.setState({ user: null, token: null, sessionStatus: "anonymous" });
 });
 
-function open(adapter: AxiosAdapter) {
+function open(adapter: AxiosAdapter, base = view) {
   mainInstance.defaults.adapter = adapter;
   const onApply = vi.fn<() => Promise<CvAiEditApplyResult>>().mockResolvedValue("applied");
   const onClose = vi.fn();
   render(
     <QueryClientProvider client={client}>
-      <CvAiEditDialog base={view} selection={selection} onApply={onApply} onClose={onClose} onDenial={vi.fn()} />
+      <CvAiEditDialog base={base} selection={selection} onApply={onApply} onClose={onClose} onDenial={vi.fn()} />
     </QueryClientProvider>,
   );
   const dialog = within(screen.getByRole("dialog", { name: t("ai_edit.open") }));
@@ -185,6 +185,32 @@ describe("CV AI edit", () => {
     expect(adapter).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
       url: expect.stringContaining(`/generations/requests/${key}`), method: "get",
     }));
+  });
+
+  it("recovers a copied CV proposal under the model that actually made it", async () => {
+    rememberCvAiEditReceipt(owner, target, key);
+    const source_version = { id: crypto.randomUUID(), template: "classic" } as const;
+    const base: CvGenerationView = {
+      ...view,
+      receipt: { ...receipt, selection: null, source_version },
+      intent: { ...view.intent, offer_text: "", selection: null, source_version },
+    };
+    const actualSelection = { ...selection, connection_id: "12", model_id: "original-edit-model" };
+    const completed = { ...child, selection: actualSelection, source_version };
+    const adapter = vi.fn<AxiosAdapter>(async config => success(config, {
+      ...completed, recovery: { offer_text: "", profile },
+    }));
+    const { dialog, onApply, user } = open(adapter, base);
+    await user.click(dialog.getByRole("button", { name: t("ai_edit.check") }));
+    expect(await dialog.findByText(/original-edit-model/)).toBeVisible();
+    const apply = dialog.getByRole("button", { name: t("ai_edit.apply") });
+    await waitFor(() => expect(apply).toBeEnabled());
+    await user.click(apply);
+    await waitFor(() => expect(onApply).toHaveBeenCalledWith({
+      intent: { ...base.intent, request_key: key, selection: actualSelection },
+      receipt: completed,
+    }));
+    expect(adapter.mock.calls.every(([config]) => config.method === "get")).toBe(true);
   });
 
   it("reports an unchanged proposal without requiring a confirmation to keep editing", async () => {

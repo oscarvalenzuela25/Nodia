@@ -52,6 +52,7 @@ describe('HTTP module policy', () => {
       ['POST', 'versions'],
       ['GET', 'versions/:id'],
       ['DELETE', 'versions/:id'],
+      ['POST', 'versions/:id/draft-copy'],
       ['GET', 'versions/:id/pdf'],
     ]) {
       expect(resolveHttpModulePolicy(controller, [path], method)).toEqual({

@@ -10,6 +10,7 @@ import type {
   CvPdfTemplate,
   NodiaCvPdfRenderer,
 } from './pdf/nodia-cv-pdf-renderer.service.js';
+import type { CvSavedDraftSource } from './policies/nodia-cv-version-draft.js';
 import type { CvGenerationRow } from './types/nodia-cv-generation.types.js';
 
 type CvPdfArtifact = Omit<NodiaCvPreparedPdfDto, 'expires_at'>;
@@ -133,6 +134,15 @@ export class NodiaCvPdfVersionsStore {
        FROM nodia_cv_versions v JOIN nodia_cv_version_pdfs p
          ON p.version_id=v.id AND p.owner_user_id=v.owner_user_id
        WHERE v.owner_user_id=$1 AND v.id=$2`,
+      [owner, id],
+    );
+    return row;
+  }
+
+  async draftSource(manager: EntityManager, owner: string, id: string) {
+    const [row] = await manager.query<CvSavedDraftSource[]>(
+      `SELECT ${summary},v.snapshot,v.analysis FROM nodia_cv_versions v
+       WHERE v.owner_user_id=$1 AND v.id=$2 FOR SHARE OF v`,
       [owner, id],
     );
     return row;
