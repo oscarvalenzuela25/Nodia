@@ -118,9 +118,12 @@ Si el nombre es coloquial, busca el término distintivo sin el
 tratamiento ni el descriptor genérico del negocio. Si no hay
 coincidencias, puede probar una variante que sólo cambie la tilde
 del término. Si ningún resultado identifica el negocio, pide el
-nombre registrado o una aclaración entre las coincidencias. El perfil
-exige MCP observado para la selección exacta y conserva la autoridad
-de las lecturas publicadas de Negocios y Productos.
+nombre registrado o una aclaración entre las coincidencias. El
+perfil indica buscar en todos los negocios sólo si el actor sigue
+siendo superadministrador, tiene Negocios dentro del ámbito del turno
+y proporciona un nombre específico para filtrar. El perfil exige MCP
+observado para la selección exacta y conserva la autoridad de las
+lecturas publicadas de Negocios y Productos.
 
 ## Cómo conoce NodiaAI los productos
 

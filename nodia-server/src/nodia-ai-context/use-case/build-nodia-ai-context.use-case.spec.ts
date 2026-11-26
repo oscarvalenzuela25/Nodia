@@ -347,6 +347,7 @@ describe('BuildNodiaAiContextUseCase', () => {
     const instructions = (
       phase: 'discovery' | 'execution',
       toolSelectionProfileId?: string,
+      catalogCanSearchAllBusinesses?: boolean,
     ): string =>
       JSON.parse(
         useCase.execute({
@@ -360,10 +361,24 @@ describe('BuildNodiaAiContextUseCase', () => {
             catalog_hash: 'a'.repeat(64),
           },
           toolSelectionProfileId,
+          catalogCanSearchAllBusinesses,
         }).prompt,
       ).instructions;
 
     const execution = instructions('execution', 'product_catalog_reads');
+    expect(execution).not.toContain('all_businesses');
+    expect(instructions('execution', 'product_catalog_reads', true)).toContain(
+      'Incluye all_businesses: true en nodia_businesses_list sólo junto a q.name_cont con un término específico',
+    );
+    expect(
+      instructions('execution', 'product_catalog_reads', false),
+    ).not.toContain('all_businesses');
+    expect(
+      instructions('discovery', 'product_catalog_reads', true),
+    ).not.toContain('all_businesses');
+    expect(instructions('execution', 'published_reads', true)).not.toContain(
+      'all_businesses',
+    );
     expect(execution).toContain('nodia_businesses_list');
     expect(execution).toContain('q.business_id_eq');
     expect(execution).toContain(

@@ -144,6 +144,7 @@ export class BuildNodiaAiContextUseCase {
     recoveryRefs?: NodiaAiJsonObject;
     toolSelection?: unknown;
     toolSelectionProfileId?: NodiaAiJsonValue;
+    catalogCanSearchAllBusinesses?: boolean;
     capabilityIndex?: NodiaAiJsonObject;
     invoiceOcrReferenceIds?: readonly string[];
   }) {
@@ -264,6 +265,9 @@ export class BuildNodiaAiContextUseCase {
       input.toolSelectionProfileId === 'product_catalog_reads'
         ? 'Para consultar el catálogo, identifica primero el negocio con nodia_businesses_list si falta su ID. ' +
           'Para un nombre coloquial, omite el tratamiento («Sr.», «Sra.», «don», «doña») y los descriptores genéricos como «tienda» o «negocio». Busca el término distintivo con q.name_cont. ' +
+          (input.catalogCanSearchAllBusinesses
+            ? 'Incluye all_businesses: true en nodia_businesses_list sólo junto a q.name_cont con un término específico, también al probar una variante con tilde. Si falta un nombre específico, conserva el ámbito propio. '
+            : '') +
           'Sólo si la búsqueda devuelve cero coincidencias, prueba como máximo una variante plausible que cambie la tilde del mismo término. Si no encuentras coincidencias, pide el nombre registrado. ' +
           'Si hay varias coincidencias posibles, pide aclaración (comprueba meta.total_items aunque la página muestre una sola fila). Usa el ID devuelto para el negocio identificado. ' +
           'Llama a nodia_products_list con q.business_id_eq y page: 1. Si sólo se pide cuántos productos hay, usa limit: 1 y toma meta.total_items como total exacto de productos activos. Devuelve ese total con finish sin contar filas ni consultar otras páginas. Para listar precios, usa el límite predeterminado. Cada respuesta contiene las filas en data y el número de páginas en meta.total_pages. Consulta otra página sólo si meta.page < meta.total_pages, con el mismo negocio, filtros y límite, avanzando de una en una. Al llegar a la última página, usa los datos recibidos y responde con finish. Si la primera página contiene todo el catálogo, responde con una sola lectura de productos. No vuelvas a leer la misma página ni cambies el límite para verificar sus datos. Muestra effective_price como precio vigente y sale_price como precio regular cuando esté en oferta.'
