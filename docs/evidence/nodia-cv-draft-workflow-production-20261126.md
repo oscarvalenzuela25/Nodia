@@ -78,3 +78,24 @@ y rechazó citas alteradas, referencias de evidencia inconsistentes y
 JSON envuelto en Markdown. Esos rechazos corresponden a
 `generation_invalid_output`. El recibo de Hydrogen quedó en la etapa
 de resultado remoto incierto.
+
+La corrección de finalización de Gemini quedó activa en el backend
+`backend-e6b173db19fb-3fb1060f6d4f`. El CD informó pérdida del sondeo.
+El VPS confirmó la operación `0be8b9b169b6018957b9597322fb9c0c` completa,
+con el release exacto y ambos servicios activos. La entrega sólo
+requería backend. [CI](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45899729034) ·
+[CD](https://github.com/oscarvalenzuela25/Nodia/actions/runs/45900623408).
+
+- **Gemini 4 Hydrogen · Agentic · Alto.** Una solicitud nueva con la
+  oferta intacta y otro perfil sintético produjo el borrador
+  `7bb3ec7d-fc8d-4b83-8342-dde8b05c98d4`. Mostró 22 requisitos y
+  dos hechos. El PDF exacto pasó la lectura interna de una página.
+- **Gemini 4 Neon · Agentic · Bajo.** La misma oferta con el perfil
+  sintético inicial produjo el borrador
+  `1699ec52-fd42-462a-85ba-45569237af64`. Mostró 18 requisitos y
+  seis hechos. El PDF exacto pasó la lectura interna de una página.
+
+El ajuste pasó 26 pruebas focalizadas y dos integraciones PostgreSQL 18
+aisladas para Agentic y API key. Las variantes sintéticas emplearon
+selecciones e intenciones explícitas. El recibo anterior de Hydrogen
+se conservó en su estado incierto.
