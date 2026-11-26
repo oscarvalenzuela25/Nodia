@@ -32,10 +32,12 @@ export interface CvPdfSourceSnapshot {
   >;
   facts: CvEvidenceFact[];
   evidence: CvDraftReviewEvidence[];
+  section_order?: CvEvidenceSection[];
 }
 
 const headings = {
   es: {
+    profile: 'Perfil',
     experience: 'Experiencia profesional',
     project: 'Proyectos',
     skills: 'Competencias',
@@ -46,6 +48,7 @@ const headings = {
     evidence: 'Aportes confirmados',
   },
   en: {
+    profile: 'Profile',
     experience: 'Professional experience',
     project: 'Projects',
     skills: 'Skills',
@@ -137,6 +140,7 @@ export function snapshotCvPdfSource(source: CvPdfSource): CvPdfSourceSnapshot {
       source,
       detail,
     })),
+    ...(review.section_order ? { section_order: [...review.section_order] } : {}),
   };
 }
 
@@ -208,7 +212,7 @@ function experienceBlocks(
 export function composeCvPdfDocument(
   snapshot: CvPdfSourceSnapshot,
 ): CvPdfDocument {
-  const { language, profile, facts, evidence } = snapshot;
+  const { language, profile, facts, evidence, section_order } = snapshot;
   const { email, phone, location, linkedin_url, github_url, portfolio_url } =
     profile.contact;
   const labels = headings[language];
@@ -246,7 +250,9 @@ export function composeCvPdfDocument(
     bySection.set(section, groups);
   }
 
-  for (const section of sections) {
+  const orderedSections = new Set([...(section_order ?? []), ...sections]);
+  let hasSectionContent = false;
+  for (const section of orderedSections) {
     const groups = bySection.get(section);
     if (!groups) continue;
     const content: CvPdfBlock[] = [];
@@ -267,13 +273,14 @@ export function composeCvPdfDocument(
       }
     }
     if (!content.length) continue;
-    if (section !== 'profile')
+    if (section !== 'profile' || hasSectionContent)
       blocks.push({
         kind: 'section',
         text: labels[section],
         keepWithNext: true,
       });
     blocks.push(...content);
+    hasSectionContent = true;
   }
 
   if (evidence.length) {

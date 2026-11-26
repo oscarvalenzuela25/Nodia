@@ -160,6 +160,8 @@ try {
   }).evidence;
   const typeScript = facts.find((fact) => fact.text === 'TypeScript')?.id;
   assert.ok(typeScript);
+  const developer = facts.find((fact) => fact.text === 'Developer')?.id;
+  assert.ok(developer);
   const valid = {
     requirements: [
       {
@@ -179,6 +181,7 @@ try {
   };
   let calls = 0;
   let behavior = 'valid';
+  let duringExchange;
   const api = {
     measure(prompt) {
       return { utf8Bytes: Buffer.byteLength(prompt), maximumUtf8Bytes: 65536 };
@@ -188,11 +191,14 @@ try {
       await context.beforeExchange();
       calls++;
       await context.checkLease();
+      await duringExchange?.();
       if (behavior === 'lost') throw new Error('simulated response loss');
       const result =
         behavior === 'bad'
           ? { ...valid, selectedEvidenceIds: ['foreign-fact'] }
-          : valid;
+          : context.prompt.includes('cv-edit/1')
+            ? { requirements: [], selectedEvidenceIds: [typeScript, developer] }
+            : valid;
       const text = JSON.stringify(result);
       return {
         text,
@@ -373,6 +379,120 @@ try {
   });
   assert.equal(calls, 4);
   await db.query(
+    'UPDATE ai_api_keys SET is_selected=true WHERE provider_id=$1',
+    [selection.connection_id],
+  );
+
+  // Editing uses the same owned ledger, while preserving the exact parent and its original data.
+  const base = await command.status(owner, first.id);
+  const editRequest = {
+    request_key: randomUUID(),
+    revision: base.review.revision,
+    instructions:
+      'Poner competencias primero. Email: private-qa@example.invalid',
+    selection,
+  };
+  const edit = (options = {}) =>
+    command.startEdit(owner, base.id, { ...editRequest, ...options });
+  const [child, childReplay] = await Promise.all([edit(), edit()]);
+  assert.equal(child.state, 'queued');
+  assert.equal(child.id, childReplay.id);
+  assert.notEqual(child.id, base.id);
+  assert.deepEqual(child.edit, {
+    base_generation_id: base.id,
+    base_revision: base.review.revision,
+  });
+  await assert.rejects(
+    edit({ instructions: 'Otra instrucción' }),
+    okStatus(409, /request_key_conflict/),
+  );
+  await assert.rejects(
+    edit({ request_key: randomUUID() }),
+    okStatus(409, /edit_in_progress/),
+  );
+  await assert.rejects(
+    command.startEdit(outsider, base.id, {
+      ...editRequest,
+      request_key: randomUUID(),
+    }),
+    okStatus(404, /generation_not_found/),
+  );
+  const editReadback = await command.statusByRequest(
+    owner,
+    editRequest.request_key,
+  );
+  assert.equal(editReadback.recovery.offer_text, request.offer_text);
+  assert.deepEqual(
+    editReadback.recovery.profile,
+    JSON.parse(JSON.stringify(ownerProfile)),
+  );
+  assert.ok(!JSON.stringify(editReadback.edit).includes('instructions'));
+  const [privateEdit] = await db.query(
+    'SELECT edit_input,expires_at FROM nodia_cv_generations WHERE id=$1',
+    [child.id],
+  );
+  assert.equal(
+    privateEdit.edit_input.instructions.includes('private-qa@example.invalid'),
+    false,
+  );
+  assert.equal(privateEdit.expires_at.getTime(), base.expires_at.getTime());
+  behavior = 'valid';
+  assert.equal(await run(), true);
+  const revised = await command.status(owner, child.id);
+  assert.equal(revised.state, 'ready');
+  assert.equal(calls, 5);
+  assert.deepEqual(revised.review.section_order, ['skills', 'experience']);
+  assert.deepEqual(revised.review.evidence, base.review.evidence);
+  assert.deepEqual(revised.draft.requirements, base.draft.requirements);
+  assert.deepEqual(await command.status(owner, base.id), base);
+  const manual = await command.updateDraft(owner, child.id, {
+    revision: revised.review.revision,
+    included_fact_ids: revised.review.included_fact_ids,
+    evidence: revised.review.evidence,
+  });
+  assert.deepEqual(manual.review.section_order, revised.review.section_order);
+
+  const unknownEditRequest = {
+    request_key: randomUUID(),
+    instructions: 'Revisar orden',
+  };
+  const unknownEdit = await edit(unknownEditRequest);
+  behavior = 'lost';
+  await run();
+  assert.equal((await command.status(owner, unknownEdit.id)).state, 'unknown');
+  assert.equal((await edit(unknownEditRequest)).id, unknownEdit.id);
+  await assert.rejects(
+    edit({ ...unknownEditRequest, request_key: randomUUID() }),
+    okStatus(409, /edit_in_progress/),
+  );
+  await registry.recover();
+  assert.equal(await run(), false);
+  assert.equal(calls, 6);
+
+  const staleEdit = await edit({
+    request_key: randomUUID(),
+    instructions: 'Acortar el CV',
+  });
+  behavior = 'valid';
+  duringExchange = async () => {
+    await command.updateDraft(owner, base.id, {
+      revision: base.review.revision,
+      included_fact_ids: base.review.included_fact_ids,
+      evidence: base.review.evidence,
+    });
+  };
+  await run();
+  duringExchange = undefined;
+  assert.equal(
+    (await command.status(owner, staleEdit.id)).error_code,
+    'stale_draft',
+  );
+  assert.equal(
+    (await command.status(owner, base.id)).review.revision,
+    base.review.revision + 1,
+  );
+  assert.equal(calls, 7);
+  await db.query(
     "UPDATE nodia_cv_generations SET expires_at=clock_timestamp()-interval '1 second' WHERE id=$1",
     [first.id],
   );
@@ -404,8 +524,13 @@ try {
     review_updated_by_actor_id: null,
   });
   await people.delete(owner, ownerProfile.id, ownerProfile.revision);
+  const [deletedEdit] = await db.query(
+    'SELECT state,edit_input FROM nodia_cv_generations WHERE id=$1',
+    [child.id],
+  );
+  assert.deepEqual(deletedEdit, { state: 'expired', edit_input: null });
   console.log(
-    'CV generation: isolated SQL, ordinary first use, scoped probe receipts, one dispatch, drafts, recovery, revocation and purge passed.',
+    'CV generation and AI edit: isolated SQL, scoped receipts, one dispatch per intention, draft review, recovery, revocation and purge passed.',
   );
 } finally {
   if (db.isInitialized) await db.destroy();

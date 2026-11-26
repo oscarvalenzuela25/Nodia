@@ -20,6 +20,7 @@ import type {
   CvDraftReviewContent,
   CvAgenticCustody,
   CvAgenticOperation,
+  CvEditInput,
   CvGenerationClaim,
   CvGenerationConfiguration,
   CvGenerationRow,
@@ -40,6 +41,8 @@ type Admission = {
   promptVersion: string;
   qualification: boolean;
   waitSeconds: number;
+  editInput: CvEditInput | null;
+  baseExpiresAt: Date | null;
 };
 
 const expireCoreFields = `state='expired',profile_id=NULL,profile_revision=NULL,auth_session_public_id=NULL,
@@ -103,9 +106,10 @@ export class NodiaCvGenerationStore {
       `INSERT INTO nodia_cv_generations (id,owner_user_id,auth_session_public_id,profile_id,profile_revision,
          request_key,request_hash,state,language,purpose_version,prompt_version,profile_snapshot,offer_text,vacancy_title,
          vacancy_company,selection_snapshot,configuration_generation,session_generation,resource_key,
-         scope_hash,qualification,queue_expires_at,expires_at)
+         scope_hash,qualification,queue_expires_at,expires_at,edit_input)
        VALUES ($1,$2,$3,$4,$5,$6,$7,'queued',$8,$9,$10,$11::jsonb,$12,$13,$14,$15::jsonb,$16,$17,
-         $18,$19,$20,clock_timestamp()+$21*interval '1 second',clock_timestamp()+interval '24 hours')
+         $18,$19,$20,clock_timestamp()+$21*interval '1 second',
+         least(clock_timestamp()+interval '24 hours',$22::timestamptz),$23::jsonb)
        RETURNING *`,
       [
         a.id,
@@ -129,9 +133,25 @@ export class NodiaCvGenerationStore {
         a.scopeHash,
         a.qualification,
         a.waitSeconds,
+        a.baseExpiresAt,
+        a.editInput ? JSON.stringify(a.editInput) : null,
       ],
     );
     return row;
+  }
+
+  async hasUnresolvedEdit(
+    manager: EntityManager,
+    owner: string,
+    requestHash: string,
+  ) {
+    const [row] = await manager.query<{ present: boolean }[]>(
+      `SELECT EXISTS (SELECT 1 FROM nodia_cv_generations
+        WHERE owner_user_id=$1 AND request_hash=$2 AND edit_input IS NOT NULL
+          AND state IN ('queued','running','unknown') AND expires_at>clock_timestamp()) AS present`,
+      [owner, requestHash],
+    );
+    return row?.present === true;
   }
 
   async checkQueue(
@@ -572,6 +592,7 @@ export class NodiaCvGenerationStore {
     row: CvGenerationRow,
     draft: CvTailoringDraft,
     responseHash: string,
+    editedReview?: CvDraftReviewContent,
   ) {
     await manager.query(
       `UPDATE nodia_cv_generations SET state='ready',draft=$2::jsonb,review=$3::jsonb,review_revision=1,
@@ -579,10 +600,13 @@ export class NodiaCvGenerationStore {
       [
         row.id,
         JSON.stringify(draft),
-        JSON.stringify({
-          included_fact_ids: draft.selectedFacts.map(({ id }) => id),
-          evidence: [],
-        } satisfies CvDraftReviewContent),
+        JSON.stringify(
+          editedReview ??
+            ({
+              included_fact_ids: draft.selectedFacts.map(({ id }) => id),
+              evidence: [],
+            } satisfies CvDraftReviewContent),
+        ),
       ],
     );
     if (row.qualification && row.selection_snapshot?.mode !== 'agentic') {

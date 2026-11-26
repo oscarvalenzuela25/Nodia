@@ -1,12 +1,16 @@
 import type { UpdateNodiaCvDraftDto } from '../dto/nodia-cv-draft.dto.js';
 import { isStructuralCvFact } from '../engine/evidence.js';
 import type { CvTailoringDraft } from '../engine/index.js';
-import type { CvDraftReviewContent } from '../types/nodia-cv-generation.types.js';
+import type {
+  CvDraftReviewContent,
+  CvGenerationRow,
+} from '../types/nodia-cv-generation.types.js';
 import { cvGenerationError } from './nodia-cv-generation-errors.js';
 
 export function prepareCvDraftReview(
   draft: CvTailoringDraft,
   input: UpdateNodiaCvDraftDto,
+  sectionOrder?: CvDraftReviewContent['section_order'],
 ): CvDraftReviewContent {
   const requirements = new Set(draft.requirements.map(({ id }) => id));
   for (const entry of input.evidence) {
@@ -44,5 +48,36 @@ export function prepareCvDraftReview(
       source,
       detail,
     })),
+    ...(sectionOrder ? { section_order: sectionOrder } : {}),
+  };
+}
+
+export function requireCvEditBase(
+  row: CvGenerationRow | null,
+  revision: number,
+) {
+  if (!row || row.qualification) cvGenerationError('generation_not_found', 404);
+  if (
+    row.state === 'expired' ||
+    !row.profile_id ||
+    row.expires_at.getTime() <= Date.now()
+  )
+    cvGenerationError('generation_expired', 410);
+  if (
+    row.state !== 'ready' ||
+    !row.profile_snapshot ||
+    !row.offer_text ||
+    !row.draft ||
+    !row.review
+  )
+    cvGenerationError('draft_not_ready');
+  if (row.review_revision !== revision) cvGenerationError('stale_draft');
+  return {
+    ...row,
+    profile_id: row.profile_id,
+    profile_snapshot: row.profile_snapshot,
+    offer_text: row.offer_text,
+    draft: row.draft,
+    review: row.review,
   };
 }

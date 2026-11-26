@@ -178,6 +178,19 @@ borrador permanecen fuera del formulario activo. Una solicitud terminada
 permite generar con los insumos actuales. La incertidumbre de la misma
 intención conserva su clave y tiene un estado contextual.
 
+### 3.4 Editar con IA
+
+- Abrir **Editar con IA** desde una vista previa lista. Mostrar modelo,
+  modo e intensidad de la selección aplicada y admitir una instrucción
+  junto a ejemplos del alcance de selección, orden y énfasis.
+- Mantener el borrador actual, su análisis y su PDF mientras se prepara
+  la propuesta. Conservar el texto ante fallo y consultar el recibo
+  de la generación incierta antes de ofrecer un nuevo envío.
+- Comparar lo que cambió en el contenido o el orden. **Aplicar cambios**
+  exige la revisión base que vio la persona. **Conservar original** vuelve
+  al borrador activo. Tras aplicar, la vista previa y el PDF corresponden
+  a la nueva revisión. Guardar archiva sólo la revisión elegida.
+
 ## 4. Vista previa y comprobaciones ATS
 
 - Panel **Vista previa** con estado del borrador y selector de plantilla
@@ -267,6 +280,7 @@ intención conserva su clave y tiene un estado contextual.
 | Primera generación con modelo compatible y navegación interna | El botón inicia el modelo e intensidad elegidos. Volver a Generar CV muestra la vista inicial. Abrir la versión guardada recupera los requisitos de esa revisión |
 | Cambiar de sección o ruta con un borrador sin guardar | Seguir editando conserva vista y foco. Descartar sale y retira el borrador. Guardar solo sale después de confirmar el PDF y la versión. El error mantiene el diálogo |
 | Recargar con una referencia anterior y preparar otra oferta | El botón admite iniciar una solicitud nueva con una selección válida. La comprobación no recupera la vista ni reemplaza la oferta |
+| Editar con IA, comparar y guardar | Proponer cambios con una solicitud. Conservar borrador al fallar o cancelar. Aplicar la edición y comprobar el orden y hechos del PDF guardado |
 | Plantillas, documento y lectura ATS | Vista y lectura verificadas contra el mismo PDF. Errores y ausencia de evidencia explícitos. Solo guardado por clic |
 | Dos CV del mismo cargo, borrar perfil y borrar versión | Abrir y borrar por identidad correcta, snapshot existente recuperable y confirmaciones diferenciadas |
 

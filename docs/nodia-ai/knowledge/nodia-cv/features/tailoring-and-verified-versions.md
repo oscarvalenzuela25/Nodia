@@ -4,7 +4,7 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 10,
+  "revision": 11,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -179,6 +179,12 @@ guardados**. Descartar retira el resultado temporal de la vista. Una
 referencia de un trabajo anterior se comprueba sin sustituir la oferta
 actual ni abrir su borrador.
 [Plan113 §21](../../../../mvp/113-nodia-cv-implementation-plan.md#21-guardar-o-descartar-antes-de-salir--2026-11-26).
+
+**Editar con IA** prepara una propuesta temporal a partir del borrador
+activo y una instrucción de la persona. Puede seleccionar, omitir y
+reordenar datos del perfil. La persona compara el resultado, aplica la
+propuesta o conserva el original. Guardar archiva la revisión elegida.
+[Plan113 §22](../../../../mvp/113-nodia-cv-implementation-plan.md#22-edición-del-borrador-con-ia--2026-11-26).
 
 **Guardar versión** confirma la versión concreta que la persona revisó.
 Al abrirla después se conserva su snapshot y el PDF exacto. La versión
