@@ -5,6 +5,7 @@ import { validate } from 'class-validator';
 import { CheckoutSaleDto, CreateSaleDto } from '../dto/sale-command.dto.js';
 import type { ProductSaleRow, SaleItemInput } from '../types/sale.types.js';
 import {
+  assertSalePaymentTotal,
   assertSaleTransition,
   normalizeSaleCommand,
   normalizeSaleQuery,
@@ -44,6 +45,76 @@ const input = (change: Partial<SaleItemInput> = {}): SaleItemInput => ({
 });
 
 describe('sale command and monetary policy', () => {
+  it('normalizes reordered payments without letting a changed allocation reuse the request hash', () => {
+    const command = { request_key: key, items: [input()] };
+    const cash = { payment_method: 'cash', amount: '2000' };
+    const card = { payment_method: 'card', amount: '1000' };
+    const mixed = normalizeSaleCommand('checkout', {
+      ...command,
+      payments: [cash, card],
+    });
+    const reordered = normalizeSaleCommand('checkout', {
+      ...command,
+      payments: [card, cash],
+    });
+    const changed = normalizeSaleCommand('checkout', {
+      ...command,
+      payments: [
+        { ...cash, amount: '1500' },
+        { ...card, amount: '1500' },
+      ],
+    });
+    expect(mixed).toEqual({ ...command, payments: [cash, card] });
+    expect(saleCommandHash('checkout', reordered)).toBe(
+      saleCommandHash('checkout', mixed),
+    );
+    expect(saleCommandHash('checkout', changed)).not.toBe(
+      saleCommandHash('checkout', mixed),
+    );
+  });
+
+  it('rejects malformed, repeated, legacy or conflicting combined payments', () => {
+    const command = { request_key: key, items: [input()] };
+    const cash = { payment_method: 'cash', amount: '10' };
+    const card = { payment_method: 'card', amount: '20' };
+    for (const extra of [
+      { payments: null },
+      { payments: [cash] },
+      { payments: [cash, cash] },
+      { payments: [cash, { ...card, payment_method: 'debit_card' }] },
+      { payments: [cash, { ...card, amount: '0' }] },
+      { payments: [cash, { ...card, amount: '9223372036854775808' }] },
+      { payments: [cash, { ...card, amount: '1.5' }] },
+      { payments: [cash, { ...card, amount: 20 }] },
+      { payments: [cash, card], payment_method: 'cash' },
+      { payments: [cash, card], payment_method_description: null },
+      { payment_method: 'mixed' },
+    ])
+      expect(() =>
+        normalizeSaleCommand('checkout', { ...command, ...extra }),
+      ).toThrow('business:sale_invalid_command');
+    expect(() =>
+      normalizeSaleCommand('create', { ...command, payments: [cash, card] }),
+    ).toThrow('business:sale_invalid_command');
+  });
+
+  it('requires each payment to sum to the exact CLP total above JavaScript safe integer precision', () => {
+    const { payments = [] } = normalizeSaleCommand('checkout', {
+      request_key: key,
+      items: [input()],
+      payments: [
+        { payment_method: 'cash', amount: '9007199254740992' },
+        { payment_method: 'card', amount: '1' },
+      ],
+    });
+    expect(() =>
+      assertSalePaymentTotal(payments, '9007199254740993'),
+    ).not.toThrow();
+    expect(() => assertSalePaymentTotal(payments, '9007199254740992')).toThrow(
+      'business:sale_payment_total_mismatch',
+    );
+  });
+
   it('checkout requires items and canonicalizes the same explicit payment intent', () => {
     const omitted = normalizeSaleCommand(
       'checkout',
@@ -485,9 +556,14 @@ describe('sale snapshots and transitions', () => {
   it('deducts exact fractional quantities and permits the last fraction', () => {
     const products = [product({ track_stock: true, stock: 0.3 })];
     const partial = snapshotSaleItems([input({ quantity: 0.1 })], products);
-    expect(saleStockDeductions(partial, products)).toEqual([{
-      product_id: '1', quantity: 0.1, stock_before: 0.3, stock_after: 0.2,
-    }]);
+    expect(saleStockDeductions(partial, products)).toEqual([
+      {
+        product_id: '1',
+        quantity: 0.1,
+        stock_before: 0.3,
+        stock_after: 0.2,
+      },
+    ]);
     const all = snapshotSaleItems([input({ quantity: 0.3 })], products);
     expect(saleStockDeductions(all, products)[0].stock_after).toBe(0);
     expect(() =>

@@ -1,5 +1,9 @@
 # Contexto funcional de productos para NodiaAI
 
+La [ficha candidata de pagos combinados](businesses/features/combined-sale-payments.md)
+documenta el POS manual y el filtro de Ventas. Las consultas activas de
+NodiaAI conservan el contrato firmado y el alcance de solo lectura.
+
 ## Stock opcional de Negocios — 2026-11-25
 
 La [ficha candidata de stock](businesses/features/product-stock-tracking.md)

@@ -29,7 +29,10 @@ export const Line = styled("li")(({ theme }) => ({
   gridTemplateAreas: '"picture copy copy" "controls controls remove"',
   alignItems: "center", gap: theme.spacing(.75, 1), padding: theme.spacing(.75, 1), minWidth: 0,
   "& + &": { borderTop: `1px solid ${theme.palette.divider}` },
-  "&[data-price-editing='true']": { gridTemplateAreas: '"picture . ." "copy copy copy" "controls controls remove"' },
+  "&[data-price-editing='true']": {
+    gridTemplateAreas: '"picture product product" "controls controls remove" "editor editor editor"',
+    backgroundColor: alpha(theme.palette.primary.main, .035),
+  },
   "@container (min-width: 34rem)": {
     "[data-enlarged='false'] &[data-price-editing='false']": {
       gridTemplateColumns: "40px minmax(0, 1fr) min(48%, 16rem) var(--pos-line-control-size)",
@@ -37,6 +40,10 @@ export const Line = styled("li")(({ theme }) => ({
       "@media (hover: hover) and (pointer: fine) and (not (any-pointer: coarse))": {
         "--pos-line-control-size": "32px",
       },
+    },
+    "[data-enlarged='false'] &[data-price-editing='true']": {
+      gridTemplateColumns: "40px minmax(0, 1fr) min(48%, 16rem) var(--pos-line-control-size)",
+      gridTemplateAreas: '"picture product controls remove" ". editor editor editor"',
     },
   },
 }));
@@ -49,13 +56,16 @@ export const Picture = styled(Avatar)(({ theme }) => ({
 export const LineControls = styled(Box)(({ theme }) => ({
   gridArea: "controls", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-end",
   gap: theme.spacing(.5, .75), minWidth: 0,
+  "[data-price-editing='true'] &": { justifyContent: "space-between" },
   "@container (min-width: 34rem)": { columnGap: theme.spacing(1.5) },
 }));
 export const Copy = styled(Box)(({ theme }) => ({
   gridArea: "copy", display: "grid", gap: theme.spacing(.25), minWidth: 0, overflowWrap: "anywhere",
+  "[data-price-editing='true'] &": { display: "contents" },
 }));
 export const LineIdentity = styled(Box)(({ theme }) => ({
   display: "grid", gap: theme.spacing(.25), minWidth: 0,
+  "[data-price-editing='true'] &": { display: "contents" },
   "[data-price-editing='false'] &": {
     "--pos-price-display-layout": "contents",
     gridTemplateColumns: "minmax(0, 1fr)", gridTemplateRows: "auto auto", gridAutoFlow: "column",
@@ -67,6 +77,12 @@ export const LineIdentity = styled(Box)(({ theme }) => ({
     },
   },
 }));
+export const ProductDetails = styled(Box)({
+  gridArea: "product",
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  "[data-price-editing='false'] &": { gridArea: "auto" },
+});
 export const LineTotal = styled(Typography)({
   position: "relative", minWidth: 0, maxWidth: "100%", textAlign: "end", overflowWrap: "anywhere", fontWeight: 700,
   fontSize: "calc(.875rem * var(--sale-font-scale, 1))", fontVariantNumeric: "tabular-nums",

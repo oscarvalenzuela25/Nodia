@@ -14,10 +14,13 @@ import {
   MaxLength,
   Min,
   ValidateNested,
+  ValidateIf,
 } from 'class-validator';
 import {
+  SALE_COMBINABLE_PAYMENT_METHODS,
   SALE_PAYMENT_METHODS,
   type SalePaymentMethod,
+  type SaleTender,
 } from '../types/sale.types.js';
 
 export class SaleItemInputDto {
@@ -45,6 +48,10 @@ export class CreateSaleDto {
   @IsOptional() @IsString() @MaxLength(500) payment_method_description?:
     string | null;
 }
+export class SalePaymentDto {
+  @IsIn(SALE_COMBINABLE_PAYMENT_METHODS) payment_method: SaleTender;
+  @IsString() @Matches(/^[1-9][0-9]{0,18}$/) amount: string;
+}
 export class CheckoutSaleDto {
   @IsUUID() request_key: string;
   @IsArray()
@@ -56,6 +63,13 @@ export class CheckoutSaleDto {
   @IsOptional() @IsIn(SALE_PAYMENT_METHODS) payment_method?: SalePaymentMethod;
   @IsOptional() @IsString() @MaxLength(500) payment_method_description?:
     string | null;
+  @ValidateIf((dto: CheckoutSaleDto) => dto.payments !== undefined)
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(3)
+  @ValidateNested({ each: true })
+  @Type(() => SalePaymentDto)
+  payments?: SalePaymentDto[];
 }
 export class UpdateSaleDto extends CreateSaleDto {
   @IsInt() @Min(1) @Max(2147483647) expected_version: number;

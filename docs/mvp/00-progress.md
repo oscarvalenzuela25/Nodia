@@ -1,5 +1,10 @@
 # Progreso del MVP — Nodia
 
+**Pagos combinados y filtro de Ventas — 2026-11-25.** Client y Server
+incorporan el diseño aprobado en la rama local. El POS admite hasta tres
+medios en un checkout y Ventas muestra sus importes por medio.
+[Plan94 §49](94-business-point-of-sale-and-product-refactor.md#49-pagos-combinados-y-total-filtrado-en-ventas--2026-11-25).
+
 **Punto de venta y búsqueda de Productos — 2026-11-25.** Client implementa
 el diseño aprobado del POS con carritos laterales, cobro compacto y el último
 producto agregado al inicio de su carrito. La cabecera y la búsqueda de

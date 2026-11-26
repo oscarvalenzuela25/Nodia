@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { assertBusinessesAccess } from '../../business-access/business-access.js';
 import { ReadSalesUseCase } from '../../sale/use-case/read-sales.use-case.js';
-import type { SaleListQuery } from '../../sale/types/sale.types.js';
+import type { SaleListQuery, SaleView } from '../../sale/types/sale.types.js';
 import { saleQuantityThousandths } from '../../sale/policies/sale-quantity.js';
 import { validateProductMeasurementUnit } from '../../product/product-measurement-unit.js';
 import type { NodiaAiJsonObject } from '../../nodia-ai-conversation/types/nodia-ai-persistence.types.js';
@@ -10,6 +10,33 @@ import type {
   NodiaAiToolFamily,
   NodiaAiToolHandlerContext,
 } from '../../nodia-ai-tools/types/tool-registry.types.js';
+
+function legacySaleView({
+  payments,
+  record_payment: _record,
+  ...sale
+}: SaleView) {
+  // The signed v3 schema is closed. Its existing "other" description carries
+  // native payment methods introduced after publication.
+  if (sale.payment_method === 'card')
+    return {
+      ...sale,
+      payment_method: 'other',
+      payment_method_description: 'Tarjeta',
+    };
+  if (sale.payment_method === 'mixed')
+    return {
+      ...sale,
+      payment_method: 'other',
+      payment_method_description:
+        payments
+          ?.map(
+            ({ payment_method, amount }) => `${payment_method}: ${amount} CLP`,
+          )
+          .join(', ') ?? null,
+    };
+  return sale;
+}
 
 /** JSON Schema number bounds alone cannot check exact decimal scale in Ajv. */
 function assertSaleMeasurements(rows: unknown): void {
@@ -64,9 +91,7 @@ export function createNodiaAiSalesToolFamily(
   };
   return {
     familyKey: 'business_sales',
-    modules: [
-      { key: 'businesses', route: '/business', label: 'Negocios' },
-    ],
+    modules: [{ key: 'businesses', route: '/business', label: 'Negocios' }],
     resources: [
       {
         key: 'sales',
@@ -128,11 +153,13 @@ export function createNodiaAiSalesToolFamily(
         const result =
           operation === 'get'
             ? {
-                data: await reader.get(
-                  String(input.business_id),
-                  String(input.id),
-                  actor(context),
-                  context.manager,
+                data: legacySaleView(
+                  await reader.get(
+                    String(input.business_id),
+                    String(input.id),
+                    actor(context),
+                    context.manager,
+                  ),
                 ),
               }
             : await reader.list(
@@ -157,7 +184,7 @@ export function createNodiaAiSalesToolFamily(
           const page = result as Awaited<ReturnType<ReadSalesUseCase['list']>>;
           return JSON.parse(
             JSON.stringify({
-              data: page.data,
+              data: page.data.map(legacySaleView),
               meta: {
                 page: page.meta.page,
                 limit: page.meta.limit,

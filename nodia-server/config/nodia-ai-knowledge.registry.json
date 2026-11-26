@@ -8,6 +8,7 @@
     "docs/nodia-ai/knowledge/businesses/features/business-data-privacy.md",
     "docs/nodia-ai/knowledge/businesses/features/businesses-and-collaborators.md",
     "docs/nodia-ai/knowledge/businesses/features/cash-ledger-and-invoice-expenses.md",
+    "docs/nodia-ai/knowledge/businesses/features/combined-sale-payments.md",
     "docs/nodia-ai/knowledge/businesses/features/confirmed-business-effects.md",
     "docs/nodia-ai/knowledge/businesses/features/invoice-analysis.md",
     "docs/nodia-ai/knowledge/businesses/features/invoices-and-files.md",
@@ -5934,7 +5935,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/sales-tool-family.ts",
-          "sha256": "7516a7bc4f2d5bc6ac22456d6d473fda9d5005e4606107670402bb9e55db2904"
+          "sha256": "647f912cab53abf690d15e59540147e2458858ff189c24743c15dc12d68e8363"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
@@ -5950,7 +5951,7 @@
         },
         {
           "path": "nodia-server/src/sale/policies/sale-policy.ts",
-          "sha256": "fb89178f380a6201f00452f5eb48667ded129a0107c847092e252375fff3f3d6"
+          "sha256": "476e282bf3fb032159ffae978fc164c98d3e415d41196ed1a1b6594d5d3e2f5e"
         },
         {
           "path": "nodia-server/src/sale/policies/sale-quantity.ts",
@@ -5962,19 +5963,19 @@
         },
         {
           "path": "nodia-server/src/sale/sale.controller.ts",
-          "sha256": "fbc9f018b40367262151b78dcb80d2a9ba04520f28f3b452b73b99f086e42d27"
+          "sha256": "6218fa52f92eaf6689fd24181cc3bd6f7326b07c91f4a00c62a62304a71f80d3"
         },
         {
           "path": "nodia-server/src/sale/sale.service.ts",
-          "sha256": "daa29338903b862ce9253cd8403237dedd96b2da67e115e49d9fae896567ab5e"
+          "sha256": "021007c23c5d0f97c280db90c5488babd078a9720d393d183b22de518b529180"
         },
         {
           "path": "nodia-server/src/sale/types/sale.types.ts",
-          "sha256": "3bb8897e0cb612453722597c39cebfb6630d84b351310d38134e87211ac74cb6"
+          "sha256": "52cd8ac63256598c2e407040a1ee80993e122e140d8ac8fd60ea222f79a76db4"
         },
         {
           "path": "nodia-server/src/sale/use-case/read-sales.use-case.ts",
-          "sha256": "6ae0b05b6b2b8413af313014a4a13d3a6ab846908eb9e2f8c353c4429ad046ec"
+          "sha256": "089c56724b9f37135a6bfb2a6c5206359c5704c2ba7df91c84fc80decd33cc07"
         }
       ],
       "input_schema": {
@@ -6010,7 +6011,7 @@
         },
         {
           "path": "nodia-server/src/nodia-ai-products/business/sales-tool-family.ts",
-          "sha256": "7516a7bc4f2d5bc6ac22456d6d473fda9d5005e4606107670402bb9e55db2904"
+          "sha256": "647f912cab53abf690d15e59540147e2458858ff189c24743c15dc12d68e8363"
         },
         {
           "path": "nodia-server/src/nodia-ai-products/nodia-ai-product-reads.module.ts",
@@ -6026,7 +6027,7 @@
         },
         {
           "path": "nodia-server/src/sale/policies/sale-policy.ts",
-          "sha256": "fb89178f380a6201f00452f5eb48667ded129a0107c847092e252375fff3f3d6"
+          "sha256": "476e282bf3fb032159ffae978fc164c98d3e415d41196ed1a1b6594d5d3e2f5e"
         },
         {
           "path": "nodia-server/src/sale/policies/sale-quantity.ts",
@@ -6038,19 +6039,19 @@
         },
         {
           "path": "nodia-server/src/sale/sale.controller.ts",
-          "sha256": "fbc9f018b40367262151b78dcb80d2a9ba04520f28f3b452b73b99f086e42d27"
+          "sha256": "6218fa52f92eaf6689fd24181cc3bd6f7326b07c91f4a00c62a62304a71f80d3"
         },
         {
           "path": "nodia-server/src/sale/sale.service.ts",
-          "sha256": "daa29338903b862ce9253cd8403237dedd96b2da67e115e49d9fae896567ab5e"
+          "sha256": "021007c23c5d0f97c280db90c5488babd078a9720d393d183b22de518b529180"
         },
         {
           "path": "nodia-server/src/sale/types/sale.types.ts",
-          "sha256": "3bb8897e0cb612453722597c39cebfb6630d84b351310d38134e87211ac74cb6"
+          "sha256": "52cd8ac63256598c2e407040a1ee80993e122e140d8ac8fd60ea222f79a76db4"
         },
         {
           "path": "nodia-server/src/sale/use-case/read-sales.use-case.ts",
-          "sha256": "6ae0b05b6b2b8413af313014a4a13d3a6ab846908eb9e2f8c353c4429ad046ec"
+          "sha256": "089c56724b9f37135a6bfb2a6c5206359c5704c2ba7df91c84fc80decd33cc07"
         }
       ],
       "input_schema": {

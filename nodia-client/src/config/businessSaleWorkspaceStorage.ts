@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { editableQuantitySchema, measurementUnitSchema, paymentMethodSchema, positiveQuantitySchema, saleSchema } from "../modules/business/infrastructure/salesSchemas";
+import { editableQuantitySchema, measurementUnitSchema, paymentMethodSchema, posPaymentMethodSchema, positiveQuantitySchema, salePaymentsSchema, saleSchema } from "../modules/business/infrastructure/salesSchemas";
 import { cartTotal } from "../modules/business/infrastructure/salesPolicies";
-import type { CartLine, PaymentMethod, Sale } from "../modules/business/infrastructure/salesTypes";
+import { matchesSplitPayment } from "../modules/business/infrastructure/salePayments";
+import { POS_PAYMENT_METHODS, type CartLine, type PaymentMethod, type PosPaymentMethod, type Sale } from "../modules/business/infrastructure/salesTypes";
 import type { SaleJournal } from "./businessSaleRecoveryStorage";
 
 export interface SaleWorkspaceSession {
@@ -10,6 +11,7 @@ export interface SaleWorkspaceSession {
   sale: Sale | null;
   lines: CartLine[];
   paymentMethod: PaymentMethod;
+  combinedPaymentMethods?: PosPaymentMethod[];
   description: string;
   dirty: boolean;
   pending: SaleJournal | null;
@@ -51,12 +53,19 @@ const mutation = z.object({
     request_key: z.string().min(1), expected_version: positiveInteger.optional(),
     items: z.array(lineCommand).max(200).optional(), payment_method: paymentMethodSchema.optional(),
     payment_method_description: z.string().nullable().optional(), cancellation_reason: z.string().optional(),
+    payments: salePaymentsSchema.optional(),
   }).strict(),
-}).strict();
+}).strict().refine(
+  ({ operation, command }) => !command.payments ||
+    (operation === "checkout" && command.payment_method === undefined && command.payment_method_description === undefined),
+  "Invalid combined payment command",
+);
 const journal = z.object({ actorId: z.string().min(1), businessId: z.string().min(1), mutation }).strict();
 const session = z.object({
   id: z.string().min(1), number: positiveInteger, sale: saleSchema.nullable(), lines: z.array(line).max(200),
   paymentMethod: paymentMethodSchema, description: z.string(), dirty: z.boolean(), pending: journal.nullable(),
+  combinedPaymentMethods: z.array(posPaymentMethodSchema).max(POS_PAYMENT_METHODS.length)
+    .refine((methods) => new Set(methods).size === methods.length).optional(),
   quantityDrafts: z.record(z.string(), z.string()), barcode: z.string(),
 }).strict();
 const snapshot = z.object({
@@ -79,8 +88,10 @@ function parseWorkspace(value: unknown, actorId: string, businessId: string): Sa
     const requestKeys = result.sessions.flatMap((entry) => entry.pending ? [entry.pending.mutation.command.request_key] : []);
     if (new Set(requestKeys).size !== requestKeys.length) throw new Error("invalid_workspace");
     for (const entry of result.sessions) {
-      cartTotal(entry.lines);
+      const total = cartTotal(entry.lines);
       if (new Set(entry.lines.map((item) => item.product_id)).size !== entry.lines.length) throw new Error("invalid_workspace");
+      const payments = entry.pending?.mutation.command.payments;
+      if (payments && (!entry.combinedPaymentMethods || !matchesSplitPayment(payments, entry.combinedPaymentMethods, total))) throw new Error("invalid_workspace");
     }
     return result;
   } catch {

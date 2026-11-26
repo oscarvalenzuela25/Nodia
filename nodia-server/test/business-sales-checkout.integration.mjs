@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
 import { AddDirectSaleCheckout1793420000000 } from '../dist/migrations/1793420000000-AddDirectSaleCheckout.js';
+import { AddCombinedSalePayments1794050000000 } from '../dist/migrations/1794050000000-AddCombinedSalePayments.js';
+import { createNodiaAiSalesToolFamily } from '../dist/nodia-ai-products/business/sales-tool-family.js';
+import { compileNodiaAiToolSchema } from '../dist/nodia-ai-tools/use-case/nodia-ai-tool-registry.use-case.js';
 
 /** Runs only against the disposable database owned by business-sales.integration.mjs. */
 export async function verifyDirectSaleCheckout({
@@ -456,5 +460,118 @@ export async function verifyDirectSaleCheckout({
       cancellation_reason: 'Synthetic correction',
     }, actor);
     assert.deepEqual(await balance(), { stock: '1', version: 2 });
+  });
+
+  await check('combined checkout commits stock and receipt once and lists each filtered payment amount', async () => {
+    const isolated = randomUUID();
+    await db.query('INSERT INTO businesses(id,owner_id) VALUES($1,1)', [isolated]);
+    const [tracked, untracked] = await db.query(
+      `INSERT INTO products(business_id,code,name,cost_price,cost_price_tax,sale_price,track_stock,stock)
+       VALUES($1,'tracked','Combined payment item',0,0,1500,true,6),
+             ($1,'untracked','Previous payment item',0,0,1500,false,0)
+       RETURNING id::text`,
+      [isolated],
+    );
+    const base = `${httpBase}/businesses/${isolated}/sales`;
+    const json = async (suffix, expected, body) => {
+      const response = await fetch(base + suffix, body === undefined ? {} : {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
+      });
+      const result = await response.json();
+      assert.equal(response.status, expected, JSON.stringify(result));
+      return result;
+    };
+    for (const payment_method of ['debit_card', 'card']) {
+      await json('/checkout', 201, {
+        request_key: randomUUID(), items: [item(untracked.id)], payment_method,
+      });
+    }
+    const balance = async () =>
+      (await db.query('SELECT stock,version FROM products WHERE id=$1', [tracked.id]))[0];
+    const command = {
+      request_key: randomUUID(),
+      items: [item(tracked.id, '1500', 1, 2)],
+      payments: [
+        { payment_method: 'cash', amount: '1500' },
+        { payment_method: 'card', amount: '1000' },
+        { payment_method: 'bank_transfer', amount: '500' },
+      ],
+    };
+    const failedKey = randomUUID();
+    await json('/checkout', 400, { ...command, request_key: failedKey, payments: null });
+    await json('/checkout', 409, {
+      ...command, request_key: failedKey, payments: [{ payment_method: 'cash', amount: '1' }, command.payments[1]],
+    });
+    assert.deepEqual(await balance(), { stock: '6', version: 1 });
+    assert.deepEqual(await read.receipt(isolated, failedKey, actor), { status: 'unconfirmed' });
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM sale_payments WHERE business_id=$1', [isolated]))[0].n, 0);
+
+    const [sale, replay] = await Promise.all([
+      json('/checkout', 201, command),
+      json('/checkout', 201, { ...command, payments: command.payments.toReversed() }),
+    ]);
+    assert.deepEqual(replay, sale);
+    assert.deepEqual((await read.receipt(isolated, command.request_key, actor)).sale, sale);
+    assert.equal(sale.payment_method, 'mixed');
+    assert.deepEqual(sale.payments, command.payments);
+    assert.deepEqual(await balance(), { stock: '4', version: 2 });
+    assert.equal((await db.query('SELECT count(*)::int AS n FROM sale_payments WHERE sale_id=$1', [sale.id]))[0].n, 3);
+    await json('/checkout', 409, {
+      ...command, payments: [{ payment_method: 'cash', amount: '2000' }, command.payments[1]],
+    });
+
+    const all = await json('?limit=1', 200);
+    assert.equal(all.meta.total_amount, '6000');
+    assert.equal(all.meta.total, 5);
+    const allCard = await json('?payment_method=card&limit=1&page=2', 200);
+    assert.equal(allCard.meta.total_amount, '4000');
+    assert.equal(allCard.meta.total, 3);
+    const empty = await json('?payment_method=other', 200);
+    assert.equal(empty.meta.total_amount, '0');
+    assert.deepEqual(empty.data, []);
+    const split = await json('?search=Combined%20payment&payment_method=card', 200);
+    assert.equal(split.meta.total_amount, '1000');
+    assert.equal(split.meta.total, 1);
+    const [row] = split.data;
+    assert.equal(row.id, sale.id);
+    assert.equal(row.total_amount, '3000');
+    assert.equal(row.record_payment.amount, '1000');
+    assert.equal(row.record_payment.payment_method, 'card');
+    assert.deepEqual(await json('/' + row.record_payment.id, 200), row);
+    await json('?payment_method=mixed', 400);
+    await json('/reports/summary?payment_method=card', 400);
+    await assert.rejects(() => read.get(isolated, row.record_payment.id, other, undefined, 'payment_records'));
+    const summary = await read.summary(isolated, {}, actor);
+    assert.equal(summary.sales_count, '3');
+    assert.equal(summary.total_amount, '6000');
+    assert.equal(summary.units_sold, '4');
+
+    const source = readFileSync(new URL('../src/nodia-ai-products/contracts/sales.schema.json', import.meta.url), 'utf8');
+    const family = createNodiaAiSalesToolFamily(source, read);
+    await db.transaction(async (manager) => {
+      const context = { manager, actor: { actorId: actor.userId, sessionId: actor.sessionId }, moduleRoutes: ['/business'] };
+      for (const capability of family.capabilities) {
+        const result = await capability.handler({ business_id: isolated, id: sale.id }, context);
+        const validator = compileNodiaAiToolSchema(capability.outputSchema);
+        assert.equal(validator.validate(result), true, JSON.stringify(validator.validate.errors));
+        const projected = Array.isArray(result.data) ? result.data.find((entry) => entry.id === sale.id) : result.data;
+        assert.equal(projected.payment_method, 'other');
+        assert.match(projected.payment_method_description, /card: 1000 CLP/);
+        assert.equal(projected.total_amount, '3000');
+      }
+    });
+    const migration = new AddCombinedSalePayments1794050000000();
+    await assert.rejects(
+      () => db.transaction((tx) => migration.down(tx.queryRunner)),
+      /sale_rollback_would_lose_data/,
+    );
+    await json('/' + sale.id + '/cancel', 201, {
+      request_key: randomUUID(), expected_version: sale.version, cancellation_reason: 'Synthetic correction',
+    });
+    const cancelled = await json('?status=cancelled&search=' + sale.id, 200);
+    assert.equal(cancelled.meta.total, 3);
+    assert.equal(cancelled.meta.total_amount, '3000');
+    assert.equal((await read.summary(isolated, {}, actor)).total_amount, '3000');
+    assert.deepEqual(await balance(), { stock: '4', version: 2 });
   });
 }
