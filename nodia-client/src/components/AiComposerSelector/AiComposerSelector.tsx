@@ -19,7 +19,7 @@ const selectionKey = (selection: NodiaAiSelection | null) => JSON.stringify(sele
 function SelectionEditor<Connection extends NodiaAiConnection>({
   connections, selection, onSelectionChange, onDirtyChange,
   eligibility, eligibilityBusy, eligibilityError, onRetryEligibility,
-  isLoading, isFetching, isSaving, readOnly, error, onRetry,
+  isLoading, isFetching, isSaving, readOnly, locked = false, error, onRetry,
   hasMore, onLoadMore, onApply, summaryRef, labels, unavailableMode,
 }: AiComposerSelectorProps<Connection> & { summaryRef: RefObject<HTMLButtonElement | null> }) {
   const { t } = useTranslation("nodiaAi");
@@ -46,7 +46,7 @@ function SelectionEditor<Connection extends NodiaAiConnection>({
   useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
 
   const busy = isLoading || isFetching || isSaving || applying || eligibilityBusy;
-  const disabled = busy || readOnly;
+  const disabled = busy || readOnly || locked;
   const missing = connectionId !== null && (!connection || (mode !== null && !modeConfig)
     || (modelId !== null && !model) || (effortId !== null && !model?.efforts.some(item => item.effort_id === effortId)));
   const configurationDisabled = !!connection && (!connection.is_active || modeConfig?.configuration === "disabled");
@@ -154,7 +154,7 @@ function SelectionEditor<Connection extends NodiaAiConnection>({
     {dirty && <Typography role="status" variant="caption" color="text.primary" sx={{ px: 1, overflowWrap: "anywhere" }}>
       {labels.unsaved}
     </Typography>}
-    {error && <SelectionActionAlert severity="error" action={<Button type="button" color="inherit" disabled={busy} onClick={onRetry}>{t("retry")}</Button>}>{error}</SelectionActionAlert>}
+    {error && <SelectionActionAlert severity="error" action={<Button type="button" color="inherit" disabled={busy || locked} onClick={onRetry}>{t("retry")}</Button>}>{error}</SelectionActionAlert>}
     {noConnections && <Alert severity="info">{labels.noConnections}</Alert>}
     {missing && <Alert severity="warning">{labels.selectionMissing}</Alert>}
     {modeBlock ? <Alert severity="info">{modeBlock.message}</Alert>
@@ -168,7 +168,7 @@ function SelectionEditor<Connection extends NodiaAiConnection>({
     <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>
       {eligibilityBusy ? t("configuration.checking") : labels.scope}
     </Typography>
-    <Button type="button" size="small" disabled={busy} onClick={() => {
+    <Button type="button" size="small" disabled={busy || locked} onClick={() => {
       setConnectionId(selection?.connection_id ?? null);
       setMode(selection?.mode ?? null);
       setModelId(selection?.model_id ?? null);
@@ -180,7 +180,7 @@ function SelectionEditor<Connection extends NodiaAiConnection>({
   return <ComposerSelectionPopover summaryRef={summaryRef} title={labels.title} triggerLabel={labels.trigger}
     closeLabel={t("close")} appliedLabel={t("configuration.selection_panel.applied")} appliedModel={appliedModelLabel}
     appliedMode={selection ? t(`modes.${selection.mode}`) : labels.choose} appliedDetails={appliedDetails}
-    appliedIdentity={appliedIdentity} busy={busy} fields={fields} notices={notices}
+    appliedIdentity={appliedIdentity} busy={busy} locked={locked} fields={fields} notices={notices}
     hasNotices={Boolean(dirty || error || missing || configurationDisabled || eligibilityError || modeBlock)}
     actions={actions} />;
 }
@@ -191,7 +191,7 @@ export default function AiComposerSelector<Connection extends NodiaAiConnection>
   const completedFocus = useRef<string | null>(null);
   const [confirmedFocus, setConfirmedFocus] = useState<string | null>(null);
   const key = selectionKey(props.selection);
-  const summaryBusy = props.isLoading || props.isFetching || props.isSaving || props.eligibilityBusy;
+  const summaryBusy = props.locked || props.isLoading || props.isFetching || props.isSaving || props.eligibilityBusy;
   useEffect(() => {
     if (!summaryBusy && confirmedFocus === key && completedFocus.current !== confirmedFocus) {
       summary.current?.focus();

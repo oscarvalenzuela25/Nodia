@@ -327,6 +327,12 @@ describe('BuildNodiaAiContextUseCase', () => {
 
     const productsList = 'nodia_products_list', businessesList = 'nodia_businesses_list';
     expect(instructions([productsList, businessesList])).toContain('cuánto cuestan');
+    expect(instructions([productsList, businessesList])).toContain(
+      'cuántos productos hay',
+    );
+    expect(instructions([productsList, businessesList])).toContain(
+      'meta.total_items',
+    );
     expect(instructions([productsList, businessesList])).toContain(businessesList);
     expect(instructions([productsList])).toContain(productsList);
     expect(instructions([productsList])).not.toContain(businessesList);
@@ -341,6 +347,7 @@ describe('BuildNodiaAiContextUseCase', () => {
     const instructions = (
       phase: 'discovery' | 'execution',
       toolSelectionProfileId?: string,
+      catalogCanSearchAllBusinesses?: boolean,
     ): string =>
       JSON.parse(
         useCase.execute({
@@ -354,14 +361,46 @@ describe('BuildNodiaAiContextUseCase', () => {
             catalog_hash: 'a'.repeat(64),
           },
           toolSelectionProfileId,
+          catalogCanSearchAllBusinesses,
         }).prompt,
       ).instructions;
 
     const execution = instructions('execution', 'product_catalog_reads');
+    expect(execution).not.toContain('all_businesses');
+    expect(instructions('execution', 'product_catalog_reads', true)).toContain(
+      'Incluye all_businesses: true en nodia_businesses_list sólo junto a q.name_cont con un término específico',
+    );
+    expect(
+      instructions('execution', 'product_catalog_reads', false),
+    ).not.toContain('all_businesses');
+    expect(
+      instructions('discovery', 'product_catalog_reads', true),
+    ).not.toContain('all_businesses');
+    expect(instructions('execution', 'published_reads', true)).not.toContain(
+      'all_businesses',
+    );
     expect(execution).toContain('nodia_businesses_list');
     expect(execution).toContain('q.business_id_eq');
+    expect(execution).toContain(
+      'omite el tratamiento («Sr.», «Sra.», «don», «doña») y los descriptores genéricos',
+    );
+    expect(execution).toContain('Busca el término distintivo con q.name_cont');
+    expect(execution).toContain(
+      'Sólo si la búsqueda devuelve cero coincidencias, prueba como máximo una variante plausible que cambie la tilde del mismo término.',
+    );
+    expect(execution).toContain(
+      'Si no encuentras coincidencias, pide el nombre registrado',
+    );
+    expect(execution).toContain(
+      'Si hay varias coincidencias posibles, pide aclaración (comprueba meta.total_items aunque la página muestre una sola fila).',
+    );
+    expect(execution).toContain('Usa el ID devuelto para el negocio identificado');
     expect(execution).toContain('nodia_products_list');
     expect(execution).toContain('page: 1');
+    expect(execution).toContain(
+      'limit: 1 y toma meta.total_items como total exacto de productos activos',
+    );
+    expect(execution).toContain('sin contar filas ni consultar otras páginas');
     expect(execution).toContain('meta.page < meta.total_pages');
     expect(execution).toContain('una sola lectura de productos');
     expect(execution).toContain('effective_price');
