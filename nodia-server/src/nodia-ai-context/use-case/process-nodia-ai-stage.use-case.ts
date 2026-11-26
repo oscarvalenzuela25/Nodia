@@ -159,7 +159,11 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
         ? toolSelectionProfile.profile_id
         : undefined;
     const data = await context.checkpoint((manager) =>
-      this.history(manager, claim),
+      this.history(
+        manager,
+        claim,
+        toolSelectionProfileId === 'product_catalog_reads',
+      ),
     );
     let imageGeneration:
       | {
@@ -196,6 +200,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
           recoveryRefs: data.recoveryRefs,
           toolSelection: claim.run.context_manifest.tool_selection,
           toolSelectionProfileId,
+          catalogCanSearchAllBusinesses: data.catalogCanSearchAllBusinesses,
           capabilityIndex: data.capabilityIndex,
           invoiceOcrReferenceIds: invoiceOcrReferenceIds(
             claim.run.context_manifest,
@@ -911,7 +916,11 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       },
     };
   }
-  private async history(manager: EntityManager, claim: NodiaAiClaim) {
+  private async history(
+    manager: EntityManager,
+    claim: NodiaAiClaim,
+    catalogReadProfile: boolean,
+  ) {
     const actor = await this.authorize.execute(claim.identity, {}, manager);
     const frozen = claim.run.context_manifest.module_routes;
     if (
@@ -996,6 +1005,9 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
     );
     return {
       routes,
+      catalogCanSearchAllBusinesses: catalogReadProfile
+        ? actor.isSuperAdmin && routes.includes('/business')
+        : undefined,
       history: window.history,
       preferences,
       snapshot,
@@ -1070,6 +1082,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       .sort();
     if (
       !isDeepStrictEqual(routes, data.routes) ||
+      (data.catalogCanSearchAllBusinesses && !actor.isSuperAdmin) ||
       (await this.historyReader.fingerprint(
         manager,
         claim.run.conversation_id,

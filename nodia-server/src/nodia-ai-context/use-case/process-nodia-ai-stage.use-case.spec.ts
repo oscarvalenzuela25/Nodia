@@ -115,7 +115,10 @@ function fixture(
       fragments: [],
     }),
   };
-  const actor = { modules: modules.map((route) => ({ route })) };
+  const actor = {
+    isSuperAdmin: false,
+    modules: modules.map((route) => ({ route })),
+  };
   const authorize = { execute: vi.fn().mockResolvedValue(actor) };
   const journal = eventJournalFixture();
   const query = vi
@@ -1581,6 +1584,40 @@ describe('Process NodiaAI stage', () => {
       ),
     ).toBe(true);
   });
+  it.each([
+    { isSuperAdmin: true, admittedBusiness: true, expectsHint: true },
+    { isSuperAdmin: true, admittedBusiness: false, expectsHint: false },
+    { isSuperAdmin: false, admittedBusiness: true, expectsHint: false },
+  ])(
+    'scopes catalog business search for superAdmin=$isSuperAdmin and admittedBusiness=$admittedBusiness',
+    async ({ isSuperAdmin, admittedBusiness, expectsHint }) => {
+      const f = fixture();
+      f.actor.isSuperAdmin = isSuperAdmin;
+      f.actor.modules.push({ route: '/business' });
+      if (admittedBusiness)
+        f.claim.run.context_manifest.module_routes = f.actor.modules.map(
+          ({ route }) => route,
+        );
+      f.observation.supportsMcp = true;
+      f.claim.run.context_manifest.tool_selection_profile = {
+        profile_id: 'product_catalog_reads',
+      };
+      f.claim.run.context_manifest.tool_selection = {
+        schema_version: 1,
+        phase: 'execution',
+        catalog_hash: 'a'.repeat(64),
+      };
+      const outcome = await f.subject.execute(f.claim, f.context);
+      expect(outcome.status).toBe('completed');
+      const prompt = JSON.parse(
+        f.adapter.execute.mock.calls[0][0].canonicalPrompt,
+      );
+      expect(prompt.instructions).toContain('Busca el término distintivo');
+      expect(prompt.instructions.includes('all_businesses: true')).toBe(
+        expectsHint,
+      );
+    },
+  );
   it('does not widen a frozen run grant when another module is assigned later', async () => {
     const f = fixture();
     f.actor.modules.push({ route: '/new-feature' });
