@@ -32,8 +32,8 @@
   ],
   "verification": {
     "checked_on": "2026-11-26",
-    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md"],
-    "notes": "La VM verificó API key y OneATS coincidió en 9 de 10 comprobaciones para ambos PDF EN. El piloto Agentic verificó el recorrido completo. Plan113 §18 y §19 registran la verificación productiva de ChatGPT y el resultado incierto de Gemini."
+    "evidence_paths": ["docs/mvp/113-nodia-cv-implementation-plan.md", "docs/evidence/nodia-cv-api-key-vm-20261124.md", "docs/evidence/nodia-cv-generation-ui-20261124.md", "docs/evidence/nodia-cv-pdf-versions-20261124.md", "docs/evidence/nodia-cv-pilot-vm-and-ats-20261124.md", "docs/evidence/nodia-cv-agentic-baseline-vm-20261125.md", "docs/evidence/nodia-cv-agentic-delivery-20261125.md", "docs/evidence/nodia-cv-first-use-production-20261126.md"],
+    "notes": "La VM verificó las dos plantillas mediante OneATS público. Plan113 §20 registra cuatro modelos en producción, junto con apertura, descarga y requisitos de versiones."
   },
   "approval": null
 }
@@ -77,8 +77,8 @@ incluyó guardado, reapertura y descarga.
 
 El primer borrador puede iniciar la ejecución con la conexión, modo, modelo
 e intensidad compatibles elegidos. La disponibilidad real se comprueba
-mediante la inferencia y el cierre del transporte. La verificación del
-cambio en producción está pendiente.
+mediante la inferencia y el cierre del transporte.
+[QA de producción](../../../../evidence/nodia-cv-first-use-production-20261126.md).
 [Plan113 §20](../../../../mvp/113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
 ## Solicitudes en lenguaje natural

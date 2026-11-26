@@ -10,7 +10,9 @@ actual se evaluó mediante lectura de código y documentación.
 El primer borrador puede usar el modelo elegido sin un recibo previo de
 CV. Al salir de Generar CV se limpian la vista previa y los requisitos.
 Las versiones nuevas conservan el análisis de la revisión para la reapertura.
-La verificación del cambio en producción está pendiente.
+El navegador verificó generación y PDF con cuatro modelos y recuperó los
+requisitos de una versión nueva y otra histórica.
+[QA de producción](../evidence/nodia-cv-first-use-production-20261126.md).
 [Plan113 §20](113-nodia-cv-implementation-plan.md#20-primera-generación-y-recuperación-por-versión--2026-11-26).
 
 **GPT-6.1 Sol en Nodia CV — 2026-11-26.** Producción ofrece GPT-6.1 Sol
