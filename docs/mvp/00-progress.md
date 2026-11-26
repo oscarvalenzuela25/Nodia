@@ -6,6 +6,12 @@ y la integración posterior por API key. La primera comprobación exige una
 ruta explícita y un solo envío al destino ante éxito y fallos. La versión
 actual se evaluó mediante lectura de código y documentación.
 
+**Nodia CV Agentic en producción — 2026-11-26.** Backend y Client
+publicados con ambos runtimes instalados. Las dos selecciones requieren
+calificación y trabajos cerrados de Chat impedían reclamar la primera
+prueba. Se preparó el operador y la corrección de la cola.
+[Incidencia y QA pendiente](113-nodia-cv-implementation-plan.md#18-agentic-en-producción--incidencia-del-2026-11-26).
+
 **Pagos combinados y filtro de Ventas — 2026-11-25.** Client y Server
 incorporan el diseño aprobado en la rama local. El POS admite hasta tres
 medios en un checkout y Ventas muestra sus importes por medio.

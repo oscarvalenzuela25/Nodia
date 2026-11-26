@@ -12,6 +12,7 @@ import {
   agenticHash,
   agenticTextHash,
 } from '../dist/ai-generation/agentic-text-contract.js';
+import { finishChatGeneration } from '../dist/ai-generation/chat-generation-ownership.js';
 import { GenerationWorkerSourceRegistry } from '../dist/ai-generation/worker-source-registry.js';
 import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-module-access.use-case.js';
 import { PrepareNodiaAiRestoreUseCase } from '../dist/nodia-ai-recovery/use-case/prepare-nodia-ai-restore.use-case.js';
@@ -142,6 +143,61 @@ async function operation(id) {
     [id],
   );
   return row;
+}
+
+async function seedUnresolvedChat(actor, selection) {
+  const conversation = randomUUID();
+  const job = randomUUID();
+  const attempt = randomUUID();
+  const workerId = randomUUID();
+  const resource = 'codex-profile:' + 'd'.repeat(64);
+  await db.transaction(async (manager) => {
+    await manager.query(
+      `INSERT INTO nodia_ai_conversations(id,owner_id,client_request_id,title,creation_request_hash,expires_at)
+       VALUES($1,$2,$3,'Synthetic Chat', $4,clock_timestamp()+interval '1 hour')`,
+      [conversation, actor.userId, randomUUID(), agenticHash(conversation)],
+    );
+    await manager.query(
+      `INSERT INTO nodia_ai_jobs(id,kind,dedup_key,conversation_id,state,available_at,deadline_at,stage_key)
+       VALUES($1,'reconcile',$2,$3,'unknown',clock_timestamp(),clock_timestamp()+interval '1 hour','context')`,
+      [job, 'synthetic:' + job, conversation],
+    );
+    await manager.query(
+      `INSERT INTO nodia_ai_job_attempts(id,job_id,attempt_no,fence,worker_id,phase,started_at,stage_key,stage_seq)
+       VALUES($1,$2,1,1,$3,'claimed',clock_timestamp(),'context',1)`,
+      [attempt, job, workerId],
+    );
+    await manager.query(
+      `INSERT INTO ai_generation_operations(id,owner_kind,chat_attempt_id,chat_job_id,chat_conversation_id,
+         actor_id,auth_session_public_id,connection_id,selection_snapshot,configuration_generation,session_generation,
+         resource_key,worker_id,owner_fence,runtime_fence,phase,request_hash,exchange_limit)
+       VALUES($1,'chat',$1,$2,$3,$4,$5,$6,$7::jsonb,$8,$9,$10,$11,1,1,'reserved',$12,1)`,
+      [attempt, job, conversation, actor.userId, actor.sessionId, connection.id,
+        JSON.stringify(selection), 'c'.repeat(64), generation, resource, workerId, agenticHash(attempt)],
+    );
+  });
+  return {
+    attempt,
+    close: () => db.transaction(async (manager) => {
+      await finishChatGeneration(manager, attempt, {
+        engine: 'agentic',
+        attemptId: attempt,
+        operationRef: attempt,
+        resourceKey: resource,
+        sessionGeneration: generation,
+        adapterIdentity: {
+          providerKey: 'openai',
+          contractVersion: 'nodia-ai-codex-chat/1',
+          connectionId: connection.id,
+        },
+        terminalProofId: randomUUID(),
+        processClosed: true,
+        outcome: 'completed',
+        observedAt: new Date(),
+      });
+      await manager.query("UPDATE nodia_ai_jobs SET state='done' WHERE id=$1", [job]);
+    }),
+  };
 }
 
 const lock = () => join(root, connection.id, 'nodia.lock');
@@ -762,10 +818,18 @@ try {
     currentAttempt.id,
   );
   assert.equal(observations, reads);
+  const chat = await seedUnresolvedChat(admin, selection);
+  assert.equal(await setup.run(), false);
+  assert.equal(sends, 0);
+  await chat.close();
+  const closedChat = await operation(chat.attempt);
+  assert.equal(closedChat.phase, 'closed');
+  assert.equal(closedChat.remote_outcome, 'completed');
+  assert.equal(closedChat.acknowledged_at, null);
   failNextAck = true;
   await Promise.all([setup.run(), setup.run()]);
   assert.equal(nativeFailure, undefined);
-  assert.equal(sends, 1);
+  assert.equal(sends, 1, 'Closed Chat history must not block a CV claim.');
   const pending = await operation(currentAttempt.id);
   assert.equal(pending.phase, 'closed');
   assert.equal(pending.remote_outcome, 'completed');
