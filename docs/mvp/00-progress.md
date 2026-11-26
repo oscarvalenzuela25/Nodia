@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**FreeLLMAPI después de OpenCode — 2026-11-26.** El
+[plan116](116-freellmapi-integration-plan.md) define ocho pruebas de piloto
+y la integración posterior por API key. La primera comprobación exige una
+ruta explícita y un solo envío al destino ante éxito y fallos. La versión
+actual se evaluó mediante lectura de código y documentación.
+
 **Pagos combinados y filtro de Ventas — 2026-11-25.** Client y Server
 incorporan el diseño aprobado en la rama local. El POS admite hasta tres
 medios en un checkout y Ventas muestra sus importes por medio.

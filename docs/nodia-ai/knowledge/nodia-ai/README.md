@@ -4,7 +4,7 @@
   "document_id": "nodia-ai",
   "product_id": "nodia-ai",
   "kind": "product",
-  "revision": 85,
+  "revision": 86,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -426,6 +426,13 @@ La [ficha candidata de OpenCode](features/opencode-provider.md) enlaza el
 [plan de implementación](../../../mvp/115-opencode-provider-implementation-plan.md)
 y el [catastro de usos de IA](../../../mvp/114-ai-model-usage-inventory.md).
 La disponibilidad se verifica por modo, propósito, selección y entorno.
+
+## FreeLLMAPI — propuesta posterior a OpenCode
+
+La [ficha candidata de FreeLLMAPI](features/freellmapi-gateway.md) enlaza el
+[plan de piloto e integración](../../../mvp/116-freellmapi-integration-plan.md).
+Está prevista para API key con selección y destino explícitos. La
+disponibilidad depende de las pruebas del gateway y de cada consumidor.
 
 
 ## Archivo de capturas de validación — 2026-11-16

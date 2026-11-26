@@ -227,3 +227,10 @@ nuevo de OpenCode.
   disponible la cuota. El primer hito demuestra texto útil por modo y
   habilita el trabajo de producto. La entrega se cierra al completar los
   casos aplicables de ambos modos y resolver los bloqueos del alcance.
+
+## Iniciativa posterior
+
+Tras cerrar los recorridos de OpenCode, retomar el
+[piloto de FreeLLMAPI](116-freellmapi-integration-plan.md) con una ruta API key
+explícita. El piloto reutiliza el catastro y acredita el número de envíos
+hasta el proveedor de destino.
