@@ -47,7 +47,6 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
   const [priorRequest, setPriorRequest] = useState<PriorRequest | null>(null);
   const [clock, setClock] = useState(Date.now);
   const mounted = useRef(true);
-  const lock = useRef(false);
   const recovering = useRef<AbortController | null>(null);
   const localReceipts = useRef(new Set<string>());
   const status = useCvGenerationStatus(tracked, active);
@@ -133,16 +132,14 @@ export function useCvGenerationWorkflow(active: boolean, onDenial: () => void) {
     notifyHttpError(error);
   };
   const beginCommand = () => {
-    if (!active || lock.current || !sameActor() || !hasActiveSession(useAuthStore.getState())) return null;
+    if (!active || recovering.current || !sameActor() || !hasActiveSession(useAuthStore.getState())) return null;
     const controller = new AbortController();
-    lock.current = true;
     recovering.current = controller;
     setBusy(true);
     return controller;
   };
   const finishCommand = () => {
     recovering.current = null;
-    lock.current = false;
     if (sameActor()) setBusy(false);
   };
   const accept = (intent: Intent, value: CvGeneration) => {
