@@ -820,6 +820,12 @@ El recorrido cubre las selecciones y esfuerzos de la tabla.
 
 ## 20. Primera generación y recuperación por versión — 2026-11-26
 
+Codex sirve de referencia para iniciar una tarea con cualquier modelo
+compatible que ofrece su selector. Nodia CV aplica la misma elección al
+primer borrador e incorpora la revisión del perfil, la oferta y la
+verificación del PDF en su flujo propio.
+[Regla principal de IA en AGENTS.md](../../AGENTS.md#regla-principal-de-ia--codex-como-referencia-2026-11-26).
+
 La solicitud explícita cambia la admisión de Nodia CV para ambos modos.
 La calificación por modelo y configuración descrita en §17–19
 documenta el comportamiento anterior. Cambiar de modelo o intensidad
@@ -862,3 +868,12 @@ interfaz de producción mostraba «Esta selección exacta aún no está
 habilitada para generar CV» y deshabilitaba aplicar y generar. Se registró
 el bloqueo sin enviar una solicitud de inferencia. La misma selección es
 el control para la verificación del despliegue.
+
+### Verificación posterior al despliegue
+
+El navegador generó y comprobó el PDF con GPT-6.1 Sol en Bajo,
+GPT-6 Luna y Gemini 4 Neon en Bajo por Agentic, y con GPT-6.1 Terra
+en Alto por API key. Después de guardar y salir de Generar CV, reabrir
+la versión en CV guardados recuperó sus requisitos. La migración
+recuperó también los de una versión histórica cuya fuente seguía vigente.
+[Resultados y entrega](../evidence/nodia-cv-first-use-production-20261126.md).
