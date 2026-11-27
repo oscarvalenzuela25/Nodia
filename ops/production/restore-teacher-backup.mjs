@@ -10,7 +10,7 @@ import { validateFingerprint } from './fingerprint-teacher-restore.mjs';
 
 export const PINS = Object.freeze({ postgres: HISTORICAL_PINS.postgres, runner: HISTORICAL_PINS.runner,
   fingerprint: 'e4d899a31df33ca40f3e663369d7b3419577c530779cdb54c318f82ac9acf191',
-  inventory: 'c4ccbc0ad598611bedde395d4662b491785b912905bbde8de057b685bfba4c7f' });
+  inventory: 'f0360a4479f065846feaf7b78752954c57a32c36f91b8aa15e39e7c548a235ae' });
 const LABEL = 'nodia.teacher.database.restore';
 const ensure = (condition, code) => { if (!condition) throw Object.assign(new Error('Teacher restore rejected'), { safeCode: code }); };
 const HEX = /^[a-f0-9]{64}$/u;
