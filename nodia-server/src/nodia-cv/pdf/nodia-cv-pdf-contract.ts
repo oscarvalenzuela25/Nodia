@@ -8,7 +8,17 @@ export const CV_PDF_LIMITS = {
   phaseMs: 5_000,
 } as const;
 
-export type CvPdfTemplate = 'classic' | 'compact';
+export const CV_PDF_TEMPLATES = [
+  'classic',
+  'compact',
+  'editorial',
+  'contemporary',
+] as const;
+export type CvPdfTemplate = (typeof CV_PDF_TEMPLATES)[number];
+
+export function isCvPdfTemplate(value: unknown): value is CvPdfTemplate {
+  return CV_PDF_TEMPLATES.some((template) => template === value);
+}
 
 export type CvPdfErrorCode =
   | 'pdf_busy'

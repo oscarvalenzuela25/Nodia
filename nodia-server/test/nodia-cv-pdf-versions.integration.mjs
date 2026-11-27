@@ -21,6 +21,7 @@ import { CheckModuleAccessUseCase } from '../dist/authorization/use-case/check-m
 import { AllExceptionsFilter } from '../dist/common/filters/all-exceptions.filter.js';
 import { RedisService } from '../dist/common/redis/redis.service.js';
 import { SaveNodiaCvVersionAnalysis1794060000000 } from '../dist/migrations/1794060000000-SaveNodiaCvVersionAnalysis.js';
+import { ExpandNodiaCvPdfTemplates1794110000000 } from '../dist/migrations/1794110000000-ExpandNodiaCvPdfTemplates.js';
 import {
   buildCvDraft,
   prepareCvTailoring,
@@ -437,6 +438,42 @@ try {
   );
   const es = await readyDraft('es', false);
   const en = await readyDraft('en', true);
+  const letterPath = '/drafts/' + es.generationId + '/application-documents/pdf';
+  const letter = {
+    revision: 1,
+    kind: 'recommendation',
+    text: 'Antecedente confirmado por la persona postulante.',
+  };
+  await json(request('POST', letterPath, null, letter), 401);
+  await json(request('POST', letterPath, unassigned, letter), 403);
+  await json(
+    request('POST', letterPath, other, letter),
+    404,
+    'generation_not_found',
+  );
+  await json(
+    request('POST', letterPath, owner, { ...letter, revision: letter.revision + 1 }),
+    409,
+    'stale_draft',
+  );
+  await json(
+    request('POST', letterPath, owner, { ...letter, text: 'Línea\n'.repeat(29) }),
+    422,
+    'pdf_limits',
+  );
+  for (const kind of ['cover', 'recommendation']) {
+    const response = await request('POST', letterPath, owner, { ...letter, kind });
+    assert.equal(response.status, 200, response.ok ? undefined : await response.text());
+    assert.equal(response.headers.get('cache-control'), 'private, no-store');
+    assert.match(response.headers.get('content-type'), /^application\/pdf(?:$|;)/i);
+    assert.match(response.headers.get('content-disposition'), /^attachment;/i);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(digest(bytes), response.headers.get('x-content-sha256'));
+    const document = await readPdfWithPdfJs(bytes);
+    assert.equal(document.pages, 1);
+    assert.ok(document.text.includes(letter.text));
+    assert.equal(document.text.includes('Borrador sin firma.'), kind === 'recommendation');
+  }
   const editPath = '/drafts/' + es.generationId + '/ai-edits';
   const editRequest = {
     request_key: randomUUID(),
@@ -451,14 +488,21 @@ try {
   };
   await json(request('POST', editPath, null, editRequest), 401);
   await json(request('POST', editPath, unassigned, editRequest), 403);
-  await json(request('POST', editPath, other, editRequest), 404, 'generation_not_found');
+  await json(
+    request('POST', editPath, other, editRequest),
+    404,
+    'generation_not_found',
+  );
   await json(
     request('POST', editPath, owner, { ...editRequest, revision: 2 }),
     409,
     'stale_draft',
   );
   await json(
-    request('POST', editPath, owner, { ...editRequest, instructions: 'á'.repeat(1025) }),
+    request('POST', editPath, owner, {
+      ...editRequest,
+      instructions: 'á'.repeat(1025),
+    }),
     400,
     'generation_invalid_input',
   );
@@ -475,7 +519,16 @@ try {
   const esCompact = await prepare(es.generationId, 'compact');
   const enClassic = await prepare(en.generationId, 'classic');
   const enCompact = await prepare(en.generationId, 'compact');
-  const matrix = [esClassic, esCompact, enClassic, enCompact];
+  const matrix = [
+    esClassic,
+    esCompact,
+    enClassic,
+    enCompact,
+    await prepare(es.generationId, 'editorial'),
+    await prepare(en.generationId, 'editorial'),
+    await prepare(es.generationId, 'contemporary'),
+    await prepare(en.generationId, 'contemporary'),
+  ];
   const artifacts = new Map();
   for (const artifact of matrix) {
     const source = artifact.language === 'es' ? es : en;
@@ -556,6 +609,16 @@ try {
   }
   assert.notEqual(esClassic.sha256, esCompact.sha256);
   assert.notEqual(enClassic.sha256, enCompact.sha256);
+  for (const language of ['es', 'en']) {
+    const versions = matrix.filter(
+      (artifact) => artifact.language === language,
+    );
+    assert.equal(new Set(versions.map(({ sha256 }) => sha256)).size, 4);
+    assert.equal(
+      new Set(versions.map(({ extracted_text }) => extracted_text)).size,
+      1,
+    );
+  }
   await json(
     request('GET', draftPdf(es.generationId) + '/' + esClassic.id, other),
     404,
@@ -734,10 +797,10 @@ try {
   await db.query('UPDATE nodia_cv_versions SET analysis=NULL WHERE id=$1', [
     retainedEn.id,
   ]);
-  assert.deepEqual(
-    await json(request('GET', versionPath(retainedEn)), 200),
-    { ...retainedEn, analysis: null },
-  );
+  assert.deepEqual(await json(request('GET', versionPath(retainedEn)), 200), {
+    ...retainedEn,
+    analysis: null,
+  });
   assert.deepEqual(
     await readPdf(versionPath(retainedEn) + '/pdf', enClassic.sha256),
     artifacts.get(enClassic.id),
@@ -865,6 +928,80 @@ try {
       );
       assert.deepEqual(row.evidence, legacy.review.evidence);
     }
+  }
+
+  for (const template of ['editorial', 'contemporary']) {
+    const artifact = await prepare(copy.id, template, copy.review.revision);
+    const verified = await readPdf(
+      draftPdf(copy.id) + '/' + artifact.id,
+      artifact.sha256,
+    );
+    const version = await save(bodyFor(artifact));
+    assert.equal(version.template, template);
+    assert.equal(version.extracted_text, first.extracted_text);
+    assert.deepEqual(
+      await json(request('GET', versionPath(version)), 200),
+      version,
+    );
+    assert.deepEqual(
+      await readPdf(versionPath(version) + '/pdf', artifact.sha256),
+      verified,
+    );
+    const reopened = await json(
+      request('POST', versionPath(version) + '/draft-copy', owner, {
+        request_key: randomUUID(),
+      }),
+      200,
+    );
+    assert.deepEqual(reopened.source_version, { id: version.id, template });
+    assert.equal(reopened.state, 'ready');
+  }
+  assert.deepEqual(
+    await readPdf(versionPath(first) + '/pdf', first.sha256),
+    artifacts.get(esClassic.id),
+  );
+
+  const technologyReview = {
+    included: ['Dagger'],
+    additions: [
+      { name: 'Dagger', status: 'confirmed', source: 'Portal de pruebas', detail: 'Configuré un pipeline de pruebas.' },
+      { name: 'Flux CD', status: 'study' },
+    ],
+  };
+  const withTechnologies = await json(request('PUT', '/drafts/' + copy.id, owner, {
+    revision: copy.review.revision,
+    included_fact_ids: copy.review.included_fact_ids,
+    evidence: copy.review.evidence,
+    technologies: technologyReview,
+  }), 200);
+  assert.deepEqual(withTechnologies.review.technologies, technologyReview);
+  const withOrdinaryReview = await json(request('PUT', '/drafts/' + copy.id, owner, {
+    revision: withTechnologies.review.revision,
+    included_fact_ids: withTechnologies.review.included_fact_ids,
+    evidence: withTechnologies.review.evidence,
+  }), 200);
+  assert.deepEqual(withOrdinaryReview.review.technologies, technologyReview);
+  const technologyArtifact = await prepare(copy.id, 'editorial', withOrdinaryReview.review.revision);
+  assert.match(technologyArtifact.extracted_text, /Tecnologías\s+Dagger/);
+  assert.match(technologyArtifact.extracted_text, /Configuré un pipeline de pruebas\./);
+  assert.doesNotMatch(technologyArtifact.extracted_text, /Flux CD/);
+  const technologyVersion = await save(bodyFor(technologyArtifact));
+  const technologyCopy = await json(request(
+    'POST', versionPath(technologyVersion) + '/draft-copy', owner, { request_key: randomUUID() },
+  ), 200);
+  assert.deepEqual(technologyCopy.review.technologies, technologyReview);
+
+  const rollbackTemplates = db.createQueryRunner();
+  await rollbackTemplates.connect();
+  await rollbackTemplates.startTransaction();
+  try {
+    await assert.rejects(
+      new ExpandNodiaCvPdfTemplates1794110000000().down(rollbackTemplates),
+      /Preserve Nodia CV versions and drafts using new templates before reverting/,
+    );
+  } finally {
+    await rollbackTemplates.rollbackTransaction();
+    await rollbackTemplates.release();
   }
 
   await db.query(

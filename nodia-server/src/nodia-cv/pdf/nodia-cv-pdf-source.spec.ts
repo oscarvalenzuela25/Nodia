@@ -126,4 +126,56 @@ describe('CV PDF section order', () => {
       'Centro de prueba',
     ]);
   });
+
+  it.each([
+    ['es', 'Tecnologías', 'Aportes confirmados'],
+    ['en', 'Technical skills', 'Confirmed additions'],
+  ] as const)(
+    'renders only the explicit technology selection in %s',
+    (language, heading, contributions) => {
+      const included = ['PostgreSQL', 'REACT'];
+      const confirmed = {
+        name: 'React',
+        status: 'confirmed' as const,
+        source: 'Portal de operaciones',
+        detail: 'Implementación de formularios',
+      };
+      const snapshot = snapshotCvPdfSource({
+        ...source,
+        language,
+        draft: { ...source.draft, locale: language },
+        review: {
+          ...source.review,
+          section_order: ['skills'],
+          technologies: {
+            included,
+            additions: [
+              confirmed,
+              { ...confirmed, name: 'Node.js' },
+              { name: 'Kubernetes', status: 'study' },
+            ],
+          },
+        },
+      });
+      included.reverse();
+      confirmed.detail = 'Cambio posterior';
+      expect(snapshot.technologies).toEqual({
+        included: ['PostgreSQL', 'REACT'],
+        additions: [{ ...confirmed, detail: 'Implementación de formularios' }],
+      });
+      const texts = composeCvPdfDocument(snapshot).blocks.map(
+        ({ text }) => text,
+      );
+      expect(texts.slice(3, 5)).toEqual([heading, 'PostgreSQL · REACT']);
+      expect(texts).toContain('Empresa de prueba');
+      expect(texts.slice(-3)).toEqual([
+        contributions,
+        'React · Portal de operaciones',
+        'Implementación de formularios',
+      ]);
+      expect(texts.join('\n')).not.toMatch(
+        /TypeScript|Node\.js|Kubernetes|Cambio posterior/,
+      );
+    },
+  );
 });

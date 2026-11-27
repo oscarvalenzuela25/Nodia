@@ -14,18 +14,25 @@ export function cvExperiencePresentation(facts: CvDraftFact[], t: TFunction<"nod
   const start = monthForDocument(byField.get("start_month")?.text);
   const end = monthForDocument(byField.get("end_month")?.text);
   const status = byField.get("status")?.text;
-  const lines: { id: string; text: string }[] = [];
+  const lines: { id: string; text: string; evidenceFactIds?: string[] }[] = [];
+  const addLine = (id: string, text: string, ...fields: string[]) => {
+    const evidenceFactIds = fields.flatMap((field) => {
+      const fact = byField.get(field);
+      return fact ? [fact.id] : [];
+    });
+    lines.push({ id, text, evidenceFactIds });
+  };
   if (position && company) lines.push(position);
-  if (start && end) lines.push({ id: "period", text: start + " - " + end });
+  if (start && end) addLine("period", start + " - " + end, "start_month", "end_month");
   else if (status === "current" && start)
-    lines.push({ id: "period", text: t("document_experience.current_period", { start }) });
-  else if (start) lines.push({ id: "period", text: t("document_experience.start", { date: start }) });
-  else if (end) lines.push({ id: "period", text: t("document_experience.end", { date: end }) });
+    addLine("period", t("document_experience.current_period", { start }), "start_month", "status");
+  else if (start) addLine("period", t("document_experience.start", { date: start }), "start_month");
+  else if (end) addLine("period", t("document_experience.end", { date: end }), "end_month");
 
   if (status === "current" && !start)
-    lines.push({ id: "state", text: t("document_experience.current_status") });
+    addLine("state", t("document_experience.current_status"), "status");
   if (status === "finished" && !end)
-    lines.push({ id: "state", text: t("document_experience.finished_status") });
+    addLine("state", t("document_experience.finished_status"), "status");
   lines.push(...facts.filter((fact) => !anchorFields.has(fact.field)));
   return { heading: company ?? position, lines };
 }

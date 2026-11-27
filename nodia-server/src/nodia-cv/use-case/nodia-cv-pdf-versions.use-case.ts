@@ -6,6 +6,7 @@ import {
   NODIA_AI_DELETION_JOURNAL,
   type NodiaAiDeletionJournalPort,
 } from '../../nodia-ai-recovery/types/deletion-journal.js';
+import type { PrepareNodiaCvApplicationDocumentDto } from '../dto/nodia-cv-application-document.dto.js';
 import type {
   CopyNodiaCvVersionDto,
   ListNodiaCvVersionsDto,
@@ -15,6 +16,7 @@ import type {
 import { NodiaCvGenerationScope } from '../nodia-cv-generation-scope.service.js';
 import { NodiaCvGenerationStore } from '../nodia-cv-generation.store.js';
 import { NodiaCvPdfVersionsStore } from '../nodia-cv-pdf-versions.store.js';
+import { composeCvApplicationDocument } from '../pdf/nodia-cv-application-document.js';
 import {
   CV_PDF_RENDERER,
   NodiaCvPdfRenderer,
@@ -127,6 +129,28 @@ export class NodiaCvPdfVersionsUseCase {
         sha256: pdf.sha256,
         filename: `nodia-cv-${pdf.template}-${pdf.language}.pdf`,
       };
+    });
+  }
+
+  async applicationDocumentPdf(
+    actor: ActorReference,
+    id: string,
+    input: PrepareNodiaCvApplicationDocumentDto,
+  ) {
+    const language = await this.authorized(actor, async (manager, owner) =>
+      (await this.draft(manager, owner, id, input.revision)).language,
+    );
+    const document = composeCvApplicationDocument(language, input);
+    const pdf = await this.renderer.renderDocument(document, 'classic');
+    if (pdf.page_count !== 1) cvGenerationError('pdf_limits', 422);
+    assertPdfIntegrity(pdf);
+    const filename =
+      input.kind === 'cover'
+        ? 'nodia-cover-letter.pdf'
+        : 'nodia-recommendation-draft.pdf';
+    return this.authorized(actor, async (manager, owner) => {
+      await this.draft(manager, owner, id, input.revision);
+      return { bytes: pdf.bytes, sha256: pdf.sha256, filename };
     });
   }
 
@@ -252,6 +276,10 @@ export class NodiaCvPdfVersionsUseCase {
             evidence: draft.review.evidence.filter(({ requirement_id }) =>
               requirementIds.has(requirement_id),
             ),
+            ...(draft.draft.technologyOptions
+              ? { technology_options: draft.draft.technologyOptions }
+              : {}),
+            ...(draft.review.technologies ? { technologies: draft.review.technologies } : {}),
           },
           snapshot: {
             ...snapshotCvPdfSource(sourceOf(draft)),

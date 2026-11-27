@@ -14,6 +14,8 @@ import {
   type CvProviderReceipt,
 } from './agentic/nodia-cv-agentic-provider.js';
 import type { CvTailoringDraft } from './engine/index.js';
+import { minimizeCvText } from './engine/evidence.js';
+import { analyzeCvTechnologies } from './engine/technologies.js';
 import type { StartNodiaCvGenerationDto } from './dto/nodia-cv-generation.dto.js';
 import { cvGenerationError } from './policies/nodia-cv-generation-errors.js';
 import { cvGenerationProfileId } from './policies/nodia-cv-generation-status.js';
@@ -643,19 +645,30 @@ export class NodiaCvGenerationStore {
     responseHash: string,
     editedReview?: CvDraftReviewContent,
   ) {
+    const offer = row.offer_text ?? '';
+    const options = draft.technologyOptions ?? analyzeCvTechnologies(
+      draft,
+      row.profile_snapshot ? minimizeCvText(row.profile_snapshot)(offer) : '',
+    );
+    const newTechnologies = !row.qualification && options.length
+      ? {
+          included: options.filter(({ kind, in_profile }) =>
+            in_profile && (kind === 'required' || kind === 'preferred')).map(({ name }) => name),
+          additions: [],
+        }
+      : undefined;
+    const review = editedReview ?? {
+      included_fact_ids: draft.selectedFacts.map(({ id }) => id),
+      evidence: [],
+      ...(newTechnologies ? { technologies: newTechnologies } : {}),
+    } satisfies CvDraftReviewContent;
     await manager.query(
       `UPDATE nodia_cv_generations SET state='ready',draft=$2::jsonb,review=$3::jsonb,review_revision=1,
        error_code=NULL,lease_until=NULL,updated_at=clock_timestamp() WHERE id=$1`,
       [
         row.id,
-        JSON.stringify(draft),
-        JSON.stringify(
-          editedReview ??
-            ({
-              included_fact_ids: draft.selectedFacts.map(({ id }) => id),
-              evidence: [],
-            } satisfies CvDraftReviewContent),
-        ),
+        JSON.stringify(options.length ? { ...draft, technologyOptions: options } : draft),
+        JSON.stringify(review),
       ],
     );
     if (row.qualification && row.selection_snapshot?.mode !== 'agentic') {

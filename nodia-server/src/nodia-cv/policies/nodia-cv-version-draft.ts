@@ -36,10 +36,14 @@ export function prepareCvVersionDraft(version: CvSavedDraftSource) {
     requirements: analysis?.requirements ?? [],
     selectedFacts: snapshot.facts,
     remainingFacts: analysis?.facts.filter(({ id }) => !included.has(id)) ?? [],
+    ...(analysis?.technology_options ? { technologyOptions: analysis.technology_options } : {}),
   };
   const review: CvDraftReviewContent = {
     included_fact_ids: [...included],
     evidence: snapshot.evidence,
+    ...((analysis?.technologies ?? snapshot.technologies)
+      ? { technologies: analysis?.technologies ?? snapshot.technologies }
+      : {}),
     ...(snapshot.section_order
       ? { section_order: snapshot.section_order }
       : {}),

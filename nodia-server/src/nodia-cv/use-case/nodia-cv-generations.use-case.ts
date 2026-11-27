@@ -144,7 +144,8 @@ export class NodiaCvGenerationsUseCase {
       const review = prepareCvDraftReview(
         visible.draft,
         input,
-        visible.review.section_order,
+        visible.review,
+        visible.technology_options ?? [],
       );
       const updated = await this.store.updateReview(
         manager,

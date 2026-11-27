@@ -78,6 +78,7 @@ export function prepareCvEdit(input: {
     providedOffer: '',
     evidence,
     editRequirements: draft.requirements,
+    ...(draft.technologyOptions ? { editTechnologyOptions: draft.technologyOptions } : {}),
   };
 }
 
@@ -89,5 +90,10 @@ export function cvEditedReview(
   const section_order = [
     ...new Set(draft.selectedFacts.map(presentationSection)),
   ];
-  return { included_fact_ids, evidence: base.evidence, section_order };
+  return {
+    included_fact_ids,
+    evidence: base.evidence,
+    section_order,
+    ...(base.technologies ? { technologies: base.technologies } : {}),
+  };
 }
