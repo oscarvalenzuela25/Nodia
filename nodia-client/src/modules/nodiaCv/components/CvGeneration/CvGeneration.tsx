@@ -704,18 +704,21 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
         />
       )}
       {exit.open && (
-        <BaseModal open size="xs" title={t("draft_exit_title")} subtitle={t("draft_exit_description")}
+        <BaseModal open size="sm" title={t("draft_exit_title")} ariaDescribedBy={`${id}-draft-exit-description`}
           onClose={exit.keepEditing} showCloseButton={false} disableEscapeKeyDown={exit.saving}
           actions={
             <Stack direction={{ xs: "column", sm: "row" }} sx={{ width: "100%", gap: 1, justifyContent: "flex-end", flexWrap: "wrap" }}>
-              <Button autoFocus variant="outlined" color="inherit" disabled={exit.saving}
-                sx={primaryAction} onClick={exit.keepEditing}>{t("draft_exit_keep")}</Button>
+              <Button autoFocus color="inherit" disabled={exit.saving}
+                sx={{ ...primaryAction, mr: { sm: "auto" } }} onClick={exit.keepEditing}>{t("draft_exit_keep")}</Button>
               <Button variant="outlined" color="error" disabled={exit.saving || writingVersion}
                 sx={primaryAction} onClick={exit.discard}>{t("draft_exit_discard")}</Button>
               <Button variant="contained" loading={exit.saving} disabled={!pdfReady || writingVersion || Boolean(reviewTarget)}
                 sx={primaryAction} onClick={() => void exit.saveAndLeave()}>{t("draft_exit_save")}</Button>
             </Stack>
           }>
+          <Typography id={`${id}-draft-exit-description`} variant="body2" color="text.secondary">
+            {t("draft_exit_description")}
+          </Typography>
           {exit.saveFailed && <Alert severity="error">{t("draft_exit_save_error")}</Alert>}
         </BaseModal>
       )}

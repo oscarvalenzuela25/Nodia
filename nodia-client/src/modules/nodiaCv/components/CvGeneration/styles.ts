@@ -14,8 +14,8 @@ export const cvEvidenceHighlight = ({ palette }: Theme) => ({
   "&[data-cv-evidence-highlighted]": {
     backgroundColor: alpha(palette.primary.main, palette.action.selectedOpacity),
     outline: `2px solid ${palette.primary.main}`,
-    outlineOffset: 2,
-    borderRadius: 4,
+    outlineOffset: -2,
+    borderRadius: 0,
     scrollMarginBlock: "4rem",
   },
 });

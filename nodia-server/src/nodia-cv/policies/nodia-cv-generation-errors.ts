@@ -1,5 +1,39 @@
-import { HttpException, type HttpStatus } from '@nestjs/common';
+import { HttpException, Logger, type HttpStatus } from '@nestjs/common';
+import type { AiSelection } from '../../ai-generation/ai-selection.js';
+import type { NodiaAiApiProvider } from '../../nodia-ai-adapter/api-nodia-ai-credentials.service.js';
 import { NodiaAiAdapterError } from '../../nodia-ai-adapter/types/nodia-ai-adapter.types.js';
+
+const logger = new Logger('NodiaCvGenerationWorker');
+const outputRejectionReasons = new Set([
+  'invalid_model_output',
+  'invalid_citation',
+  'invalid_evidence',
+  'draft_size_limit',
+  'qualification_draft_mismatch',
+]);
+
+/** Only record diagnostics produced by CV validation, without any response text. */
+export function reportCvOutputRejection(
+  claim: {
+    row: { id: string };
+    configuration: { providerKey: NodiaAiApiProvider };
+    selection: { mode: AiSelection['mode'] };
+  },
+  reason: string,
+) {
+  if (!outputRejectionReasons.has(reason)) return;
+  try {
+    logger.warn({
+      event: 'cv_generated_output_rejected',
+      generation_id: claim.row.id,
+      provider: claim.configuration.providerKey,
+      mode: claim.selection.mode,
+      reason,
+    });
+  } catch {
+    // Diagnostics must not interrupt terminal persistence or acknowledgement.
+  }
+}
 
 export function cvGenerationError(
   code: string,
