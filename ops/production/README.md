@@ -1494,6 +1494,30 @@ La entrega siguiente usa CI de `master` nueva, el respaldo fresco del CD y
 las verificaciones ordinarias de esquema y activación. Ver el
 [incidente y la recuperación](../../docs/mvp/99-production-deployment-and-cicd-plan.md#35-respaldo-previo-interrumpido-en-listas-de-market--2026-11-18).
 
+## Conciliación antes de detener escritores — 2026-11-27
+
+El candidato de [ADR099](../../docs/architecture/decisions/ADR-099-pre-migration-deployment-reconciliation.md#espera-agotada-antes-de-detener-escritores--2026-11-27)
+acota el acuse al intento `4f74fce53e7101cddfa0484ed6711ca7`.
+El guard reconoce la fase `waiting_for_quiescence` con el código
+`live_or_unconfirmed_runtime_work`, los hashes de la solicitud y
+estado originales, el manifiesto activo y el ledger de 87 migraciones.
+El respaldo de ese intento se conserva como parte del historial.
+
+La recuperación de disponibilidad conserva los escritores activos y
+emite un recibo privado. Para conciliar, el operador toma los locks del
+instalador y del receptor, revalida los originales, las identidades de
+ambos escritores, los timers y el mismo release, y obtiene una inspección
+nueva del ledger por TLS en solo lectura. Es obligatorio que los nueve
+contadores sean cero en esa inspección. El recibo histórico puede registrar
+trabajo pendiente de Teacher y se conserva como salió. El estado remoto
+incierto de los trabajos archivados tampoco se reescribe.
+
+Guardar el manifiesto recuperado y la nueva evidencia privada, comprobar
+la vista previa de ambas barreras y publicar el acuse como último paso,
+dentro de los 120 segundos siguientes a la inspección. El estado fallido
+y `BLOCKED.json` quedan íntegros. El acuse sólo habilita una
+intención nueva, sujeta al respaldo y verificaciones normales de CD.
+
 ## Custodia de ZIP originales de despliegue
 
 Usar el [helper de custodia](release-zip-custody.py) con Python 3.12 y

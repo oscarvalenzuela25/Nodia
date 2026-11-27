@@ -416,7 +416,8 @@ class Host:
                 acknowledgment = override_receipt if preview else private(pre if has_pre else post)
                 self.must(0 < len(acknowledgment) <= 16384, 'update_history_size_invalid')
                 receipt = unique_json(acknowledgment)
-                if has_pre or (preview and receipt.get('status') == 'backup_request_reconciled_before_migration'):
+                if has_pre or (preview and receipt.get('status') in (
+                        'backup_request_reconciled_before_migration', 'quiescence_reconciled_before_migration')):
                     recovery = private(STATE / ('same-release-recovery-' + previous.name + '.json'))
                     self.p.validate_pre_migration_reconciliation(receipt, recovery_bytes=recovery, **evidence)
                 else:

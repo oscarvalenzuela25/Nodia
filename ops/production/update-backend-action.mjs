@@ -11,6 +11,72 @@ const ensure = (condition, code) => {
 };
 const releasePattern = /^backend-[a-f0-9]{12}-[a-f0-9]{12}$/;
 
+// Teacher keeps the remote result unknown after a verified local closure. Require
+// the same archived job, attempt, operation, descriptor and both durable ACKs.
+// The operation and native transport hash different request envelopes.
+const liveTeacherJobs = `job.state IN ('queued','running','unknown') AND NOT EXISTS (
+  SELECT 1
+  FROM public.teacher_sessions AS session
+  JOIN public.teacher_generation_attempts AS attempt
+    ON attempt.session_id=session.id AND attempt.job_id=job.id
+  JOIN public.ai_generation_operations AS operation
+    ON operation.id=attempt.id AND operation.teacher_attempt_id=attempt.id
+    AND operation.teacher_session_id=session.id AND operation.teacher_job_id=job.id
+  WHERE job.state='unknown' AND job.error_code='provider_outcome_unknown'
+    AND job.selection_snapshot->>'mode'='agentic' AND job.dispatches_used=1
+    AND job.blocks_duplicate IS FALSE AND job.lease_owner IS NULL AND job.lease_until IS NULL
+    AND session.id=job.session_id AND session.owner_user_id=job.actor_id AND session.state='archived'
+    AND attempt.phase='terminal' AND attempt.ended_at IS NOT NULL
+    AND attempt.fence=job.fence AND attempt.fence=operation.owner_fence AND attempt.worker_id=operation.worker_id
+    AND operation.owner_kind='teacher' AND operation.actor_id=job.actor_id
+    AND operation.selection_snapshot=job.selection_snapshot
+    AND operation.configuration_generation=job.configuration_generation
+    AND operation.session_generation=job.session_generation
+    AND operation.phase='closed' AND operation.remote_outcome='unknown' AND operation.response_hash IS NULL
+    AND operation.reserved_exchanges=1 AND operation.started_exchanges=1
+    AND operation.acknowledged_at IS NOT NULL AND operation.agentic_acknowledged_at IS NOT NULL
+    AND operation.terminal_proof @> jsonb_build_object(
+      'schema_version', 2, 'contract', 'teacher-agentic-text/1', 'operation_id', operation.id::text,
+      'request_hash', operation.request_hash::text, 'local_transport_closed', true,
+      'remote_outcome', 'unknown', 'dispatch_not_armed', false, 'transport_not_started', false,
+      'response_hash', NULL,
+      'owner', jsonb_build_object('kind', 'teacher_agentic')
+    )
+    AND operation.terminal_proof->>'owner_fence'=operation.owner_fence::text
+    AND operation.terminal_proof->>'runtime_fence'=operation.runtime_fence::text
+    AND operation.terminal_proof#>>'{owner,descriptor_hash}' ~ '^[0-9a-f]{64}$'
+    AND (CASE operation.agentic_transport_descriptor->>'provider'
+      WHEN 'openai' THEN operation.resource_key ~ '^codex-profile:[0-9a-f]{64}$'
+      WHEN 'gemini' THEN operation.resource_key ~ '^gemini-profile:[0-9a-f]{64}$'
+      ELSE false
+    END) IS TRUE
+    AND operation.agentic_transport_descriptor->'reference' @> jsonb_build_object(
+      'contract', 'teacher-agentic-text/1', 'operation_id', operation.id::text,
+      'attempt_id', attempt.id::text, 'session_id', session.id::text, 'job_id', job.id::text,
+      'actor_id', job.actor_id::text, 'connection_id', operation.connection_id::text,
+      'model_id', job.selection_snapshot->'model_id', 'effort_id', job.selection_snapshot->'effort_id',
+      'resource_key', operation.resource_key, 'configuration_generation', operation.configuration_generation,
+      'session_generation', operation.session_generation
+    )
+    AND operation.agentic_transport_descriptor#>>'{reference,request_hash}' ~ '^[0-9a-f]{64}$'
+    AND operation.agentic_transport_descriptor#>>'{reference,runtime_hash}' ~ '^[0-9a-f]{64}$'
+    AND operation.agentic_transport_descriptor#>>'{reference,policy_hash}' ~ '^[0-9a-f]{64}$'
+    AND operation.terminal_proof->'native_proof' @> '{"process_closed":true,"remote_outcome":"unknown","response_hash":null}'::jsonb
+    AND operation.terminal_proof#>>'{native_proof,terminal_proof_id}' ~ '^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$'
+    AND operation.terminal_proof#>>'{native_proof,terminal_proof_id}'<>'00000000-0000-0000-0000-000000000000'
+    AND operation.terminal_proof#>>'{native_proof,observed_at}' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T.*(Z|[+-][0-9]{2}:[0-9]{2})$'
+    AND CASE WHEN jsonb_typeof(operation.terminal_proof->'native_proof')='object'
+      THEN (operation.terminal_proof->'native_proof') -
+        ARRAY['terminal_proof_id','process_closed','remote_outcome','response_hash','observed_at']
+      END = operation.agentic_transport_descriptor->'reference'
+    AND NOT EXISTS (SELECT 1 FROM public.teacher_generation_attempts AS other
+      WHERE other.job_id=job.id AND other.id<>attempt.id)
+    AND NOT EXISTS (SELECT 1 FROM public.ai_generation_operations AS other
+      WHERE other.teacher_job_id=job.id AND other.id<>operation.id)
+    AND NOT EXISTS (SELECT 1 FROM public.nodia_ai_runtime_slots AS slot
+      WHERE slot.generation_operation_id=operation.id)
+)`;
+
 export const quiescencePredicates = Object.freeze({
   jobs: ['nodia_ai_jobs', "state IN ('leased','unknown') OR (kind IN ('turn','execution') AND state IN ('ready','waiting')) OR (kind='reconcile' AND stage_key='reconcile_ack')"],
   runs: ['nodia_ai_runs', "state IN ('queued','running','cancel_requested','unknown')"],
@@ -18,7 +84,7 @@ export const quiescencePredicates = Object.freeze({
   steps: ['nodia_ai_execution_steps', "state IN ('running','unknown')"],
   slots: ['nodia_ai_runtime_slots', "state<>'free'"],
   api_dispatches: ['nodia_ai_api_dispatches', "state<>'closed' OR acknowledged_at IS NULL"],
-  teacher_jobs: ['teacher_generation_jobs', "state IN ('queued','running','unknown')"],
+  teacher_jobs: ['teacher_generation_jobs AS job', liveTeacherJobs],
   teacher_attempts: ['teacher_generation_attempts', "phase<>'terminal' OR ended_at IS NULL"],
   generation_operations: ['ai_generation_operations', "phase<>'closed' OR (owner_kind='teacher' AND (acknowledged_at IS NULL OR (agentic_transport_descriptor IS NOT NULL AND agentic_acknowledged_at IS NULL))) OR (owner_kind='chat' AND selection_snapshot->>'mode'='api_key' AND acknowledged_at IS NULL)"],
 });
