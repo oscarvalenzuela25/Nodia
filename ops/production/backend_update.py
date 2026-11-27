@@ -61,6 +61,25 @@ RECONCILIATION_FIELDS = frozenset(RECONCILIATION_DIGESTS) | {
     'schema_version', 'status', 'operation_id', 'current_release_id', 'migration_count',
     'acknowledged_at_utc', 'new_operation_allowed', 'original_operation_retry_allowed',
 }
+QUIESCENCE_ACKNOWLEDGMENT = 'quiescence_reconciled_before_migration'
+QUIESCENCE_OPERATION = '4f74fce53e7101cddfa0484ed6711ca7'
+QUIESCENCE_REQUEST_SOURCE = 'da680ac8c802c2054f5f888b0bba28b441c2504b'
+QUIESCENCE_CURRENT_SOURCE = '6aa8b7ace5336c9dd36cd62a6f5832d8b87221ce'
+QUIESCENCE_CURRENT_RELEASE = 'backend-6aa8b7ace533-e6edfae54f09'
+QUIESCENCE_CANDIDATE = 'backend-da680ac8c802-3e1c9413cba1'
+QUIESCENCE_MIGRATION_COUNT = 87
+QUIESCENCE_AVAILABILITY_SHA256 = '0a164b8804963be46a8fe67bd4ae7c387f964d8e586849b305422adce67b4d43'
+QUIESCENCE_PINS = {
+    'state_sha256': 'a05caae4f6ed9fa45aef29fd273c0d19e47ad19c4d06f9abbeb2bd6e52c1b4bb',
+    'request_sha256': '88d7e86323539893e6473889e0d81e533f41f29839a0d59af192d4ea3870cb61',
+    'blocked_sha256': '3cf7f9dbeb1c761b2400f7a88ac87a48815645cd0ee8f0b8d2931d280e313b98',
+    'current_manifest_sha256': '9d2cedc4f6c0853542b7ed49553bea048a8003320dd36633d57d1fecf8a4567d',
+    'package_tree_sha256': 'e6edfae54f095d111a42cac9c0bac22a599cf7e1c1a0fb44f5ee50cd9d21a3d4',
+    'ledger_sha256': 'a387f48e7379eca355dc0cb99a131c5f51e7076dffd9ab893d99640e65f83417',
+}
+QUIESCENCE_WRITERS = ('nodia-api.service', 'nodia-ai-worker.service')
+QUIESCENCE_TIMERS = ('nodia-ai-backup.timer', 'nodia-ai-backup-rotate.timer')
+QUIESCENCE_FRESH_SECONDS = 120
 BACKUP_REQUEST_ACKNOWLEDGMENT = 'backup_request_reconciled_before_migration'
 BACKUP_REQUEST_OPERATION = '1d6e3f19410a3cec6d2b97c958c44471'
 BACKUP_REQUEST_CANDIDATE = 'backend-8017dbc63189-6422a361f0c7'
@@ -101,6 +120,9 @@ def validate_pre_migration_reconciliation(receipt, *, state_bytes, request_bytes
     """
     if type(receipt) is dict and receipt.get('status') == BACKUP_REQUEST_ACKNOWLEDGMENT:
         return _validate_backup_request_reconciliation(
+            receipt, state_bytes, request_bytes, recovery_bytes, manifest_bytes, blocked_bytes)
+    if type(receipt) is dict and receipt.get('status') == QUIESCENCE_ACKNOWLEDGMENT:
+        return _validate_quiescence_reconciliation(
             receipt, state_bytes, request_bytes, recovery_bytes, manifest_bytes, blocked_bytes)
     code = 'pre_migration_reconciliation_invalid'
     def check(condition): require(condition, code)
@@ -276,6 +298,141 @@ def _validate_backup_request_reconciliation(receipt, state_bytes, request_bytes,
         _check_backup_request_r2(evidence['r2_observation'], operation, _evidence_date(receipt['acknowledged_at_utc'], check), check)
         return receipt
     except (KeyError, TypeError, ValueError, AttributeError, RecursionError):
+        raise Rejected(code) from None
+
+
+def _check_quiescence_inspection(result, receipt, check, *, fresh):
+    fields = LEDGER_VERIFICATION_FIELDS if fresh else LEDGER_VERIFICATION_FIELDS - {
+        'schema_version', 'status', 'mode', 'incremental_migrations',
+    }
+    check(type(result) is dict and set(result) == fields and
+          result['read_only'] is True and result['client_tls_authorized'] is True and
+          result['migrations_executed'] is False and result['ledger_sha256'] == receipt['ledger_sha256'] and
+          all(type(result[name]) is int for name in ('before', 'target', 'pending')) and
+          result['before'] == result['target'] == receipt['migration_count'] and result['pending'] == 0)
+    counts = result['counts']
+    check(type(counts) is dict and set(counts) == RUNTIME_COUNTERS and
+          all(type(value) is int and value >= 0 for value in counts.values()) and
+          result['quiescent'] is (not any(counts.values())))
+    if fresh:
+        check(type(result['schema_version']) is int and result['schema_version'] == 1 and
+              result['status'] == 'verified' and result['mode'] == 'inspect' and
+              type(result['incremental_migrations']) is int and result['incremental_migrations'] == 0 and
+              result['quiescent'] is True)
+
+
+def _check_quiescence_availability(availability, receipt, state, evidence, check):
+    stable_fields = ('operation_id', 'release_id', 'candidate_release', 'package_tree_sha256',
+                     'current_manifest_sha256', 'writer_identities', 'originals', 'ledger_sha256', 'migration_count')
+    true_flags = {'maintenance_removed', 'timers_restored', 'cors_verified', 'originals_preserved'}
+    false_flags = {'migrations_requested', 'deployment_performed', 'cd_unblocked',
+                   'original_operation_retry_allowed', 'writers_restarted'}
+    check(type(availability) is dict and set(availability) == set(stable_fields) | true_flags | false_flags | {
+        'schema_version', 'status', 'observed_pin', 'quiescence', 'diagnostic_directory',
+        'started_at_utc', 'completed_at_utc',
+    } and type(availability['schema_version']) is int and availability['schema_version'] == 1 and
+          availability['status'] == 'same_release_availability_restored' and
+          all(availability[name] is True for name in true_flags) and
+          all(availability[name] is False for name in false_flags))
+    digest = hashlib.sha256((json.dumps(availability, sort_keys=True, indent=2) + '\n').encode()).hexdigest()
+    check(evidence['availability_receipt_sha256'] == digest == QUIESCENCE_AVAILABILITY_SHA256)
+    stable = {name: availability[name] for name in stable_fields}
+    pin = hashlib.sha256(json.dumps(stable, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    check(availability['observed_pin'] == pin and
+          availability['release_id'] == receipt['current_release_id'] and
+          availability['candidate_release'] == state['candidate_release'] and
+          all(availability[name] == receipt[name] for name in
+              ('operation_id', 'package_tree_sha256', 'current_manifest_sha256', 'ledger_sha256', 'migration_count')) and
+          type(availability['migration_count']) is int and re.fullmatch(
+              r'/var/lib/nodia-updates/diagnostics/quiescence-availability-[a-f0-9]{32}',
+              availability['diagnostic_directory']))
+    originals = availability['originals']
+    check(type(originals) is dict and set(originals) == {
+        'state', 'request', 'attempt_request', 'blocked', 'timers', 'settings', 'receiver_settings', 'deployed',
+    } and all(re.fullmatch(r'[a-f0-9]{64}', value) for value in originals.values()) and
+          originals['state'] == receipt['state_sha256'] and
+          originals['request'] == originals['attempt_request'] == receipt['request_sha256'] and
+          originals['blocked'] == receipt['blocked_sha256'])
+    timers = {name: {'active': state['timers_before'][name]['active'], 'enabled': state['timers_before'][name]['enabled']}
+              for name in QUIESCENCE_TIMERS}
+    check(originals['timers'] == hashlib.sha256((json.dumps(timers) + '\n').encode()).hexdigest())
+    writers = availability['writer_identities']
+    check(type(writers) is dict and set(writers) == set(QUIESCENCE_WRITERS) and
+          all(type(value) is dict and set(value) == {'pid', 'invocation'} and
+              type(value['pid']) is int and value['pid'] > 1 and re.fullmatch(r'[a-f0-9]{32}', value['invocation'])
+              for value in writers.values()) and len({value['pid'] for value in writers.values()}) == len(writers) and
+          len({value['invocation'] for value in writers.values()}) == len(writers) and writers == evidence['writer_identities'])
+    _check_quiescence_inspection(availability['quiescence'], receipt, check, fresh=False)
+
+
+def _validate_quiescence_reconciliation(receipt, state_bytes, request_bytes, recovery_bytes, manifest_bytes, blocked_bytes):
+    # The reviewed pre-stop failure requires an independent post-recovery SQL observation.
+    code = 'quiescence_reconciliation_invalid'
+
+    def check(condition):
+        require(condition, code)
+
+    try:
+        operation = _check_acknowledgment(receipt, QUIESCENCE_ACKNOWLEDGMENT, check)
+        check(operation == QUIESCENCE_OPERATION and all(receipt[name] == digest for name, digest in QUIESCENCE_PINS.items()))
+        state = _evidence_json(state_bytes, check)
+        request = validate_request(_evidence_json(request_bytes, check))
+        manifest = _evidence_json(manifest_bytes, check, 32 * 1024 ** 2)
+        check(type(state) is dict and set(state) == {
+            'schema_version', 'operation_id', 'phase', 'failed_phase', 'error_code', 'effects_started',
+            'migration_requested', 'automatic_retry_allowed', 'previous_release', 'candidate_release',
+            'timers_before', 'backup',
+        } and type(state['schema_version']) is int and state['schema_version'] == 1 and
+              state['operation_id'] == request['operation_id'] == operation and state['phase'] == 'failed' and
+              state['failed_phase'] == 'waiting_for_quiescence' and
+              state['error_code'] == 'live_or_unconfirmed_runtime_work' and
+              state['effects_started'] is True and state['migration_requested'] is False and
+              state['automatic_retry_allowed'] is False and request['source_sha'] == QUIESCENCE_REQUEST_SOURCE and
+              state['previous_release'] == request['expected_current_release'] == QUIESCENCE_CURRENT_RELEASE and
+              state['candidate_release'] == QUIESCENCE_CANDIDATE and
+              re.fullmatch('backend-' + request['source_sha'][:12] + r'-[a-f0-9]{12}', state['candidate_release']) and
+              state['candidate_release'] != state['previous_release'])
+        backup = state['backup']
+        check(type(backup) is dict and set(backup) == {'backup_id', 'cipher_sha256', 'captured_at', 'journal_sequence'} and
+              re.fullmatch(r'[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}', backup['backup_id']) and
+              re.fullmatch(r'[a-f0-9]{64}', backup['cipher_sha256']) and
+              type(backup['journal_sequence']) is int and backup['journal_sequence'] >= 0)
+        timers = state['timers_before']
+        check(type(timers) is dict and set(timers) == set(QUIESCENCE_TIMERS) and all(
+            type(value) is dict and set(value) == {'active', 'enabled'} and type(value['active']) is bool and
+            isinstance(value['enabled'], str) and re.fullmatch(r'[a-z-]{1,32}', value['enabled'])
+            for value in timers.values()))
+
+        expected_block = blocked_record_bytes(state)
+        _check_evidence_digest(receipt, {
+            'state_sha256': state_bytes, 'request_sha256': request_bytes, 'blocked_sha256': expected_block,
+            'current_manifest_sha256': manifest_bytes, 'recovery_receipt_sha256': recovery_bytes,
+        }, check)
+        check(blocked_bytes is None or (type(blocked_bytes) is bytes and blocked_bytes == expected_block))
+        check(type(manifest['schema_version']) is int and manifest['schema_version'] == 1 and
+              manifest['release_id'] == receipt['current_release_id'] == state['previous_release'] and
+              manifest['source_sha'] == QUIESCENCE_CURRENT_SOURCE and
+              manifest['package_tree_sha256'] == receipt['package_tree_sha256'] == request['expected_current_tree_sha256'] and
+              manifest['release_id'] == 'backend-' + manifest['source_sha'][:12] + '-' + manifest['package_tree_sha256'][:12] and
+              type(receipt['migration_count']) is int and receipt['migration_count'] == QUIESCENCE_MIGRATION_COUNT and
+              _compiled_ledger(manifest, check) == (receipt['migration_count'], receipt['ledger_sha256']))
+
+        evidence = _evidence_json(recovery_bytes, check)
+        check(type(evidence) is dict and set(evidence) == {
+            'schema_version', 'status', 'operation_id', 'availability_receipt', 'availability_receipt_sha256',
+            'ledger_inspection', 'ledger_observed_at_utc', 'writer_identities',
+        } and type(evidence['schema_version']) is int and evidence['schema_version'] == 1 and
+              evidence['operation_id'] == operation and evidence['status'] == 'quiescence_reconciliation_evidence')
+        availability = evidence['availability_receipt']
+        _check_quiescence_availability(availability, receipt, state, evidence, check)
+        _check_quiescence_inspection(evidence['ledger_inspection'], receipt, check, fresh=True)
+        observed_at = _evidence_date(evidence['ledger_observed_at_utc'], check)
+        acknowledged_at = _evidence_date(receipt['acknowledged_at_utc'], check)
+        check(_evidence_date(backup['captured_at'], check) <= _evidence_date(availability['started_at_utc'], check) <=
+              _evidence_date(availability['completed_at_utc'], check) <= observed_at <= acknowledged_at and
+              acknowledged_at - observed_at <= datetime.timedelta(seconds=QUIESCENCE_FRESH_SECONDS))
+        return receipt
+    except (KeyError, TypeError, ValueError, AttributeError, RecursionError, OverflowError):
         raise Rejected(code) from None
 
 
