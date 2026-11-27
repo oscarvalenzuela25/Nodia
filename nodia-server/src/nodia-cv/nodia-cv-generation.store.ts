@@ -17,6 +17,7 @@ import type { CvTailoringDraft } from './engine/index.js';
 import { minimizeCvText } from './engine/evidence.js';
 import { analyzeCvTechnologies } from './engine/technologies.js';
 import type { StartNodiaCvGenerationDto } from './dto/nodia-cv-generation.dto.js';
+import { cvGenerationDispatchSeconds } from './policies/nodia-cv-generation-deadline.js';
 import { cvGenerationError } from './policies/nodia-cv-generation-errors.js';
 import { cvGenerationProfileId } from './policies/nodia-cv-generation-status.js';
 import {
@@ -301,7 +302,7 @@ export class NodiaCvGenerationStore {
        SELECT deadline_at FROM changed`,
       [
         row.id,
-        policy.timing.provider_dispatch_seconds,
+        cvGenerationDispatchSeconds(selection.mode, policy),
         policy.timing.lease_seconds,
       ],
     );
