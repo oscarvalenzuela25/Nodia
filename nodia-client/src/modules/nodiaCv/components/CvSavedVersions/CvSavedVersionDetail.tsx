@@ -131,7 +131,6 @@ export default function CvSavedVersionDetail({ target, onClose, onMissing, onDel
       )}
       {!unavailable && data && (
         <Stack spacing={2} sx={{ minWidth: 0 }}>
-          <CvRequirements analysis={data.analysis} />
           {!file.data && !file.isError && (
             <Button variant="outlined" startIcon={<PictureAsPdfOutlined />} loading={file.isFetching}
               disabled={detail.isFetching || detail.isError || copy.isPending} sx={{ ...button, alignSelf: { sm: "flex-start" } }}
@@ -141,6 +140,7 @@ export default function CvSavedVersionDetail({ target, onClose, onMissing, onDel
           )}
           <CvPdfReview key={data.id + ":" + data.sha256} description={data} bytes={file.data ?? null}
             filename={`nodia-cv-${data.version_number}.pdf`} showTextOnOpen />
+          <CvRequirements analysis={data.analysis} />
         </Stack>
       )}
     </BaseModal>

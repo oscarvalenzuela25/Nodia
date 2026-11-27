@@ -67,8 +67,11 @@ describe("saved CV analysis and preview", () => {
   it("opens the exact saved document and renders its linked and declared evidence read-only", async () => {
     const adapter = openVersion({ ...version, analysis });
     const dialog = within(await screen.findByRole("dialog"));
-    expect(await dialog.findByText(version.extracted_text)).toBeVisible();
-    expect(dialog.getByText("TypeScript at time of save")).toBeVisible();
+    const pdfText = await dialog.findByText(version.extracted_text);
+    const requirement = dialog.getByText("TypeScript at time of save");
+    expect(pdfText).toBeVisible();
+    expect(requirement).toBeVisible();
+    expect(pdfText.compareDocumentPosition(requirement) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(dialog.getByText(/Saved project fact/)).toBeVisible();
     expect(dialog.getByText(/Saved evidence source · Saved evidence detail/)).toBeVisible();
     expect(dialog.queryByRole("button", { name: /Revisar evidencia/ })).not.toBeInTheDocument();
