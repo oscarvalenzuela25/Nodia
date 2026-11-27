@@ -84,22 +84,24 @@ describe("prepare and save CV", () => {
     expect(saveCvVersion).not.toHaveBeenCalled();
   });
 
-  it("prepares, verifies and saves the selected template on explicit exit", async () => {
+  it.each(["compact", "editorial", "contemporary"] as const)("prepares, verifies and saves %s on explicit exit", async (template) => {
     const user = userEvent.setup();
-    const compact: CvPdfArtifact = { ...artifact, template: "compact" };
-    vi.mocked(prepareCvPdf).mockResolvedValue(compact);
+    const selected: CvPdfArtifact = { ...artifact, template };
+    vi.mocked(prepareCvPdf).mockResolvedValue(selected);
     vi.mocked(fetchCvDraftPdf).mockResolvedValue(verifiedBytes);
-    vi.mocked(saveCvVersion).mockResolvedValue({ ...savedVersion, template: "compact" });
+    vi.mocked(saveCvVersion).mockResolvedValue({ ...savedVersion, template });
     const { saveForExit, onSaved } = openDraft();
-    await user.click(screen.getByRole("button", { name: t("pdf_templates.compact") }));
+    const choice = screen.getByRole("button", { name: t(`pdf_templates.${template}`) });
+    await user.click(choice);
+    expect(choice).toHaveAttribute("aria-pressed", "true");
     expect(saveCvVersion).not.toHaveBeenCalled();
 
     expect(await saveForExit()).toBe(true);
     expect(prepareCvPdf).toHaveBeenCalledExactlyOnceWith(artifact.generation_id, {
-      revision: artifact.revision, template: "compact", language: "es",
+      revision: artifact.revision, template, language: "es",
     }, expect.objectContaining({ signal: expect.any(AbortSignal) }));
-    expect(fetchCvDraftPdf).toHaveBeenCalledExactlyOnceWith(compact, expect.anything());
-    expect(saveCvVersion).toHaveBeenCalledExactlyOnceWith(compact, expect.any(String), expect.anything());
+    expect(fetchCvDraftPdf).toHaveBeenCalledExactlyOnceWith(selected, expect.anything());
+    expect(saveCvVersion).toHaveBeenCalledExactlyOnceWith(selected, expect.any(String), expect.anything());
     expect(onSaved).toHaveBeenCalledOnce();
 
     expect(await saveForExit()).toBe(true);

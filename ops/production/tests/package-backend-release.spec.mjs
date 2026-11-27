@@ -83,7 +83,7 @@ test('compiled CV PDF assets require exact paths and bytes from the source archi
 
   const assets = 'nodia-cv/pdf/assets';
   const font = Buffer.from([0, 1, 2, 255]);
-  for (const name of ['DejaVuSans.ttf', 'DejaVuSans-Bold.ttf', 'LICENSE', 'PROVENANCE.txt']) {
+  for (const name of ['DejaVuSans.ttf', 'DejaVuSans-Bold.ttf', 'DejaVuSerif-Bold.ttf', 'LICENSE', 'PROVENANCE.txt']) {
     write(`nodia-server/src/${assets}/${name}`, font);
     compiled(`${assets}/${name}`, font);
   }

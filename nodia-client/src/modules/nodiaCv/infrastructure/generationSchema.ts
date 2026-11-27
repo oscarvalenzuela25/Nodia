@@ -13,7 +13,7 @@ export const cvSelectionSchema = z.object({
   model_id: z.string().min(1).max(1024),
   effort_id: z.string().min(1).max(256).nullable(),
 });
-export const cvPdfTemplateSchema = z.enum(["classic", "compact"]);
+export const cvPdfTemplateSchema = z.enum(["classic", "compact", "editorial", "contemporary"]);
 const savedSource = z.object({ id: z.uuidv4(), template: cvPdfTemplateSchema });
 
 const catalogMode = z.object({
@@ -129,11 +129,33 @@ const declaredEvidence = z.object({
   detail: z.string().trim().min(1).max(600),
 });
 
+export const cvTechnologyName = z.string().trim().regex(/^[\p{L}\p{N}.][\p{L}\p{N} .+#()/&-]{0,79}$/u);
+const technologyOption = z.object({
+  name: cvTechnologyName,
+  kind: z.enum(["required", "preferred", "uncertain", "outside"]),
+  in_profile: z.boolean(),
+  requirement_ids: z.array(requirementId).max(128),
+});
+const technologyAddition = z.discriminatedUnion("status", [
+  z.object({
+    name: cvTechnologyName,
+    status: z.literal("confirmed"),
+    source: z.string().trim().min(1).max(160),
+    detail: z.string().trim().min(1).max(600),
+  }),
+  z.object({ name: cvTechnologyName, status: z.literal("study") }),
+]);
+const technologyReview = z.object({
+  included: z.array(cvTechnologyName).max(64).refine(unique),
+  additions: z.array(technologyAddition).max(64),
+});
+
 const review = z.object({
   revision: z.int().positive(),
   included_fact_ids: z.array(factId),
   evidence: z.array(declaredEvidence),
   section_order: z.array(evidenceSection).max(evidenceSection.options.length).refine(unique).optional(),
+  technologies: technologyReview.optional(),
 });
 
 function unique(values: readonly string[]) {
@@ -144,6 +166,8 @@ export const cvSavedAnalysisSchema = z.object({
   requirements: z.array(requirement),
   facts: z.array(fact),
   evidence: z.array(declaredEvidence),
+  technology_options: z.array(technologyOption).max(64).optional(),
+  technologies: technologyReview.optional(),
 }).refine(({ requirements, facts, evidence }) => {
   const factIds = new Set(facts.map((item) => item.id));
   const requirementIds = new Set(requirements.map((item) => item.id));
@@ -170,6 +194,7 @@ export const cvGenerationSchema = z
       .regex(/^[a-z_]+$/)
       .nullable(),
     draft: draft.nullable(),
+    technology_options: z.array(technologyOption).max(64).optional(),
     review: review.nullable().optional(),
     edit: z.object({
       base_generation_id: z.uuidv4(),
@@ -219,6 +244,9 @@ export type CvDraft = z.output<typeof draft>;
 export type CvDraftFact = z.output<typeof fact>;
 export type CvRequirement = z.output<typeof requirement>;
 export type CvReviewSave = Omit<z.output<typeof review>, "section_order">;
+export type CvTechnologyOption = z.output<typeof technologyOption>;
+export type CvTechnologyReview = z.output<typeof technologyReview>;
+export type CvTechnologyAddition = z.output<typeof technologyAddition>;
 export type CvSavedAnalysis = z.output<typeof cvSavedAnalysisSchema>;
 export type CvGeneration = z.output<typeof cvGenerationSchema>;
 export type CvCatalog = z.output<typeof cvCatalogSchema>;

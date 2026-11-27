@@ -4,6 +4,8 @@ import { cvGenerationError } from '../policies/nodia-cv-generation-errors.js';
 import {
   CV_PDF_LIMITS,
   CvPdfError,
+  isCvPdfTemplate,
+  type CvPdfDocument,
   type CvPdfErrorCode,
   type CvPdfResult,
   type CvPdfTemplate,
@@ -84,17 +86,30 @@ export class NodiaCvPdfRenderer implements OnModuleDestroy {
   private worker: Worker | null = null;
   private stopping = false;
 
-  async render(
-    source: CvPdfSource,
+  render(source: CvPdfSource, template: CvPdfTemplate): Promise<CvPdfResult> {
+    return this.renderPrepared(
+      () => composeCvPdfDocument(snapshotCvPdfSource(source)),
+      template,
+    );
+  }
+
+  renderDocument(
+    document: CvPdfDocument,
+    template: CvPdfTemplate,
+  ): Promise<CvPdfResult> {
+    return this.renderPrepared(() => document, template);
+  }
+
+  private async renderPrepared(
+    document: () => CvPdfDocument,
     template: CvPdfTemplate,
   ): Promise<CvPdfResult> {
     if (this.worker || this.stopping)
       cvGenerationError('pdf_busy', status.pdf_busy);
     try {
-      if (template !== 'classic' && template !== 'compact')
-        throw new CvPdfError('pdf_render_failed');
+      if (!isCvPdfTemplate(template)) throw new CvPdfError('pdf_render_failed');
       const workerData: CvPdfWorkerInput = {
-        document: composeCvPdfDocument(snapshotCvPdfSource(source)),
+        document: document(),
         template,
       };
       this.worker = new Worker(
