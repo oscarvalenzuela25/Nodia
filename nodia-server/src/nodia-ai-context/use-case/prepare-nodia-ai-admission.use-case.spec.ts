@@ -46,6 +46,7 @@ function fixture() {
   const eligibility = {
     available: true,
     observedAt: now,
+    source: 'gemini_live_session_and_catalog',
     resourceKey: 'gemini-profile:' + '1'.repeat(64),
     configurationGeneration: '2'.repeat(64),
     sessionGeneration: '3'.repeat(32),
@@ -170,7 +171,7 @@ describe('Prepare NodiaAI admission', () => {
         : []),
     ]);
     const observation = await f.subject.observe(identity, f.summary, {
-      productCatalogRead: true,
+      productCatalogText: 'Lista los productos y sus precios',
     });
 
     await f.subject.prepare(f.manager, f.actor, f.chat, now, observation);
@@ -179,6 +180,48 @@ describe('Prepare NodiaAI admission', () => {
       expect.objectContaining({ profileId: expected }),
     );
   });
+  it.each([
+    { label: 'qualified Codex', codex: true, supportsMcp: true, hasBothReads: true, expected: 'product_catalog_reads' },
+    { label: 'unverified Codex', codex: true, supportsMcp: false, hasBothReads: true, expected: undefined },
+    { label: 'Codex without Products', codex: true, supportsMcp: true, hasBothReads: false, expected: undefined },
+    { label: 'Gemini on the extended grammar', codex: false, supportsMcp: true, hasBothReads: true, expected: undefined },
+  ])('checks the named catalog read profile for $label', async ({ codex, supportsMcp, hasBothReads, expected }) => {
+    const f = fixture();
+    f.eligibility.supportsMcp = supportsMcp;
+    if (codex) {
+      Object.assign(f.eligibility, {
+        source: 'codex_live_session_and_catalog',
+        resourceKey: 'codex-profile:' + 'a'.repeat(64),
+        adapterContractVersion: 'nodia-ai-codex-chat/1',
+        adapterIdentity: {
+          providerKey: 'openai',
+          contractVersion: 'nodia-ai-codex-chat/1',
+          connectionId: '2',
+        },
+        supportsTools: true,
+      });
+    }
+    f.tools.visible.mockResolvedValue([
+      { capabilityId: 'nodia_businesses_list', toolName: 'nodia_businesses_list', kind: 'read' },
+      ...(hasBothReads
+        ? [{ capabilityId: 'nodia_products_list', toolName: 'nodia_products_list', kind: 'read' }]
+        : []),
+    ]);
+    const observation = await f.subject.observe(identity, f.summary, {
+      productCatalogText: 'Ve y búscame la lista de productos activos del Mercado Roble. Muéstrame los primeros 5 ordenados por nombre con su precio de venta vigente en CLP y dime cuántos productos activos hay en total.',
+    });
+
+    const prepared = await f.subject.prepare(f.manager, f.actor, f.chat, now, observation);
+
+    expect(f.selector.execute).toHaveBeenCalledWith(
+      expect.objectContaining({ profileId: expected }),
+    );
+    if (expected) {
+      expect(prepared.contextManifest.tool_selection).toMatchObject({ phase: 'execution' });
+      expect(prepared.contextManifest.tool_contracts).not.toHaveProperty('nodia_capabilities_select');
+    }
+  });
+
   it('freezes a private Codex identity independently from mutable adapter objects', async () => {
     const f = fixture();
     f.summary.selection!.mode = 'agentic';
@@ -197,7 +240,7 @@ describe('Prepare NodiaAI admission', () => {
       verifiedAttachmentMediaTypes: ['image/png'],
     });
     const observation = await f.subject.observe(identity, f.summary, {
-      productCatalogRead: true,
+      productCatalogText: 'Lista los productos y sus precios',
     });
     identityValue.connectionId = '4';
     const prepared = await f.subject.prepare(
@@ -650,7 +693,7 @@ describe('API admission binding', () => {
         : []),
     ]);
     const observed = await f.subject.observe(identity, f.summary, {
-      productCatalogRead: catalogIntent,
+      productCatalogText: catalogIntent ? 'Lista los productos y sus precios' : 'Explica mi catálogo',
     });
     const prepared = await f.subject.prepare(f.manager, f.actor, f.chat, now, observed);
 

@@ -143,6 +143,25 @@ Productos. Si el término produce cero coincidencias o resulta ambiguo,
 el modelo pide precisión. Si quedan páginas, informa el alcance de la
 página consultada. [Paridad de API key](92-nodia-ai-api-chat-parity.md#consultas-del-catálogo-de-productos--2026-11-27).
 
+### Lectura de catálogo en Codex Agentic — 2026-11-27
+
+Tras calificar MCP en la selección exacta de producción, Codex pudo
+invocar herramientas. La prueba del listado por nombre sólo ejecutó
+búsquedas con el ámbito propio de una cuenta superadministradora y
+terminó sin consultar Productos. Se vuelve a verificar el listado tras
+desplegar el candidato.
+
+En el candidato, la admisión usa el mismo perfil de lectura para Codex
+Agentic sólo con MCP vigente y ambas lecturas publicadas y autorizadas.
+El perfil indica buscar por nombre específico con `all_businesses` sólo
+cuando el actor tiene autoridad global. La consulta de Productos vuelve
+a comprobar el acceso al negocio. Una muestra explícita usa el límite
+solicitado, los precios de la página y el total de `meta.total_items`.
+Para un catálogo completo, Codex conserva la paginación y devuelve texto
+por su transporte nativo. La ruta de Gemini mantiene su finalización y
+alcance de detección anteriores.
+[Evaluación de contexto](../nodia-ai/knowledge/nodia-ai/README.md#catálogo-de-productos-en-codex-agentic--2026-11-27).
+
 ## Cómo conoce NodiaAI los productos
 
 Cada módulo registra una descripción funcional, recursos, operaciones, esquemas públicos, reglas de ámbito y medidas admitidas. NodiaAI descubre las capacidades relevantes y pide el detalle necesario; no necesita cargar 156 definiciones en cada turno. La publicación real incluye sólo herramientas verificadas y autorizadas para la sesión, el modo y el modelo seleccionados.

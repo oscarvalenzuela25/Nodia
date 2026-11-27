@@ -36,6 +36,7 @@ import { SelectNodiaAiTurnToolsUseCase } from '../../nodia-ai-tools/use-case/sel
 import { NodiaAiToolSelectionFlowUseCase } from '../../nodia-ai-tools/use-case/nodia-ai-tool-selection-flow.use-case.js';
 import { NodiaAiKnownPreDispatchError } from '../../nodia-ai-runtime/types/worker.types.js';
 import { observationIdentityManifest } from './nodia-ai-observation-identity.js';
+import { isProductCatalogReadIntent } from '../../nodia-ai-conversation/types/product-catalog-read-intent.js';
 
 @Injectable()
 export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer {
@@ -52,19 +53,28 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
   async observe(
     identity: NodiaAiActorReference,
     chat: Readonly<NodiaAiConversationSummary>,
-    options?: { toolProfileId?: string; productCatalogRead?: boolean },
+    options?: { toolProfileId?: string; productCatalogText?: string },
   ) {
     if (!chat.selection)
       throw new ServiceUnavailableException('nodia_ai:mode_unavailable');
-    const observation = {
+    const observed = {
       actorId: identity.userId,
       sessionId: identity.sessionId,
       conversationId: chat.conversation_id,
       revision: chat.revision,
       selection: structuredClone(chat.selection),
       toolProfileId: options?.toolProfileId,
-      productCatalogRead: options?.productCatalogRead === true,
       eligibility: structuredClone(await this.adapter.observe(chat.selection)),
+    };
+    const observation = {
+      ...observed,
+      productCatalogRead:
+        options?.productCatalogText !== undefined &&
+        isProductCatalogReadIntent(
+          options.productCatalogText,
+          observed.selection.mode === 'api_key' ||
+            observed.eligibility.source === 'codex_live_session_and_catalog',
+        ),
     };
     if (observation.selection.mode === 'api_key')
       observationIdentityManifest(
@@ -98,8 +108,9 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       model_id: chat.selected_model_id!,
       effort_id: chat.selected_effort_id,
     };
+    const { eligibility } = observation;
     const age =
-      now.getTime() - new Date(observation.eligibility.observedAt).getTime();
+      now.getTime() - new Date(eligibility.observedAt).getTime();
     if (
       observation.actorId !== actor.actorId ||
       observation.sessionId !== actor.sessionId ||
@@ -112,10 +123,7 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
       age > this.policy.timing.eligibility_observation_seconds * 1000
     )
       throw new ConflictException('nodia_ai:eligibility_changed');
-    if (
-      !observation.eligibility.available ||
-      !observation.eligibility.resourceKey
-    )
+    if (!eligibility.available || !eligibility.resourceKey)
       throw new ServiceUnavailableException('nodia_ai:mode_unavailable');
     let adapterManifest: ReturnType<typeof observationIdentityManifest>;
     try {
@@ -136,17 +144,17 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
     const modules = actor.modules.map((item) => item.route).sort();
     const knowledge = this.knowledge.manifest;
     const visible = await this.tools.visible(manager, actor, modules);
-    // The intent can choose a profile only after native support and both
+    // The intent can choose a profile only after tool support and both
     // published read capabilities have been checked in the current authority.
     const useCatalogReadProfile =
       observation.productCatalogRead &&
-      supportsNodiaAiTools(observation.eligibility) &&
-      (selection.mode === 'api_key' ||
+      ((selection.mode === 'api_key' && supportsNodiaAiTools(eligibility)) ||
         (selection.mode === 'agentic' &&
-          observation.eligibility.adapterIdentity === undefined &&
-          /^gemini-profile:[a-f0-9]{64}$/.test(
-            observation.eligibility.resourceKey,
-          ))) &&
+          eligibility.supportsMcp === true &&
+          ((codex && adapterManifest.adapter_identity !== undefined) ||
+            (eligibility.source === 'gemini_live_session_and_catalog' &&
+              eligibility.adapterIdentity === undefined &&
+              /^gemini-profile:[a-f0-9]{64}$/.test(eligibility.resourceKey))))) &&
       ['nodia_businesses_list', 'nodia_products_list'].every((id) =>
         visible.some((tool) => tool.capabilityId === id && tool.kind === 'read'),
       );

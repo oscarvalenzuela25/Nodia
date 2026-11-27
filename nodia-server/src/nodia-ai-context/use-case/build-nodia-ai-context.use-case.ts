@@ -145,6 +145,7 @@ export class BuildNodiaAiContextUseCase {
     toolSelection?: unknown;
     toolSelectionProfileId?: NodiaAiJsonValue;
     catalogCanSearchAllBusinesses?: boolean;
+    catalogUsesCodex?: boolean;
     capabilityIndex?: NodiaAiJsonObject;
     invoiceOcrReferenceIds?: readonly string[];
   }) {
@@ -277,7 +278,15 @@ export class BuildNodiaAiContextUseCase {
           'Llama a nodia_products_list con q.business_id_eq y page: 1. ' +
           (input.mode === 'api_key'
             ? 'Haz una sola lectura de productos. Si sólo se pide el total, usa limit: 1. Si se piden los primeros N productos, usa limit: N dentro del límite admitido y q.s: "name asc" cuando se solicite ordenar por nombre. Cuando se pida el total de productos activos, toma meta.total_items con el filtro activo. Responde con texto después de recibir el resultado, indica si quedan páginas y continúa sólo si el usuario pide otra en un turno posterior. '
-            : 'Si sólo se pide cuántos productos hay, usa limit: 1 y toma meta.total_items como total exacto de productos activos. Devuelve ese total con finish sin contar filas ni consultar otras páginas. Para listar precios, usa el límite predeterminado. Cada respuesta contiene las filas en data y el número de páginas en meta.total_pages. Consulta otra página sólo si meta.page < meta.total_pages, con el mismo negocio, filtros y límite, avanzando de una en una. Al llegar a la última página, usa los datos recibidos y responde con finish. Si la primera página contiene todo el catálogo, responde con una sola lectura de productos. No vuelvas a leer la misma página ni cambies el límite para verificar sus datos. ') +
+            : 'Si sólo se pide cuántos productos hay, usa limit: 1 y toma meta.total_items como total exacto de productos activos. Devuelve ese total ' +
+              (input.catalogUsesCodex ? 'como texto' : 'con finish') +
+              ' sin contar filas ni consultar otras páginas. ' +
+              (input.catalogUsesCodex
+                ? 'Si se piden los primeros N productos, usa limit: N dentro del límite admitido y q.s: "name asc" si se solicita ordenar por nombre. Con la muestra solicitada en mano, toma el total de activos de meta.total_items y responde como texto. Para un catálogo completo usa el límite predeterminado. '
+                : 'Para listar precios, usa el límite predeterminado. ') +
+              'Cada respuesta contiene las filas en data y el número de páginas en meta.total_pages. Consulta otra página sólo si meta.page < meta.total_pages, con el mismo negocio, filtros y límite, avanzando de una en una. Al llegar a la última página, usa los datos recibidos y responde ' +
+              (input.catalogUsesCodex ? 'como texto' : 'con finish') +
+              '. Si la primera página contiene todo el catálogo, responde con una sola lectura de productos. No vuelvas a leer la misma página ni cambies el límite para verificar sus datos. ') +
           'Muestra effective_price como precio vigente y sale_price como precio regular cuando esté en oferta.'
         : '',
       invoiceDiscoveryHint

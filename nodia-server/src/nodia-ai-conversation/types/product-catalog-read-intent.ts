@@ -18,8 +18,10 @@ const displayInstructions = [
   /^(?:show|include) the current (?:selling )?price(?: in [a-z]{3})?(?: with one row per product)?(?: and (?:include|show) the regular price if on sale)?[.]?$/i,
 ];
 
-const catalogListRequests =
-  /^(?:(?:ve y )?buscame|busca|dame|lista|listame|muestrame) (?:(?:la|el) )?(?:lista|listado|catalogo) de (?:los )?productos(?: activos)? (?:de|del) (.+)$/i;
+const catalogListRequests = [
+  /^(?:(?:ve y )?buscame|busca|dame|lista|listame|muestrame) (?:(?:la|el) )?(?:lista|listado|catalogo) de (?:los )?productos(?: activos)? (?:de|del) (.+)$/i,
+  /^(?:quiero que me listes|listame|muestrame) (?:los )?productos(?: activos)? (?:de|del) (.+)$/i,
+];
 
 const catalogPreview =
   /^(?:muestrame|muestra) (?:los )?primeros (?:[1-9][0-9]?|100)(?: productos)?(?: ordenados por nombre)? con (?:su|el|sus|los) precios?(?: de venta)? vigentes?(?: en [a-z]{3})?(?: y (?:dime|muestra|indica) cuantos productos(?: activos)? hay(?: en total)?)?[.]?$/i;
@@ -55,7 +57,7 @@ function isBusinessScope(suffix: string): boolean {
  */
 export function isProductCatalogReadIntent(
   text: string,
-  mode?: 'agentic' | 'api_key',
+  allowNamedCatalog = false,
 ): boolean {
   if (text.length > 512 || /[\r\n]/.test(text)) return false;
 
@@ -65,7 +67,7 @@ export function isProductCatalogReadIntent(
     .trim()
     .replace(/[ \t]+/g, ' ');
   const requestText =
-    mode === 'api_key'
+    allowNamedCatalog
       ? input.replace(/\b(Sr|Sra)\.(?= [a-z])/gi, '$1')
       : input;
   const clauses = /^¿?([^¿?!.]+?)(?:[?.](?: (.+))?)?$/.exec(requestText);
@@ -75,10 +77,15 @@ export function isProductCatalogReadIntent(
   const request = question
     .replace(/^(?:por favor|please),? /i, '')
     .replace(/,? (?:por favor|please)$/i, '');
-  if (mode === 'api_key' && (!display || catalogPreview.test(display))) {
-    const scope = catalogListRequests.exec(request)?.[1];
-    if (scope !== undefined && isBusinessName(scope, true)) return true;
-  }
+  if (
+    allowNamedCatalog &&
+    (!display || catalogPreview.test(display)) &&
+    catalogListRequests.some((pattern) => {
+      const scope = pattern.exec(request)?.[1];
+      return scope !== undefined && isBusinessName(scope, true);
+    })
+  )
+    return true;
   if (display && !displayInstructions.some((pattern) => pattern.test(display)))
     return false;
   if (
