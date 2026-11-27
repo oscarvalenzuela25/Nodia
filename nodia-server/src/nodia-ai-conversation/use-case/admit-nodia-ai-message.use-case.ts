@@ -117,7 +117,8 @@ export class AdmitNodiaAiMessageUseCase {
         ? dto.parts[0].text
         : null;
     const observation =
-      text !== null && isProductCatalogReadIntent(text)
+      text !== null &&
+      isProductCatalogReadIntent(text, preflight.chat.selection?.mode)
         ? await this.preparer.observe(identity, preflight.chat, {
             productCatalogRead: true,
           })

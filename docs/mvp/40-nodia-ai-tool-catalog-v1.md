@@ -125,6 +125,24 @@ y proporciona un nombre específico para filtrar. El perfil exige MCP
 observado para la selección exacta y conserva la autoridad de las
 lecturas publicadas de Negocios y Productos.
 
+### Lectura de catálogo en API key — 2026-11-27
+
+El candidato aplica el mismo perfil de solo lectura a las selecciones
+API key con function calling habilitado y autoridad vigente sobre
+`nodia_businesses_list` y `nodia_products_list`. Puede usar una búsqueda
+del negocio, una lectura de la página solicitada y una respuesta de
+texto dentro del presupuesto compartido. Al pedir los primeros N
+productos, usa un límite de N dentro del contrato y `q.s: "name asc"`
+si se solicita orden por nombre. Los precios vigentes provienen de
+`effective_price` y el total de `meta.total_items`.
+
+La búsqueda global por término distintivo se indica sólo a
+`super_admin`. Server conserva el alcance propio o de colaboración para
+otros usuarios y revalida el acceso al negocio en la lectura de
+Productos. Si el término produce cero coincidencias o resulta ambiguo,
+el modelo pide precisión. Si quedan páginas, informa el alcance de la
+página consultada. [Paridad de API key](92-nodia-ai-api-chat-parity.md#consultas-del-catálogo-de-productos--2026-11-27).
+
 ## Cómo conoce NodiaAI los productos
 
 Cada módulo registra una descripción funcional, recursos, operaciones, esquemas públicos, reglas de ámbito y medidas admitidas. NodiaAI descubre las capacidades relevantes y pide el detalle necesario; no necesita cargar 156 definiciones en cada turno. La publicación real incluye sólo herramientas verificadas y autorizadas para la sesión, el modo y el modelo seleccionados.

@@ -630,6 +630,37 @@ describe('API admission binding', () => {
     });
     return f;
   }
+  it.each([
+    { supportsTools: true, authorizedReads: true, catalogIntent: true, profileId: 'product_catalog_reads' },
+    { supportsTools: false, authorizedReads: true, catalogIntent: true, profileId: undefined },
+    { supportsTools: true, authorizedReads: false, catalogIntent: true, profileId: undefined },
+    { supportsTools: true, authorizedReads: true, catalogIntent: false, profileId: undefined },
+  ])('chooses the catalog execution profile only for an authorized API read with tools', async ({
+    supportsTools,
+    authorizedReads,
+    catalogIntent,
+    profileId,
+  }) => {
+    const f = apiFixture();
+    Object.assign(f.eligibility, { supportsTools });
+    f.tools.visible.mockResolvedValue([
+      { capabilityId: 'nodia_businesses_list', toolName: 'nodia_businesses_list', kind: 'read' },
+      ...(authorizedReads
+        ? [{ capabilityId: 'nodia_products_list', toolName: 'nodia_products_list', kind: 'read' }]
+        : []),
+    ]);
+    const observed = await f.subject.observe(identity, f.summary, {
+      productCatalogRead: catalogIntent,
+    });
+    const prepared = await f.subject.prepare(f.manager, f.actor, f.chat, now, observed);
+
+    expect(f.selector.execute).toHaveBeenCalledWith(expect.objectContaining({ profileId }));
+    if (profileId) {
+      expect(prepared.contextManifest.tool_selection).toMatchObject({ phase: 'execution' });
+      expect(prepared.contextManifest.tool_contracts).not.toHaveProperty('nodia_capabilities_select');
+    }
+  });
+
   it('freezes API function-calling identity and the same scoped grant without claiming native capabilities', async () => {
     const f = apiFixture();
     const observed = await f.subject.observe(identity, f.summary);

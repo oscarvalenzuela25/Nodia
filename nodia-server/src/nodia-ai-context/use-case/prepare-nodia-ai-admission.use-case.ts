@@ -140,10 +140,13 @@ export class PrepareNodiaAiAdmissionUseCase implements NodiaAiAdmissionPreparer 
     // published read capabilities have been checked in the current authority.
     const useCatalogReadProfile =
       observation.productCatalogRead &&
-      selection.mode === 'agentic' &&
-      observation.eligibility.adapterIdentity === undefined &&
-      /^gemini-profile:[a-f0-9]{64}$/.test(observation.eligibility.resourceKey) &&
       supportsNodiaAiTools(observation.eligibility) &&
+      (selection.mode === 'api_key' ||
+        (selection.mode === 'agentic' &&
+          observation.eligibility.adapterIdentity === undefined &&
+          /^gemini-profile:[a-f0-9]{64}$/.test(
+            observation.eligibility.resourceKey,
+          ))) &&
       ['nodia_businesses_list', 'nodia_products_list'].every((id) =>
         visible.some((tool) => tool.capabilityId === id && tool.kind === 'read'),
       );

@@ -18,6 +18,12 @@ const displayInstructions = [
   /^(?:show|include) the current (?:selling )?price(?: in [a-z]{3})?(?: with one row per product)?(?: and (?:include|show) the regular price if on sale)?[.]?$/i,
 ];
 
+const catalogListRequests =
+  /^(?:(?:ve y )?buscame|busca|dame|lista|listame|muestrame) (?:(?:la|el) )?(?:lista|listado|catalogo) de (?:los )?productos(?: activos)? (?:de|del) (.+)$/i;
+
+const catalogPreview =
+  /^(?:muestrame|muestra) (?:los )?primeros (?:[1-9][0-9]?|100)(?: productos)?(?: ordenados por nombre)? con (?:su|el|sus|los) precios?(?: de venta)? vigentes?(?: en [a-z]{3})?(?: y (?:dime|muestra|indica) cuantos productos(?: activos)? hay(?: en total)?)?[.]?$/i;
+
 const mixedScope =
   /\b(?:y|e|o|u|and|or|then|tambien|ademas|luego|despues|pero|but|si|if|sin|without|actualiz\w*|modific\w*|cambi\w*|baja\w*|sube\w*|ajust\w*|reduc\w*|increment\w*|aument\w*|edit\w*|crea\w*|agreg\w*|anad\w*|borr\w*|elimin\w*|vend\w*|registra\w*|confirm\w*|anul\w*|export\w*|import\w*|delete\w*|updat\w*|chang\w*|add\w*|creat\w*|remove\w*|sell\w*|stock|inventario|inventory|ventas|sales|reservas|bookings|servicios|services|facturas|invoices|proveedores|suppliers|precio|precios|price|prices|productos|products)\b/i;
 
@@ -47,7 +53,10 @@ function isBusinessScope(suffix: string): boolean {
  * Recognizes a narrow read request for routing. The result confers no module
  * grant, tool permission, business identity or access to any record.
  */
-export function isProductCatalogReadIntent(text: string): boolean {
+export function isProductCatalogReadIntent(
+  text: string,
+  mode?: 'agentic' | 'api_key',
+): boolean {
   if (text.length > 512 || /[\r\n]/.test(text)) return false;
 
   const input = text
@@ -55,16 +64,23 @@ export function isProductCatalogReadIntent(text: string): boolean {
     .replace(/\p{M}/gu, '')
     .trim()
     .replace(/[ \t]+/g, ' ');
-  const clauses = /^¿?([^¿?!.]+?)(?:[?.](?: (.+))?)?$/.exec(input);
+  const requestText =
+    mode === 'api_key'
+      ? input.replace(/\b(Sr|Sra)\.(?= [a-z])/gi, '$1')
+      : input;
+  const clauses = /^¿?([^¿?!.]+?)(?:[?.](?: (.+))?)?$/.exec(requestText);
   if (!clauses) return false;
 
   const [, question, display] = clauses;
-  if (display && !displayInstructions.some((pattern) => pattern.test(display)))
-    return false;
-
   const request = question
     .replace(/^(?:por favor|please),? /i, '')
     .replace(/,? (?:por favor|please)$/i, '');
+  if (mode === 'api_key' && (!display || catalogPreview.test(display))) {
+    const scope = catalogListRequests.exec(request)?.[1];
+    if (scope !== undefined && isBusinessName(scope, true)) return true;
+  }
+  if (display && !displayInstructions.some((pattern) => pattern.test(display)))
+    return false;
   if (
     !display &&
     countRequests.some((pattern) => {

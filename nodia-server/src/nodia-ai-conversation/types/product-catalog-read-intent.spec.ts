@@ -28,6 +28,22 @@ describe('isProductCatalogReadIntent', () => {
   });
 
   it.each([
+    'Ve y búscame la lista de productos activos del Mercado Roble. Muéstrame los primeros 5 ordenados por nombre con su precio de venta vigente en CLP y dime cuántos productos activos hay en total.',
+    'Búscame la lista de productos del Market Sra. Vera.',
+  ])('routes a scoped API catalog request %s', (text) => {
+    expect(isProductCatalogReadIntent(text, 'api_key')).toBe(true);
+    expect(isProductCatalogReadIntent(text, 'agentic')).toBe(false);
+  });
+
+  it.each([
+    'Ve y búscame la lista de productos activos del Mercado Roble. Muéstrame los primeros 5 con su precio vigente y actualiza el precio del pan.',
+    'Ve y búscame la lista de productos del Market Sra. Vera y exporta el catálogo.',
+    'Ve y búscame la lista de productos del Mercado Roble. Muestra los primeros 101 con sus precios vigentes.',
+  ])('keeps API catalog previews bounded and free of mixed intent %s', (text) => {
+    expect(isProductCatalogReadIntent(text, 'api_key')).toBe(false);
+  });
+
+  it.each([
     'Dame el listado de los productos',
     'Cambia el precio de los productos de mi negocio.',
     'Lista productos con precios y actualiza el precio del pan.',
@@ -58,5 +74,6 @@ describe('isProductCatalogReadIntent', () => {
     '',
   ])('leaves other requests to normal discovery %s', (text) => {
     expect(isProductCatalogReadIntent(text)).toBe(false);
+    expect(isProductCatalogReadIntent(text, 'api_key')).toBe(false);
   });
 });
