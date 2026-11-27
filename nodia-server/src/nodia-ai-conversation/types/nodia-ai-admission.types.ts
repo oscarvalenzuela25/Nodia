@@ -26,7 +26,7 @@ export interface NodiaAiAdmissionPreparer {
   observe(
     identity: NodiaAiActorReference,
     chat: Readonly<NodiaAiConversationSummary>,
-    options?: { toolProfileId?: string; productCatalogRead?: boolean },
+    options?: { toolProfileId?: string; productCatalogText?: string },
   ): Promise<unknown>;
   prepare(
     manager: EntityManager,

@@ -72,6 +72,30 @@ El ledger se crea antes del envío HTTP. Cada POST generativo real, incluidas co
 
 No hay retries de inferencias inciertas ni rotación automática en mitad de un turno que pueda haber sido recibido. Errores de credencial, cuota, rechazo, formato o tamaño producen estados seguros, conservan identidad y exigen la acción correspondiente. El adaptador no mantiene una transacción SQL abierta durante la red.
 
+### Consultas del catálogo de productos — 2026-11-27
+
+Una prueba en producción de listado acotado con precios y total pasó por
+descubrimiento general. El modelo eligió Productos, pero consumió los POST
+del turno al repetir la búsqueda del negocio con el ámbito propio de una
+cuenta superadministradora. La lectura de Productos no se ejecutó.
+
+La corrección candidata reutiliza el perfil de lectura
+[`product_catalog_reads`](40-nodia-ai-tool-catalog-v1.md#lectura-de-catálogo-en-api-key--2026-11-27)
+para peticiones inequívocas y selecciones API con function calling habilitado.
+Las dos lecturas deben estar publicadas y autorizadas en el turno. El
+perfil reserva el espacio de los tres POST para identificar el negocio,
+consultar una página y devolver la respuesta. Si se pide una muestra,
+la herramienta recibe el límite y orden correspondientes. El total exacto
+proviene de `meta.total_items`. Ante una búsqueda vacía o ambigua se pide
+aclaración. Las consultas fuera de ese alcance usan el recorrido general.
+
+La búsqueda por nombre usa `all_businesses` sólo cuando el actor sigue
+siendo `super_admin` y tiene Negocios en el ámbito del turno. Para los
+demás usuarios, Server conserva pertenencia y revalida cada consulta.
+La [evaluación de contexto de NodiaAI](../nodia-ai/knowledge/nodia-ai/README.md#catálogo-de-productos-en-api-key--2026-11-27)
+registra el impacto documental. La aceptación real del candidato por
+selección y entorno sigue pendiente.
+
 ## Prueba terminal y recuperación
 
 El descriptor privado API usa `schema_version: 3`, `engine: api_key` e identidad cerrada de proveedor/contrato/conexión/intento/recurso/generación/operación. Se conservan los formatos históricos Agentic para su lectura y conciliación; no se reetiquetan como HTTP.

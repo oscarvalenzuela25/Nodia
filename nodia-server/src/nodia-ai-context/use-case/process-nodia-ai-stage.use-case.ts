@@ -158,6 +158,13 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
       !Array.isArray(toolSelectionProfile)
         ? toolSelectionProfile.profile_id
         : undefined;
+    const adapterIdentity = claim.run.context_manifest.adapter_identity;
+    const catalogUsesCodex =
+      selection.mode === 'agentic' &&
+      !!adapterIdentity &&
+      typeof adapterIdentity === 'object' &&
+      !Array.isArray(adapterIdentity) &&
+      adapterIdentity.contract_version === 'nodia-ai-codex-chat/1';
     const data = await context.checkpoint((manager) =>
       this.history(
         manager,
@@ -201,6 +208,7 @@ export class ProcessNodiaAiStageUseCase implements NodiaAiStageHandler {
           toolSelection: claim.run.context_manifest.tool_selection,
           toolSelectionProfileId,
           catalogCanSearchAllBusinesses: data.catalogCanSearchAllBusinesses,
+          catalogUsesCodex,
           capabilityIndex: data.capabilityIndex,
           invoiceOcrReferenceIds: invoiceOcrReferenceIds(
             claim.run.context_manifest,
