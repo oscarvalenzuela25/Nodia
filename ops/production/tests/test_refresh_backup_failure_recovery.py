@@ -1,16 +1,35 @@
 import importlib.util
 import json
+import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
 
 
 BASE = Path(__file__).resolve().parents[1]
+RECOVERY_COMMIT = '907407843d6c9460d80fbd2daf44665a9d6aee6c'
+RECOVERY_FIXTURES = {
+    'update-backend.py': 'NODIA_BACKUP_RECOVERY_TEST_FIXTURE',
+    'backend_update.py': 'NODIA_BACKUP_RECOVERY_TEST_POLICY_FIXTURE',
+}
 SPEC = importlib.util.spec_from_file_location(
     'refresh_backup_failure', BASE / 'refresh-backup-failure-recovery.py')
 refresh = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(refresh)
+
+
+def reviewed_recovery_asset(name):
+    # Keep the original candidate pair that the historical recovery operator pins.
+    if name not in RECOVERY_FIXTURES:
+        return (BASE / name).read_bytes()
+    fixture = os.environ.get(RECOVERY_FIXTURES[name])
+    if fixture:
+        return Path(fixture).read_bytes()
+    return subprocess.check_output([
+        'git', '-C', str(BASE), 'show', f'{RECOVERY_COMMIT}:ops/production/{name}',
+    ])
 
 
 class RefreshBackupFailureTest(unittest.TestCase):
@@ -21,7 +40,8 @@ class RefreshBackupFailureTest(unittest.TestCase):
         for directory in (self.bundle, self.lib, self.state):
             directory.mkdir()
         for name in refresh.IO_POLICIES.keys() | refresh.CANDIDATES.keys():
-            (self.bundle / name).write_bytes((BASE / name).read_bytes())
+            data = reviewed_recovery_asset(name)
+            (self.bundle / name).write_bytes(data)
         self.updater_assets = set(refresh.CANDIDATES) | {
             'update-backend-action.mjs', 'stage-backend-candidate.py', 'probe-backend-dependencies.mjs'}
         receiver_assets = {'deploy-backend-receiver.py', 'deploy-gateway.py',
