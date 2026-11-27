@@ -60,6 +60,7 @@ import {
 import {
   cvGenerationError,
   cvGenerationFailure,
+  reportCvOutputRejection,
 } from './policies/nodia-cv-generation-errors.js';
 import { requireCvEditBase } from './policies/nodia-cv-draft-review.js';
 import {
@@ -342,6 +343,18 @@ export class NodiaCvGenerationWorker
     }, true);
   }
 
+  private draftFits(claim: CvGenerationClaim, draft: CvTailoringDraft) {
+    if (Buffer.byteLength(JSON.stringify(draft)) > 250 * 1024) {
+      reportCvOutputRejection(claim, 'draft_size_limit');
+      return false;
+    }
+    if (claim.row.qualification && !validCvProbeDraft(draft)) {
+      reportCvOutputRejection(claim, 'qualification_draft_mismatch');
+      return false;
+    }
+    return true;
+  }
+
   async execute(
     workerId: string,
     signal: AbortSignal,
@@ -409,14 +422,12 @@ export class NodiaCvGenerationWorker
       ) {
         responseHash = digest;
         const validated = buildCvDraft(claim.prepared, result.text);
-        if (
-          Buffer.byteLength(JSON.stringify(validated)) <= 250 * 1024 &&
-          (!claim.row.qualification || validCvProbeDraft(validated))
-        )
-          draft = validated;
+        if (this.draftFits(claim, validated)) draft = validated;
       }
       if (!draft) error = 'generation_invalid_output';
     } catch (cause) {
+      if (responseHash !== null && cause instanceof CvTailoringError)
+        reportCvOutputRejection(claim, cause.code);
       error =
         cause instanceof CvTailoringError
           ? 'generation_invalid_output'
@@ -495,13 +506,19 @@ export class NodiaCvGenerationWorker
             return this.store.agenticArm(manager, op, descriptor, custody);
           }, true);
         },
-        terminal: (outcome) =>
-          this.finishAgentic(
+        terminal: (outcome) => {
+          if (
+            outcome.state === 'failed' &&
+            outcome.receipt.remote_outcome === 'completed'
+          )
+            reportCvOutputRejection(claim, outcome.code);
+          return this.finishAgentic(
             claim,
             observation,
             outcome.state === 'draft' ? outcome.draft : null,
             outcome.receipt,
-          ),
+          );
+        },
       },
     );
     await this.scope.transaction(async (manager) => {
@@ -563,6 +580,7 @@ export class NodiaCvGenerationWorker
           draft = buildCvDraft(claim.prepared, snapshot.text);
         } catch (error) {
           if (!(error instanceof CvTailoringError)) throw error;
+          reportCvOutputRejection(claim, error.code);
         }
       }
     }
@@ -634,9 +652,7 @@ export class NodiaCvGenerationWorker
         op.started_exchanges === 1 &&
         op.valid_lease;
       if (mayPublish && draft) {
-        mayPublish =
-          Buffer.byteLength(JSON.stringify(draft)) <= 250 * 1024 &&
-          (!claim.row.qualification || validCvProbeDraft(draft));
+        mayPublish = this.draftFits(claim, draft);
       } else if (draft && !op.valid_lease) failure = 'generation_lease_lost';
       let base = null;
       if (op.valid_lease) {

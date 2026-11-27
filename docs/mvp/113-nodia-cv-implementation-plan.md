@@ -1077,3 +1077,12 @@ cuenta. Para un nuevo proveedor, el adaptador se ocupa del transporte, la
 autenticación, el descubrimiento y el cierre nativos. La preparación y la
 validación del CV conservan su contrato común. Las políticas de cada conexión
 y la compatibilidad del runtime vigente aplican al modelo exacto.
+
+La ventana de ejecución del CV Agentic es de hasta 270 segundos, acotada
+por el presupuesto total de la cola y del trabajo. La misma ventana aplica a
+generación y edición para ambos adaptadores Agentic. API key conserva su
+ventana de 120 segundos. El plazo firmado, el arrendamiento renovable y el
+cierre con un solo envío siguen aplicando. El apagado operativo puede
+interrumpir una ejecución en curso y conserva su conciliación sin reenvío.
+Los fallos de validación registran una categoría técnica acotada y el UUID
+para diagnóstico.
