@@ -13,14 +13,18 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import type { CvPdfTemplate } from '../pdf/nodia-cv-pdf-renderer.service.js';
+import {
+  CV_PDF_TEMPLATES,
+  type CvPdfTemplate,
+} from '../pdf/nodia-cv-pdf-contract.js';
 import type {
   CvDraftRequirement,
   CvEvidenceFact,
+  CvTechnologyOption,
 } from '../engine/index.js';
-import type { CvDraftReviewEvidence } from '../types/nodia-cv-generation.types.js';
+import type { CvDraftReviewEvidence, CvTechnologyReview } from '../types/nodia-cv-generation.types.js';
+import { NodiaCvTechnologyReviewDto } from './nodia-cv-draft.dto.js';
 
-const templates = ['classic', 'compact'] as const;
 const languages = ['es', 'en'] as const;
 const queryInteger = Transform(({ value }: { value: unknown }) =>
   typeof value === 'string' && /^[1-9][0-9]*$/.test(value)
@@ -37,8 +41,8 @@ class NodiaCvDraftRevisionDto {
 }
 
 export class PrepareNodiaCvPdfDto extends NodiaCvDraftRevisionDto {
-  @ApiProperty({ enum: templates })
-  @IsIn(templates)
+  @ApiProperty({ enum: CV_PDF_TEMPLATES })
+  @IsIn(CV_PDF_TEMPLATES)
   template!: CvPdfTemplate;
 }
 
@@ -96,7 +100,7 @@ export class NodiaCvPreparedPdfDto extends NodiaCvPdfVerificationDto {
   @ApiProperty({ type: String, format: 'uuid' }) id!: string;
   @ApiProperty({ type: String, format: 'uuid' }) generation_id!: string;
   @ApiProperty({ type: Number, minimum: 1 }) revision!: number;
-  @ApiProperty({ enum: templates }) template!: CvPdfTemplate;
+  @ApiProperty({ enum: CV_PDF_TEMPLATES }) template!: CvPdfTemplate;
   @ApiProperty({ enum: languages }) language!: (typeof languages)[number];
   @ApiProperty({ type: String, format: 'date-time' }) expires_at!: Date;
 }
@@ -109,7 +113,7 @@ export class NodiaCvVersionSummaryDto {
   @ApiProperty({ type: String, nullable: true }) vacancy_company!:
     string | null;
   @ApiProperty({ enum: languages }) language!: (typeof languages)[number];
-  @ApiProperty({ enum: templates }) template!: CvPdfTemplate;
+  @ApiProperty({ enum: CV_PDF_TEMPLATES }) template!: CvPdfTemplate;
   @ApiProperty({ type: String, format: 'date-time' }) created_at!: Date;
 }
 
@@ -137,12 +141,24 @@ class NodiaCvSavedEvidenceDto implements CvDraftReviewEvidence {
   @ApiProperty({ type: String }) detail!: string;
 }
 
+class NodiaCvSavedTechnologyOptionDto implements CvTechnologyOption {
+  @ApiProperty({ type: String }) name!: string;
+  @ApiProperty({ enum: ['required', 'preferred', 'uncertain', 'outside'] })
+  kind!: CvTechnologyOption['kind'];
+  @ApiProperty({ type: Boolean }) in_profile!: boolean;
+  @ApiProperty({ type: [String] }) requirement_ids!: string[];
+}
+
 export class NodiaCvVersionAnalysisDto {
   @ApiProperty({ type: [NodiaCvSavedRequirementDto] })
   requirements!: CvDraftRequirement[];
   @ApiProperty({ type: [NodiaCvSavedFactDto] }) facts!: CvEvidenceFact[];
   @ApiProperty({ type: [NodiaCvSavedEvidenceDto] })
   evidence!: CvDraftReviewEvidence[];
+  @ApiPropertyOptional({ type: [NodiaCvSavedTechnologyOptionDto] })
+  technology_options?: CvTechnologyOption[];
+  @ApiPropertyOptional({ type: NodiaCvTechnologyReviewDto })
+  technologies?: CvTechnologyReview;
 }
 
 export class NodiaCvVersionDetailDto extends IntersectionType(

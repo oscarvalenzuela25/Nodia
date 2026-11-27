@@ -1,4 +1,6 @@
 import type { CvGenerationRow } from '../types/nodia-cv-generation.types.js';
+import { minimizeCvText } from '../engine/evidence.js';
+import { analyzeCvTechnologies } from '../engine/technologies.js';
 import { cvGenerationError } from './nodia-cv-generation-errors.js';
 
 export function cvGenerationProfileId(row: CvGenerationRow) {
@@ -17,6 +19,11 @@ export function requireLiveCvGeneration(row: CvGenerationRow) {
 }
 
 export function visibleGeneration(row: CvGenerationRow) {
+  const technologyOptions = row.draft && row.state === 'ready'
+    ? row.draft.technologyOptions ?? analyzeCvTechnologies(
+      row.draft, row.profile_snapshot ? minimizeCvText(row.profile_snapshot)(row.offer_text ?? '') : '',
+    )
+    : undefined;
   return {
     id: row.id,
     state: row.state,
@@ -30,6 +37,7 @@ export function visibleGeneration(row: CvGenerationRow) {
     vacancy_company: row.vacancy_company,
     error_code: row.error_code,
     draft: row.draft,
+    ...(technologyOptions ? { technology_options: technologyOptions } : {}),
     ...(row.source_version
       ? {
           source_version: {
@@ -52,6 +60,7 @@ export function visibleGeneration(row: CvGenerationRow) {
             revision: row.review_revision,
             included_fact_ids: row.review.included_fact_ids,
             evidence: row.review.evidence,
+            ...(row.review.technologies ? { technologies: row.review.technologies } : {}),
             ...(row.review.section_order
               ? { section_order: row.review.section_order }
               : {}),

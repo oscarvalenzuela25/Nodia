@@ -4,7 +4,7 @@
   "document_id": "nodia-cv.tailoring-and-verified-versions",
   "product_id": "nodia-cv",
   "kind": "feature",
-  "revision": 12,
+  "revision": 13,
   "document_status": "draft",
   "implementation": {
     "status": "partial",
@@ -55,6 +55,19 @@ el alcance comprobado. El [Plan113](../../../../mvp/113-nodia-cv-implementation-
 la [guía UI](../../../../features/nodia-cv/ui-design.md) y el
 [ADR119 propuesto](../../../../architecture/decisions/ADR-119-nodia-cv-owned-generation-and-verified-pdf.md)
 describen el flujo implementado y los pendientes de aceptación.
+
+Los requisitos enlazan su evidencia con la vista previa. En
+**Tecnologías** la persona elige qué conocimientos incluye en el CV,
+confirma fuente y uso para un aporte nuevo o marca un recordatorio de
+estudio. El PDF incorpora las tecnologías incluidas. Editorial y
+Contemporánea se suman a Clásica y Compacta. La extracción interna y
+la importación ATS externa tienen comprobaciones distintas.
+
+El editor dispone de cartas separadas para la postulación. La de
+presentación se puede editar a partir de la oferta y hechos seleccionados.
+La de recomendación puede provenir de un PDF recibido o de un
+borrador para revisión y firma. El usuario descarga cada documento
+desde el borrador activo. [Plan113 §25](../../../../mvp/113-nodia-cv-implementation-plan.md#25-requisitos-tecnologías-y-documentos-de-postulación--2026-11-27).
 
 ## Agentic en el piloto de la VM
 

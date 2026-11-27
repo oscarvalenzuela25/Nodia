@@ -1,5 +1,5 @@
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
-import { Alert, Button, Divider, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Alert, Box, Button, Divider, Stack, ToggleButton, Typography } from "@mui/material";
 import PictureAsPdfOutlined from "@mui/icons-material/PictureAsPdfOutlined";
 import SaveOutlined from "@mui/icons-material/SaveOutlined";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { sileo } from "sileo";
 import useAuthStore from "../../../../store/authStore";
 import { cvPdfErrorMessage, notifyCvPdfError } from "../../infrastructure/pdfFeedback";
+import { cvPdfTemplateSchema } from "../../infrastructure/generationSchema";
 import {
   fetchCvDraftPdf, prepareCvPdf, saveCvVersion, type CvPdfArtifact, type CvPdfTemplate, type CvVerifiedBytes,
 } from "../../infrastructure/pdfVersions";
@@ -96,8 +97,8 @@ export default function CvDraftPdf({
     pdf.generation_id === generationId && pdf.revision === revision &&
     pdf.language === language && pdf.template === template && Date.parse(pdf.expires_at) > Date.now();
 
-  const choose = (next: CvPdfTemplate | null) => {
-    if (!next || template === next || disabled || flight.current || saveLock.current) return;
+  const choose = (next: CvPdfTemplate) => {
+    if (template === next || disabled || flight.current || saveLock.current) return;
     setTemplate(next);
     onTemplateChange?.(next);
     setResult(null);
@@ -194,16 +195,22 @@ export default function CvDraftPdf({
 
   if (!active) return null;
   return (
-    <Stack spacing={1.75} sx={{ minWidth: 0 }}>
+    <Stack spacing={1.75} sx={{ minWidth: 0, containerType: "inline-size" }}>
       <Divider />
       <Typography component="h3" variant="subtitle1" sx={{ fontWeight: 750 }}>{t("pdf_panel_title")}</Typography>
-      <Stack direction={{ xs: "column", sm: "row" }} sx={{ gap: 1, alignItems: { sm: "center" }, flexWrap: "wrap" }}>
-        <ToggleButtonGroup exclusive value={template} onChange={(_, next: CvPdfTemplate | null) => choose(next)}
-          aria-label={t("pdf_template")} size="small" disabled={disabled || preparing || saving}
-          sx={{ width: { xs: "100%", sm: "auto" }, "& button": { minHeight: 44, flex: { xs: 1, sm: "initial" } } }}>
-          <ToggleButton value="classic">{t("pdf_templates.classic")}</ToggleButton>
-          <ToggleButton value="compact">{t("pdf_templates.compact")}</ToggleButton>
-        </ToggleButtonGroup>
+      <Stack spacing={1} sx={{ alignItems: { sm: "flex-start" } }}>
+        <Box role="group" aria-label={t("pdf_template")} sx={{
+          display: "grid", gap: 0.75, width: "100%", gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          "@container (min-width: 510px)": { gridTemplateColumns: "repeat(4, minmax(0, 1fr))" },
+        }}>
+          {cvPdfTemplateSchema.options.map((option) => (
+            <ToggleButton key={option} value={option} size="small" color="primary"
+              selected={template === option} disabled={disabled || preparing || saving}
+              onClick={() => choose(option)} sx={{ minHeight: 44, minWidth: 0, textTransform: "none", overflowWrap: "anywhere" }}>
+              {t(`pdf_templates.${option}`)}
+            </ToggleButton>
+          ))}
+        </Box>
         {!result?.bytes && (
           <Button variant="outlined" startIcon={<PictureAsPdfOutlined />} loading={preparing}
             disabled={disabled || stale || saving} onClick={() => void prepare()} sx={action}>

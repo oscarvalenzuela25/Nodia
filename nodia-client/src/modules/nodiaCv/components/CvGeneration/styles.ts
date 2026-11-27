@@ -1,4 +1,4 @@
-import { getContrastRatio, type Theme } from "@mui/material/styles";
+import { alpha, getContrastRatio, type Theme } from "@mui/material/styles";
 
 export const cvPrimaryHover = ({ palette }: Theme) => {
   const { dark, contrastText } = palette.primary;
@@ -9,3 +9,13 @@ export const cvPrimaryHover = ({ palette }: Theme) => {
     "@media (hover: hover)": { "&:hover": { "--variant-containedColor": hoverText ?? contrastText } },
   };
 };
+
+export const cvEvidenceHighlight = ({ palette }: Theme) => ({
+  "&[data-cv-evidence-highlighted]": {
+    backgroundColor: alpha(palette.primary.main, palette.action.selectedOpacity),
+    outline: `2px solid ${palette.primary.main}`,
+    outlineOffset: 2,
+    borderRadius: 4,
+    scrollMarginBlock: "4rem",
+  },
+});

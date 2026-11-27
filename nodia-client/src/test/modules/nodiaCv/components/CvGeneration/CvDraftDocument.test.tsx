@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import CvDraftDocument from "../../../../../modules/nodiaCv/components/CvGeneration/CvDraftDocument";
+import { cvPreviewPresentation } from "../../../../../modules/nodiaCv/components/CvGeneration/previewPresentation";
+import i18n from "../../../../../translate";
 import { emptyProfile, profileRecordSchema } from "../../../../../modules/nodiaCv/infrastructure/profileSchema";
 import type { CvGenerationView } from "../../../../../modules/nodiaCv/infrastructure/useCvGenerationWorkflow";
 
@@ -60,23 +62,27 @@ const view: CvGenerationView = {
   },
 };
 
+function documentFor(view: CvGenerationView) {
+  const presentation = cvPreviewPresentation(view, i18n.getFixedT(view.receipt.language, "nodiaCv"));
+  if (!presentation) throw new Error("Expected fixture draft");
+  return <CvDraftDocument view={view} presentation={presentation} activeRequirement={null} />;
+}
+
 const headings = () => screen.getAllByRole("heading", { level: 4 }).map(({ textContent }) => textContent);
 
 describe("CV draft document", () => {
   it("shows the proposed order in the DOM and appends other visible sections in canonical order", () => {
-    const { rerender } = render(<CvDraftDocument view={view} />);
+    const { rerender } = render(documentFor(view));
     expect(headings()).toEqual(["Professional experience", "Skills", "Education"]);
     const experience = screen.getByRole("heading", { name: "Professional experience" });
 
-    rerender(
-      <CvDraftDocument view={{
-        ...view,
-        receipt: {
-          ...view.receipt,
-          review: { ...review, revision: 2, section_order: ["certification", "skills", "profile"] },
-        },
-      }} />,
-    );
+    rerender(documentFor({
+      ...view,
+      receipt: {
+        ...view.receipt,
+        review: { ...review, revision: 2, section_order: ["certification", "skills", "profile"] },
+      },
+    }));
 
     expect(headings()).toEqual(["Skills", "Profile", "Professional experience", "Education"]);
     expect(screen.getByRole("heading", { name: "Professional experience" })).toBe(experience);

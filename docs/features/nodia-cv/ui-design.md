@@ -119,6 +119,16 @@ de ancho. Seguir [DESIGN §9–10](../../../nodia-client/DESIGN.md#9-lineamiento
   proyecto o habilidad que respalda el requisito. **Revisar** permite
   proponer o confirmar evidencia conforme al plan. Mantener las revisiones
   pendientes cuando el usuario corrija otros campos.
+- Agrupar por importancia y mantener Requisitos y Tecnologías junto a la
+  vista previa. Puntero, foco y selección enlazan una fila con los ítems
+  correspondientes del CV. Un toque permite localizar la vista previa en
+  pantalla estrecha. Cuando falta evidencia, indicar la brecha junto al
+  documento.
+- Tecnologías distingue coincidencias, otras del perfil y sugeridas por
+  confirmar. El checkbox controla qué tecnologías se muestran en la sección
+  del CV. **Añadir experiencia** pide fuente y uso para nuevas tecnologías.
+  **Marcar para estudiar** las deja como recordatorio de preparación.
+  **Aplicar al borrador** actualiza la revisión y la vista previa.
 - Ocultar la vista previa, los requisitos y las acciones de versión cuando
   cambien el perfil, su revisión, la oferta, el idioma o la selección.
   Usar IDs de perfil y trabajo más la identidad exacta de la solicitud
@@ -236,6 +246,17 @@ intención conserva su clave. **Consultar estado** actualiza su recibo y
   documento. Revocar también al cambiar sesión, perfil o versión y ante una
   denegación de acceso de Server. Evitar URLs persistentes o datos privados
   en caché del navegador fuera del alcance que admite el plan.
+
+### 4.1 Plantillas y documentos de postulación
+
+- El selector de PDF ofrece Clásica, Compacta, Editorial y Contemporánea.
+  La revisión, extracción y guardado identifican la plantilla elegida.
+- **Documentos de la postulación** distingue **Carta de presentación**
+  y **Carta de recomendación**. La primera ofrece un borrador editable a
+  partir de la oferta y el CV revisado. Para recomendación se puede
+  seleccionar un PDF recibido y descargarlo aparte o escribir un
+  borrador identificado para revisión y firma de la persona que recomienda.
+  Cada PDF se descarga por separado desde el editor abierto.
 
 ## 5. CV guardados y confirmaciones
 

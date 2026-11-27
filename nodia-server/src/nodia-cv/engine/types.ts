@@ -42,6 +42,7 @@ export interface PreparedCvTailoring {
   readonly providedOffer: string;
   readonly evidence: readonly CvEvidenceFact[];
   readonly editRequirements?: readonly CvDraftRequirement[];
+  readonly editTechnologyOptions?: CvTechnologyOption[];
 }
 
 export type CvRequirementKind = 'required' | 'preferred' | 'uncertain';
@@ -55,12 +56,20 @@ export interface CvDraftRequirement {
   evidenceIds: string[];
 }
 
+export interface CvTechnologyOption {
+  name: string;
+  kind: CvRequirementKind | 'outside';
+  in_profile: boolean;
+  requirement_ids: string[];
+}
+
 export interface CvTailoringDraft {
   schemaVersion: typeof CV_TAILORING_SCHEMA_VERSION;
   locale: CvTailoringLocale;
   requirements: CvDraftRequirement[];
   selectedFacts: CvEvidenceFact[];
   remainingFacts: CvEvidenceFact[];
+  technologyOptions?: CvTechnologyOption[];
 }
 
 export type CvTailoringErrorCode =

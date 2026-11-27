@@ -1007,3 +1007,46 @@ salida por su propio contrato. Nodia mantiene el mismo objetivo en cada
 transporte y adapta únicamente la entrega técnica. La persona sigue
 eligiendo una selección compatible desde el primer intento.
 [Prueba en producción](../evidence/nodia-cv-draft-workflow-production-20261126.md#oferta-extensa-y-gemini-agentic).
+
+## 25. Requisitos, tecnologías y documentos de postulación — 2026-11-27
+
+El panel agrupa los requisitos por importancia y enlaza el puntero, el
+foco y la selección con la evidencia visible en la vista previa.
+**Revisar evidencia** sigue usando la revisión vigente del borrador.
+
+**Tecnologías** contrasta el stack, las tecnologías de proyectos y
+experiencias y las competencias explícitas con la oferta y sus citas.
+Las coincidencias obligatorias y deseables se incluyen al preparar
+un borrador nuevo. Las demás se pueden marcar manualmente. La
+detección usa nombres del perfil, términos habituales y listas
+explícitas de la oferta. Se puede añadir una tecnología aunque la
+detección la omita. Para incluir una tecnología nueva, la persona
+confirma fuente y uso. **Para estudiar** conserva un recordatorio
+en la revisión. El documento incluye las tecnologías marcadas y los
+aportes confirmados pertinentes. La selección se guarda en la misma
+revisión que la evidencia y se conserva al editar con IA o abrir una
+copia de la versión guardada.
+
+Editorial y Contemporánea conservan texto seleccionable de una
+columna, orden de lectura, encabezados habituales y contacto en el
+cuerpo. Clásica, Compacta y sus archivos históricos siguen disponibles.
+La extracción interna comprueba el PDF exacto. La importación de cada
+plantilla nueva en un ATS externo requiere evidencia propia.
+
+**Documentos de la postulación** aparece en el borrador. La carta de
+presentación ofrece texto editable a partir de la vacante y la evidencia
+incluida. La carta de recomendación permite descargar el PDF que la
+persona recibió o preparar un borrador identificado para revisión y firma
+de quien recomienda. Cada carta se descarga aparte. Los borradores
+viven en el editor activo y la descarga conserva una copia fuera de Nodia.
+El servidor comprueba los permisos y la revisión antes de preparar el
+PDF de la carta y antes de entregarlo.
+
+En Codex, la persona revisa y elige los hechos antes de exportar un
+documento. Nodia usa esa decisión en la revisión del CV. Las cartas
+aprovechan los hechos ya elegidos y componen un borrador editable
+dentro del producto. Esta composición y la detección de tecnologías
+usan el contenido de la revisión y la oferta disponibles.
+
+[Guía UI](../features/nodia-cv/ui-design.md) ·
+[Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md).

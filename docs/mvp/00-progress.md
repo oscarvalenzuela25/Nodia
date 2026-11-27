@@ -1,5 +1,12 @@
 # Progreso del MVP — Nodia
 
+**Nodia CV — revisión de requisitos y documentos de postulación, 2026-11-27.**
+La vista previa enlaza requisitos y evidencia. La revisión incorpora
+tecnologías confirmadas y recordatorios de estudio. Editorial y
+Contemporánea se incorporan a la preparación de PDF. Las cartas de
+presentación y recomendación se descargan por separado desde el editor.
+[Plan113 §25](113-nodia-cv-implementation-plan.md#25-requisitos-tecnologías-y-documentos-de-postulación--2026-11-27).
+
 **Nodia CV — oferta extensa con Gemini Agentic, 2026-11-26.**
 La oferta reportada generó borradores y PDF verificados con Hydrogen
 Alto y Neon Bajo tras ajustar la entrega estructurada de Gemini. La

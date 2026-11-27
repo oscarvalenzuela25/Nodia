@@ -4,6 +4,7 @@ import PDFDocument from 'pdfkit';
 import {
   CV_PDF_LIMITS,
   CvPdfError,
+  isCvPdfTemplate,
   type CvPdfBlock,
   type CvPdfBlockKind,
   type CvPdfDocument,
@@ -20,11 +21,15 @@ type Style = {
   after: number;
   bold?: true;
   before?: number;
+  font?: 'SerifBold' | 'Bold';
+  centered?: true;
+  marker?: 'rule' | 'bar';
 };
 
 interface TemplateLayout {
   margin: number;
   styles: Record<CvPdfBlockKind, Style>;
+  topRule?: string;
 }
 
 const classic: TemplateLayout = {
@@ -79,6 +84,96 @@ const compact: TemplateLayout = {
   },
 };
 
+const layouts: Record<CvPdfTemplate, TemplateLayout> = {
+  classic,
+  compact,
+  editorial: {
+    margin: 53,
+    styles: {
+      title: {
+        size: 29,
+        height: 38,
+        color: '#3e372d',
+        after: 2,
+        font: 'SerifBold',
+      },
+      subtitle: {
+        size: 12,
+        height: 17,
+        color: '#473d33',
+        after: 4,
+        bold: true,
+      },
+      contact: { size: 9.5, height: 14, color: '#564e43', after: 2 },
+      section: {
+        size: 13.5,
+        height: 20,
+        color: '#3e372d',
+        before: 15,
+        after: 3,
+        font: 'SerifBold',
+        marker: 'rule',
+      },
+      group: {
+        size: 11,
+        height: 16,
+        color: '#342f29',
+        before: 3,
+        after: 1,
+        bold: true,
+      },
+      body: { size: 10.5, height: 15, color: '#342f29', after: 3 },
+    },
+  },
+  contemporary: {
+    margin: 48,
+    topRule: '#283f69',
+    styles: {
+      title: {
+        size: 27,
+        height: 34,
+        color: '#283f69',
+        after: 2,
+        bold: true,
+        centered: true,
+      },
+      subtitle: {
+        size: 12,
+        height: 17,
+        color: '#26364d',
+        after: 3,
+        bold: true,
+        centered: true,
+      },
+      contact: {
+        size: 9.5,
+        height: 14,
+        color: '#42546a',
+        after: 2,
+        centered: true,
+      },
+      section: {
+        size: 13.5,
+        height: 20,
+        color: '#283f69',
+        before: 13,
+        after: 3,
+        bold: true,
+        marker: 'bar',
+      },
+      group: {
+        size: 11,
+        height: 16,
+        color: '#26364d',
+        before: 3,
+        after: 1,
+        bold: true,
+      },
+      body: { size: 10.5, height: 15, color: '#26364d', after: 3 },
+    },
+  },
+};
+
 interface WrappedLine {
   text: string;
   separator: ' ' | '';
@@ -86,9 +181,11 @@ interface WrappedLine {
 
 export interface CvPdfPageLine extends WrappedLine {
   block: number;
+  left: number;
   top: number;
   style: Style;
   url?: string;
+  marker?: Style['marker'];
 }
 
 export interface CvPdfLayout {
@@ -145,19 +242,24 @@ function fontAsset(name: string): { bytes: Buffer; font: Font } {
   return { bytes, font };
 }
 
+function fontName(style: Style) {
+  return style.font ?? (style.bold ? 'Bold' : 'Regular');
+}
+
 function selectFont(doc: PDFKit.PDFDocument, style: Style) {
-  return doc.font(style.bold ? 'Bold' : 'Regular').fontSize(style.size);
+  return doc.font(fontName(style)).fontSize(style.size);
 }
 
 function layoutPdf(
   doc: PDFKit.PDFDocument,
   blocks: CvPdfBlock[],
-  { styles, margin }: TemplateLayout,
+  styles: Style[],
+  margin: number,
 ): CvPdfLayout {
   const maximumWidth = CV_A4_WIDTH - 2 * margin;
   const usableHeight = CV_A4_HEIGHT - 2 * margin;
-  const prepared = blocks.map((block) => {
-    const style = styles[block.kind];
+  const prepared = blocks.map((block, index) => {
+    const style = styles[index];
     selectFont(doc, style);
     const lines = wrapText(
       block.text,
@@ -167,7 +269,12 @@ function layoutPdf(
     );
     return {
       height: (style.before ?? 0) + lines.length * style.height + style.after,
-      lines,
+      lines: lines.map((line) => ({
+        ...line,
+        left: style.centered
+          ? margin + (maximumWidth - doc.widthOfString(line.text)) / 2
+          : margin,
+      })),
       style,
     };
   });
@@ -194,8 +301,15 @@ function layoutPdf(
     for (const [offset, { lines, style }] of group.entries()) {
       const block = start + offset;
       top += style.before ?? 0;
-      for (const line of lines) {
-        page.push({ ...line, block, top, style, url: blocks[block].url });
+      for (const [index, line] of lines.entries()) {
+        page.push({
+          ...line,
+          block,
+          top,
+          style,
+          url: blocks[block].url,
+          marker: index === 0 ? style.marker : undefined,
+        });
         top += style.height;
       }
       top += style.after;
@@ -204,6 +318,29 @@ function layoutPdf(
   }
 
   return { margin, pages };
+}
+
+function renderMarker(
+  doc: PDFKit.PDFDocument,
+  line: CvPdfPageLine,
+  margin: number,
+) {
+  if (line.marker === 'rule') {
+    doc
+      .save()
+      .strokeColor('#8e8272')
+      .lineWidth(0.42)
+      .moveTo(margin, line.top - 5)
+      .lineTo(CV_A4_WIDTH - margin, line.top - 5)
+      .stroke()
+      .restore();
+  } else if (line.marker === 'bar') {
+    doc
+      .save()
+      .rect(margin - 7, line.top + 2, 2, 13)
+      .fill(line.style.color)
+      .restore();
+  }
 }
 
 function readBytes(doc: PDFKit.PDFDocument): Promise<Buffer> {
@@ -227,16 +364,31 @@ export async function renderCvPdfBytes(
   document: CvPdfDocument,
   template: CvPdfTemplate,
 ): Promise<{ bytes: Buffer; layout: CvPdfLayout }> {
-  const settings = template === 'classic' ? classic : compact;
-  const regular = fontAsset('DejaVuSans');
-  const bold = fontAsset('DejaVuSans-Bold');
-  for (const block of document.blocks) {
-    const { font } = settings.styles[block.kind].bold ? bold : regular;
-    for (const character of new Set(block.text)) {
-      if (!font.hasGlyphForCodePoint(character.codePointAt(0)!))
-        throw new CvPdfError('pdf_text_mismatch');
-    }
-  }
+  if (!isCvPdfTemplate(template)) throw new CvPdfError('pdf_render_failed');
+  const settings = layouts[template];
+  const fonts = {
+    Regular: fontAsset('DejaVuSans'),
+    Bold: fontAsset('DejaVuSans-Bold'),
+    ...(template === 'editorial'
+      ? { SerifBold: fontAsset('DejaVuSerif-Bold') }
+      : {}),
+  };
+  const styles = document.blocks.map((block) => {
+    let style = settings.styles[block.kind];
+    const points = [...new Set(block.text)].map((character) =>
+      character.codePointAt(0)!,
+    );
+    const supports = (name: ReturnType<typeof fontName>) => {
+      const asset = fonts[name];
+      return (
+        asset && points.every((point) => asset.font.hasGlyphForCodePoint(point))
+      );
+    };
+    if (style.font === 'SerifBold' && !supports('SerifBold'))
+      style = { ...style, font: 'Bold' };
+    if (!supports(fontName(style))) throw new CvPdfError('pdf_text_mismatch');
+    return style;
+  });
 
   const doc = new PDFDocument({
     size: 'A4',
@@ -249,17 +401,31 @@ export async function renderCvPdfBytes(
     },
   });
   try {
-    doc.registerFont('Regular', regular.bytes).registerFont('Bold', bold.bytes);
-    const layout = layoutPdf(doc, document.blocks, settings);
+    for (const [name, asset] of Object.entries(fonts))
+      doc.registerFont(name, asset.bytes);
+    const layout = layoutPdf(doc, document.blocks, styles, settings.margin);
     const output = readBytes(doc);
     try {
       for (const page of layout.pages) {
         doc.addPage();
+        if (settings.topRule) {
+          doc
+            .save()
+            .rect(
+              layout.margin,
+              layout.margin - 11,
+              CV_A4_WIDTH - 2 * layout.margin,
+              2.5,
+            )
+            .fill(settings.topRule)
+            .restore();
+        }
         for (const line of page) {
+          renderMarker(doc, line, layout.margin);
           selectFont(doc, line.style).fillColor(
             line.url ? '#205b88' : line.style.color,
           );
-          doc.text(line.text, layout.margin, line.top, {
+          doc.text(line.text, line.left, line.top, {
             lineBreak: false,
             link: line.url,
           });

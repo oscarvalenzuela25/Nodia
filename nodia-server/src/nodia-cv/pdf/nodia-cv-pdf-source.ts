@@ -3,6 +3,7 @@ import type {
   CvEvidenceSection,
   CvTailoringDraft,
 } from '../engine/index.js';
+import { normalizeCvTechnologyName } from '../engine/technologies.js';
 import type {
   CvDraftReviewContent,
   CvDraftReviewEvidence,
@@ -33,6 +34,7 @@ export interface CvPdfSourceSnapshot {
   facts: CvEvidenceFact[];
   evidence: CvDraftReviewEvidence[];
   section_order?: CvEvidenceSection[];
+  technologies?: NonNullable<CvDraftReviewContent['technologies']>;
 }
 
 const headings = {
@@ -41,6 +43,7 @@ const headings = {
     experience: 'Experiencia profesional',
     project: 'Proyectos',
     skills: 'Competencias',
+    technologies: 'Tecnologías',
     education: 'Formación',
     certification: 'Certificaciones',
     language: 'Idiomas',
@@ -52,6 +55,7 @@ const headings = {
     experience: 'Professional experience',
     project: 'Projects',
     skills: 'Skills',
+    technologies: 'Technical skills',
     education: 'Education',
     certification: 'Certifications',
     language: 'Languages',
@@ -88,6 +92,25 @@ const sections: readonly CvEvidenceSection[] = [
 ];
 const primaryFields = new Set(['position', 'title', 'name', 'language']);
 
+function snapshotTechnologies(
+  technologies: CvDraftReviewContent['technologies'],
+): CvPdfSourceSnapshot['technologies'] {
+  if (!technologies) return undefined;
+  const included = new Set(
+    technologies.included.map(normalizeCvTechnologyName),
+  );
+  return {
+    included: [...technologies.included],
+    additions: technologies.additions
+      .filter(
+        ({ name, status }) =>
+          status === 'confirmed' &&
+          included.has(normalizeCvTechnologyName(name)),
+      )
+      .map((entry) => ({ ...entry })),
+  };
+}
+
 export function snapshotCvPdfSource(source: CvPdfSource): CvPdfSourceSnapshot {
   const { profile, draft, review } = source;
   if (source.language !== draft.locale)
@@ -120,6 +143,7 @@ export function snapshotCvPdfSource(source: CvPdfSource): CvPdfSourceSnapshot {
       portfolio_url,
     },
   } = profile;
+  const technologies = snapshotTechnologies(review.technologies);
   return {
     language: source.language,
     profile: {
@@ -140,7 +164,10 @@ export function snapshotCvPdfSource(source: CvPdfSource): CvPdfSourceSnapshot {
       source,
       detail,
     })),
-    ...(review.section_order ? { section_order: [...review.section_order] } : {}),
+    ...(review.section_order
+      ? { section_order: [...review.section_order] }
+      : {}),
+    ...(technologies ? { technologies } : {}),
   };
 }
 
@@ -212,7 +239,8 @@ function experienceBlocks(
 export function composeCvPdfDocument(
   snapshot: CvPdfSourceSnapshot,
 ): CvPdfDocument {
-  const { language, profile, facts, evidence, section_order } = snapshot;
+  const { language, profile, facts, evidence, section_order, technologies } =
+    snapshot;
   const { email, phone, location, linkedin_url, github_url, portfolio_url } =
     profile.contact;
   const labels = headings[language];
@@ -238,10 +266,10 @@ export function composeCvPdfDocument(
       fact.text === profile.professional_title
     )
       continue;
-    const section =
-      fact.section === 'profile' && fact.field === 'main_stack'
-        ? 'skills'
-        : fact.section;
+    const isMainStack =
+      fact.section === 'profile' && fact.field === 'main_stack';
+    if (isMainStack && technologies) continue;
+    const section = isMainStack ? 'skills' : fact.section;
     const groups =
       bySection.get(section) ?? new Map<string, CvEvidenceFact[]>();
     const group = groups.get(fact.groupId) ?? [];
@@ -253,6 +281,13 @@ export function composeCvPdfDocument(
   const orderedSections = new Set([...(section_order ?? []), ...sections]);
   let hasSectionContent = false;
   for (const section of orderedSections) {
+    if (section === 'skills' && technologies?.included.length) {
+      blocks.push(
+        { kind: 'section', text: labels.technologies, keepWithNext: true },
+        { kind: 'body', text: technologies.included.join(' · ') },
+      );
+      hasSectionContent = true;
+    }
     const groups = bySection.get(section);
     if (!groups) continue;
     const content: CvPdfBlock[] = [];
@@ -283,7 +318,16 @@ export function composeCvPdfDocument(
     hasSectionContent = true;
   }
 
-  if (evidence.length) {
+  const technologyEvidence =
+    technologies?.additions.flatMap(({ name, source, detail }): CvPdfBlock[] =>
+      source && detail
+        ? [
+            { kind: 'group', text: `${name} · ${source}`, keepWithNext: true },
+            { kind: 'body', text: detail },
+          ]
+        : [],
+    ) ?? [];
+  if (evidence.length || technologyEvidence.length) {
     blocks.push({ kind: 'section', text: labels.evidence, keepWithNext: true });
     for (const entry of evidence) {
       blocks.push(
@@ -291,6 +335,7 @@ export function composeCvPdfDocument(
         { kind: 'body', text: entry.detail },
       );
     }
+    blocks.push(...technologyEvidence);
   }
 
   for (const block of blocks) {

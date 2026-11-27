@@ -220,5 +220,8 @@ export function buildCvDraft(
     requirements,
     selectedFacts: [...selected.values()],
     remainingFacts: prepared.evidence.filter((fact) => !selected.has(fact.id)),
+    ...(prepared.editTechnologyOptions
+      ? { technologyOptions: prepared.editTechnologyOptions }
+      : {}),
   };
 }

@@ -1,49 +1,25 @@
-import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Fragment } from "react";
+import { Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { cvExperiencePresentation } from "../../infrastructure/experiencePresentation";
-import type { CvDraftFact } from "../../infrastructure/generationSchema";
+import type { CvRequirement } from "../../infrastructure/generationSchema";
 import type { CvGenerationView } from "../../infrastructure/useCvGenerationWorkflow";
+import { cvLineFactIds, type CvPreviewPresentation } from "./previewPresentation";
+import { cvEvidenceHighlight } from "./styles";
 
-type FactGroup = { section: CvDraftFact["section"]; facts: CvDraftFact[] };
-const sections: CvDraftFact["section"][] = [
-  "profile",
-  "experience",
-  "project",
-  "skills",
-  "education",
-  "certification",
-  "language",
-  "additional",
-];
-const primaryFields = ["title", "name", "language"];
+type Props = {
+  view: CvGenerationView;
+  presentation: CvPreviewPresentation;
+  activeRequirement: CvRequirement | null;
+};
 
-export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
+export default function CvDraftDocument({ view, presentation, activeRequirement }: Props) {
   const { receipt, profile } = view;
   const { t } = useTranslation("nodiaCv", { lng: receipt.language });
-  const draft = receipt.draft;
-  if (!draft) return null;
-  const indexed = new Map([...draft.selectedFacts, ...draft.remainingFacts].map((fact) => [fact.id, fact]));
-  const included = receipt.review?.included_fact_ids ?? draft.selectedFacts.map((fact) => fact.id);
-  const groups = new Map<string, FactGroup>();
-  for (const id of included) {
-    const fact = indexed.get(id);
-    if (!fact) continue;
-    if (
-      fact.section === "profile" && fact.field === "professional_title" &&
-      fact.text === profile.professional_title
-    ) continue;
-    const section = fact.section === "profile" && fact.field === "main_stack" ? "skills" : fact.section;
-    const key = `${section}:${fact.groupId}`;
-    const group = groups.get(key) ?? { section, facts: [] };
-    group.facts.push(fact);
-    groups.set(key, group);
-  }
-
-  const orderedSections = new Set([...(receipt.review?.section_order ?? []), ...sections]);
-  const bySection = Array.from(orderedSections, (section) => ({
-    section,
-    groups: [...groups].filter(([, group]) => group.section === section),
-  }));
+  const highlightedFacts = new Set(activeRequirement?.evidenceIds);
+  const highlightedRequirementId = activeRequirement?.id;
+  const factHighlight = (ids: readonly string[]) => ids.some((id) => highlightedFacts.has(id)) || undefined;
+  const requirementHighlight = (ids: readonly string[]) =>
+    (highlightedRequirementId !== undefined && ids.includes(highlightedRequirementId)) || undefined;
   const contact = [
     profile.contact.location,
     profile.contact.email,
@@ -52,9 +28,11 @@ export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
     profile.contact.github_url,
     profile.contact.portfolio_url,
   ].filter(Boolean);
+  const showTechnologies = presentation.technologies.length > 0;
   return (
     <Stack
       component={Paper}
+      role="article"
       lang={receipt.language}
       variant="outlined"
       spacing={2.25}
@@ -71,7 +49,10 @@ export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
           {profile.full_name}
         </Typography>
         {profile.professional_title && (
-          <Typography sx={{ mt: 0.5, fontWeight: 600 }}>{profile.professional_title}</Typography>
+          <Typography data-cv-evidence-highlighted={factHighlight(presentation.titleFactIds)}
+            sx={[{ mt: 0.5, fontWeight: 600 }, cvEvidenceHighlight]}>
+            {profile.professional_title}
+          </Typography>
         )}
         {contact.length > 0 && (
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -80,53 +61,66 @@ export default function CvDraftDocument({ view }: { view: CvGenerationView }) {
         )}
       </Box>
       <Divider />
-      {bySection
-        .filter(({ groups }) => groups.length > 0)
-        .map(({ section, groups }, index) => (
-          <Stack component="section" key={section} spacing={1}>
-            {(section !== "profile" || index > 0) && (
+      {presentation.bySection.map(({ section, groups }, index) => (
+        <Fragment key={section}>
+          {section === "skills" && showTechnologies && (
+            <Stack component="section" spacing={1}>
               <Typography component="h4" variant="subtitle2" sx={{ fontWeight: 750 }}>
-                {t("document_sections." + section)}
+                {t("analysis_technologies")}
               </Typography>
-            )}
-            {groups.map(([id, group]) => {
-              const lines = group.facts;
-              const presentation =
-                group.section === "experience"
-                  ? cvExperiencePresentation(lines, t)
-                  : { heading: lines.find((fact) => primaryFields.includes(fact.field)), lines };
-              const { heading, lines: visibleLines } = presentation;
-              return (
+              <Stack component="ul" sx={{ flexDirection: "row", flexWrap: "wrap", gap: 1, listStyle: "none", m: 0, p: 0 }}>
+                {presentation.technologies.map(({ name, requirementIds }) => (
+                  <Chip key={name} component="li" label={name} size="small" variant="outlined"
+                    data-cv-evidence-highlighted={requirementHighlight(requirementIds)}
+                    sx={[{
+                      maxWidth: "100%", height: "auto", minHeight: 24,
+                      "& .MuiChip-label": { whiteSpace: "normal", overflowWrap: "anywhere", py: 0.25 },
+                    }, cvEvidenceHighlight]} />
+                ))}
+              </Stack>
+            </Stack>
+          )}
+          {groups.length > 0 && (
+            <Stack component="section" spacing={1}>
+              {(section !== "profile" || index > 0) && (
+                <Typography component="h4" variant="subtitle2" sx={{ fontWeight: 750 }}>
+                  {t("document_sections." + section)}
+                </Typography>
+              )}
+              {groups.map(({ id, heading, lines }) => (
                 <Stack key={id} spacing={0.25}>
                   {heading && (
-                    <Typography component="h5" variant="body2" sx={{ fontWeight: 700 }}>
+                    <Typography component="h5" variant="body2"
+                      data-cv-evidence-highlighted={factHighlight([heading.id])}
+                      sx={[{ fontWeight: 700 }, cvEvidenceHighlight]}>
                       {heading.text}
                     </Typography>
                   )}
-                  {visibleLines
-                    .filter((fact) => fact.id !== heading?.id)
-                    .map((fact) => (
-                      <Typography key={fact.id} variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                        {fact.text}
-                      </Typography>
-                    ))}
+                  {lines.map((line) => (
+                    <Typography key={line.id} variant="body2"
+                      data-cv-evidence-highlighted={factHighlight(cvLineFactIds(line))}
+                      sx={[{ whiteSpace: "pre-wrap" }, cvEvidenceHighlight]}>
+                      {line.text}
+                    </Typography>
+                  ))}
                 </Stack>
-              );
-            })}
-          </Stack>
-        ))}
-      {!!receipt.review?.evidence.length && (
+              ))}
+            </Stack>
+          )}
+        </Fragment>
+      ))}
+      {presentation.confirmed.length > 0 && (
         <Stack component="section" spacing={0.75}>
           <Typography component="h4" variant="subtitle2" sx={{ fontWeight: 750 }}>
             {t("document_confirmed_evidence")}
           </Typography>
-          {receipt.review.evidence.map((item) => (
-            <Box key={item.requirement_id}>
+          {presentation.confirmed.map(({ key, source, detail, requirementIds }) => (
+            <Box key={key} data-cv-evidence-highlighted={requirementHighlight(requirementIds)} sx={cvEvidenceHighlight}>
               <Typography variant="body2" sx={{ fontWeight: 650 }}>
-                {item.source}
+                {source}
               </Typography>
               <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                {item.detail}
+                {detail}
               </Typography>
             </Box>
           ))}
