@@ -348,13 +348,14 @@ describe('BuildNodiaAiContextUseCase', () => {
       phase: 'discovery' | 'execution',
       toolSelectionProfileId?: string,
       catalogCanSearchAllBusinesses?: boolean,
+      mode = 'agentic',
     ): string =>
       JSON.parse(
         useCase.execute({
           moduleRoutes: ['/nodia-ai', '/business'],
           throughSeq: '1',
           history: [],
-          mode: 'agentic',
+          mode,
           toolSelection: {
             schema_version: 1,
             phase,
@@ -413,6 +414,19 @@ describe('BuildNodiaAiContextUseCase', () => {
       'meta.total_pages',
     );
     expect(instructions('execution')).not.toContain('meta.total_pages');
+
+    const api = instructions('execution', 'product_catalog_reads', true, 'api_key');
+    expect(api).toContain('all_businesses: true');
+    expect(api).toContain('Haz como máximo una búsqueda de negocio');
+    expect(api).toContain('Haz una sola lectura de productos');
+    expect(api).toContain('usa limit: N');
+    expect(api).toContain('q.s: "name asc"');
+    expect(api).toContain('meta.total_items');
+    expect(api).toContain('Responde con texto después de recibir el resultado');
+    expect(api).not.toContain('variante plausible');
+    expect(api).not.toContain('responde con finish');
+    expect(instructions('execution', 'product_catalog_reads', false, 'api_key'))
+      .not.toContain('all_businesses');
   });
   const snapshot = (): NodiaAiCompactionSnapshot => ({
     id: 'f32a0ebe-9865-4e5d-9b38-25a886a6c694',

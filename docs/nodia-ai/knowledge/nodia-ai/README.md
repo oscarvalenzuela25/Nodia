@@ -334,6 +334,32 @@ sin aprobación documental ni publicación del contexto.
 
 Las rutas de `ops/lab/artifacts/` citadas debajo identifican originales locales ignorados por Git; no se distribuyen con un checkout ni con el paquete productivo. Se conservan sus nombres, hechos y fuentes portables ya enlazadas, sin copiar originales, alterar evidencias o ampliar aprobación/publicación. Esta revisión sólo corrige su presentación documental y sigue draft/unregistered, con approval:null.
 
+## Catálogo de productos en API key — 2026-11-27
+
+El [candidato de lectura acotada](../../../mvp/92-nodia-ai-api-chat-parity.md#consultas-del-catálogo-de-productos--2026-11-27)
+preselecciona las dos lecturas de negocio y productos en solicitudes
+inequívocas cuando function calling está habilitado y el actor tiene
+acceso. La herramienta usa la página solicitada para los precios y su
+metadato para el total. La búsqueda global por nombre específico
+requiere `super_admin`. El gateway conserva la validación vigente de
+ámbito y las lecturas de Productos mantienen su contrato.
+
+La corrección afecta la admisión y las indicaciones de ejecución.
+Las revisiones aprobadas de [Productos](../businesses/features/products.md)
+y [chat API key](features/api-key-chat-parity.md) mantienen sus operaciones,
+esquemas y cuerpos. La verificación del candidato con un proveedor real
+queda pendiente por selección y entorno.
+
+## Catálogo de productos en Codex Agentic — 2026-11-27
+
+El [candidato de Codex](../../../mvp/40-nodia-ai-tool-catalog-v1.md#lectura-de-catálogo-en-codex-agentic--2026-11-27)
+preselecciona las dos lecturas publicadas al detectar una solicitud
+inequívoca con MCP calificado para la selección actual. Conserva el
+acceso por negocio, la búsqueda global por nombre para `super_admin`
+y las lecturas paginadas. Los recursos, esquemas y fichas aprobadas
+conservan sus revisiones. La calificación de MCP y la comprobación del
+listado con el candidato son evidencias distintas.
+
 ## Ampliación candidata: chat API key — 2026-10-27
 
 [Paridad API key](features/api-key-chat-parity.md), [coordinación revisión18](features/conversation-coordination.md), [OCR/comparación revisión2](features/invoice-ocr-product-comparison.md), [imágenes revisión4](features/image-generation.md) y [adjuntos revisión11](features/attachments-and-voice.md) son borradores para revisión humana conforme [plan92](../../../mvp/92-nodia-ai-api-chat-parity.md). El [gateway común draft](features/capability-registry-gateway.md) permite API sin afirmar MCP; comparte grants, permisos41/89 y confirmación, ledger/proof HTTP3 y presupuesto por POST. Código implementado con ensayos SQL/API/VM aún pendientes. Los originales aprobados se conservan en el catálogo privado local `ops/lab/artifacts/api-chat-parity-r01/catalog.json` (ignorado por Git); no se hereda su aceptación de Agentic a API ni se declaran 151 operaciones reales verificadas. Este índice permanece draft/unregistered/approval:null. Los cortes inferiores conservan sus fechas y alcances anteriores.
