@@ -64,6 +64,28 @@ GET con digest. El respaldo observado demuestra que hay una copia legible.
 La siguiente entrega debe generar y verificar su propio respaldo fresco.
 Ambas barreras verifican el recibo antes de admitir una intención nueva.
 
+### Espera agotada antes de detener escritores — 2026-11-27
+
+La entrega de catálogo quedó en `waiting_for_quiescence` con
+`live_or_unconfirmed_runtime_work`. El respaldo se registró y el
+release anterior permaneció activo durante la recuperación de disponibilidad.
+El ledger conservó 87 migraciones. El recibo de disponibilidad observó
+tres trabajos históricos de Teacher y preservó el estado remoto incierto.
+
+El candidato incorpora el estado independiente
+`quiescence_reconciled_before_migration`, limitado a la operación
+`4f74fce53e7101cddfa0484ed6711ca7` y a los originales verificados.
+El recibo de disponibilidad acredita la recuperación del servicio.
+Para el acuse de CD se exige además una inspección posterior del mismo
+release con TLS autorizado, transacción de solo lectura, ledger sin
+cambios y nueve contadores de quiescencia en cero. El acuse debe quedar
+dentro de los 120 segundos siguientes a esa inspección y conservar la
+identidad de ambos escritores. Las dos barreras verifican la misma
+evidencia y los intentos ajenos conservan su propia barrera.
+El ID fallido y su respaldo histórico se conservan. Una entrega posterior
+necesita una intención nueva y su propio respaldo y verificaciones.
+[Runbook del caso](../../../ops/production/README.md#conciliación-antes-de-detener-escritores--2026-11-27).
+
 ## Consecuencias
 
 - Se conserva evidencia honesta: recuperar f01 no equivale a desplegar el candidato.

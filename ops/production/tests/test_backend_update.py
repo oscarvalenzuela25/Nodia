@@ -179,6 +179,140 @@ def backup_request_fixture(*, changes=None, request_change=None):
              'BACKUP_REQUEST_CANDIDATE_MANIFEST_SHA256': '3' * 64})
 
 
+def quiescence_fixture(*, changes=None, request_change=None):
+    changes = changes or {}
+
+    def encode(value, **kwargs):
+        return (json.dumps(value, **kwargs) + '\n').encode()
+
+    def digest(raw):
+        return hashlib.sha256(raw).hexdigest()
+
+    req = {**request(), **(request_change or {})}
+    operation = req['operation_id']
+    current = req['expected_current_release']
+    current_source = current.split('-')[1] + 'a' * 28
+    candidate = 'backend-' + req['source_sha'][:12] + '-' + 'f' * 12
+    timers = {name: {'active': True, 'enabled': 'enabled'} for name in policy.QUIESCENCE_TIMERS}
+    state = {'schema_version': 1, 'operation_id': operation, 'phase': 'failed',
+             'failed_phase': 'waiting_for_quiescence', 'error_code': 'live_or_unconfirmed_runtime_work',
+             'effects_started': True, 'migration_requested': False, 'automatic_retry_allowed': False,
+             'previous_release': current, 'candidate_release': candidate, 'timers_before': timers,
+             'backup': {'backup_id': '11111111-1111-4111-8111-111111111111', 'cipher_sha256': 'b' * 64,
+                        'captured_at': '2026-11-27T21:45:00Z', 'journal_sequence': 0},
+             **changes.get('state', {})}
+    state_bytes, request_bytes = encode(state, sort_keys=True), encode(req, sort_keys=True)
+    blocked = policy.blocked_record_bytes(state)
+    manifest = {'schema_version': 1, 'release_id': current,
+                'source_sha': current_source, 'package_tree_sha256': req['expected_current_tree_sha256'],
+                'files': [{'path': f'dist/migrations/{timestamp}-Fixture.js', 'type': 'file', 'sha256': 'f' * 64}
+                          for timestamp in ('1790000000000', '1790000000001')],
+                **changes.get('manifest', {})}
+    manifest_bytes = encode(manifest)
+    ledger_rows = [{'timestamp': timestamp, 'name': f'Fixture{timestamp}'}
+                   for timestamp in ('1790000000000', '1790000000001')]
+    ledger = digest(json.dumps(ledger_rows, separators=(',', ':')).encode())
+    writers = {'nodia-api.service': {'pid': 10, 'invocation': 'a' * 32},
+               'nodia-ai-worker.service': {'pid': 11, 'invocation': 'b' * 32}}
+    stable = {
+        'operation_id': operation, 'release_id': current, 'candidate_release': candidate,
+        'package_tree_sha256': req['expected_current_tree_sha256'], 'current_manifest_sha256': digest(manifest_bytes),
+        'writer_identities': writers, 'ledger_sha256': ledger, 'migration_count': len(ledger_rows),
+        'originals': {'state': digest(state_bytes), 'request': digest(request_bytes), 'attempt_request': digest(request_bytes),
+                      'blocked': digest(blocked), 'timers': digest(encode(timers)), 'settings': 'a' * 64,
+                      'receiver_settings': 'b' * 64, 'deployed': 'c' * 64},
+        **changes.get('stable', {}),
+    }
+    historical = {'before': len(ledger_rows), 'target': len(ledger_rows), 'pending': 0, 'ledger_sha256': ledger,
+                  'read_only': True, 'client_tls_authorized': True, 'quiescent': False, 'migrations_executed': False,
+                  'counts': {**dict.fromkeys(policy.RUNTIME_COUNTERS, 0), 'teacher_jobs': 3}}
+    availability = {
+        'schema_version': 1, 'status': 'same_release_availability_restored', **stable,
+        'observed_pin': digest(json.dumps(stable, sort_keys=True, separators=(',', ':')).encode()),
+        'quiescence': historical, 'diagnostic_directory': '/var/lib/nodia-updates/diagnostics/quiescence-availability-' + 'b' * 32,
+        'migrations_requested': False, 'deployment_performed': False, 'cd_unblocked': False,
+        'original_operation_retry_allowed': False, 'writers_restarted': False, 'maintenance_removed': True,
+        'timers_restored': True, 'cors_verified': True, 'originals_preserved': True,
+        'started_at_utc': '2026-11-27T21:53:59Z', 'completed_at_utc': '2026-11-27T21:54:04Z',
+        **changes.get('availability', {}),
+    }
+    availability_sha = digest(encode(availability, sort_keys=True, indent=2))
+    inspection = {**historical, 'schema_version': 1, 'status': 'verified', 'mode': 'inspect',
+                  'incremental_migrations': 0, 'quiescent': True, 'counts': dict.fromkeys(policy.RUNTIME_COUNTERS, 0),
+                  **changes.get('inspection', {})}
+    recovery = {'schema_version': 1, 'status': 'quiescence_reconciliation_evidence', 'operation_id': operation,
+                'availability_receipt': availability, 'availability_receipt_sha256': availability_sha,
+                'ledger_inspection': inspection, 'ledger_observed_at_utc': '2026-11-27T22:01:00Z',
+                'writer_identities': writers, **changes.get('recovery', {})}
+    recovery_bytes = encode(recovery)
+    pins = {'state_sha256': digest(state_bytes), 'request_sha256': digest(request_bytes), 'blocked_sha256': digest(blocked),
+            'current_manifest_sha256': digest(manifest_bytes), 'package_tree_sha256': req['expected_current_tree_sha256'],
+            'ledger_sha256': ledger}
+    receipt = {'schema_version': 1, 'status': policy.QUIESCENCE_ACKNOWLEDGMENT, 'operation_id': operation,
+               'current_release_id': current, **pins, 'migration_count': len(ledger_rows),
+               'recovery_receipt_sha256': digest(recovery_bytes), 'acknowledged_at_utc': '2026-11-27T22:01:30Z',
+               'new_operation_allowed': True, 'original_operation_retry_allowed': False,
+               **changes.get('receipt', {})}
+    return receipt, {'state_bytes': state_bytes, 'request_bytes': request_bytes, 'blocked_bytes': blocked,
+                     'manifest_bytes': manifest_bytes, 'recovery_bytes': recovery_bytes}, {
+        'QUIESCENCE_PINS': pins, 'QUIESCENCE_OPERATION': operation, 'QUIESCENCE_REQUEST_SOURCE': req['source_sha'],
+        'QUIESCENCE_CURRENT_SOURCE': current_source, 'QUIESCENCE_CURRENT_RELEASE': current,
+        'QUIESCENCE_CANDIDATE': candidate, 'QUIESCENCE_MIGRATION_COUNT': len(ledger_rows),
+        'QUIESCENCE_AVAILABILITY_SHA256': availability_sha,
+    }
+
+
+class QuiescenceReconciliationTests(unittest.TestCase):
+    def test_original_nonzero_snapshot_and_fresh_zero_snapshot_are_independent(self):
+        receipt, evidence, pins = quiescence_fixture()
+        with patch.multiple(policy, **pins):
+            self.assertEqual(policy.validate_pre_migration_reconciliation(receipt, **evidence), receipt)
+            self.assertEqual(policy.validate_pre_migration_reconciliation(
+                receipt, **{**evidence, 'blocked_bytes': None}), receipt)
+
+    def test_only_exact_operation_and_immutable_original_bytes_are_acknowledged(self):
+        receipt, evidence, pins = quiescence_fixture()
+        with patch.multiple(policy, **pins):
+            for field, raw in evidence.items():
+                with self.subTest(field=field), self.assertRaises(policy.Rejected):
+                    policy.validate_pre_migration_reconciliation(receipt, **{**evidence, field: raw + b' '})
+            for changes in ({'operation_id': 'f' * 32}, {'original_operation_retry_allowed': True},
+                            {'new_operation_allowed': False}, {'status': 'same_release_restored_before_migration'}):
+                with self.subTest(changes=changes), self.assertRaises(policy.Rejected):
+                    policy.validate_pre_migration_reconciliation({**receipt, **changes}, **evidence)
+        with self.assertRaises(policy.Rejected):
+            policy.validate_pre_migration_reconciliation(receipt, **evidence)
+
+    def test_rehashed_invalid_reconciliation_is_rejected(self):
+        for changes in (
+            {'state': {'failed_phase': 'stopping_writers'}},
+            {'state': {'error_code': 'host_command_failed_inspect_private_diagnostics'}},
+            {'state': {'migration_requested': True}},
+            {'state': {'backup': None}},
+            {'state': {'timers_before': {}}},
+            {'manifest': {'source_sha': '0' * 40}},
+            {'availability': {'writers_restarted': True}},
+            {'availability': {'cd_unblocked': True}},
+            {'availability': {'maintenance_removed': False}},
+            {'availability': {'observed_pin': '0' * 64}},
+            {'inspection': {'read_only': False}},
+            {'inspection': {'client_tls_authorized': False}},
+            {'inspection': {'migrations_executed': True}},
+            {'inspection': {'pending': 1}},
+            {'inspection': {'quiescent': False, 'counts': {**dict.fromkeys(policy.RUNTIME_COUNTERS, 0), 'teacher_jobs': 1}}},
+            {'inspection': {'counts': {**dict.fromkeys(policy.RUNTIME_COUNTERS, 0), 'jobs': False}}},
+            {'inspection': {'counts': {}}},
+            {'recovery': {'ledger_observed_at_utc': '2026-11-27T21:53:00Z'}},
+            {'recovery': {'ledger_observed_at_utc': '2026-11-27T22:02:00Z'}},
+            {'recovery': {'ledger_observed_at_utc': '2026-11-27T21:59:29Z'}},
+            {'recovery': {'writer_identities': {}}},
+            {'recovery': {'availability_receipt_sha256': '0' * 64}},
+        ):
+            receipt, evidence, pins = quiescence_fixture(changes=changes)
+            with self.subTest(changes=changes), patch.multiple(policy, **pins), self.assertRaises(policy.Rejected):
+                policy.validate_pre_migration_reconciliation(receipt, **evidence)
+
+
 class BackupRequestReconciliationTests(unittest.TestCase):
     def test_original_failure_remains_unknown_and_only_new_operations_are_allowed(self):
         receipt, evidence, pins = backup_request_fixture()

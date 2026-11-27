@@ -116,12 +116,20 @@ CREATE TABLE nodia_ai_jobs(state text,kind text,stage_key text);
 CREATE TABLE nodia_ai_runs(state text);
 CREATE TABLE nodia_ai_executions(state text);
 CREATE TABLE nodia_ai_execution_steps(state text);
-CREATE TABLE nodia_ai_runtime_slots(state text);
+CREATE TABLE nodia_ai_runtime_slots(state text,generation_operation_id uuid);
 CREATE TABLE nodia_ai_api_dispatches(state text,acknowledged_at timestamptz);
-CREATE TABLE teacher_generation_jobs(state text);
-CREATE TABLE teacher_generation_attempts(phase text,ended_at timestamptz);
+CREATE TABLE teacher_sessions(id uuid,owner_user_id bigint,state text);
+CREATE TABLE teacher_generation_jobs(state text,id uuid,session_id uuid,actor_id bigint,error_code text,
+ selection_snapshot jsonb,dispatches_used int,blocks_duplicate boolean,lease_owner uuid,lease_until timestamptz,
+ fence bigint,configuration_generation text,session_generation text);
+CREATE TABLE teacher_generation_attempts(phase text,ended_at timestamptz,
+ id uuid,session_id uuid,job_id uuid,fence bigint,worker_id uuid);
 CREATE TABLE ai_generation_operations(phase text,owner_kind text,acknowledged_at timestamptz,
- agentic_transport_descriptor jsonb,agentic_acknowledged_at timestamptz,selection_snapshot jsonb,remote_outcome text);`);
+ agentic_transport_descriptor jsonb,agentic_acknowledged_at timestamptz,selection_snapshot jsonb,remote_outcome text,
+ id uuid,teacher_attempt_id uuid,teacher_job_id uuid,teacher_session_id uuid,owner_fence bigint,runtime_fence bigint,
+ worker_id uuid,actor_id bigint,configuration_generation text,session_generation text,response_hash char(64),
+ reserved_exchanges int,started_exchanges int,terminal_proof jsonb,request_hash char(64),resource_key text,
+ connection_id bigint);`);
 for (const item of migrationInventory(manifest)) await gates.query('INSERT INTO migrations(timestamp,name) VALUES($1,$2)', [item.timestamp, item.name]);
 const scenario = async (name, insert, expectedCount, counter) => {
   await gates.query('BEGIN');
@@ -150,6 +158,82 @@ await scenario('terminal Teacher attempt with closure time does not block', "INS
 await scenario('unclosed neutral operation blocks', "INSERT INTO ai_generation_operations(phase,owner_kind,selection_snapshot) VALUES('transport_open','chat','{\"mode\":\"agentic\"}')", 1, 'generation_operations');
 await scenario('Teacher Agentic ACK pending blocks', "INSERT INTO ai_generation_operations VALUES('closed','teacher',now(),'{}',NULL,'{\"mode\":\"agentic\"}','unknown')", 1, 'generation_operations');
 await scenario('historical unknown Teacher closed and ACKed is allowed', "INSERT INTO ai_generation_operations VALUES('closed','teacher',now(),'{}',now(),'{\"mode\":\"agentic\"}','unknown')", 0, 'generation_operations');
+const teacherSession = '00000000-0000-4000-8000-000000000101';
+const teacherJob = '00000000-0000-4000-8000-000000000102';
+const teacherAttempt = '00000000-0000-4000-8000-000000000103';
+const teacherWorker = '00000000-0000-4000-8000-000000000104';
+const teacherProof = '00000000-0000-4000-8000-000000000105';
+const selection = { mode: 'agentic', connection_id: '7', model_id: 'fixture-model', effort_id: null };
+const reference = {
+  contract: 'teacher-agentic-text/1', operation_id: teacherAttempt, attempt_id: teacherAttempt,
+  session_id: teacherSession, job_id: teacherJob, actor_id: '8', connection_id: selection.connection_id,
+  model_id: selection.model_id, effort_id: selection.effort_id,
+  resource_key: 'codex-profile:' + 'a'.repeat(64), configuration_generation: 'b'.repeat(64),
+  session_generation: 'c'.repeat(32), runtime_hash: 'd'.repeat(64), policy_hash: 'e'.repeat(64),
+  request_hash: 'f'.repeat(64),
+};
+const operationRequestHash = '9'.repeat(64);
+const terminal = {
+  schema_version: 2, contract: reference.contract, operation_id: teacherAttempt, request_hash: operationRequestHash,
+  owner: { kind: 'teacher_agentic', descriptor_hash: 'a'.repeat(64) }, owner_fence: '2', runtime_fence: '3',
+  local_transport_closed: true, remote_outcome: 'unknown', response_hash: null,
+  dispatch_not_armed: false, transport_not_started: false,
+  native_proof: { ...reference, terminal_proof_id: teacherProof, process_closed: true,
+    remote_outcome: 'unknown', response_hash: null, observed_at: '2026-11-27T10:00:00.000Z' },
+};
+const sqlJson = value => "'" + JSON.stringify(value).replaceAll("'", "''") + "'::jsonb";
+const archivedTeacher = `
+INSERT INTO teacher_sessions VALUES ('${teacherSession}',8,'archived');
+INSERT INTO teacher_generation_jobs VALUES ('unknown','${teacherJob}','${teacherSession}',8,'provider_outcome_unknown',
+  ${sqlJson(selection)},1,false,NULL,NULL,2,'${reference.configuration_generation}','${reference.session_generation}');
+INSERT INTO teacher_generation_attempts VALUES ('terminal',now(),'${teacherAttempt}','${teacherSession}','${teacherJob}',2,'${teacherWorker}');
+INSERT INTO ai_generation_operations VALUES ('closed','teacher',now(),${sqlJson({ provider: 'openai', reference })},
+  now(),${sqlJson(selection)},'unknown','${teacherAttempt}','${teacherAttempt}','${teacherJob}','${teacherSession}',2,3,
+  '${teacherWorker}',8,'${reference.configuration_generation}','${reference.session_generation}',NULL,1,1,${sqlJson(terminal)},
+  '${operationRequestHash}','${reference.resource_key}',7);
+`;
+await scenario('archived Teacher unknown with exact native closure and both ACKs does not block', archivedTeacher, 0, 'teacher_jobs');
+for (const [name, changed] of [
+  ['queued Teacher job', "UPDATE teacher_generation_jobs SET state='queued'"],
+  ['running Teacher job', "UPDATE teacher_generation_jobs SET state='running'"],
+  ['unknown in an active Teacher session', "UPDATE teacher_sessions SET state='active'"],
+  ['unknown for another Teacher session', 'UPDATE teacher_generation_attempts SET session_id=gen_random_uuid()'],
+  ['unavailable Teacher session', 'DELETE FROM teacher_sessions'],
+  ['API key Teacher job', "UPDATE teacher_generation_jobs SET selection_snapshot=selection_snapshot || '{\"mode\":\"api_key\"}'"],
+  ['unknown still blocking duplicates', 'UPDATE teacher_generation_jobs SET blocks_duplicate=true'],
+  ['unknown with a lease owner', 'UPDATE teacher_generation_jobs SET lease_owner=gen_random_uuid()'],
+  ['unknown with a lease deadline', 'UPDATE teacher_generation_jobs SET lease_until=now()'],
+  ['unknown without terminal attempt', 'DELETE FROM teacher_generation_attempts'],
+  ['unknown with an open attempt', "UPDATE teacher_generation_attempts SET phase='transport_open'"],
+  ['unknown with missing terminal attempt time', 'UPDATE teacher_generation_attempts SET ended_at=NULL'],
+  ['unknown with an additional attempt', "INSERT INTO teacher_generation_attempts "
+    + "SELECT 'terminal',now(),gen_random_uuid(),session_id,job_id,3,worker_id FROM teacher_generation_attempts"],
+  ['unknown with stale attempt fence', 'UPDATE teacher_generation_attempts SET fence=4'],
+  ['unknown with a mismatched operation worker', 'UPDATE ai_generation_operations SET worker_id=gen_random_uuid()'],
+  ['unknown without a matching local operation', 'DELETE FROM ai_generation_operations'],
+  ['unknown with retained operation transport', "UPDATE ai_generation_operations SET phase='transport_open'"],
+  ['unknown missing its SQL ACK', 'UPDATE ai_generation_operations SET acknowledged_at=NULL'],
+  ['unknown missing its native ACK', 'UPDATE ai_generation_operations SET agentic_acknowledged_at=NULL'],
+  ['unknown without a native descriptor', 'UPDATE ai_generation_operations SET agentic_transport_descriptor=NULL'],
+  ['unknown missing its local transport receipt', "UPDATE ai_generation_operations SET terminal_proof=terminal_proof-'local_transport_closed'"],
+  ['unknown with incomplete native proof', "UPDATE ai_generation_operations SET terminal_proof=terminal_proof-'native_proof'"],
+  ['unknown with malformed native proof', "UPDATE ai_generation_operations SET terminal_proof=jsonb_set(terminal_proof,'{native_proof}','false')"],
+  ['unknown without proof of process closure', "UPDATE ai_generation_operations SET terminal_proof=jsonb_set(terminal_proof,'{native_proof,process_closed}','false')"],
+  ['unknown with a mismatched native proof identity', "UPDATE ai_generation_operations SET terminal_proof=jsonb_set(terminal_proof,'{native_proof,job_id}',to_jsonb(gen_random_uuid()))"],
+  ['unknown with a mismatched parent request digest', "UPDATE ai_generation_operations "
+    + "SET terminal_proof=jsonb_set(terminal_proof,'{request_hash}',to_jsonb(repeat('0',64)))"],
+  ['unknown with a malformed native request digest', "UPDATE ai_generation_operations "
+    + "SET terminal_proof=jsonb_set(terminal_proof,'{native_proof,request_hash}',to_jsonb('malformed'::text)), "
+    + "agentic_transport_descriptor=jsonb_set(agentic_transport_descriptor,'{reference,request_hash}',to_jsonb('malformed'::text))"],
+  ['unknown with an incomplete but matching native reference', "UPDATE ai_generation_operations "
+    + "SET terminal_proof=terminal_proof #- '{native_proof,policy_hash}', "
+    + "agentic_transport_descriptor=agentic_transport_descriptor #- '{reference,policy_hash}'"],
+  ['unknown with a malformed closure time', "UPDATE ai_generation_operations "
+    + "SET terminal_proof=jsonb_set(terminal_proof,'{native_proof,observed_at}',to_jsonb('not-a-time'::text))"],
+  ['unknown retaining its runtime slot', "INSERT INTO nodia_ai_runtime_slots SELECT 'held',id FROM ai_generation_operations"],
+]) {
+  await scenario(`${name} blocks Teacher quiescence`, archivedTeacher + changed, 1, 'teacher_jobs');
+}
 await scenario('historical unknown Agentic chat requires no neutral API ACK', "INSERT INTO ai_generation_operations VALUES('closed','chat',NULL,NULL,NULL,'{\"mode\":\"agentic\"}','unknown')", 0, 'generation_operations');
 await scenario('API chat neutral ACK pending blocks', "INSERT INTO ai_generation_operations VALUES('closed','chat',NULL,NULL,NULL,'{\"mode\":\"api_key\"}','unknown')", 1, 'generation_operations');
 await gates.query("INSERT INTO nodia_ai_runtime_slots VALUES('unknown')");
