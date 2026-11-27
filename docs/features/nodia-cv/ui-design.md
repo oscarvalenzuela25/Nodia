@@ -321,3 +321,15 @@ Probar validación y transiciones en la unidad que las decide y recorrer la UI
 en navegador con API aislada antes del piloto. Registrar ancho, tema, idioma,
 fuente de datos y pruebas de teclado, touch o dispositivo físico por separado.
 Mantener capturas fuera de Git según la [política de evidencia](../../evidence/README.md).
+
+## 7. Ajustes a la revisión y al historial
+
+El resaltado de la evidencia dentro de la vista previa usa un borde recto e
+interior. Cada párrafo conserva su propio límite aunque también se resalte el
+párrafo adyacente.
+
+Los desplegables de documentos conservan una separación al expandirse o
+cerrarse. El diálogo de salida muestra la explicación en el cuerpo y las tres
+acciones juntas en escritorio. En móvil se apilan a ancho completo. **Seguir
+editando** recibe el foco inicial. En el detalle guardado se muestran primero el
+archivo, su comprobación y sus acciones. El análisis de la oferta queda debajo.

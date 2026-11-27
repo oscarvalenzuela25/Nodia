@@ -187,7 +187,7 @@ function ApplicationDocumentsEditor({ view, owner, version, revision, onDenial }
   if (denied) return <Alert severity="error">{t("application_documents.access_denied")}</Alert>;
   return (
     <Paper component="section" aria-labelledby={heading} variant="outlined" sx={{ p: 2 }}>
-      <Stack spacing={1.5}>
+      <Stack spacing={1.5} useFlexGap>
         <Typography id={heading} component="h2" variant="h6">{t("application_documents.title")}</Typography>
         <Typography variant="body2" color="text.secondary">{t("application_documents.temporary")}</Typography>
         <DocumentPanel title={t("application_documents.cover_title")}>{renderEditor("cover")}</DocumentPanel>
