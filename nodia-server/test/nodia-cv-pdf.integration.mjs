@@ -6,7 +6,10 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 import PDFDocument from 'pdfkit';
-import { CV_PDF_LIMITS } from '../dist/nodia-cv/pdf/nodia-cv-pdf-contract.js';
+import {
+  CV_PDF_LIMITS,
+  CV_PDF_TEMPLATES,
+} from '../dist/nodia-cv/pdf/nodia-cv-pdf-contract.js';
 import { renderCvPdfBytes } from '../dist/nodia-cv/pdf/nodia-cv-pdf-layout.js';
 import { verifyCvPdf } from '../dist/nodia-cv/pdf/nodia-cv-pdf-read.js';
 import {
@@ -262,7 +265,8 @@ try {
   );
   const classicShort = await active;
   const firstElapsed = Math.round(performance.now() - firstStart);
-  for (const template of ['classic', 'compact']) {
+  const classicText = new Map();
+  for (const template of CV_PDF_TEMPLATES) {
     for (const [name, fixture] of fixtures) {
       const started = performance.now();
       const result =
@@ -280,6 +284,8 @@ try {
       assert.equal(createHash('sha256').update(bytes).digest('hex'), sha256);
       assert.equal(page_count === 1, name.endsWith('corto'));
       assert.equal(result.missing_contact, name === 'en-corto');
+      if (template === 'classic') classicText.set(name, extracted_text);
+      else assert.equal(extracted_text, classicText.get(name));
       assert.ok(extracted_text.startsWith(fixture.profile.full_name));
       const skills = fixture.language === 'es' ? 'Competencias' : 'Skills';
       const experience =
@@ -341,7 +347,7 @@ try {
     const document = composeCvPdfDocument(snapshotCvPdfSource(periods));
     const position =
       language === 'es' ? 'Desarrollo de software' : 'Software development';
-    for (const template of ['classic', 'compact']) {
+    for (const template of CV_PDF_TEMPLATES) {
       const { bytes, layout } = await renderCvPdfBytes(document, template);
       const confirmed = await verifyCvPdf(bytes, document, layout);
       const lines = confirmed.extracted_text.split('\n');
@@ -374,6 +380,20 @@ try {
 
   const document = composeCvPdfDocument(filtered);
   const layout = (await renderCvPdfBytes(document, 'classic')).layout;
+  const editorial = (await renderCvPdfBytes(document, 'editorial')).layout;
+  const modern = (await renderCvPdfBytes(document, 'contemporary')).layout;
+  assert.equal(editorial.pages[0][0].style.font, 'SerifBold');
+  assert.ok(editorial.pages[0].some(({ marker }) => marker === 'rule'));
+  assert.ok(modern.pages[0][0].left > modern.margin);
+  assert.ok(modern.pages[0].some(({ marker }) => marker === 'bar'));
+  for (const variant of [editorial, modern]) {
+    const bodyLines = variant.pages
+      .flat()
+      .filter(({ block }) =>
+        ['section', 'group', 'body'].includes(document.blocks[block].kind),
+      );
+    assert.ok(bodyLines.every(({ left }) => left === variant.margin));
+  }
   await assert.rejects(
     verifyCvPdf(Buffer.from('%PDF-1.7\nbroken'), document, layout),
     { code: 'pdf_read_failed' },

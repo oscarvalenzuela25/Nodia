@@ -47,16 +47,16 @@ function fixture() {
     extracted_text: 'Synthetic Test',
     missing_contact: true,
   };
-  let complete = () => {};
+  let complete: (pageCount?: number) => void = () => {};
   const pending = new Promise<typeof output>((resolve) => {
-    complete = () => resolve(output);
+    complete = (pageCount = 1) => resolve({ ...output, page_count: pageCount });
   });
   const render = vi.fn(() => pending);
   const useCase = new NodiaCvPdfVersionsUseCase(
     { transaction, authorize } as unknown as NodiaCvGenerationScope,
     { status } as unknown as NodiaCvGenerationStore,
     { prepared, insertPrepared } as unknown as NodiaCvPdfVersionsStore,
-    { render } as unknown as NodiaCvPdfRenderer,
+    { render, renderDocument: render } as unknown as NodiaCvPdfRenderer,
   );
   return { status, row, authorize, insertPrepared, render, complete, useCase };
 }
@@ -91,6 +91,41 @@ describe('Nodia CV publication fence for verified PDFs', () => {
     await expect(work).rejects.toMatchObject({
       status: 409,
       message: 'nodiaCv:stale_draft',
+    });
+    expect(test.insertPrepared).not.toHaveBeenCalled();
+  });
+});
+
+describe('Nodia CV application document delivery', () => {
+  const letter = {
+    revision: 1,
+    kind: 'recommendation',
+    text: 'Reviewed synthetic experience.',
+  } as const;
+
+  it('checks the draft revision after rendering and keeps application PDFs transient', async () => {
+    const test = fixture();
+    const work = test.useCase.applicationDocumentPdf(actor, id, letter);
+    await vi.waitFor(() => expect(test.render).toHaveBeenCalled());
+    test.status.mockResolvedValueOnce({ ...test.row, review_revision: 2 });
+    test.complete();
+
+    await expect(work).rejects.toMatchObject({
+      status: 409,
+      message: 'nodiaCv:stale_draft',
+    });
+    expect(test.insertPrepared).not.toHaveBeenCalled();
+  });
+
+  it('rejects letters that would span more than one page', async () => {
+    const test = fixture();
+    const work = test.useCase.applicationDocumentPdf(actor, id, letter);
+    await vi.waitFor(() => expect(test.render).toHaveBeenCalled());
+    test.complete(2);
+
+    await expect(work).rejects.toMatchObject({
+      status: 422,
+      message: 'nodiaCv:pdf_limits',
     });
     expect(test.insertPrepared).not.toHaveBeenCalled();
   });

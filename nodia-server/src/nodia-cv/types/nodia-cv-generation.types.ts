@@ -23,10 +23,23 @@ export interface CvDraftReviewEvidence {
   detail: string;
 }
 
+export interface CvTechnologyAddition {
+  name: string;
+  status: 'confirmed' | 'study';
+  source?: string;
+  detail?: string;
+}
+
+export interface CvTechnologyReview {
+  included: string[];
+  additions: CvTechnologyAddition[];
+}
+
 export interface CvDraftReviewContent {
   included_fact_ids: string[];
   evidence: CvDraftReviewEvidence[];
   section_order?: CvEvidenceSection[];
+  technologies?: CvTechnologyReview;
 }
 
 export interface CvDraftReview extends CvDraftReviewContent {

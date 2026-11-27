@@ -1,6 +1,7 @@
 import type { UpdateNodiaCvDraftDto } from '../dto/nodia-cv-draft.dto.js';
 import { isStructuralCvFact } from '../engine/evidence.js';
-import type { CvTailoringDraft } from '../engine/index.js';
+import type { CvTailoringDraft, CvTechnologyOption } from '../engine/index.js';
+import { prepareCvTechnologyReview } from '../engine/technologies.js';
 import type {
   CvDraftReviewContent,
   CvGenerationRow,
@@ -11,7 +12,8 @@ import { requireLiveCvGeneration } from './nodia-cv-generation-status.js';
 export function prepareCvDraftReview(
   draft: CvTailoringDraft,
   input: UpdateNodiaCvDraftDto,
-  sectionOrder?: CvDraftReviewContent['section_order'],
+  current: Pick<CvDraftReviewContent, 'section_order' | 'technologies'>,
+  options: readonly CvTechnologyOption[],
 ): CvDraftReviewContent {
   const requirements = new Set(draft.requirements.map(({ id }) => id));
   for (const entry of input.evidence) {
@@ -49,7 +51,10 @@ export function prepareCvDraftReview(
       source,
       detail,
     })),
-    ...(sectionOrder ? { section_order: sectionOrder } : {}),
+    ...(current.section_order ? { section_order: current.section_order } : {}),
+    ...(input.technologies
+      ? { technologies: prepareCvTechnologyReview(options, input.technologies) }
+      : current.technologies ? { technologies: current.technologies } : {}),
   };
 }
 

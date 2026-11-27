@@ -26,6 +26,7 @@ import {
 import type { Response } from 'express';
 import type { AuthRequest } from '../auth/types/auth.types.js';
 import { actorReference } from '../authorization/authority-transaction.js';
+import { PrepareNodiaCvApplicationDocumentDto } from './dto/nodia-cv-application-document.dto.js';
 import {
   CopyNodiaCvVersionDto,
   ListNodiaCvVersionsDto,
@@ -105,6 +106,32 @@ export class NodiaCvPdfVersionsController {
   @ApiOkResponse({ type: NodiaCvVersionPageDto })
   list(@Req() request: AuthRequest, @Query() query: ListNodiaCvVersionsDto) {
     return this.pdfVersions.list(actorReference(request.auth), query);
+  }
+
+  @Post('drafts/:id/application-documents/pdf')
+  @HttpCode(200)
+  @Header('Cache-Control', privateResponse)
+  @ApiProduces('application/pdf')
+  @ApiOkResponse({
+    schema: binarySchema,
+    description: 'Private, single-page application document.',
+  })
+  @ApiConflictResponse({
+    description: 'Draft revision changed or is not ready.',
+  })
+  @ApiGoneResponse({ description: 'Draft has expired.' })
+  async applicationDocumentPdf(
+    @Req() request: AuthRequest,
+    @Res({ passthrough: true }) response: Response,
+    @Param('id', uuid) id: string,
+    @Body() input: PrepareNodiaCvApplicationDocumentDto,
+  ) {
+    const pdf = await this.pdfVersions.applicationDocumentPdf(
+      actorReference(request.auth),
+      id,
+      input,
+    );
+    return servePdf(response, pdf);
   }
 
   @Get('versions/:id')

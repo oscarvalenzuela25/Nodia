@@ -116,6 +116,7 @@ const runtimeScripts = ['render-codex-pdf.mjs', 'seed-core.mjs', 'nodia-ai-journ
 const cvPdfAssets = new Set([
   'nodia-cv/pdf/assets/DejaVuSans.ttf',
   'nodia-cv/pdf/assets/DejaVuSans-Bold.ttf',
+  'nodia-cv/pdf/assets/DejaVuSerif-Bold.ttf',
   'nodia-cv/pdf/assets/LICENSE',
   'nodia-cv/pdf/assets/PROVENANCE.txt',
 ]);

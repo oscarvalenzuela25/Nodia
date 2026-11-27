@@ -1,5 +1,6 @@
 import { useId, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { Alert, Box, Button, Divider, LinearProgress, Paper, Stack, Typography } from "@mui/material";
+import { visuallyHidden } from "@mui/utils";
 import AutoAwesomeOutlined from "@mui/icons-material/AutoAwesomeOutlined";
 import DescriptionOutlined from "@mui/icons-material/DescriptionOutlined";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,9 +38,13 @@ import {
 import CvModelSelector from "../CvModelSelector";
 import { CvAiEditDialog } from "../CvAiEditDialog/CvAiEditDialog";
 import CvDraftPdf, { type CvDraftPdfHandle } from "../CvDraftPdf/CvDraftPdf";
-import CvRequirements from "../CvRequirements/CvRequirements";
+import CvOfferAnalysis from "../CvRequirements/CvOfferAnalysis";
+import CvApplicationDocuments from "../CvApplicationDocuments";
+import CvTechnologies from "../CvTechnologies/CvTechnologies";
 import CvDraftDocument from "./CvDraftDocument";
 import ReviewEvidenceDialog from "./ReviewEvidenceDialog";
+import { cvPreviewCoverage, cvPreviewPresentation } from "./previewPresentation";
+import { useCvEvidenceHighlight } from "./useCvEvidenceHighlight";
 import { cvPrimaryHover } from "./styles";
 
 const primaryAction = { minHeight: 44, width: { xs: "100%", sm: "auto" }, flexShrink: 0 };
@@ -72,6 +77,7 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
   const [template, setTemplate] = useState<CvPdfTemplate>(initialCopy?.receipt.source_version?.template ?? "classic");
   const [writingVersion, setWritingVersion] = useState(false);
   const pdfRef = useRef<CvDraftPdfHandle>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const modelTrigger = useRef<HTMLButtonElement>(null);
   const prepareTitle = useRef<HTMLHeadingElement>(null);
   if (!active && reviewTarget) setReviewTarget(null);
@@ -131,6 +137,14 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
     (initialCopy || (!selectionDirty && identity === cvInputIdentity(visible.intent))) ? visible : null;
   const draft = draftView?.receipt.draft;
   const review = draftView?.receipt.review;
+  const draftId = draftView?.receipt.id ?? null;
+  const highlight = useCvEvidenceHighlight(draftId, previewRef, draft?.requirements);
+  const { activeRequirement, pinnedRequirement } = highlight;
+  const preview = draftView && cvPreviewPresentation(draftView, i18n.getFixedT(draftView.receipt.language, "nodiaCv"));
+  const describeEvidence = (requirement: CvRequirement) => t(
+    preview?.linkedRequirements.has(requirement.id) ? "preview_evidence_linked" : "preview_evidence_missing",
+    { quote: requirement.quote },
+  );
   const visibleReview = visible?.receipt.review;
   const revisionKey = visible && visibleReview ? visible.receipt.id + ":" + visibleReview.revision : null;
   const unsaved = Boolean(revisionKey && revisionKey !== savedRevision);
@@ -223,7 +237,7 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
     },
   );
   const submit = submitDraft();
-  const forPreviewAvailable = Boolean(draftView && draft);
+  const forPreviewAvailable = Boolean(preview);
   const pdfReady =
     !workflow.status.isFetching &&
     !workflow.status.isError &&
@@ -258,7 +272,7 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
           "@container (min-width: 870px)": { gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)" },
         }}
       >
-        <Stack spacing={3} sx={{ minWidth: 0 }}>
+        <Stack sx={{ minWidth: 0, gridColumn: forPreviewAvailable ? "1 / -1" : undefined }}>
           <Stack
             component={Paper}
             variant="outlined"
@@ -593,23 +607,40 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
               retryVariant="outlined"
             />
           </Stack>
-          {draft && (
-            <CvRequirements
-              analysis={{
-                requirements: draft.requirements,
-                facts: [...draft.selectedFacts, ...draft.remainingFacts],
-                evidence: review?.evidence ?? [],
-              }}
-              onReview={openReview}
-              reviewDisabled={!reviewReady}
-            />
-          )}
         </Stack>
-        <Stack component={Paper} variant="outlined" spacing={2} sx={panel} aria-labelledby={id + "-preview"}>
+        {draftView && draft && preview && (
+          <CvOfferAnalysis key={draftView.receipt.id}
+            analysis={{
+              requirements: draft.requirements,
+              facts: [...draft.selectedFacts, ...draft.remainingFacts],
+              evidence: review?.evidence ?? [],
+            }}
+            interaction={{
+              previewId: id + "-preview-panel",
+              ...highlight.target,
+              coverage: (requirement) => cvPreviewCoverage(requirement, preview),
+            }}
+            onReview={openReview}
+            reviewDisabled={!reviewReady}
+            onChangeTab={highlight.clear}
+            technologies={
+              <CvTechnologies view={draftView} disabled={!reviewReady || Boolean(reviewTarget)}
+                onSave={(input) => workflow.review(draftView, input)}
+                onReload={() => workflow.reloadReview(draftView)} />
+            }
+          />
+        )}
+        <Stack component={Paper} variant="outlined" spacing={2} sx={panel} ref={previewRef} role="region"
+          id={id + "-preview-panel"} aria-labelledby={id + "-preview"} data-cv-preview-draft={draftId ?? undefined}
+          data-cv-scroll-requirement={highlight.scrollRequirementId}>
           <Stack spacing={0.75}>
             <Typography id={id + "-preview"} component="h2" variant="h6" sx={{ fontWeight: 750 }}>
               {t("generation_preview")}
             </Typography>
+            {activeRequirement && (
+              <Typography variant="body2" color="text.secondary" sx={wrap}>{describeEvidence(activeRequirement)}</Typography>
+            )}
+            <Box role="status" sx={visuallyHidden}>{pinnedRequirement && describeEvidence(pinnedRequirement)}</Box>
             {draftView && (draftView.receipt.vacancy_title || draftView.receipt.vacancy_company) && (
               <Typography variant="body2" color="text.secondary" sx={wrap}>
                 {[draftView.receipt.vacancy_title, draftView.receipt.vacancy_company]
@@ -636,8 +667,8 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
                 onRefresh={() => { void workflow.status.refetch(); }} onOpenVersions={onOpenVersions} />
             </Box>
           )}
-          {forPreviewAvailable && draftView ? (
-            <CvDraftDocument view={draftView} />
+          {preview && draftView ? (
+            <CvDraftDocument view={draftView} presentation={preview} activeRequirement={activeRequirement} />
           ) : workflow.status.isLoading ? (
             <Skeleton loading name="cv-draft-preview">
               <Box sx={{ height: 180 }} />
@@ -662,6 +693,9 @@ export default function CvGeneration({ active, initialCopy, onCreateProfile, onD
           )}
         </Stack>
       </Box>
+      {active && draftView && preview && (
+        <Box sx={{ mt: 3 }}><CvApplicationDocuments view={draftView} onDenial={onDenial} /></Box>
+      )}
       {active && editTarget && (
         <CvAiEditDialog base={editTarget.view} selection={editTarget.selection}
           connectionLabel={connections.find(item => item.connection_id === editTarget.selection.connection_id)?.label}
