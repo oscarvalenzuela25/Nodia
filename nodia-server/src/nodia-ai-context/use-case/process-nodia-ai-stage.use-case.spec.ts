@@ -1618,6 +1618,38 @@ describe('Process NodiaAI stage', () => {
       );
     },
   );
+  it.each([true, false])(
+    'builds a named Codex catalog prompt with verified identity and superAdmin=%s',
+    async (isSuperAdmin) => {
+      const f = applyCodexIdentity(fixture());
+      f.actor.isSuperAdmin = isSuperAdmin;
+      f.actor.modules.push({ route: '/business' });
+      f.claim.run.context_manifest.module_routes = f.actor.modules.map(
+        ({ route }) => route,
+      );
+      f.claim.run.context_manifest.tool_selection_profile = {
+        profile_id: 'product_catalog_reads',
+      };
+      f.claim.run.context_manifest.tool_selection = {
+        schema_version: 1,
+        phase: 'execution',
+        catalog_hash: 'a'.repeat(64),
+      };
+
+      const outcome = await f.subject.execute(f.claim, f.context);
+
+      expect(outcome.status).toBe('completed');
+      const prompt = JSON.parse(
+        f.adapter.execute.mock.calls[0][0].canonicalPrompt,
+      );
+      expect(prompt.instructions).toContain('responde como texto');
+      expect(prompt.instructions).toContain('usa limit: N');
+      expect(prompt.instructions).toContain('meta.total_pages');
+      expect(prompt.instructions).not.toContain('con finish');
+      expect(prompt.instructions.includes('all_businesses: true')).toBe(isSuperAdmin);
+    },
+  );
+
   it('does not widen a frozen run grant when another module is assigned later', async () => {
     const f = fixture();
     f.actor.modules.push({ route: '/new-feature' });
