@@ -1050,3 +1050,30 @@ usan el contenido de la revisión y la oferta disponibles.
 
 [Guía UI](../features/nodia-cv/ui-design.md) ·
 [Ficha candidata](../nodia-ai/knowledge/nodia-cv/features/tailoring-and-verified-versions.md).
+
+## 26. Ajustes de revisión y verificación externa — 2026-11-27
+
+Las acciones del PDF guardado aparecen antes del análisis de la oferta. El
+diálogo de salida separa la explicación de las acciones y conserva el foco
+inicial en **Seguir editando**. Los desplegables de cartas tienen separación
+propia y el resaltado queda dentro del párrafo enlazado.
+
+La verificación externa compara el mismo CV sintético por idioma y plantilla.
+La lectura de experiencia estructurada depende del importador. La ficha técnica
+y el aviso del PDF conservan el alcance por archivo.
+[Guía UI](../features/nodia-cv/ui-design.md#7-ajustes-a-la-revisión-y-al-historial) ·
+[Prueba de parsers](../evidence/nodia-cv-polish-provider-qa-20261127.md).
+
+El verificador de Alto consulta el catálogo ordinario de Nodia y comprueba
+elegibilidad por conexión, modo, ID y esfuerzo. Usa una oferta identificada,
+un perfil sintético y una sola solicitud de generación por selección. Si
+pierde la respuesta del POST, consulta el estado por la misma clave. La
+existencia de un modelo en el catálogo y su generación comprobada mantienen
+evidencias distintas.
+[Verificador](../../nodia-server/scripts/check-nodia-cv-agentic-high.mjs).
+
+Como en Codex, el usuario elige un modelo del catálogo que corresponde a su
+cuenta. Para un nuevo proveedor, el adaptador se ocupa del transporte, la
+autenticación, el descubrimiento y el cierre nativos. La preparación y la
+validación del CV conservan su contrato común. Las políticas de cada conexión
+y la compatibilidad del runtime vigente aplican al modelo exacto.
