@@ -5,6 +5,7 @@ import {
   type FlashcardImportCard,
 } from '../types/teacher-flashcards.types.js';
 import {
+  flashcardCollectionTitle,
   flashcardDeckDefinition,
   flashcardDeckId,
   readFlashcardSource,
@@ -73,4 +74,38 @@ export function readFlashcardImport(raw: unknown) {
   if (Buffer.byteLength(JSON.stringify(input)) > FLASHCARD_IMPORT_MAX_BYTES)
     teacherError('flashcard_import_too_large', 413);
   return { requestKey, destination, cards };
+}
+
+export function readFlashcardSetImport(raw: unknown) {
+  const input = object(raw, ['request_key', 'set', 'decks']);
+  const requestKey = requireUuid(input.request_key).toLowerCase();
+  if (Buffer.byteLength(JSON.stringify(input)) > FLASHCARD_IMPORT_MAX_BYTES)
+    teacherError('flashcard_import_too_large', 413);
+  const set = flashcardCollectionTitle(object(input.set, ['title']).title);
+  if (
+    !Array.isArray(input.decks) ||
+    !input.decks.length ||
+    input.decks.length > FLASHCARD_IMPORT_MAX_CARDS
+  )
+    teacherError('invalid_input', 400);
+  let cardCount = 0;
+  const titles = new Set<string>();
+  const decks = input.decks.map((rawDeck) => {
+    const deck = object(rawDeck, ['title', 'category', 'cards']);
+    const definition = flashcardDeckDefinition(deck.title, deck.category);
+    if (titles.has(definition.normalizedTitle))
+      teacherError('flashcard_deck_duplicate');
+    titles.add(definition.normalizedTitle);
+    if (!Array.isArray(deck.cards) || !deck.cards.length)
+      teacherError('invalid_input', 400);
+    cardCount += deck.cards.length;
+    if (cardCount > FLASHCARD_IMPORT_MAX_CARDS)
+      teacherError('invalid_input', 400);
+    return { definition, cards: deck.cards.map(readCard) };
+  });
+  // All requests acquire unique deck titles in the same order.
+  decks.sort((a, b) =>
+    a.definition.normalizedTitle < b.definition.normalizedTitle ? -1 : 1,
+  );
+  return { requestKey, set, decks, cardCount };
 }

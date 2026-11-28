@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { readFlashcardImport } from './teacher-flashcard-import.js';
+import {
+  readFlashcardImport,
+  readFlashcardSetImport,
+} from './teacher-flashcard-import.js';
 
 const requestKey = 'fe0af13c-3385-4401-be2b-7dcf7b9d02df';
 const validCard = { question: 'Why?', answer: 'Because.' };
@@ -74,5 +77,28 @@ describe('flashcard import policy', () => {
     expect(() => readFlashcardImport(payload(18))).toThrow(
       'flashcard_import_too_large',
     );
+  });
+});
+
+describe('flashcard set import policy', () => {
+  const input = {
+    request_key: requestKey,
+    set: { title: ' Set ' },
+    decks: [{ title: ' Uno ', cards: [validCard] }],
+  };
+
+  it('rejects ambiguous and oversized batches across decks', () => {
+    const read = (decks: unknown[]) => readFlashcardSetImport({ ...input, decks });
+    expect(() => read([input.decks[0], { title: 'ＵＮＯ', cards: [validCard] }]))
+      .toThrow('flashcard_deck_duplicate');
+    expect(() => read([
+      { title: 'Uno', cards: Array.from({ length: 30 }, () => validCard) },
+      { title: 'Dos', cards: [validCard] },
+    ])).toThrow('invalid_input');
+    expect(() => read([{ title: 'Dos', cards: [{ ...validCard, source: { label: 'Invalid' } }] }]))
+      .toThrow('invalid_input');
+    const longCard = { question: '学'.repeat(2000), answer: '学'.repeat(2000) };
+    expect(() => read([{ title: 'Uno', cards: Array.from({ length: 18 }, () => longCard) }]))
+      .toThrow('flashcard_import_too_large');
   });
 });

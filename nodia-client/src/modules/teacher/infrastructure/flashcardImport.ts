@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   flashcardCategoryLimit, flashcardDeckIdSchema, flashcardDeckSchema, flashcardDeckTitleLimit,
-  flashcardSourceLabelLimit, flashcardTextLimit,
+  flashcardSetSchema, flashcardSourceLabelLimit, flashcardTextLimit,
 } from "./flashcards";
 
 export const flashcardImportLimit = 30;
@@ -14,6 +14,8 @@ const normalizedName = (limit: number) => validText(limit)
   .transform(text => text.normalize("NFKC").replace(/[\p{White_Space}\uFEFF]+/gu, " ").trim())
   .pipe(validText(limit));
 const deckTitle = normalizedName(flashcardDeckTitleLimit);
+const normalizedTitleKey = (title: string) => title.toLocaleLowerCase("es").normalize("NFKC");
+const newDeckTitle = deckTitle.refine(title => normalizedTitleKey(title) !== "general");
 const category = normalizedName(flashcardCategoryLimit);
 const cardText = validText(flashcardTextLimit);
 
@@ -23,17 +25,26 @@ const card = z.strictObject({
   source: validText(flashcardSourceLabelLimit).optional(),
 });
 
+const cards = z.array(card).min(1).max(flashcardImportLimit);
+const deck = z.strictObject({ title: deckTitle, category: category.optional() });
 const envelope = z.strictObject({
   version: z.literal(1),
-  deck: z.strictObject({ title: deckTitle, category: category.optional() }).optional(),
-  cards: z.array(card).min(1).max(flashcardImportLimit),
+  deck: deck.optional(),
+  cards,
+});
+
+const setDeck = deck.extend({ title: newDeckTitle, cards });
+const setEnvelope = z.strictObject({
+  version: z.literal(1),
+  set: z.strictObject({ title: deckTitle }),
+  decks: z.array(setDeck).min(1).max(flashcardImportLimit),
 });
 
 export const flashcardImportDestinationSchema = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("existing"), deck_id: flashcardDeckIdSchema }),
   z.strictObject({
     kind: z.literal("new"),
-    title: deckTitle.refine(title => title.toLocaleLowerCase("es") !== "general"),
+    title: newDeckTitle,
     category: category.optional(),
   }),
 ]);
@@ -43,15 +54,42 @@ export const flashcardImportReceiptSchema = z.object({
   imported_count: z.number().int().min(1).max(flashcardImportLimit),
 });
 
-export type FlashcardImportPlan = z.infer<typeof envelope>;
+export const flashcardSetImportReceiptSchema = flashcardImportReceiptSchema.omit({ deck: true })
+  .extend({ set: flashcardSetSchema });
+
+export type FlashcardImportPlan = z.infer<typeof envelope> | z.infer<typeof setEnvelope>;
 type FlashcardImportCard = z.infer<typeof card>;
 export type FlashcardImportDestination = z.infer<typeof flashcardImportDestinationSchema>;
-export type FlashcardImportReceipt = z.infer<typeof flashcardImportReceiptSchema>;
-export type FlashcardImportBatch = { destination: FlashcardImportDestination; cards: FlashcardImportCard[] };
+export type FlashcardImportReceipt = z.infer<typeof flashcardImportReceiptSchema> | z.infer<typeof flashcardSetImportReceiptSchema>;
+export type FlashcardImportBatch = { destination: FlashcardImportDestination; cards: FlashcardImportCard[] }
+  | Omit<z.infer<typeof setEnvelope>, "version">;
 export type FlashcardImportIssue =
-  | { code: "size" | "syntax" | "version" | "format" | "deck" | "count" }
-  | { code: "card"; index: number };
+  | { code: "size" | "syntax" | "version" | "format" | "deck" | "count" | "set" | "set_decks" | "set_count" | "duplicate_decks" }
+  | { code: "card"; index: number }
+  | { code: "set_deck"; index: number }
+  | { code: "set_card"; index: number; deckIndex: number };
 type Result = { plan: FlashcardImportPlan; issue?: never } | { issue: FlashcardImportIssue; plan?: never };
+
+function parseSet(data: unknown): Result {
+  const parsed = setEnvelope.safeParse(data);
+  if (!parsed.success) {
+    const [field, deckIndex, detail, index] = parsed.error.issues[0].path;
+    if (field === "version") return { issue: { code: "version" } };
+    if (field === "set") return { issue: { code: "set" } };
+    if (field === "decks" && typeof deckIndex === "number") {
+      return { issue: detail === "cards" && typeof index === "number"
+        ? { code: "set_card", deckIndex: deckIndex + 1, index: index + 1 }
+        : { code: "set_deck", index: deckIndex + 1 } };
+    }
+    return { issue: { code: "set_decks" } };
+  }
+  const { decks } = parsed.data;
+  if (decks.reduce((total, deck) => total + deck.cards.length, 0) > flashcardImportLimit)
+    return { issue: { code: "set_count" } };
+  if (new Set(decks.map(deck => normalizedTitleKey(deck.title))).size !== decks.length)
+    return { issue: { code: "duplicate_decks" } };
+  return { plan: parsed.data };
+}
 
 export function parseFlashcardImport(value: string): Result {
   if (utf8.encode(value).byteLength > inputByteLimit) return { issue: { code: "size" } };
@@ -64,6 +102,7 @@ export function parseFlashcardImport(value: string): Result {
   } catch {
     return { issue: { code: "syntax" } };
   }
+  if (data && typeof data === "object" && ("set" in data || "decks" in data)) return parseSet(data);
   const parsed = envelope.safeParse(data);
   if (parsed.success) return { plan: parsed.data };
   const [field, index] = parsed.error.issues[0].path;
@@ -71,6 +110,17 @@ export function parseFlashcardImport(value: string): Result {
   if (field === "deck") return { issue: { code: "deck" } };
   if (field === "cards") return { issue: typeof index === "number" ? { code: "card", index: index + 1 } : { code: "count" } };
   return { issue: { code: "format" } };
+}
+
+export function selectedFlashcardSetDecks(
+  decks: z.infer<typeof setDeck>[], selected: readonly boolean[],
+) {
+  let offset = 0;
+  return decks.flatMap(deck => {
+    const cards = deck.cards.filter((_, index) => selected[offset + index]);
+    offset += deck.cards.length;
+    return cards.length ? [{ ...deck, cards }] : [];
+  });
 }
 
 export function fitsFlashcardImportRequest(batch: FlashcardImportBatch): boolean {

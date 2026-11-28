@@ -342,8 +342,14 @@ export default function Flashcards({ active }: { active: boolean }) {
         initial={drawer.kind === "edit-deck" ? drawer.deck : drawer.kind === "new-deck" ? { set_id: drawer.setId } : undefined}
         onClose={closeDrawer} onSave={saveDeck} />}
     {drawer?.kind === "import" && <FlashcardImportDrawer decks={decks.data ?? []}
-      busy={writes.busy || decks.isFetching} save={writes.importCards} onClose={closeDrawer} onImported={({ deck: imported }) => {
-        selectDeck(imported.id, allDecks.find(item => item.id === imported.id) ?? imported);
+      busy={writes.busy || decks.isFetching || sets.isFetching} save={writes.importCards} onClose={closeDrawer} onImported={receipt => {
+        if ("set" in receipt) {
+          setCategoryFilter("");
+          selectSet(receipt.set.id);
+        } else {
+          const imported = receipt.deck;
+          selectDeck(imported.id, allDecks.find(item => item.id === imported.id) ?? imported);
+        }
         closeDrawer();
         focusAfterBrowse.current = true;
       }} />}
