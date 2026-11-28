@@ -4,11 +4,11 @@
   "document_id": "studies.flashcard-sets",
   "product_id": "studies",
   "kind": "feature",
-  "revision": 1,
+  "revision": 2,
   "document_status": "draft",
   "implementation": {
     "status": "implemented",
-    "notes": "Organización, filtros, vistas y confirmación de bajas en Teacher. Adopción en el entorno de destino pendiente."
+    "notes": "Organización, filtros, vistas, bajas e importación JSON revisable de Sets en Teacher."
   },
   "integration_status": "unregistered",
   "maintainer": "Mantenimiento de Estudios y NodiaAI conforme AGENTS",
@@ -16,6 +16,8 @@
     { "path": "docs/mvp/112-teacher-flashcards-plan.md", "kind": "specification" },
     { "path": "nodia-server/src/teacher/teacher-flashcards.controller.ts", "kind": "implementation" },
     { "path": "nodia-server/src/teacher/use-case/teacher-flashcards.use-case.ts", "kind": "implementation" },
+    { "path": "nodia-server/src/teacher/use-case/teacher-flashcard-set-import.use-case.ts", "kind": "implementation" },
+    { "path": "nodia-client/src/modules/teacher/components/Flashcards/FlashcardImportDrawer.tsx", "kind": "implementation" },
     { "path": "nodia-client/src/modules/teacher/components/Flashcards/Flashcards.tsx", "kind": "implementation" }
   ],
   "verification": {
@@ -42,6 +44,7 @@ su categoría y sus tarjetas. **Mazos sin set** reúne mazos independientes.
 | Solicitud | Resultado en Teacher |
 |---|---|
 | «Organiza estos mazos de inglés en un set» | Crear un Set con nombre y elegirlo al crear o editar cada mazo. La asociación exige que ambos registros pertenezcan a la misma cuenta. |
+| «Importa un set con varios mazos» | En **Importar tarjetas**, elegir **Un set**, copiar el formato para IA externa o cargar el ejemplo. Pegar el JSON v1, revisar hasta 30 tarjetas y confirmar el guardado atómico. Sólo se crean los mazos con tarjetas seleccionadas. |
 | «Muéstrame los mazos de gramática del set» | Combinar Set y categoría. La pantalla usa páginas de diez mazos y ofrece lista y cuadrícula. |
 | «Quita el set, quiero mantener los mazos» | Abrir la confirmación del Set. La baja desvincula sus mazos, que pasan a **Mazos sin set**. |
 | «Elimina el mazo» | Identificar el mazo por nombre y confirmar su baja, que elimina sus tarjetas, imágenes y marcas de repaso. |
@@ -53,3 +56,6 @@ antes de orientar a la acción. Usar la interfaz de Teacher para administrar
 Sets, asignaciones y bajas de mazos. Las operaciones existentes del
 [catálogo de Tarjetas](flashcards.md#operaciones-desde-nodiaai) mantienen
 su revisión publicada.
+
+El [formato y contrato de importación](../../../../mvp/112-teacher-flashcards-plan.md#importar-un-set-de-mazos)
+documenta validación, conflictos y recuperación del recibo.

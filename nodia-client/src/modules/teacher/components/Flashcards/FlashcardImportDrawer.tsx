@@ -12,7 +12,7 @@ import { sileo } from "sileo";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
 import TextInput from "../../../../components/inputs/TextInput";
 import {
-  fitsFlashcardImportRequest, flashcardImportDestinationSchema, flashcardImportLimit, parseFlashcardImport,
+  fitsFlashcardImportRequest, flashcardImportDestinationSchema, flashcardImportLimit, parseFlashcardImport, selectedFlashcardSetDecks,
   type FlashcardImportBatch, type FlashcardImportIssue, type FlashcardImportPlan, type FlashcardImportReceipt,
 } from "../../infrastructure/flashcardImport";
 import {
@@ -39,6 +39,7 @@ type ReviewDraft = {
   category: string;
 };
 type WriteIntent = { batch: FlashcardImportBatch; key: string };
+type ExampleMode = "one" | "deck" | "set";
 const previewPageSize = 6;
 
 export default function FlashcardImportDrawer({ decks, busy, save, onImported, onClose }: Props) {
@@ -55,7 +56,7 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
   const [issue, setIssue] = useState<FlashcardImportIssue>();
   const [review, setReview] = useState<ReviewDraft>();
   const [page, setPage] = useState(1);
-  const [exampleMode, setExampleMode] = useState<"one" | "deck">("deck");
+  const [exampleMode, setExampleMode] = useState<ExampleMode>("deck");
   const [clipboardFallback, setClipboardFallback] = useState<string>();
   const [announcement, setAnnouncement] = useState<{ id: string; title: string }>();
   const [copying, setCopying] = useState(false);
@@ -73,13 +74,27 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
     }
   }, [pasteId, previewing]);
 
-  const example = JSON.stringify({
+  const exampleDeck = { title: t("flashcard_import.example.title"), category: t("flashcard_import.example.category") };
+  const firstExample = {
+    question: t("flashcard_import.example.question"),
+    answer: t("flashcard_import.example.answer"),
+    source: t("flashcard_import.example.source"),
+  };
+  const secondExample = {
+    question: t("flashcard_import.example.second_question"),
+    answer: t("flashcard_import.example.second_answer"),
+  };
+  const example = JSON.stringify(exampleMode === "set" ? {
     version: 1,
-    ...(exampleMode === "deck" ? { deck: { title: t("flashcard_import.example.title"), category: t("flashcard_import.example.category") } } : {}),
-    cards: [
-      { question: t("flashcard_import.example.question"), answer: t("flashcard_import.example.answer"), source: t("flashcard_import.example.source") },
-      ...(exampleMode === "deck" ? [{ question: t("flashcard_import.example.second_question"), answer: t("flashcard_import.example.second_answer") }] : []),
+    set: { title: t("flashcard_import.example.set_title") },
+    decks: [
+      { ...exampleDeck, cards: [firstExample] },
+      { title: t("flashcard_import.example.second_deck"), cards: [secondExample] },
     ],
+  } : {
+    version: 1,
+    ...(exampleMode === "deck" ? { deck: exampleDeck } : {}),
+    cards: exampleMode === "deck" ? [firstExample, secondExample] : [firstExample],
   }, null, 2);
 
   const changeInput = (value: string) => {
@@ -102,19 +117,21 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
     }
     setIssue(undefined);
     setPage(1);
+    const { plan } = result;
+    const deck = "decks" in plan ? undefined : plan.deck;
     setReview({
-      plan: result.plan,
-      selected: result.plan.cards.map(() => true),
-      mode: result.plan.deck ? "new" : "existing",
+      plan,
+      selected: ("decks" in plan ? plan.decks.flatMap(deck => deck.cards) : plan.cards).map(() => true),
+      mode: deck ? "new" : "existing",
       deckId: flashcardGeneralDeck,
-      title: result.plan.deck?.title ?? "",
-      category: result.plan.deck?.category ?? "",
+      title: deck?.title ?? "",
+      category: deck?.category ?? "",
     });
   };
 
   const copyFormat = async () => {
     if (copying) return;
-    const prompt = t(exampleMode === "deck" ? "flashcard_import.prompt_deck" : "flashcard_import.prompt_one", {
+    const prompt = t("flashcard_import.prompt_" + exampleMode, {
       example, limit: flashcardImportLimit, titleLimit: flashcardDeckTitleLimit, categoryLimit: flashcardCategoryLimit,
       textLimit: flashcardTextLimit, sourceLimit: flashcardSourceLabelLimit,
     });
@@ -131,16 +148,21 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
     }
   };
 
-  const selectedCards = review?.plan.cards.filter((_, index) => review.selected[index]) ?? [];
+  const plan = review?.plan;
+  const setPlan = plan && "decks" in plan ? plan : undefined;
+  const previewCards = setPlan
+    ? setPlan.decks.flatMap(deck => deck.cards.map(card => ({ card, deck })))
+    : (plan && "cards" in plan ? plan.cards : []).map(card => ({ card, deck: undefined }));
+  const selectedCards = previewCards.filter((_, index) => review?.selected[index]).map(({ card }) => card);
   const previewStart = (page - 1) * previewPageSize;
-  const previewPages = Math.ceil((review?.plan.cards.length ?? 0) / previewPageSize);
+  const previewPages = Math.ceil(previewCards.length / previewPageSize);
   const selectedDeck = decks.find(deck => deck.id === review?.deckId);
   const destination = flashcardImportDestinationSchema.safeParse(review?.mode === "existing"
     ? { kind: "existing", deck_id: selectedDeck?.id }
     : { kind: "new", title: review?.title, category: review?.category.trim() || undefined });
-  const batch = review && destination.success && selectedCards.length
-    ? { destination: destination.data, cards: selectedCards }
-    : null;
+  const batch: FlashcardImportBatch | null = !review || !selectedCards.length ? null
+    : setPlan ? { set: setPlan.set, decks: selectedFlashcardSetDecks(setPlan.decks, review.selected) }
+    : destination.success ? { destination: destination.data, cards: selectedCards } : null;
   const tooLarge = batch !== null && !fitsFlashcardImportRequest(batch);
   const category = review?.mode === "new" ? review.category.trim() : selectedDeck?.category;
   const updateReview = (changes: Partial<Omit<ReviewDraft, "plan">>) => {
@@ -181,61 +203,73 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
           <Typography id={previewId} ref={previewHeading} tabIndex={-1} variant="h6" component="h3">
             {t("flashcard_import.preview")}
           </Typography>
-          <ToggleButtonGroup exclusive size="small" value={review.mode} disabled={locked}
-            aria-label={t("flashcard_import.destination")} onChange={(_, mode: ReviewDraft["mode"] | null) => {
-              if (mode) updateReview({ mode });
-            }} sx={{ alignSelf: "start", "& .MuiToggleButton-root": { minHeight: 44 } }}>
-            <ToggleButton value="existing">{t("flashcard_import.existing_deck")}</ToggleButton>
-            <ToggleButton value="new">{t("flashcards.new_deck")}</ToggleButton>
-          </ToggleButtonGroup>
-          {review.mode === "existing" ? <SelectSingleInput label={t("flashcards.deck")} value={review.deckId}
-            disabled={locked} clearable={false} onChange={id => { if (id) updateReview({ deckId: id }); }}
-            options={decks.map(deck => ({
-              value: deck.id,
-              label: deck.id === flashcardGeneralDeck ? t("flashcards.general") : deck.title,
-            }))} /> : <>
-              <TextInput label={t("flashcards.deck_title")} required value={review.title} disabled={locked}
-                onChange={event => updateReview({ title: event.target.value })} />
-              <TextInput label={t("flashcard_import.category_optional")} value={review.category} disabled={locked}
-                onChange={event => updateReview({ category: event.target.value })} />
-              {!destination.success && <Typography variant="body2" color="text.secondary">
-                {t("flashcard_import.destination_invalid", { titleLimit: flashcardDeckTitleLimit, categoryLimit: flashcardCategoryLimit })}
-              </Typography>}
-            </>}
-          {review.mode === "existing" && !selectedDeck && <Alert severity="warning">{t("flashcard_import.deck_unavailable")}</Alert>}
-          {category && <Chip size="small" label={category} sx={{ alignSelf: "start", maxWidth: "100%" }} />}
+          {setPlan ? <>
+            <Typography variant="subtitle1" sx={{ overflowWrap: "anywhere" }}>
+              {t("flashcard_import.set_destination", { title: setPlan.set.title })}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">{t("flashcard_import.set_selection")}</Typography>
+          </> : <>
+            <ToggleButtonGroup exclusive size="small" value={review.mode} disabled={locked}
+              aria-label={t("flashcard_import.destination")} onChange={(_, mode: ReviewDraft["mode"] | null) => {
+                if (mode) updateReview({ mode });
+              }} sx={{ alignSelf: "start", "& .MuiToggleButton-root": { minHeight: 44 } }}>
+              <ToggleButton value="existing">{t("flashcard_import.existing_deck")}</ToggleButton>
+              <ToggleButton value="new">{t("flashcards.new_deck")}</ToggleButton>
+            </ToggleButtonGroup>
+            {review.mode === "existing" ? <SelectSingleInput label={t("flashcards.deck")} value={review.deckId}
+              disabled={locked} clearable={false} onChange={id => { if (id) updateReview({ deckId: id }); }}
+              options={decks.map(deck => ({
+                value: deck.id,
+                label: deck.id === flashcardGeneralDeck ? t("flashcards.general") : deck.title,
+              }))} /> : <>
+                <TextInput label={t("flashcards.deck_title")} required value={review.title} disabled={locked}
+                  onChange={event => updateReview({ title: event.target.value })} />
+                <TextInput label={t("flashcard_import.category_optional")} value={review.category} disabled={locked}
+                  onChange={event => updateReview({ category: event.target.value })} />
+                {!destination.success && <Typography variant="body2" color="text.secondary">
+                  {t("flashcard_import.destination_invalid", { titleLimit: flashcardDeckTitleLimit, categoryLimit: flashcardCategoryLimit })}
+                </Typography>}
+              </>}
+            {review.mode === "existing" && !selectedDeck && <Alert severity="warning">{t("flashcard_import.deck_unavailable")}</Alert>}
+            {category && <Chip size="small" label={category} sx={{ alignSelf: "start", maxWidth: "100%" }} />}
+          </>}
         </Stack>
         <Typography role="status" variant="body2" color="text.secondary">
-          {t("flashcard_import.selected_count", { count: selectedCards.length, total: review.plan.cards.length })}
+          {t("flashcard_import.selected_count", { count: selectedCards.length, total: previewCards.length })}
         </Typography>
         <Stack component="ul" spacing={1} sx={{ m: 0, p: 0, listStyle: "none" }}>
-          {review.plan.cards.slice(previewStart, previewStart + previewPageSize).map((card, localIndex) => {
+          {previewCards.slice(previewStart, previewStart + previewPageSize).map(({ card, deck }, localIndex) => {
             const index = previewStart + localIndex;
             const cardId = previewId + "-" + index;
             return <Box component="li" key={index} sx={{ display: "flex", alignItems: "start", minWidth: 0, gap: 0.5 }}>
               <Checkbox checked={review.selected[index]} disabled={locked}
-                slotProps={{ input: { "aria-labelledby": cardId } }}
+                slotProps={{ input: { "aria-labelledby": deck ? cardId + " " + cardId + "-deck" : cardId } }}
                 onChange={(_, checked) => updateReview({ selected: review.selected.map((value, position) => position === index ? checked : value) })}
                 sx={{ minWidth: 44, minHeight: 44 }} />
-              <Accordion defaultExpanded={localIndex === 0} disableGutters elevation={0} variant="outlined"
-                slotProps={{ transition: { unmountOnExit: true } }} sx={{
-                  minWidth: 0, flex: 1, borderRadius: 1, "&:before": { display: "none" },
-                  "& .MuiAccordionSummary-root:not(.Mui-expanded) .MuiTypography-root": {
-                    display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden",
-                  },
-                }}>
-                <AccordionSummary id={cardId} aria-controls={cardId + "-details"} expandIcon={<ExpandMoreOutlined />}>
-                  <Typography component="span" variant="subtitle2" sx={{ overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{card.question}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Stack spacing={0.5}>
-                    <Typography variant="body2" sx={{ overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{card.answer}</Typography>
-                    {card.source && <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                      {t("flashcard_import.source", { source: card.source })}
-                    </Typography>}
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
+              <Stack sx={{ minWidth: 0, flex: 1 }}>
+                {deck && <Typography id={cardId + "-deck"} variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                  {t("flashcard_import.card_deck", { title: deck.title })}{deck.category && " · " + deck.category}
+                </Typography>}
+                <Accordion defaultExpanded={localIndex === 0} disableGutters elevation={0} variant="outlined"
+                  slotProps={{ transition: { unmountOnExit: true } }} sx={{
+                    minWidth: 0, flex: 1, borderRadius: 1, "&:before": { display: "none" },
+                    "& .MuiAccordionSummary-root:not(.Mui-expanded) .MuiTypography-root": {
+                      display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 3, overflow: "hidden",
+                    },
+                  }}>
+                  <AccordionSummary id={cardId} aria-controls={cardId + "-details"} expandIcon={<ExpandMoreOutlined />}>
+                    <Typography component="span" variant="subtitle2" sx={{ overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{card.question}</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Stack spacing={0.5}>
+                      <Typography variant="body2" sx={{ overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}>{card.answer}</Typography>
+                      {card.source && <Typography variant="caption" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                        {t("flashcard_import.source", { source: card.source })}
+                      </Typography>}
+                    </Stack>
+                  </AccordionDetails>
+                </Accordion>
+              </Stack>
             </Box>;
           })}
         </Stack>
@@ -258,12 +292,13 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
         </FlashcardActions>
       </> : <>
         <Typography id={instructionsId} variant="body2" color="text.secondary">{t("flashcard_import.instructions")}</Typography>
-        <ToggleButtonGroup exclusive size="small" value={exampleMode} disabled={requestInProgress}
-          aria-label={t("flashcard_import.template_type")} onChange={(_, mode: typeof exampleMode | null) => {
+        <ToggleButtonGroup exclusive size="small" value={exampleMode} disabled={requestInProgress || copying}
+          aria-label={t("flashcard_import.template_type")} onChange={(_, mode: ExampleMode | null) => {
             if (mode) { setExampleMode(mode); setClipboardFallback(undefined); }
-          }} sx={{ alignSelf: "start", "& .MuiToggleButton-root": { minHeight: 44 } }}>
+          }} sx={{ alignSelf: "start", maxWidth: "100%", "& .MuiToggleButton-root": { minHeight: 44, minWidth: 0 } }}>
           <ToggleButton value="one">{t("flashcard_import.single_example")}</ToggleButton>
           <ToggleButton value="deck">{t("flashcard_import.deck_example")}</ToggleButton>
+          <ToggleButton value="set">{t("flashcard_import.set_example")}</ToggleButton>
         </ToggleButtonGroup>
         <FlashcardActions>
           <Button variant="outlined" startIcon={<ContentCopyOutlined />} disabled={requestInProgress} loading={copying}
@@ -290,7 +325,9 @@ export default function FlashcardImportDrawer({ decks, busy, save, onImported, o
           onChange={event => changeInput(event.target.value)} />
         {issue && <Alert severity="error" id={pasteErrorId}>
           {t("flashcard_import.errors." + issue.code, {
-            limit: flashcardImportLimit, index: issue.code === "card" ? issue.index : undefined,
+            limit: flashcardImportLimit,
+            index: "index" in issue ? issue.index : undefined,
+            deckIndex: "deckIndex" in issue ? issue.deckIndex : undefined,
           })}
         </Alert>}
         <FlashcardActions sx={{ justifyContent: "flex-end" }}>

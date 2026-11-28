@@ -158,6 +158,16 @@ export function useFlashcardWrites() {
         }
         void client.invalidateQueries({ queryKey: setsKey });
       }
+      if (result.kind === "import" && "set" in result.data) {
+        const { set } = result.data;
+        await client.cancelQueries({ queryKey: setsKey });
+        if (!currentOwner()) return null;
+        client.setQueryData(setsKey, (previous: unknown) => {
+          const cached = flashcardSetsSchema.safeParse(previous);
+          if (!cached.success || cached.data.some(item => item.id === set.id)) return previous;
+          return [...cached.data, set];
+        });
+      }
       if (result.kind !== "review" && result.kind !== "set") void client.invalidateQueries({ queryKey: decksKey });
       if (result.kind === "import" || result.kind === "create" || result.kind === "update" || result.kind === "delete") {
         void client.invalidateQueries({ queryKey: cardsKey });
