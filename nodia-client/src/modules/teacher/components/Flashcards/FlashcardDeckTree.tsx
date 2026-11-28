@@ -10,14 +10,14 @@ import InboxOutlined from "@mui/icons-material/InboxOutlined";
 import LayersOutlined from "@mui/icons-material/LayersOutlined";
 import { useTranslation } from "react-i18next";
 import SelectSingleInput from "../../../../components/inputs/SelectSingleInput";
-import { flashcardDeckPage, unassignedDeckFilter } from "../../infrastructure/flashcardLibrary";
+import { flashcardDeckPage } from "../../infrastructure/flashcardLibrary";
 import { flashcardDeckPageSize, type FlashcardDeck, type FlashcardSet } from "../../infrastructure/flashcards";
 import TeacherLoading from "../TeacherLoading";
 import {
-  CompactTreeTrigger, LibraryMark, PageControls, SetBranch,
+  CompactTreeTrigger, LibraryMark, LibraryTreePanel, PageControls, SetBranch, SetGroup,
   TreeFilters, TreeIconButton, TreeList, TreeName, TreeRow, TreeTrash,
 } from "./flashcardDeckTreeStyles";
-import { DeckButton, DeckCount, FlashcardPanel } from "./styles";
+import { DeckButton, DeckCount } from "./styles";
 
 type LibraryKind = "set" | "deck" | "general";
 const libraryIcons = { set: FolderOutlined, deck: LayersOutlined, general: InboxOutlined };
@@ -53,7 +53,7 @@ export function FlashcardDeckPagination({ page, total, disabled, onPageChange }:
 
 type Props = {
   sets: readonly FlashcardSet[];
-  decks: readonly FlashcardDeck[];
+  decksBySet: ReadonlyMap<string, readonly FlashcardDeck[]>;
   generalDeck?: FlashcardDeck;
   setOptions: readonly FlashcardSet[];
   categoryOptions: ReadonlyMap<string, string>;
@@ -88,24 +88,12 @@ export function FlashcardDeckTree(props: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const contentOpen = !compact || mobileOpen;
   const {
-    sets, decks, generalDeck, setOptions, categoryOptions, setFilter, categoryFilter,
+    sets, decksBySet, generalDeck, setOptions, categoryOptions, setFilter, categoryFilter,
     selectedSetId, selectedDeckId, expandedSetIds, pages, busy, loading = false, hasError, setsUnavailable, actions, children,
     onSetFilter, onCategoryFilter, onToggleSet, onSelectSet, onSelectDeck, onPageChange, onDeleteSet, onDeleteDeck,
   } = props;
 
-  const looseDecks: FlashcardDeck[] = [];
-  const decksBySet = new Map<string, FlashcardDeck[]>();
-  const knownSets = new Set(setOptions.map(set => set.id));
   const groupingUnavailable = setsUnavailable && setOptions.length === 0;
-  for (const deck of decks) {
-    if (!deck.set_id || !knownSets.has(deck.set_id)) {
-      looseDecks.push(deck);
-      continue;
-    }
-    const existing = decksBySet.get(deck.set_id);
-    if (existing) existing.push(deck);
-    else decksBySet.set(deck.set_id, [deck]);
-  }
 
   const closeCompactTree = useCallback(() => {
     if (!compact) return;
@@ -135,8 +123,21 @@ export function FlashcardDeckTree(props: Props) {
     </li>;
   }
 
+  function setBranch(id: string, title: string, decks: readonly FlashcardDeck[]) {
+    const { page, data } = flashcardDeckPage(decks, pages.get(id));
+    if (hasError) return null;
+    if (!data.length) return <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
+      {t("teacher:flashcard_sets.empty_set")}
+    </Typography>;
+    return <>
+      <SetBranch role="list" aria-label={title}>{data.map(deck => deckEntry(deck))}</SetBranch>
+      <FlashcardDeckPagination page={page} total={decks.length} disabled={busy}
+        onPageChange={value => onPageChange(id, value)} />
+    </>;
+  }
+
   const title = t("teacher:flashcard_sets.tree");
-  return <FlashcardPanel aria-label={title}>
+  return <LibraryTreePanel aria-label={title}>
     <Stack spacing={1.5}>
       {compact
         ? <CompactTreeTrigger ref={mobileTrigger} variant="outlined" type="button" aria-expanded={contentOpen}
@@ -155,7 +156,6 @@ export function FlashcardDeckTree(props: Props) {
             options={[
               { value: allFilterOption, label: t("teacher:flashcard_sets.all_sets") },
               ...setOptions.map(set => ({ value: set.id, label: set.title })),
-              { value: unassignedDeckFilter, label: t("teacher:flashcard_sets.unassigned") },
             ]} />
           <SelectSingleInput label={t("teacher:flashcard_sets.category_filter")} clearable={false} autoFocusSearch={false}
             disabled={busy || hasError} value={categoryFilter ? categoryOptionPrefix + categoryFilter : allFilterOption}
@@ -172,8 +172,7 @@ export function FlashcardDeckTree(props: Props) {
               const children = decksBySet.get(set.id) ?? [];
               const expanded = expandedSetIds.has(set.id);
               const branchId = treeId + "-" + set.id;
-              const { page, data } = flashcardDeckPage(children, pages.get(set.id));
-              return <li key={set.id}>
+              return <SetGroup key={set.id} data-expanded={expanded}>
                 <TreeRow>
                   <TreeIconButton type="button" disabled={busy} aria-expanded={expanded} aria-controls={branchId}
                     aria-label={t(expanded ? "teacher:flashcard_sets.collapse" : "teacher:flashcard_sets.expand", { title: set.title })}
@@ -185,9 +184,9 @@ export function FlashcardDeckTree(props: Props) {
                     <FlashcardLibraryMark kind="set" />
                     <TreeName>
                       <Typography component="span" variant="subtitle2">{set.title}</Typography>
-                      <Typography component="span" variant="caption" color="text.secondary">
+                      {!hasError && <Typography component="span" variant="caption" color="text.secondary">
                         {t("teacher:flashcard_sets.deck_count", { count: children.length })}
-                      </Typography>
+                      </Typography>}
                     </TreeName>
                   </DeckButton>
                   <TreeTrash type="button" aria-label={t("teacher:flashcard_sets.delete_set_label", { title: set.title })}
@@ -196,31 +195,24 @@ export function FlashcardDeckTree(props: Props) {
                   </TreeTrash>
                 </TreeRow>
                 <div id={branchId} hidden={!expanded}>
-                  {expanded && <SetBranch role="list" aria-label={set.title}>
-                    {data.map(deck => deckEntry(deck))}
-                    {children.length === 0 && <li>
-                      <Typography variant="body2" color="text.secondary">{t("teacher:flashcard_sets.empty_set")}</Typography>
-                    </li>}
-                    {children.length > flashcardDeckPageSize && <li>
-                      <FlashcardDeckPagination page={page} total={children.length} disabled={busy}
-                        onPageChange={value => onPageChange(set.id, value)} />
-                    </li>}
-                  </SetBranch>}
+                  {expanded && setBranch(set.id, set.title, children)}
                 </div>
-              </li>;
+              </SetGroup>;
             })}
-            {looseDecks.length > 0 && <>
+            {groupingUnavailable && decksBySet.size > 0 && <>
               <li><Typography variant="subtitle2" color="text.secondary" sx={{ mt: 0.5 }}>
-                {t(groupingUnavailable ? "teacher:flashcards.decks" : "teacher:flashcard_sets.loose_decks")}
+                {t("teacher:flashcards.decks")}
               </Typography></li>
-              {looseDecks.map(deck => deckEntry(deck))}
+              {[...decksBySet].map(([id, decks]) => <SetGroup key={id}>
+                {setBranch(id, t("teacher:flashcards.decks"), decks)}
+              </SetGroup>)}
             </>}
-            {!hasError && sets.length === 0 && looseDecks.length === 0 && <li>
+            {!hasError && !groupingUnavailable && sets.length === 0 && <li>
               <Typography variant="body2" color="text.secondary">{t("teacher:flashcard_sets.no_matches")}</Typography>
             </li>}
           </TreeList>
         </TeacherLoading>
       </Stack>
     </Stack>
-  </FlashcardPanel>;
+  </LibraryTreePanel>;
 }

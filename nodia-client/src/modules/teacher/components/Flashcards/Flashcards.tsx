@@ -14,7 +14,7 @@ import {
   flashcardDeckPageSize, flashcardGeneralDeck, type Flashcard, type FlashcardDeck, type FlashcardDeckFields,
   type FlashcardDraft, type FlashcardSet, type FlashcardSide,
 } from "../../infrastructure/flashcards";
-import { filterFlashcardLibrary, flashcardCategoryKey, flashcardDeckPage, unassignedDeckFilter } from "../../infrastructure/flashcardLibrary";
+import { filterFlashcardLibrary, flashcardCategoryKey, flashcardDeckPage } from "../../infrastructure/flashcardLibrary";
 import type { FlashcardProposalParts } from "../../infrastructure/flashcardLibraryProposal";
 import { useFlashcardDecks, useFlashcards, useFlashcardSets, useFlashcardWrites } from "../../infrastructure/useFlashcards";
 import CalendarDrawer from "../StudyCalendar/CalendarDrawer";
@@ -31,7 +31,8 @@ import FlashcardReview from "./FlashcardReview";
 import FlashcardRow from "./FlashcardRow";
 import { FlashcardActions, FlashcardDetailHeader, FlashcardDetailPanel, FlashcardHeader, FlashcardWorkspace } from "./styles";
 
-type Drawer = { kind: "create" | "notes" | "import" | "new-set" } | { kind: "new-deck"; setId?: string }
+type Drawer = { kind: "create" | "notes" | "new-set" } | { kind: "new-deck"; setId?: string }
+  | { kind: "import"; newDeckOnly?: boolean; setId?: string }
   | { kind: "edit-deck"; deck: FlashcardDeck } | { kind: "edit" | "browse"; card: Flashcard }
   | { kind: "regenerate"; card: Flashcard; parts: FlashcardProposalParts };
 type Selection = { kind: "deck" | "set"; id: string };
@@ -66,7 +67,7 @@ export default function Flashcards({ active }: { active: boolean }) {
   const selectedSet = selection.kind === "set" ? allSets.find(item => item.id === selection.id) : undefined;
   const deck = allDecks.find(item => item.id === deckId);
   const deckParent = allSets.find(item => item.id === deck?.set_id);
-  const activeSetFilter = allSets.some(set => set.id === setFilter) || setFilter === unassignedDeckFilter ? setFilter : "";
+  const activeSetFilter = allSets.some(set => set.id === setFilter) ? setFilter : "";
   const activeCategory = categoryFilter && allDecks.some(item => flashcardCategoryKey(item.category) === categoryFilter) ? categoryFilter : "";
   const library = useMemo(() => filterFlashcardLibrary(allDecks, allSets, activeSetFilter, activeCategory),
     [allDecks, allSets, activeSetFilter, activeCategory]);
@@ -92,7 +93,7 @@ export default function Flashcards({ active }: { active: boolean }) {
     if (item && id !== flashcardGeneralDeck) {
       const category = flashcardCategoryKey(item.category);
       const clearCategory = Boolean(activeCategory && activeCategory !== category);
-      const clearSet = Boolean(activeSetFilter && (activeSetFilter === unassignedDeckFilter ? item.set_id : activeSetFilter !== item.set_id));
+      const clearSet = Boolean(activeSetFilter && activeSetFilter !== item.set_id);
       if (clearCategory) setCategoryFilter("");
       if (clearSet) setSetFilter("");
       if (item.set_id) {
@@ -128,13 +129,9 @@ export default function Flashcards({ active }: { active: boolean }) {
   const filterBySet = (value: string) => {
     setSetFilter(value);
     setDeckPages(new Map());
-    if (value && value !== unassignedDeckFilter) {
+    if (value) {
       expandSet(value);
       setSelection({ kind: "set", id: value });
-    } else if (value === unassignedDeckFilter && (selectedSet || deck?.set_id)) {
-      const first = filterFlashcardLibrary(allDecks, allSets, value, activeCategory).decks[0];
-      setSelection({ kind: "deck", id: first?.id ?? flashcardGeneralDeck });
-      setPage(1);
     }
   };
 
@@ -151,13 +148,14 @@ export default function Flashcards({ active }: { active: boolean }) {
         if (!created) return;
         setCategoryFilter("");
         selectSet(created.id);
-      } else {
-        const saved = drawer?.kind === "edit-deck"
-          ? await writes.updateDeck(drawer.deck.id, fields)
-          : await writes.createDeck({ title: fields.title, category: fields.category ?? undefined, set_id: fields.set_id });
-        if (!saved) return;
-        selectDeck(saved.id, saved);
+        setDrawer({ kind: "new-deck", setId: created.id });
+        return;
       }
+      const saved = drawer?.kind === "edit-deck"
+        ? await writes.updateDeck(drawer.deck.id, fields)
+        : await writes.createDeck({ title: fields.title, category: fields.category ?? undefined, set_id: fields.set_id });
+      if (!saved) return;
+      selectDeck(saved.id, saved);
       closeDrawer();
       focusAfterBrowse.current = true;
     } catch {
@@ -207,11 +205,8 @@ export default function Flashcards({ active }: { active: boolean }) {
           next.delete(target.item.id);
           return next;
         });
-        if (selectedSet?.id === target.item.id) {
-          const child = setDecks[0];
-          if (child) selectDeck(child.id, { ...child, set_id: null });
-          else selectDeck(flashcardGeneralDeck);
-        }
+        if (selectedSet?.id === target.item.id || deck?.set_id === target.item.id)
+          selectDeck(flashcardGeneralDeck);
       }
       setDeleting(undefined);
       focusAfterBrowse.current = true;
@@ -245,7 +240,7 @@ export default function Flashcards({ active }: { active: boolean }) {
       </FlashcardActions>
     </FlashcardHeader>
     <FlashcardWorkspace>
-      <FlashcardDeckTree sets={library.sets} decks={library.decks} generalDeck={library.general} setOptions={allSets}
+      <FlashcardDeckTree sets={library.sets} decksBySet={library.bySet} generalDeck={library.general} setOptions={allSets}
         categoryOptions={library.categories} setFilter={activeSetFilter} categoryFilter={activeCategory}
         selectedSetId={selectedSet?.id} selectedDeckId={deckId} expandedSetIds={expandedSetIds} pages={deckPages}
         busy={libraryBusy} loading={decks.isLoading || sets.isLoading} hasError={decks.isError && !decks.data} setsUnavailable={sets.isError && !sets.data}
@@ -338,10 +333,12 @@ export default function Flashcards({ active }: { active: boolean }) {
     </FlashcardWorkspace>
 
     {(drawer?.kind === "new-set" || drawer?.kind === "new-deck" || drawer?.kind === "edit-deck") &&
-      <FlashcardDeckDrawer kind={drawer.kind} sets={allSets} setsUnavailable={!sets.data} busy={libraryBusy}
+      <FlashcardDeckDrawer key={drawer.kind} kind={drawer.kind} sets={allSets} setsUnavailable={!sets.data} busy={libraryBusy}
         initial={drawer.kind === "edit-deck" ? drawer.deck : drawer.kind === "new-deck" ? { set_id: drawer.setId } : undefined}
-        onClose={closeDrawer} onSave={saveDeck} />}
-    {drawer?.kind === "import" && <FlashcardImportDrawer decks={decks.data ?? []}
+        onClose={closeDrawer} onSave={saveDeck}
+        onImportJson={setId => setDrawer({ kind: "import", newDeckOnly: true, setId })} />}
+    {drawer?.kind === "import" && <FlashcardImportDrawer decks={allDecks} sets={allSets}
+      initialSetId={drawer.setId} newDeckOnly={drawer.newDeckOnly} setsUnavailable={!sets.data}
       busy={writes.busy || decks.isFetching || sets.isFetching} save={writes.importCards} onClose={closeDrawer} onImported={receipt => {
         if ("set" in receipt) {
           setCategoryFilter("");

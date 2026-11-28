@@ -60,4 +60,15 @@ describe("flashcard import format", () => {
     expect(parse([deck, { title: "Dos", cards: [{ ...card, answer: "" }] }]))
       .toEqual({ code: "set_card", deckIndex: 2, index: 1 });
   });
+
+  it("accepts a named deck or one wrapped deck in new-deck mode without changing global imports", () => {
+    const deck = { title: "Uno", cards: [card] };
+    const parse = (value: object) => parseFlashcardImport(JSON.stringify({ version: 1, ...value }), true);
+    expect(parse({ deck: { title: deck.title }, cards: deck.cards }).plan).toMatchObject({ deck: { title: "Uno" } });
+    expect(parse({ set: { title: "Inglés" }, decks: [deck] }).plan).toMatchObject({ set: { title: "Inglés" } });
+    expect(parse({ cards: deck.cards }).issue).toEqual({ code: "single_deck" });
+    expect(parse({ deck: { title: "Ｇeneral" }, cards: deck.cards }).issue).toEqual({ code: "single_deck" });
+    expect(parse({ set: { title: "Inglés" }, decks: [deck, { ...deck, title: "Dos" }] }).issue)
+      .toEqual({ code: "single_deck" });
+  });
 });

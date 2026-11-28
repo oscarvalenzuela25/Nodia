@@ -1,7 +1,5 @@
 import { flashcardDeckPageSize, flashcardGeneralDeck, type FlashcardDeck, type FlashcardSet } from "./flashcards";
 
-export const unassignedDeckFilter = "unassigned";
-
 export const flashcardCategoryKey = (label?: string | null) => label?.normalize("NFKC").toLocaleLowerCase("es");
 
 export function flashcardDeckPage(decks: readonly FlashcardDeck[], requestedPage = 1) {
@@ -21,14 +19,13 @@ export function filterFlashcardLibrary(
   const visibleDecks: FlashcardDeck[] = [];
   const general = decks.find(deck => deck.id === flashcardGeneralDeck);
   for (const deck of decks) {
-    if (deck.id === flashcardGeneralDeck) continue;
+    const setId = deck.set_id;
+    if (deck.id === flashcardGeneralDeck || !setId) continue;
     const category = flashcardCategoryKey(deck.category);
     if (category && deck.category && !categories.has(category)) categories.set(category, deck.category);
     if (categoryFilter && categoryFilter !== category) continue;
-    const setId = deck.set_id ?? "";
-    if (setFilter && (setFilter === unassignedDeckFilter ? Boolean(setId) : setFilter !== setId)) continue;
+    if (setFilter && setFilter !== setId) continue;
     visibleDecks.push(deck);
-    if (!setId) continue;
     const children = bySet.get(setId) ?? [];
     children.push(deck);
     bySet.set(setId, children);

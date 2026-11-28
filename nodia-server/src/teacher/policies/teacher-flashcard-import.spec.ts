@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   readFlashcardImport,
+  readFlashcardImportContent,
   readFlashcardSetImport,
 } from './teacher-flashcard-import.js';
 
@@ -43,6 +44,8 @@ describe('flashcard import policy', () => {
   it('rejects unknown fields and invalid content before storage', () => {
     for (const candidate of [
       { ...common, destination: { ...common.destination, category: 'Extra' } },
+      { ...common, destination: { ...common.destination, set_id: requestKey } },
+      { ...common, destination: { kind: 'new', title: 'Valid', set_id: null } },
       {
         ...common,
         destination: { kind: 'new', title: 'Valid', category: ' ' },
@@ -62,6 +65,30 @@ describe('flashcard import policy', () => {
     ]) {
       expect(() => readFlashcardImport(candidate)).toThrow('invalid_input');
     }
+  });
+
+  it('normalizes the explicit target Set for a new deck', () => {
+    const destination = {
+      kind: 'new',
+      title: 'Vocabulary',
+      set_id: requestKey.toUpperCase(),
+    };
+    const result = readFlashcardImport({
+      ...common,
+      destination,
+    });
+    expect(result.destination).toEqual({
+      kind: 'new',
+      deck: {
+        title: 'Vocabulary',
+        normalizedTitle: 'vocabulary',
+        category: null,
+      },
+      setId: requestKey,
+    });
+    expect(() => readFlashcardImportContent(destination, common.cards)).toThrow(
+      'invalid_input',
+    );
   });
 
   it('counts serialized UTF-8 bytes across otherwise valid cards', () => {
