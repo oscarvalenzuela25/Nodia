@@ -13,7 +13,11 @@ corresponden a los flujos nativos de Negocios. La revisión 4 de las lecturas
 de catálogo e historial admite los saldos decimales. [Plan94 §47](../../mvp/94-business-point-of-sale-and-product-refactor.md#47-stock-opcional-por-producto).
 
 El [contexto candidato de Sets](studies/features/flashcard-sets.md)
-describe la agrupación y gestión nativas de mazos en Teacher.
+describe la pertenencia obligatoria, la baja completa y la importación
+de mazos a Sets nuevos o existentes. La presentación del árbol y el
+listado de 30 mazos son cambios de Client. La pertenencia y la baja
+afectan el flujo nativo y la compatibilidad de datos. Esta revisión
+candidata no añade operaciones al catálogo de NodiaAI.
 
 ## Calendarios y tarjetas de Teacher en NodiaAI
 

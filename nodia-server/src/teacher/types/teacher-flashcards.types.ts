@@ -39,7 +39,7 @@ export interface FlashcardDeckDefinition extends FlashcardCollectionTitle {
 }
 
 export type FlashcardDeckPatch = Partial<FlashcardDeckDefinition> & {
-  setId?: string | null;
+  setId?: string;
 };
 
 export interface Flashcard {

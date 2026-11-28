@@ -1,6 +1,6 @@
 import { mainInstance } from "../../../config/api";
 import { fileToBase64 } from "./enrichmentSchemas";
-import { flashcardImportReceiptSchema, flashcardSetImportReceiptSchema, type FlashcardImportBatch } from "./flashcardImport";
+import { flashcardCollectionTitleKey, flashcardImportReceiptSchema, flashcardSetImportReceiptSchema, type FlashcardImportBatch } from "./flashcardImport";
 import {
   flashcardDeckSchema, flashcardImageByteLimit, flashcardSchema, flashcardSetSchema,
   type FlashcardDeckFields, type FlashcardDraft, type FlashcardUpdate,
@@ -40,8 +40,9 @@ export async function importFlashcards(batch: FlashcardImportBatch, requestKey: 
     const response = await mainInstance.post<unknown>(api + "/imports/sets", { ...batch, request_key: requestKey });
     const receipt = flashcardSetImportReceiptSchema.parse(response.data);
     const count = batch.decks.reduce((total, deck) => total + deck.cards.length, 0);
-    if (response.status !== 201 || receipt.set.title !== batch.set.title ||
-      receipt.set.deck_count !== batch.decks.length || receipt.imported_count !== count) {
+    if (response.status !== 201 ||
+      flashcardCollectionTitleKey(receipt.set.title) !== flashcardCollectionTitleKey(batch.set.title) ||
+      receipt.set.deck_count < batch.decks.length || receipt.imported_count !== count) {
       throw new Error("flashcard_import_unconfirmed");
     }
     return receipt;
@@ -52,7 +53,8 @@ export async function importFlashcards(batch: FlashcardImportBatch, requestKey: 
   const correctDeck = destination.kind === "existing"
     ? receipt.deck.id.toLowerCase() === destination.deck_id.toLowerCase()
     : receipt.deck.id !== "general" && receipt.deck.title === destination.title &&
-      (receipt.deck.category ?? null) === (destination.category ?? null);
+      (receipt.deck.category ?? null) === (destination.category ?? null) &&
+      (!destination.set_id || receipt.deck.set_id?.toLowerCase() === destination.set_id.toLowerCase());
   if (response.status !== 201 || receipt.imported_count !== batch.cards.length || !correctDeck) {
     throw new Error("flashcard_import_unconfirmed");
   }

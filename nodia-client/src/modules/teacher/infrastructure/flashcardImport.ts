@@ -10,12 +10,13 @@ const requestByteLimit = 200 * 1024;
 const utf8 = new TextEncoder();
 const validText = (limit: number) => z.string().trim().min(1).max(limit)
   .refine(text => !text.includes("\0") && !/[\uD800-\uDFFF]/u.test(text));
+const normalizeName = (title: string) => title.normalize("NFKC").replace(/[\p{White_Space}\uFEFF]+/gu, " ").trim();
 const normalizedName = (limit: number) => validText(limit)
-  .transform(text => text.normalize("NFKC").replace(/[\p{White_Space}\uFEFF]+/gu, " ").trim())
+  .transform(normalizeName)
   .pipe(validText(limit));
 const deckTitle = normalizedName(flashcardDeckTitleLimit);
-const normalizedTitleKey = (title: string) => title.toLocaleLowerCase("es").normalize("NFKC");
-const newDeckTitle = deckTitle.refine(title => normalizedTitleKey(title) !== "general");
+export const flashcardCollectionTitleKey = (title: string) => normalizeName(title).toLocaleLowerCase("es").normalize("NFKC");
+const newDeckTitle = deckTitle.refine(title => flashcardCollectionTitleKey(title) !== "general");
 const category = normalizedName(flashcardCategoryLimit);
 const cardText = validText(flashcardTextLimit);
 
@@ -46,6 +47,7 @@ export const flashcardImportDestinationSchema = z.discriminatedUnion("kind", [
     kind: z.literal("new"),
     title: newDeckTitle,
     category: category.optional(),
+    set_id: z.uuid().optional(),
   }),
 ]);
 
@@ -64,13 +66,13 @@ export type FlashcardImportReceipt = z.infer<typeof flashcardImportReceiptSchema
 export type FlashcardImportBatch = { destination: FlashcardImportDestination; cards: FlashcardImportCard[] }
   | Omit<z.infer<typeof setEnvelope>, "version">;
 export type FlashcardImportIssue =
-  | { code: "size" | "syntax" | "version" | "format" | "deck" | "count" | "set" | "set_decks" | "set_count" | "duplicate_decks" }
+  | { code: "size" | "syntax" | "version" | "format" | "deck" | "count" | "set" | "set_decks" | "set_count" | "duplicate_decks" | "single_deck" }
   | { code: "card"; index: number }
   | { code: "set_deck"; index: number }
   | { code: "set_card"; index: number; deckIndex: number };
 type Result = { plan: FlashcardImportPlan; issue?: never } | { issue: FlashcardImportIssue; plan?: never };
 
-function parseSet(data: unknown): Result {
+function parseSet(data: unknown, newDeckOnly: boolean): Result {
   const parsed = setEnvelope.safeParse(data);
   if (!parsed.success) {
     const [field, deckIndex, detail, index] = parsed.error.issues[0].path;
@@ -84,14 +86,15 @@ function parseSet(data: unknown): Result {
     return { issue: { code: "set_decks" } };
   }
   const { decks } = parsed.data;
+  if (newDeckOnly && decks.length !== 1) return { issue: { code: "single_deck" } };
   if (decks.reduce((total, deck) => total + deck.cards.length, 0) > flashcardImportLimit)
     return { issue: { code: "set_count" } };
-  if (new Set(decks.map(deck => normalizedTitleKey(deck.title))).size !== decks.length)
+  if (new Set(decks.map(deck => flashcardCollectionTitleKey(deck.title))).size !== decks.length)
     return { issue: { code: "duplicate_decks" } };
   return { plan: parsed.data };
 }
 
-export function parseFlashcardImport(value: string): Result {
+export function parseFlashcardImport(value: string, newDeckOnly = false): Result {
   if (utf8.encode(value).byteLength > inputByteLimit) return { issue: { code: "size" } };
   const input = value.trim();
   // Some assistants wrap the complete JSON response in a single fenced block.
@@ -102,9 +105,13 @@ export function parseFlashcardImport(value: string): Result {
   } catch {
     return { issue: { code: "syntax" } };
   }
-  if (data && typeof data === "object" && ("set" in data || "decks" in data)) return parseSet(data);
+  if (data && typeof data === "object" && ("set" in data || "decks" in data)) return parseSet(data, newDeckOnly);
   const parsed = envelope.safeParse(data);
-  if (parsed.success) return { plan: parsed.data };
+  if (parsed.success) {
+    if (newDeckOnly && (!parsed.data.deck || !newDeckTitle.safeParse(parsed.data.deck.title).success))
+      return { issue: { code: "single_deck" } };
+    return { plan: parsed.data };
+  }
   const [field, index] = parsed.error.issues[0].path;
   if (field === "version") return { issue: { code: "version" } };
   if (field === "deck") return { issue: { code: "deck" } };

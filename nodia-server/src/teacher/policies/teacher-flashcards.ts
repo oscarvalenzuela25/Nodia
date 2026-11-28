@@ -61,7 +61,7 @@ export function flashcardDeckDefinition(
 }
 
 export function flashcardSetId(value: unknown) {
-  return value === null ? null : requireUuid(value).toLowerCase();
+  return requireUuid(value).toLowerCase();
 }
 
 export function readFlashcardDeckPatch(input: unknown): FlashcardDeckPatch {

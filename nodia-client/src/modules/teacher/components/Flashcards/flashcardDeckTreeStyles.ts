@@ -1,5 +1,10 @@
 import { Button, IconButton } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
+import { FlashcardPanel } from "./styles";
+
+export const LibraryTreePanel = styled(FlashcardPanel)({
+  container: "flashcard-tree / inline-size",
+});
 
 export const CompactTreeTrigger = styled(Button)(({ theme }) => ({
   justifyContent: "space-between",
@@ -13,30 +18,71 @@ export const CompactTreeTrigger = styled(Button)(({ theme }) => ({
 
 export const TreeFilters = styled("div")(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gridTemplateColumns: "minmax(0, 1fr)",
   gap: theme.spacing(1),
   "& > *": { minWidth: 0 },
+  "@container flashcard-tree (min-width: 21rem)": {
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  },
 }));
 
 export const TreeList = styled("ul")(({ theme }) => ({
   display: "grid",
-  gap: theme.spacing(0.5),
+  gap: theme.spacing(0.75),
   minWidth: 0,
   margin: 0,
   padding: 0,
   listStyle: "none",
 }));
 
+export const SetGroup = styled("li")(({ theme }) => ({
+  minWidth: 0,
+  padding: theme.spacing(0.25, 0.5),
+  border: "1px solid " + theme.palette.divider,
+  borderRadius: theme.spacing(1.25),
+  backgroundColor: theme.palette.background.paper,
+  "&[data-expanded='true']": {
+    backgroundColor: alpha(theme.palette.secondary.main, 0.055),
+  },
+}));
+
 export const SetBranch = styled(TreeList)(({ theme }) => ({
-  marginInlineStart: theme.spacing(0.75),
-  paddingInlineStart: theme.spacing(0.75),
-  borderInlineStart: "1px solid " + theme.palette.divider,
-  marginTop: theme.spacing(0.5),
+  "--branch-indent": theme.spacing(2),
+  gap: 0,
+  marginInlineStart: theme.spacing(2),
+  marginInlineEnd: theme.spacing(0.25),
+  paddingBlockEnd: theme.spacing(0.5),
+  "& > li": {
+    position: "relative",
+    minWidth: 0,
+    paddingInlineStart: "var(--branch-indent)",
+    paddingBlock: theme.spacing(0.125),
+  },
+  "& > li::before, & > li::after": {
+    content: '""',
+    position: "absolute",
+    insetInlineStart: 0,
+    pointerEvents: "none",
+  },
+  "& > li::before": {
+    insetBlock: 0,
+    borderInlineStart: "1px solid " + theme.palette.divider,
+  },
+  "& > li::after": {
+    inlineSize: "var(--branch-indent)",
+    insetBlockStart: "50%",
+    borderBlockStart: "1px solid " + theme.palette.divider,
+  },
+  "& > li:last-child::before": { insetBlockEnd: "50%" },
+  "@media (any-pointer: coarse)": {
+    marginInlineStart: theme.spacing(2.75),
+  },
 }));
 
 export const TreeRow = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
+  minWidth: 0,
   gap: theme.spacing(0.25),
   "& > .MuiButton-root": {
     flex: "1 1 0",
@@ -57,7 +103,7 @@ export const TreeIconButton = styled(IconButton)(({ theme }) => ({
   inlineSize: 32,
   blockSize: 36,
   color: theme.palette.text.secondary,
-  "@media (pointer: coarse)": {
+  "@media (any-pointer: coarse)": {
     inlineSize: 44,
     blockSize: 44,
   },

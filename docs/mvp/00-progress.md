@@ -1,5 +1,11 @@
 # Progreso del MVP — Nodia
 
+**Mazos y Sets de Teacher — 2026-11-28.** La rama local integra el árbol
+con 30 mazos por página, creación manual y JSON con destino revisable.
+La migración conserva los mazos históricos y la baja de un Set retira
+sus descendientes. PostgreSQL aislado y Chromium con respuestas de
+prueba verificaron los recorridos. [Plan112](112-teacher-flashcards-plan.md#mazos-y-sets--2026-11-28).
+
 **Nodia CV — revisión de requisitos y documentos de postulación, 2026-11-27.**
 La vista previa enlaza requisitos y evidencia. La revisión incorpora
 tecnologías confirmadas y recordatorios de estudio. Editorial y
