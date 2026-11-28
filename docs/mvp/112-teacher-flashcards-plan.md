@@ -346,6 +346,9 @@ funcional de NodiaAI describe las mismas operaciones y datos.
 
 ## Sets de mazos — propuesta de interfaz
 
+Este corte describe la primera versión de Sets. Las reglas vigentes del
+candidato se detallan en [Mazos y Sets](#mazos-y-sets--2026-11-28).
+
 El usuario aprobó el mockup y autorizó implementar su alcance en la misma
 rama. Un Set agrupa mazos relacionados. El árbol permite organizar, por
 ejemplo, **Inglés en 30 días** con un mazo por jornada. En escritorio se explora el árbol a
@@ -466,3 +469,52 @@ La segunda revisión de la interfaz alineó las acciones con el
 encabezado en paneles amplios. En tarjetas angostas el menú queda
 sobre la ilustración y deja espacio para la categoría. Se comprobó
 el ajuste en la ruta real y pasaron 28 pruebas focales de Client.
+
+## Mazos y Sets — 2026-11-28
+
+La biblioteca muestra **General** en la raíz. Las tarjetas guardadas sin
+mazo aparecen allí. Los Sets se muestran como carpetas con sus mazos
+conectados debajo. Cada Set tiene hasta 30 mazos por página en el árbol y
+en su vista de lista o cuadrícula. Seleccionar un mazo muestra sus
+tarjetas y el acceso a la carpeta que lo contiene.
+
+Al crear un Set, Teacher abre **Nuevo mazo** con ese Set seleccionado.
+La persona puede crear el mazo manualmente, **Crear desde JSON** o
+cerrar el formulario y dejar el Set vacío. En la vista previa del JSON,
+puede elegir un Set propio por ID para asociar el nuevo mazo al guardar.
+El cuerpo v1 de un mazo sigue usando `deck` y `cards`.
+
+Un JSON con `set.title` y `decks` permite resolver el Set por título
+normalizado dentro de la cuenta. Teacher agrega los mazos seleccionados
+al Set si existe. Si falta, crea el Set y sus mazos en la misma transacción.
+En la creación individual se acepta un envoltorio de Set con un solo mazo.
+Una selección explícita en la vista previa tiene prioridad sobre el
+nombre del JSON. El límite de cada importación sigue siendo 30 tarjetas
+y un título de mazo duplicado cancela el lote.
+
+Todo mazo con nombre referencia un Set de su propietario. La migración
+asigna los mazos históricos sueltos al Set **Mazos sin clasificar** de cada
+cuenta. Las altas mediante contratos que no incluyen el Set usan esa
+misma agrupación. Se conservan los IDs, las tarjetas y las marcas de repaso
+históricas. El guardado de un mazo permite moverlo a otro Set de la cuenta.
+
+La confirmación de baja del Set advierte que se retiran sus mazos,
+tarjetas, imágenes y marcas de repaso. La baja se ejecuta en una
+transacción y preserva los recibos mínimos que impiden reintentar
+importaciones al destino eliminado. Las tarjetas de **General** y
+los demás Sets permanecen disponibles.
+
+[ADR-122](../architecture/decisions/ADR-122-teacher-required-flashcard-sets.md)
+explica la integridad y el retiro transaccional. La
+[ficha candidata de Sets](../nodia-ai/knowledge/studies/features/flashcard-sets.md)
+documenta el alcance nativo. Los contratos del catálogo publicado de
+Tarjetas y la aprobación de la revisión 6 conservan su alcance.
+
+En la rama local, Nest y PostgreSQL aislado pasaron 15 escenarios,
+incluidos el backfill histórico, la referencia por propietario,
+importaciones concurrentes al mismo Set, bajas y relectura de recibos.
+Chromium con API sintética verificó el árbol y los formularios a 390 y
+1440 px, la selección tras crear un Set, el JSON con nombre o ID,
+la conservación del borrador ante errores y la baja confirmada. El
+mockup recorrió General, un Set de 30 mazos, un mazo y sus tarjetas
+a 320 y 1024 px.

@@ -8,6 +8,7 @@ import {
   flashcardCollectionTitle,
   flashcardDeckDefinition,
   flashcardDeckId,
+  flashcardSetId,
   readFlashcardSource,
 } from './teacher-flashcards.js';
 import {
@@ -19,19 +20,27 @@ import {
 
 type Destination =
   | { kind: 'existing'; deckId: string | null }
-  | { kind: 'new'; deck: FlashcardDeckDefinition };
+  | { kind: 'new'; deck: FlashcardDeckDefinition; setId?: string };
 
-function readDestination(raw: unknown): Destination {
-  const input = object(raw, ['kind', 'deck_id', 'title', 'category']);
+function readDestination(
+  raw: unknown,
+  allowSetAssignment: boolean,
+): Destination {
+  const input = object(raw, ['kind', 'deck_id', 'title', 'category', 'set_id']);
   if (input.kind === 'existing') {
     object(input, ['kind', 'deck_id']);
     return { kind: 'existing', deckId: flashcardDeckId(input.deck_id) };
   }
   if (input.kind === 'new') {
-    object(input, ['kind', 'title', 'category']);
+    object(input, ['kind', 'title', 'category', 'set_id']);
+    if (!allowSetAssignment && input.set_id !== undefined)
+      teacherError('invalid_input', 400);
     return {
       kind: 'new',
       deck: flashcardDeckDefinition(input.title, input.category),
+      ...(input.set_id !== undefined && {
+        setId: flashcardSetId(input.set_id),
+      }),
     };
   }
   teacherError('invalid_input', 400);
@@ -52,8 +61,9 @@ function readCard(raw: unknown): FlashcardImportCard {
 export function readFlashcardImportContent(
   rawDestination: unknown,
   rawCards: unknown,
+  allowSetAssignment = false,
 ) {
-  const destination = readDestination(rawDestination);
+  const destination = readDestination(rawDestination, allowSetAssignment);
   if (
     !Array.isArray(rawCards) ||
     !rawCards.length ||
@@ -70,6 +80,7 @@ export function readFlashcardImport(raw: unknown) {
   const { destination, cards } = readFlashcardImportContent(
     input.destination,
     input.cards,
+    true,
   );
   if (Buffer.byteLength(JSON.stringify(input)) > FLASHCARD_IMPORT_MAX_BYTES)
     teacherError('flashcard_import_too_large', 413);

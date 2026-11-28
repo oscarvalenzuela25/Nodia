@@ -85,13 +85,11 @@ export class TeacherFlashcardsUseCase {
     manager?: EntityManager,
   ) {
     const spec = flashcardDeckDefinition(input.title, input.category);
-    const setId = flashcardSetId(input.set_id ?? null);
+    const setId =
+      input.set_id == null ? undefined : flashcardSetId(input.set_id);
     return this.scope(
       actor,
-      async (scope) => {
-        await this.requireSet(scope, setId);
-        return this.createNamedDeck(scope, spec, setId);
-      },
+      (scope) => this.createNamedDeck(scope, spec, setId),
       manager,
     );
   }
@@ -105,7 +103,7 @@ export class TeacherFlashcardsUseCase {
     const patch = readFlashcardDeckPatch(input);
     try {
       return await this.scope(actor, async (scope) => {
-        await this.requireSet(scope, patch.setId ?? null);
+        if (patch.setId) await this.requireSet(scope, patch.setId);
         const deck = await this.store.patchDeck(scope, deckId, patch);
         if (!deck) teacherError('not_found', 404);
         return deck;
@@ -178,6 +176,7 @@ export class TeacherFlashcardsUseCase {
                   ...previous.deck,
                   title: destination.deck.title,
                   category: destination.deck.category,
+                  ...(destination.setId && { set_id: destination.setId }),
                 }
               : previous.deck;
           return {
@@ -187,7 +186,13 @@ export class TeacherFlashcardsUseCase {
         }
         const deckId =
           destination.kind === 'new'
-            ? (await this.createNamedDeck(scope, destination.deck)).id
+            ? (
+                await this.createNamedDeck(
+                  scope,
+                  destination.deck,
+                  destination.setId,
+                )
+              ).id
             : destination.deckId;
         if (
           destination.kind === 'existing' &&
@@ -408,15 +413,26 @@ export class TeacherFlashcardsUseCase {
   private async createNamedDeck(
     scope: FlashcardScope,
     spec: FlashcardDeckDefinition,
-    setId: string | null = null,
+    setId?: string,
   ) {
+    if (setId) {
+      await this.requireSet(scope, setId);
+    } else {
+      // Compatibility for clients and existing assistant commands without a Set field.
+      setId = (
+        await this.store.findOrCreateSet(
+          scope,
+          flashcardCollectionTitle('Mazos sin clasificar'),
+        )
+      ).id;
+    }
     const deck = await this.store.createDeck(scope, spec, setId);
     if (!deck) teacherError('flashcard_deck_duplicate');
     return deck;
   }
 
-  private async requireSet(scope: FlashcardScope, setId: string | null) {
-    if (setId && !(await this.store.lockSet(scope, setId)))
+  private async requireSet(scope: FlashcardScope, setId: string) {
+    if (!(await this.store.lockSet(scope, setId)))
       teacherError('not_found', 404);
   }
 

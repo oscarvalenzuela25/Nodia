@@ -105,7 +105,7 @@ export class TeacherFlashcardsStore {
   async createDeck(
     { manager, owner }: FlashcardScope,
     { title, normalizedTitle, category }: FlashcardDeckDefinition,
-    setId: string | null,
+    setId: string,
   ): Promise<FlashcardDeck | undefined> {
     const [deck]: FlashcardDeck[] = await manager.query(
       `INSERT INTO teacher_flashcard_decks (owner_user_id, title, normalized_title, category, set_id)
@@ -148,18 +148,22 @@ export class TeacherFlashcardsStore {
   }
 
   async deleteDeck(scope: FlashcardScope, deckId: string) {
+    return this.removeDecks(scope, [deckId]);
+  }
+
+  private async removeDecks(scope: FlashcardScope, deckIds: readonly string[]) {
     const { manager, owner } = scope;
-    await this.removeCards(scope, 'deck_id', deckId);
+    await this.removeCards(scope, 'deck_id', deckIds);
     // Preserve the import key in the same transaction to prevent replay into General
     // or recreating the deleted destination after a response is lost.
     await manager.query(
       `UPDATE teacher_flashcard_import_requests SET deck_id = NULL, request_hash = NULL
-       WHERE owner_user_id = $1 AND deck_id = $2`,
-      [owner, deckId],
+       WHERE owner_user_id = $1 AND deck_id = ANY($2::uuid[])`,
+      [owner, deckIds],
     );
     await manager.query(
-      'DELETE FROM teacher_flashcard_decks WHERE owner_user_id = $1 AND id = $2',
-      [owner, deckId],
+      'DELETE FROM teacher_flashcard_decks WHERE owner_user_id = $1 AND id = ANY($2::uuid[])',
+      [owner, deckIds],
     );
   }
 
@@ -200,23 +204,61 @@ export class TeacherFlashcardsStore {
     return set;
   }
 
-  async lockSet({ manager, owner }: FlashcardScope, setId: string) {
+  async findOrCreateSet(
+    { manager, owner }: FlashcardScope,
+    { title, normalizedTitle }: FlashcardCollectionTitle,
+  ): Promise<Pick<FlashcardSet, 'id' | 'title'>> {
+    // Use the conflicting row in the same statement and keep its title and lock.
+    const [set]: Pick<FlashcardSet, 'id' | 'title'>[] = await manager.query(
+      `INSERT INTO teacher_flashcard_sets AS existing (owner_user_id, title, normalized_title)
+       VALUES ($1, $2, $3) ON CONFLICT (owner_user_id, normalized_title)
+       DO UPDATE SET title = existing.title RETURNING id, title`,
+      [owner, title, normalizedTitle],
+    );
+    return set;
+  }
+
+  async setDeckCount({ manager, owner }: FlashcardScope, setId: string) {
+    const [result]: { count: number }[] = await manager.query(
+      `SELECT count(*)::int AS count FROM teacher_flashcard_decks
+       WHERE owner_user_id = $1 AND set_id = $2`,
+      [owner, setId],
+    );
+    return result.count;
+  }
+
+  async lockSet(
+    { manager, owner }: FlashcardScope,
+    setId: string,
+    mode: 'update' | 'key-share' = 'key-share',
+  ) {
     const [row]: { id: string }[] = await manager.query(
       `SELECT id FROM teacher_flashcard_sets WHERE owner_user_id = $1 AND id = $2
-       FOR KEY SHARE`,
+       FOR ${mode === 'update' ? 'UPDATE' : 'KEY SHARE'}`,
       [owner, setId],
     );
     return Boolean(row);
   }
 
-  async deleteSet({ manager, owner }: FlashcardScope, setId: string) {
-    const [row]: { id: string }[] = await manager.query(
-      `WITH deleted AS (
-         DELETE FROM teacher_flashcard_sets WHERE owner_user_id = $1 AND id = $2 RETURNING id
-       ) SELECT id FROM deleted`,
+  async deleteSet(scope: FlashcardScope, setId: string) {
+    const { manager, owner } = scope;
+    if (!(await this.lockSet(scope, setId, 'update'))) return false;
+    // Block writes into this set, then drain writes into its decks before cleanup.
+    const decks: { id: string }[] = await manager.query(
+      `SELECT id FROM teacher_flashcard_decks WHERE owner_user_id = $1 AND set_id = $2
+       ORDER BY id FOR UPDATE`,
       [owner, setId],
     );
-    return Boolean(row);
+    if (decks.length)
+      await this.removeDecks(
+        scope,
+        decks.map((deck) => deck.id),
+      );
+    await manager.query(
+      'DELETE FROM teacher_flashcard_sets WHERE owner_user_id = $1 AND id = $2',
+      [owner, setId],
+    );
+    return true;
   }
 
   async hasDeck({ manager, owner }: FlashcardScope, deckId: string) {
@@ -465,20 +507,20 @@ export class TeacherFlashcardsStore {
   }
 
   deleteCard(scope: FlashcardScope, id: string) {
-    return this.removeCards(scope, 'id', id);
+    return this.removeCards(scope, 'id', [id]);
   }
 
   private async removeCards(
     { manager, owner }: FlashcardScope,
     column: 'id' | 'deck_id',
-    id: string,
+    ids: readonly string[],
   ) {
     await manager.query(
       `WITH deleted AS (
-        DELETE FROM teacher_flashcards WHERE owner_user_id = $1 AND ${column} = $2 RETURNING id
+        DELETE FROM teacher_flashcards WHERE owner_user_id = $1 AND ${column} = ANY($2::uuid[]) RETURNING id
        ) UPDATE teacher_flashcard_create_requests r SET request_hash = NULL
          FROM deleted WHERE r.owner_user_id = $1 AND r.card_id = deleted.id`,
-      [owner, id],
+      [owner, ids],
     );
   }
 

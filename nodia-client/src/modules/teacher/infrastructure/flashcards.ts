@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const flashcardGeneralDeck = "general";
 export const flashcardPageSize = 12;
-export const flashcardDeckPageSize = 10;
+export const flashcardDeckPageSize = 30;
 export const flashcardTextLimit = 2000;
 export const flashcardDeckTitleLimit = 120;
 export const flashcardCategoryLimit = 80;
