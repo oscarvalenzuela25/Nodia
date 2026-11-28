@@ -37,6 +37,12 @@ API chat reutiliza ToolGateway, módulos/ownership, grants, propuestas, confirma
 - Tratar `docs/architecture/decisions/` como fuente de decisiones técnicas versionadas.
 - Si una conversación, memoria o suposición contradice un documento aprobado, detenerse y señalar la contradicción.
 
+## Orquestación de QA por producto
+
+- Cuando se solicite QA funcional, abrir [docs/QA](docs/QA/README.md), identificar las suites afectadas y ejecutar sus casos desde las entradas normales del producto con una sola cuenta activa `super_admin`. Confirmar el release, entorno y alcance antes de comenzar. Mantener al día la suite al cambiar un comportamiento que cubre.
+- En los casos marcados `IA`, aplicar la [matriz de IA](docs/QA/README.md#matriz-de-ia) a cada proveedor y cada modelo descubierto para cada conexión y modo aplicables. Seleccionar y comprobar razonamiento **Medio** en cada ejecución. Registrar las combinaciones incompatibles o bloqueadas con su motivo y conservar la selección exacta.
+- Cerrar con resultados por caso y selección, evidencia, bloqueos y limpieza de los recursos creados para QA. El [plan 91](docs/mvp/91-ai-provider-onboarding-verification.md) conserva los controles adicionales obligatorios para incorporar o modificar proveedores.
+
 ## Continuidad
 
 - Núcleo de iniciativas futuras: [docs/mvp/TODO.md](docs/mvp/TODO.md). Para nuevas

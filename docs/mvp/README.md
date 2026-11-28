@@ -1,5 +1,8 @@
 # Especificación del MVP — Nodia
 
+Consultar las [suites de QA por producto](../QA/README.md) para ejecutar y
+documentar las verificaciones funcionales de este MVP.
+
 **Nodia CV — primera generación y análisis por versión, 2026-11-26.**
 Se puede iniciar el borrador con la selección compatible elegida.
 El análisis archivado pertenece a la misma revisión que el PDF guardado.
