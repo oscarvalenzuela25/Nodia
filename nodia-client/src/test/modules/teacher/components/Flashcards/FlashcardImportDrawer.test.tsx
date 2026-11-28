@@ -111,3 +111,35 @@ it("copies distinct prompts for a deck and a single card", async () => {
   write.mockRestore();
   success.mockRestore();
 });
+
+it("copies and loads the same set example and reviews its deck assignments before confirming", async () => {
+  const user = userEvent.setup();
+  const write = vi.spyOn(navigator.clipboard, "writeText");
+  const receipt = { set: { id: "450e45c5-b22e-463a-abf3-fc13bac10fae", title: "Inglés práctico", deck_count: 1 }, imported_count: 1 };
+  const save = vi.fn().mockResolvedValue(receipt);
+  const onImported = vi.fn();
+  try {
+    render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={onImported} />);
+    await user.click(screen.getByRole("button", { name: "Un set" }));
+    await user.click(screen.getByRole("button", { name: "Copiar formato para IA" }));
+    await user.click(screen.getByRole("button", { name: "Cargar ejemplo" }));
+    const input = screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Tarjetas en JSON" }).value;
+    expect(write).toHaveBeenCalledWith(expect.stringContaining(input));
+
+    await user.click(screen.getByRole("button", { name: "Revisar tarjetas" }));
+    expect(screen.getByText("Nuevo set · Inglés práctico")).toBeVisible();
+    expect(save).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("checkbox", { name: /Mazo · Inglés para viajar/ }));
+    await user.click(screen.getByRole("button", { name: "Guardar 1 tarjeta" }));
+    expect(save).toHaveBeenCalledWith({
+      set: { title: "Inglés práctico" },
+      decks: [{ title: "Orientación y transporte", cards: [{
+        question: "¿Cómo pides indicaciones para llegar a la estación?",
+        answer: "How do I get to the train station?",
+      }] }],
+    }, expect.any(String));
+    expect(onImported).toHaveBeenCalledWith(receipt);
+  } finally {
+    write.mockRestore();
+  }
+});

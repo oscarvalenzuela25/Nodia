@@ -380,11 +380,58 @@ categoría o Set, incluida la desvinculación. El mismo controlador expone
 La paginación de diez utiliza el inventario de mazos ya leído para el
 selector de destinos y comparte el estado entre árbol y detalle.
 
-La importación conserva su formato v1. Un mazo importado como nuevo
-empieza sin Set y se puede asignar desde su edición. Los contratos
-publicados de NodiaAI conservan sus campos y operaciones. La
+La importación de una tarjeta o un mazo conserva su formato v1. Un
+mazo importado por sí solo empieza sin Set y se puede asignar desde su
+edición. La [importación de Sets](#importar-un-set-de-mazos) amplía el
+flujo nativo de Teacher. Los contratos publicados de NodiaAI conservan
+sus campos y operaciones. La
 [ficha candidata de Sets](../nodia-ai/knowledge/studies/features/flashcard-sets.md)
 documenta el alcance nativo.
+
+### Importar un Set de mazos
+
+En **Tarjetas de repaso → Importar tarjetas**, elegir **Un set** para
+copiar el formato para IA externa o cargar el mismo ejemplo en el campo
+JSON. La vista previa muestra el nuevo Set y el mazo de cada tarjeta.
+Al confirmar se crean los mazos con al menos una tarjeta seleccionada
+y se abre el Set en la biblioteca.
+
+```json
+{
+  "version": 1,
+  "set": { "title": "Inglés práctico" },
+  "decks": [
+    {
+      "title": "Saludos",
+      "category": "Inglés",
+      "cards": [{ "question": "¿Cómo saludas de mañana?", "answer": "Good morning." }]
+    },
+    {
+      "title": "Despedidas",
+      "cards": [{ "question": "¿Cómo te despides?", "answer": "See you later." }]
+    }
+  ]
+}
+```
+
+El formato admite de 1 a 30 tarjetas en total y conserva los campos de
+tarjeta v1, incluida la fuente textual opcional. Los títulos de Set y
+mazo tienen hasta 120 caracteres y la categoría opcional del mazo hasta
+80. Los nombres de mazo se comparan normalizados dentro de la cuenta.
+General sigue reservado.
+
+El POST nativo `/api/v1/teacher/flashcards/imports/sets` recibe `set`,
+`decks` y `request_key` tras la revisión. Aplica el límite de 200 KiB
+y crea el Set, sus mazos y las tarjetas en una transacción. Un nombre
+ocupado devuelve conflicto sin guardar parte del lote. La misma clave
+confirma el recibo de un guardado incierto. Si se eliminó el Set,
+devuelve 410 y preserva la clave para impedir que el reintento lo
+recree. El catálogo de NodiaAI conserva la importación por mazo.
+
+La [ficha de Sets](../nodia-ai/knowledge/studies/features/flashcard-sets.md)
+enlaza esta operación. Las regresiones cubren
+[copia, ejemplo y revisión](../../nodia-client/src/test/modules/teacher/components/Flashcards/FlashcardImportDrawer.test.tsx)
+y la [transacción HTTP](../../nodia-server/test/teacher-flashcards.integration.mjs).
 
 ### Verificación local
 
