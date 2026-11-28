@@ -79,6 +79,19 @@ export class ImportFlashcardsDto {
   cards!: unknown[];
 }
 
+export class ImportFlashcardSetDto {
+  @IsUUID()
+  request_key!: string;
+
+  @IsObject()
+  set!: Record<string, unknown>;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(FLASHCARD_IMPORT_MAX_CARDS)
+  decks!: unknown[];
+}
+
 export class CreateFlashcardDto {
   @IsUUID()
   request_key!: string;

@@ -1,6 +1,6 @@
 import { mainInstance } from "../../../config/api";
 import { fileToBase64 } from "./enrichmentSchemas";
-import { flashcardImportReceiptSchema, type FlashcardImportBatch } from "./flashcardImport";
+import { flashcardImportReceiptSchema, flashcardSetImportReceiptSchema, type FlashcardImportBatch } from "./flashcardImport";
 import {
   flashcardDeckSchema, flashcardImageByteLimit, flashcardSchema, flashcardSetSchema,
   type FlashcardDeckFields, type FlashcardDraft, type FlashcardUpdate,
@@ -36,6 +36,16 @@ export async function deleteFlashcardCollection(kind: "decks" | "sets", id: stri
 }
 
 export async function importFlashcards(batch: FlashcardImportBatch, requestKey: string) {
+  if ("set" in batch) {
+    const response = await mainInstance.post<unknown>(api + "/imports/sets", { ...batch, request_key: requestKey });
+    const receipt = flashcardSetImportReceiptSchema.parse(response.data);
+    const count = batch.decks.reduce((total, deck) => total + deck.cards.length, 0);
+    if (response.status !== 201 || receipt.set.title !== batch.set.title ||
+      receipt.set.deck_count !== batch.decks.length || receipt.imported_count !== count) {
+      throw new Error("flashcard_import_unconfirmed");
+    }
+    return receipt;
+  }
   const response = await mainInstance.post<unknown>(api + "/imports", { ...batch, request_key: requestKey });
   const receipt = flashcardImportReceiptSchema.parse(response.data);
   const { destination } = batch;

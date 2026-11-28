@@ -11,9 +11,12 @@ import {
   flashcardWriteCandidates,
 } from '../dist/nodia-ai-teacher-operations/flashcard-operations.js';
 import { teacherBodyParser } from '../dist/teacher/teacher-body-parser.js';
+import { TeacherFlashcardSetImportController } from '../dist/teacher/teacher-flashcard-set-import.controller.js';
+import { TeacherFlashcardSetImportStore } from '../dist/teacher/teacher-flashcard-set-import.store.js';
 import { TeacherFlashcardsController } from '../dist/teacher/teacher-flashcards.controller.js';
 import { TeacherFlashcardsStore } from '../dist/teacher/teacher-flashcards.store.js';
 import { TeacherService } from '../dist/teacher/teacher.service.js';
+import { TeacherFlashcardSetImportUseCase } from '../dist/teacher/use-case/teacher-flashcard-set-import.use-case.js';
 import { TeacherFlashcardsUseCase } from '../dist/teacher/use-case/teacher-flashcards.use-case.js';
 import { ExecuteTeacherCommandUseCase } from '../dist/teacher/use-case/execute-teacher-command.use-case.js';
 import { TeacherEnrichmentUseCase } from '../dist/teacher/use-case/teacher-enrichment.use-case.js';
@@ -52,6 +55,7 @@ const lab = await teacherUpgradeLab({
 const migration = '1793900000000-CreateTeacherFlashcards';
 const importMigration = '1793910000000-ImportTeacherFlashcards';
 const setsMigration = '1793950000000-CreateTeacherFlashcardSets';
+const setImportMigration = '1794120000000-ImportTeacherFlashcardSets';
 const checks = [];
 const check = async (name, run) => {
   await run();
@@ -193,11 +197,13 @@ try {
 
   class FlashcardLabModule {}
   Module({
-    controllers: [TeacherFlashcardsController],
+    controllers: [TeacherFlashcardsController, TeacherFlashcardSetImportController],
     providers: [
       { provide: TeacherService, useValue: lab.store },
       TeacherFlashcardsStore,
       TeacherFlashcardsUseCase,
+      TeacherFlashcardSetImportStore,
+      TeacherFlashcardSetImportUseCase,
     ],
   })(FlashcardLabModule);
   app = await NestFactory.create(FlashcardLabModule, {
@@ -819,6 +825,58 @@ try {
         lab.migrate(migration, 'down'),
         /Preserve the flashcards/,
       );
+    },
+  );
+
+  await check(
+    'imports an entire set atomically and recovers concurrent requests without duplicating writes',
+    async () => {
+      await lab.migrate(setImportMigration);
+      await lab.migrate(setImportMigration, 'down');
+      await lab.migrate(setImportMigration);
+      const importSet = (body, actor) =>
+        request('imports/sets', { method: 'POST', body, actor });
+      const card = { question: 'What is an import?', answer: 'A batch of new cards.' };
+      const proposal = {
+        request_key: randomUUID(),
+        set: { title: '  Study subjects  ' },
+        decks: [
+          { title: 'Atomic imports', category: 'Terms', cards: [card] },
+          { title: 'Batch imports', cards: [{ ...card, source: 'Notes' }, card] },
+        ],
+      };
+      expectStatus(await importSet(proposal, 'no-module'), 403);
+      const copies = await Promise.all([importSet(proposal), importSet(proposal)]);
+      const receipt = expectStatus(copies[0], 201);
+      assert.deepEqual(expectStatus(copies[1], 201), receipt);
+      assert.deepEqual(receipt, {
+        set: { id: receipt.set.id, title: 'Study subjects', deck_count: 2 },
+        imported_count: 3,
+      });
+      assert.deepEqual(expectStatus(await request('decks'), 200)
+        .filter(deck => deck.set_id === receipt.set.id)
+        .map(deck => [deck.title, deck.category, deck.card_count]),
+      [['Atomic imports', 'Terms', 1], ['Batch imports', null, 2]]);
+      assert.ok(!expectStatus(await request('sets', { actor: 'other' }), 200)
+        .some(set => set.id === receipt.set.id));
+      assert.equal(expectStatus(await importSet({
+        ...proposal, set: { title: 'Different set' },
+      }), 409).code, 'idempotency_conflict');
+
+      const conflict = {
+        ...proposal,
+        request_key: randomUUID(),
+        set: { title: 'Should roll back' },
+        decks: [{ title: 'A brand new deck', cards: [card] }, proposal.decks[1]],
+      };
+      assert.equal(expectStatus(await importSet(conflict), 409).code, 'flashcard_deck_duplicate');
+      assert.ok(!expectStatus(await request('sets'), 200).some(set => set.title === conflict.set.title));
+      assert.ok(!expectStatus(await request('decks'), 200).some(deck => deck.title === conflict.decks[0].title));
+      const recovered = expectStatus(await importSet({ ...conflict, decks: [conflict.decks[0]] }), 201);
+      expectStatus(await request('sets/' + recovered.set.id, { method: 'DELETE' }), 204);
+      assert.equal(expectStatus(await importSet({ ...conflict, decks: [conflict.decks[0]] }), 410).code,
+        'flashcard_set_deleted');
+      await assert.rejects(lab.migrate(setImportMigration, 'down'), /Preserve the flashcard set import receipts/);
     },
   );
 

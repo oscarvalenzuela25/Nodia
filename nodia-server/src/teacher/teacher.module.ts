@@ -10,10 +10,13 @@ import { TeacherCalendarController } from './teacher-calendar.controller.js';
 import { TeacherCalendarStore } from './teacher-calendar.store.js';
 import { TeacherCalendarUseCase } from './use-case/teacher-calendar.use-case.js';
 import { TeacherFlashcardsController } from './teacher-flashcards.controller.js';
+import { TeacherFlashcardSetImportController } from './teacher-flashcard-set-import.controller.js';
 import { TeacherFlashcardGenerationController } from './teacher-flashcard-generation.controller.js';
 import { TeacherFlashcardLibraryController } from './teacher-flashcard-library.controller.js';
 import { TeacherFlashcardsStore } from './teacher-flashcards.store.js';
+import { TeacherFlashcardSetImportStore } from './teacher-flashcard-set-import.store.js';
 import { TeacherFlashcardsUseCase } from './use-case/teacher-flashcards.use-case.js';
+import { TeacherFlashcardSetImportUseCase } from './use-case/teacher-flashcard-set-import.use-case.js';
 import { TeacherFlashcardGenerationUseCase } from './use-case/teacher-flashcard-generation.use-case.js';
 import { TeacherFlashcardLibraryUseCase } from './use-case/teacher-flashcard-library.use-case.js';
 import { TeacherLearningUseCase } from './use-case/teacher-learning.use-case.js';
@@ -47,6 +50,7 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherRequestsController,
     TeacherCalendarController,
     TeacherFlashcardsController,
+    TeacherFlashcardSetImportController,
     TeacherFlashcardGenerationController,
     TeacherFlashcardLibraryController,
   ],
@@ -55,7 +59,9 @@ class TeacherPublisherRegistration implements OnModuleInit {
     TeacherCalendarStore,
     TeacherCalendarUseCase,
     TeacherFlashcardsStore,
+    TeacherFlashcardSetImportStore,
     TeacherFlashcardsUseCase,
+    TeacherFlashcardSetImportUseCase,
     TeacherFlashcardGenerationUseCase,
     TeacherFlashcardLibraryUseCase,
     TeacherLearningUseCase,
