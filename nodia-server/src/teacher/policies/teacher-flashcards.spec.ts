@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   flashcardDeckTitle,
+  readFlashcardDeckPatch,
   readFlashcardImage,
   readFlashcardPatch,
   readFlashcardSource,
@@ -77,6 +78,16 @@ describe('flashcard field policy', () => {
     });
     expect(() => flashcardDeckTitle(' GENERAL ')).toThrow(
       'flashcard_deck_duplicate',
+    );
+  });
+
+  it('accepts changing a named deck to a valid Set and rejects detaching it', () => {
+    const setId = '71fb7529-575a-431e-a47c-eb46f417083c';
+    expect(readFlashcardDeckPatch({ set_id: setId.toUpperCase() })).toEqual({
+      setId,
+    });
+    expect(() => readFlashcardDeckPatch({ set_id: null })).toThrow(
+      'invalid_input',
     );
   });
 

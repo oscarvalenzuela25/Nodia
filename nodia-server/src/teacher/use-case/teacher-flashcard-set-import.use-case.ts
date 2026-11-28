@@ -22,33 +22,42 @@ export class TeacherFlashcardSetImportUseCase {
       const scope = { manager, owner: actor.actorId };
       await this.flashcards.lockCreation(scope, 'set:' + requestKey, 'import');
       const previous = await this.imports.receipt(scope, requestKey);
-      let setId: string;
       if (previous) {
         if (!previous.set_id) teacherError('flashcard_set_deleted', 410);
-        if (previous.request_hash !== digest) teacherError('idempotency_conflict');
-        setId = previous.set_id;
-      } else {
-        const created = await this.flashcards.createSet(scope, set);
-        if (!created) teacherError('flashcard_set_duplicate');
-        setId = created.id;
-        for (const { definition, cards } of decks) {
-          const deck = await this.flashcards.createDeck(scope, definition, setId);
-          if (!deck) teacherError('flashcard_deck_duplicate');
-          await this.flashcards.importCards(
-            scope,
-            deck.id,
-            cards.map(card => ({
-              ...card,
-              request_hash: hash({ ...card, deckId: deck.id, image: null }),
-            })),
-          );
-        }
-        await this.imports.record(scope, requestKey, digest, setId);
+        if (previous.request_hash !== digest)
+          teacherError('idempotency_conflict');
+        return {
+          set: {
+            id: previous.set_id,
+            title: previous.set_title ?? set.title,
+            deck_count: previous.deck_count ?? decks.length,
+          },
+          imported_count: cardCount,
+        };
       }
-      return {
-        set: { id: setId, title: set.title, deck_count: decks.length },
-        imported_count: cardCount,
+      const target = await this.flashcards.findOrCreateSet(scope, set);
+      for (const { definition, cards } of decks) {
+        const deck = await this.flashcards.createDeck(
+          scope,
+          definition,
+          target.id,
+        );
+        if (!deck) teacherError('flashcard_deck_duplicate');
+        await this.flashcards.importCards(
+          scope,
+          deck.id,
+          cards.map((card) => ({
+            ...card,
+            request_hash: hash({ ...card, deckId: deck.id, image: null }),
+          })),
+        );
+      }
+      const importedSet = {
+        ...target,
+        deck_count: await this.flashcards.setDeckCount(scope, target.id),
       };
+      await this.imports.record(scope, requestKey, digest, importedSet);
+      return { set: importedSet, imported_count: cardCount };
     });
   }
 }

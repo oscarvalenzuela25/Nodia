@@ -9,13 +9,15 @@ import type { FlashcardImportBatch, FlashcardImportReceipt } from "../../../../.
 const general = { id: "general", title: "General", card_count: 4, category: null };
 const imported = { deck: { ...general, card_count: 5 }, imported_count: 1 };
 const card = { question: "¿Qué significa stream?", answer: "Arroyo.", source: "Apuntes" };
+const studySet = { id: "450e45c5-b22e-463a-abf3-fc13bac10fae", title: "Inglés", deck_count: 1 };
+const travelSet = { id: "7c1fff63-d792-4fb7-bdc3-a7098a79c9b4", title: "Viajes", deck_count: 0 };
 
 it("reviews before writing, allows a selected subset and preserves it and the request key on uncertain retry", async () => {
   const user = userEvent.setup();
   const save = vi.fn<(batch: FlashcardImportBatch, requestKey: string) => Promise<FlashcardImportReceipt | null>>()
     .mockRejectedValueOnce(new AxiosError("Connection lost")).mockResolvedValueOnce(imported);
   const onImported = vi.fn();
-  render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={onImported} />);
+  render(<FlashcardImportDrawer decks={[general]} sets={[]} busy={false} save={save} onClose={vi.fn()} onImported={onImported} />);
   const paste = screen.getByRole("textbox", { name: "Tarjetas en JSON" });
   expect(screen.getByRole("button", { name: "Revisar tarjetas" })).toBeDisabled();
   fireEvent.change(paste, { target: { value: JSON.stringify({
@@ -42,7 +44,7 @@ it("reviews before writing, allows a selected subset and preserves it and the re
 it("shows the new deck and its category, and requires a fresh preview after editing JSON", async () => {
   const user = userEvent.setup();
   const save = vi.fn();
-  render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
+  render(<FlashcardImportDrawer decks={[general]} sets={[]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
   await user.click(screen.getByRole("button", { name: "Cargar ejemplo" }));
   await user.click(screen.getByRole("button", { name: "Revisar tarjetas" }));
   expect(screen.getByRole("textbox", { name: /Nombre del mazo/ })).toHaveValue("Inglés para viajar");
@@ -62,7 +64,7 @@ it("confirms when the selected example is loaded into the JSON input", async () 
   const success = vi.spyOn(sileo, "success").mockReturnValue("example");
   const save = vi.fn();
   try {
-    render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
+    render(<FlashcardImportDrawer decks={[general]} sets={[]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
     await user.click(screen.getByRole("button", { name: "Cargar ejemplo" }));
     expect(screen.getByRole("textbox", { name: "Tarjetas en JSON" })).toHaveProperty("value", expect.stringContaining('"cards"'));
     expect(success).toHaveBeenCalledExactlyOnceWith({ title: "Ejemplo cargado" });
@@ -77,7 +79,7 @@ it("retains selection when navigating to another page of a batch", async () => {
   const user = userEvent.setup();
   const save = vi.fn().mockResolvedValue({ deck: { ...general, card_count: 10 }, imported_count: 6 });
   const cards = Array.from({ length: 7 }, (_, index) => ({ question: "Pregunta " + (index + 1), answer: "Respuesta" }));
-  render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
+  render(<FlashcardImportDrawer decks={[general]} sets={[]} busy={false} save={save} onClose={vi.fn()} onImported={vi.fn()} />);
   fireEvent.change(screen.getByRole("textbox", { name: "Tarjetas en JSON" }), {
     target: { value: JSON.stringify({ version: 1, cards }) },
   });
@@ -95,7 +97,7 @@ it("copies distinct prompts for a deck and a single card", async () => {
   const user = userEvent.setup();
   const write = vi.spyOn(navigator.clipboard, "writeText");
   const success = vi.spyOn(sileo, "success").mockReturnValueOnce("deck").mockReturnValueOnce("card");
-  render(<FlashcardImportDrawer decks={[general]} busy={false} save={vi.fn()} onClose={vi.fn()} onImported={vi.fn()} />);
+  render(<FlashcardImportDrawer decks={[general]} sets={[]} busy={false} save={vi.fn()} onClose={vi.fn()} onImported={vi.fn()} />);
   const copy = screen.getByRole("button", { name: "Copiar formato para IA" });
   await user.click(copy);
   await waitFor(() => expect(write).toHaveBeenCalledOnce());
@@ -119,7 +121,7 @@ it("copies and loads the same set example and reviews its deck assignments befor
   const save = vi.fn().mockResolvedValue(receipt);
   const onImported = vi.fn();
   try {
-    render(<FlashcardImportDrawer decks={[general]} busy={false} save={save} onClose={vi.fn()} onImported={onImported} />);
+    render(<FlashcardImportDrawer decks={[general]} sets={[]} busy={false} save={save} onClose={vi.fn()} onImported={onImported} />);
     await user.click(screen.getByRole("button", { name: "Un set" }));
     await user.click(screen.getByRole("button", { name: "Copiar formato para IA" }));
     await user.click(screen.getByRole("button", { name: "Cargar ejemplo" }));
@@ -127,7 +129,7 @@ it("copies and loads the same set example and reviews its deck assignments befor
     expect(write).toHaveBeenCalledWith(expect.stringContaining(input));
 
     await user.click(screen.getByRole("button", { name: "Revisar tarjetas" }));
-    expect(screen.getByText("Nuevo set · Inglés práctico")).toBeVisible();
+    expect(screen.getByText("Nuevo Set · Inglés práctico")).toBeVisible();
     expect(save).not.toHaveBeenCalled();
     await user.click(screen.getByRole("checkbox", { name: /Mazo · Inglés para viajar/ }));
     await user.click(screen.getByRole("button", { name: "Guardar 1 tarjeta" }));
@@ -142,4 +144,63 @@ it("copies and loads the same set example and reviews its deck assignments befor
   } finally {
     write.mockRestore();
   }
+});
+
+it("requires a Set for a new deck and preserves the preview if its chosen Set disappears", async () => {
+  const user = userEvent.setup();
+  const save = vi.fn().mockResolvedValue(imported);
+  const props = { decks: [general], busy: false, save, onClose: vi.fn(), onImported: vi.fn(), newDeckOnly: true };
+  const { rerender } = render(<FlashcardImportDrawer {...props} sets={[studySet, travelSet]} />);
+  const deck = { title: "Día 1", category: "Inglés" };
+  fireEvent.change(screen.getByRole("textbox", { name: "Tarjetas en JSON" }), {
+    target: { value: JSON.stringify({ version: 1, deck, cards: [card] }) },
+  });
+  await user.click(screen.getByRole("button", { name: "Revisar tarjetas" }));
+  expect(screen.getByRole("button", { name: "Guardar 1 tarjeta" })).toBeDisabled();
+  const choose = async (title: string) => {
+    await user.click(screen.getByRole("button", { name: "Set" }));
+    await user.click(screen.getByRole("option", { name: title }));
+  };
+  await choose(studySet.title);
+  expect(screen.getByRole("button", { name: "Guardar 1 tarjeta" })).toBeEnabled();
+
+  rerender(<FlashcardImportDrawer {...props} sets={[travelSet]} />);
+  expect(screen.getByText("El Set seleccionado ya no está disponible. Elige otro.")).toBeVisible();
+  expect(screen.getByRole("checkbox", { name: card.question })).toBeChecked();
+  expect(screen.getByRole("button", { name: "Guardar 1 tarjeta" })).toBeDisabled();
+  expect(save).not.toHaveBeenCalled();
+  await choose(travelSet.title);
+  await user.click(screen.getByRole("button", { name: "Guardar 1 tarjeta" }));
+  expect(save).toHaveBeenCalledWith({
+    destination: { kind: "new", ...deck, set_id: travelSet.id }, cards: [card],
+  }, expect.any(String));
+});
+
+it("uses a wrapped deck's named Set by default and keeps an explicit Set authoritative", async () => {
+  const user = userEvent.setup();
+  const save = vi.fn().mockResolvedValue(imported);
+  const props = { decks: [general], sets: [studySet, travelSet], busy: false, save, onClose: vi.fn(), onImported: vi.fn(), newDeckOnly: true };
+  const { rerender } = render(<FlashcardImportDrawer key="named" {...props} />);
+  const named = { title: " ＩNGLÉS " };
+  const deck = { title: "Día 1", category: "Inglés", cards: [card] };
+  const preview = async () => {
+    fireEvent.change(screen.getByRole("textbox", { name: "Tarjetas en JSON" }), {
+      target: { value: JSON.stringify({ version: 1, set: named, decks: [deck] }) },
+    });
+    await user.click(screen.getByRole("button", { name: "Revisar tarjetas" }));
+  };
+  await preview();
+  expect(screen.getByText("Set existente · Inglés")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Guardar 1 tarjeta" }));
+  expect(save).toHaveBeenLastCalledWith({ set: { title: "INGLÉS" }, decks: [deck] }, expect.any(String));
+
+  rerender(<FlashcardImportDrawer key="selected" {...props} initialSetId={travelSet.id} />);
+  await preview();
+  const { cards, ...definition } = deck;
+  expect(screen.getByRole("button", { name: "Set" })).toHaveTextContent(travelSet.title);
+  expect(screen.queryByText("Set existente · Inglés")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Guardar 1 tarjeta" }));
+  expect(save).toHaveBeenLastCalledWith({
+    destination: { kind: "new", ...definition, set_id: travelSet.id }, cards,
+  }, expect.any(String));
 });

@@ -61,9 +61,9 @@ export class PatchFlashcardDeckDto {
   @IsString()
   category?: string | null;
 
-  @ValidateIf((_object, value) => value !== undefined && value !== null)
+  @ValidateIf((_object, value) => value !== undefined)
   @IsUUID()
-  set_id?: string | null;
+  set_id?: string;
 }
 
 export class ImportFlashcardsDto {

@@ -81,32 +81,62 @@ describe("Teacher flashcard queries and mutations", () => {
     expect(client.getQueryState(listKey)?.isInvalidated).toBe(false);
   });
 
-  it("keeps the set and its decks on failure, then detaches decks on a confirmed deletion", async () => {
+  it("keeps a Set on failure, then removes only its descendants on a confirmed deletion", async () => {
     const { client, wrapper } = setup();
     const setId = "8d87bff0-a2c3-4f8e-9a91-ad29d17d6c26";
     const set = { id: setId, title: "Vocabulary", deck_count: 1 };
     const deck = { id: request, title: "Greetings", set_id: setId, card_count: 1 };
+    const general = { id: "general", title: "General", set_id: null, card_count: 1 };
     const deckKey = [...prefix, "flashcards/decks", undefined];
     const setKey = [...prefix, "flashcards/sets", undefined];
     const otherDeckKey = ["teacher", "other", 2, "flashcards/decks", undefined];
     client.setQueryData(setKey, [set]);
-    client.setQueryData(deckKey, [deck]);
+    client.setQueryData(deckKey, [general, deck]);
     client.setQueryData(otherDeckKey, [deck]);
     const deckCardKey = [...prefix, "flashcards/cards", { deck_id: deck.id, page: 1 }];
-    client.setQueryData(deckCardKey, list);
+    const deckPage = { ...list, data: [{ ...card, deck_id: deck.id }] };
+    client.setQueryData(deckCardKey, deckPage);
+    client.setQueryData(listKey, list);
+    client.setQueryData(imageKey, "private-image");
+    client.setQueryData(otherImage, "separate-owner");
     stub.delete.mockRejectedValueOnce(new Error("server unavailable")).mockResolvedValueOnce({ status: 204 });
     const { result } = renderHook(() => useFlashcardWrites(), { wrapper });
 
     await act(async () => { await expect(result.current.deleteSet(setId)).rejects.toThrow("server unavailable"); });
     expect(client.getQueryData(setKey)).toEqual([set]);
-    expect(client.getQueryData(deckKey)).toEqual([deck]);
+    expect(client.getQueryData(deckKey)).toEqual([general, deck]);
+    expect(client.getQueryData(deckCardKey)).toEqual(deckPage);
+    expect(client.getQueryData(imageKey)).toBe("private-image");
     expect(stub.success).not.toHaveBeenCalled();
     await act(async () => { expect(await result.current.deleteSet(setId)).toBe(true); });
     expect(stub.delete).toHaveBeenLastCalledWith("/teacher/flashcards/sets/" + setId);
     expect(client.getQueryData(setKey)).toEqual([]);
-    expect(client.getQueryData(deckKey)).toEqual([{ ...deck, set_id: null }]);
+    expect(client.getQueryData(deckKey)).toEqual([general]);
     expect(client.getQueryData(otherDeckKey)).toEqual([deck]);
-    expect(client.getQueryData(deckCardKey)).toEqual(list);
+    expect(client.getQueryData(deckCardKey)).toBeUndefined();
+    expect(client.getQueryData(imageKey)).toBeUndefined();
+    expect(client.getQueryData(otherImage)).toBe("separate-owner");
+    expect(client.getQueryData(listKey)).toEqual(list);
+  });
+
+  it("validates receipt identity when importing by Set title or a selected Set ID", async () => {
+    const { wrapper } = setup();
+    const { result } = renderHook(() => useFlashcardWrites(), { wrapper });
+    const setId = "8d87bff0-a2c3-4f8e-9a91-ad29d17d6c26";
+    const receipt = { set: { id: setId, title: "Inglés", deck_count: 7 }, imported_count: 1 };
+    const cards = [{ question: card.question, answer: card.answer }];
+    stub.post.mockResolvedValueOnce({ status: 201, data: receipt })
+      .mockResolvedValueOnce({ status: 201, data: { deck: { id, title: "Día 1", card_count: 1, set_id: request }, imported_count: 1 } });
+    await act(async () => {
+      expect(await result.current.importCards({ set: { title: "INGLÉS" }, decks: [{ title: "Día 1", cards }] }, request)).toEqual(receipt);
+    });
+    await act(async () => {
+      await expect(result.current.importCards({ destination: { kind: "new", title: "Día 1", set_id: setId }, cards }, request))
+        .rejects.toThrow("flashcard_import_unconfirmed");
+    });
+    expect(stub.post).toHaveBeenNthCalledWith(2, "/teacher/flashcards/imports", {
+      destination: { kind: "new", title: "Día 1", set_id: setId }, cards, request_key: request,
+    });
   });
 
   it("clears cached pages and their private images only for a confirmed deleted deck", async () => {

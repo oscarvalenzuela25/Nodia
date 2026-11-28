@@ -129,14 +129,17 @@ export function useFlashcardWrites() {
         result.kind === "delete-deck" || result.kind === "delete-set") {
         await Promise.all([client.cancelQueries({ queryKey: decksKey }), client.cancelQueries({ queryKey: setsKey })]);
         if (!currentOwner()) return null;
+        const cachedDecks = flashcardDecksSchema.safeParse(client.getQueryData(decksKey));
+        const deletedDecks = result.kind === "delete-deck" ? [result.id] : result.kind === "delete-set" && cachedDecks.success
+          ? cachedDecks.data.filter(deck => deck.set_id === result.id).map(deck => deck.id) : [];
+        const deletedIds = new Set(deletedDecks);
         client.setQueryData(decksKey, (previous: unknown) => {
           const cached = flashcardDecksSchema.safeParse(previous);
           if (!cached.success) return previous;
           if (result.kind === "deck" || result.kind === "edit-deck") {
             return [...cached.data.filter(deck => deck.id !== result.data.id), result.data];
           }
-          if (result.kind === "delete-deck") return cached.data.filter(deck => deck.id !== result.id);
-          if (result.kind === "delete-set") return cached.data.map(deck => deck.set_id === result.id ? { ...deck, set_id: null } : deck);
+          if (deletedIds.size) return cached.data.filter(deck => !deletedIds.has(deck.id));
           return previous;
         });
         client.setQueryData(setsKey, (previous: unknown) => {
@@ -146,8 +149,8 @@ export function useFlashcardWrites() {
           if (result.kind === "delete-set") return cached.data.filter(set => set.id !== result.id);
           return previous;
         });
-        if (result.kind === "delete-deck") {
-          const queryKey = [...cardsKey, { deck_id: result.id }] as const;
+        for (const id of deletedDecks) {
+          const queryKey = [...cardsKey, { deck_id: id }] as const;
           const matchingPages = client.getQueriesData({ queryKey });
           client.removeQueries({ queryKey });
           for (const [, value] of matchingPages) {
